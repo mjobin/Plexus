@@ -1,0 +1,429 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		C9307BB319DCCA3B002AFF07 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9307BB219DCCA3B002AFF07 /* AppDelegate.swift */; };
+		C9307BB519DCCA3B002AFF07 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9307BB419DCCA3B002AFF07 /* ViewController.swift */; };
+		C9307BB819DCCA3B002AFF07 /* Plexus.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = C9307BB619DCCA3B002AFF07 /* Plexus.xcdatamodeld */; };
+		C9307BBA19DCCA3B002AFF07 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C9307BB919DCCA3B002AFF07 /* Images.xcassets */; };
+		C9307BBD19DCCA3B002AFF07 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C9307BBB19DCCA3B002AFF07 /* Main.storyboard */; };
+		C9307BC919DCCA3C002AFF07 /* PlexusTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9307BC819DCCA3C002AFF07 /* PlexusTests.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		C9307BC319DCCA3C002AFF07 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C9307BA519DCCA3B002AFF07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = C9307BAC19DCCA3B002AFF07;
+			remoteInfo = Plexus;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		C9307BAD19DCCA3B002AFF07 /* Plexus.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Plexus.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		C9307BB119DCCA3B002AFF07 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		C9307BB219DCCA3B002AFF07 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		C9307BB419DCCA3B002AFF07 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		C9307BB719DCCA3B002AFF07 /* Plexus.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Plexus.xcdatamodel; sourceTree = "<group>"; };
+		C9307BB919DCCA3B002AFF07 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
+		C9307BBC19DCCA3B002AFF07 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		C9307BC219DCCA3C002AFF07 /* PlexusTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PlexusTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		C9307BC719DCCA3C002AFF07 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		C9307BC819DCCA3C002AFF07 /* PlexusTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlexusTests.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		C9307BAA19DCCA3B002AFF07 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C9307BBF19DCCA3C002AFF07 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		C9307BA419DCCA3B002AFF07 = {
+			isa = PBXGroup;
+			children = (
+				C9307BAF19DCCA3B002AFF07 /* Plexus */,
+				C9307BC519DCCA3C002AFF07 /* PlexusTests */,
+				C9307BAE19DCCA3B002AFF07 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		C9307BAE19DCCA3B002AFF07 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				C9307BAD19DCCA3B002AFF07 /* Plexus.app */,
+				C9307BC219DCCA3C002AFF07 /* PlexusTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		C9307BAF19DCCA3B002AFF07 /* Plexus */ = {
+			isa = PBXGroup;
+			children = (
+				C9307BB219DCCA3B002AFF07 /* AppDelegate.swift */,
+				C9307BB419DCCA3B002AFF07 /* ViewController.swift */,
+				C9307BB919DCCA3B002AFF07 /* Images.xcassets */,
+				C9307BBB19DCCA3B002AFF07 /* Main.storyboard */,
+				C9307BB619DCCA3B002AFF07 /* Plexus.xcdatamodeld */,
+				C9307BB019DCCA3B002AFF07 /* Supporting Files */,
+			);
+			path = Plexus;
+			sourceTree = "<group>";
+		};
+		C9307BB019DCCA3B002AFF07 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				C9307BB119DCCA3B002AFF07 /* Info.plist */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		C9307BC519DCCA3C002AFF07 /* PlexusTests */ = {
+			isa = PBXGroup;
+			children = (
+				C9307BC819DCCA3C002AFF07 /* PlexusTests.swift */,
+				C9307BC619DCCA3C002AFF07 /* Supporting Files */,
+			);
+			path = PlexusTests;
+			sourceTree = "<group>";
+		};
+		C9307BC619DCCA3C002AFF07 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				C9307BC719DCCA3C002AFF07 /* Info.plist */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		C9307BAC19DCCA3B002AFF07 /* Plexus */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C9307BCC19DCCA3C002AFF07 /* Build configuration list for PBXNativeTarget "Plexus" */;
+			buildPhases = (
+				C9307BA919DCCA3B002AFF07 /* Sources */,
+				C9307BAA19DCCA3B002AFF07 /* Frameworks */,
+				C9307BAB19DCCA3B002AFF07 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Plexus;
+			productName = Plexus;
+			productReference = C9307BAD19DCCA3B002AFF07 /* Plexus.app */;
+			productType = "com.apple.product-type.application";
+		};
+		C9307BC119DCCA3C002AFF07 /* PlexusTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C9307BCF19DCCA3C002AFF07 /* Build configuration list for PBXNativeTarget "PlexusTests" */;
+			buildPhases = (
+				C9307BBE19DCCA3C002AFF07 /* Sources */,
+				C9307BBF19DCCA3C002AFF07 /* Frameworks */,
+				C9307BC019DCCA3C002AFF07 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				C9307BC419DCCA3C002AFF07 /* PBXTargetDependency */,
+			);
+			name = PlexusTests;
+			productName = PlexusTests;
+			productReference = C9307BC219DCCA3C002AFF07 /* PlexusTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		C9307BA519DCCA3B002AFF07 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0610;
+				ORGANIZATIONNAME = "Santa Clara University";
+				TargetAttributes = {
+					C9307BAC19DCCA3B002AFF07 = {
+						CreatedOnToolsVersion = 6.1;
+					};
+					C9307BC119DCCA3C002AFF07 = {
+						CreatedOnToolsVersion = 6.1;
+						TestTargetID = C9307BAC19DCCA3B002AFF07;
+					};
+				};
+			};
+			buildConfigurationList = C9307BA819DCCA3B002AFF07 /* Build configuration list for PBXProject "Plexus" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = C9307BA419DCCA3B002AFF07;
+			productRefGroup = C9307BAE19DCCA3B002AFF07 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				C9307BAC19DCCA3B002AFF07 /* Plexus */,
+				C9307BC119DCCA3C002AFF07 /* PlexusTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		C9307BAB19DCCA3B002AFF07 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C9307BBA19DCCA3B002AFF07 /* Images.xcassets in Resources */,
+				C9307BBD19DCCA3B002AFF07 /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C9307BC019DCCA3C002AFF07 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		C9307BA919DCCA3B002AFF07 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C9307BB519DCCA3B002AFF07 /* ViewController.swift in Sources */,
+				C9307BB319DCCA3B002AFF07 /* AppDelegate.swift in Sources */,
+				C9307BB819DCCA3B002AFF07 /* Plexus.xcdatamodeld in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C9307BBE19DCCA3C002AFF07 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C9307BC919DCCA3C002AFF07 /* PlexusTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		C9307BC419DCCA3C002AFF07 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = C9307BAC19DCCA3B002AFF07 /* Plexus */;
+			targetProxy = C9307BC319DCCA3C002AFF07 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		C9307BBB19DCCA3B002AFF07 /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				C9307BBC19DCCA3B002AFF07 /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		C9307BCA19DCCA3C002AFF07 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		C9307BCB19DCCA3C002AFF07 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		C9307BCD19DCCA3C002AFF07 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = Plexus/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		C9307BCE19DCCA3C002AFF07 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = Plexus/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+		C9307BD019DCCA3C002AFF07 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
+					"$(inherited)",
+				);
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = PlexusTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Plexus.app/Contents/MacOS/Plexus";
+			};
+			name = Debug;
+		};
+		C9307BD119DCCA3C002AFF07 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = PlexusTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Plexus.app/Contents/MacOS/Plexus";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		C9307BA819DCCA3B002AFF07 /* Build configuration list for PBXProject "Plexus" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C9307BCA19DCCA3C002AFF07 /* Debug */,
+				C9307BCB19DCCA3C002AFF07 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C9307BCC19DCCA3C002AFF07 /* Build configuration list for PBXNativeTarget "Plexus" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C9307BCD19DCCA3C002AFF07 /* Debug */,
+				C9307BCE19DCCA3C002AFF07 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+		C9307BCF19DCCA3C002AFF07 /* Build configuration list for PBXNativeTarget "PlexusTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C9307BD019DCCA3C002AFF07 /* Debug */,
+				C9307BD119DCCA3C002AFF07 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCVersionGroup section */
+		C9307BB619DCCA3B002AFF07 /* Plexus.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				C9307BB719DCCA3B002AFF07 /* Plexus.xcdatamodel */,
+			);
+			currentVersion = C9307BB719DCCA3B002AFF07 /* Plexus.xcdatamodel */;
+			path = Plexus.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
+	};
+	rootObject = C9307BA519DCCA3B002AFF07 /* Project object */;
+}
