@@ -18,6 +18,7 @@
 		C9307BD819DCCD51002AFF07 /* PlexusMainWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9307BD619DCCD51002AFF07 /* PlexusMainWindowController.swift */; };
 		C9307BDB19DCD09E002AFF07 /* OpenCL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C9307BD919DCD09E002AFF07 /* OpenCL.framework */; };
 		C9307BDC19DCD09E002AFF07 /* SpriteKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C9307BDA19DCD09E002AFF07 /* SpriteKit.framework */; };
+		C96946FC19DF6C8B001CE994 /* Quartz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C96946FB19DF6C8B001CE994 /* Quartz.framework */; };
 		C9D28F0819DDF22E005FD24D /* PlexusBNViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9D28F0719DDF22E005FD24D /* PlexusBNViewController.swift */; };
 		C9D28F0919DDF22E005FD24D /* PlexusBNViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9D28F0719DDF22E005FD24D /* PlexusBNViewController.swift */; };
 /* End PBXBuildFile section */
@@ -46,6 +47,7 @@
 		C9307BD619DCCD51002AFF07 /* PlexusMainWindowController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlexusMainWindowController.swift; sourceTree = "<group>"; };
 		C9307BD919DCD09E002AFF07 /* OpenCL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenCL.framework; path = System/Library/Frameworks/OpenCL.framework; sourceTree = SDKROOT; };
 		C9307BDA19DCD09E002AFF07 /* SpriteKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SpriteKit.framework; path = System/Library/Frameworks/SpriteKit.framework; sourceTree = SDKROOT; };
+		C96946FB19DF6C8B001CE994 /* Quartz.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Quartz.framework; path = System/Library/Frameworks/Quartz.framework; sourceTree = SDKROOT; };
 		C9D28F0719DDF22E005FD24D /* PlexusBNViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlexusBNViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -54,6 +56,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C96946FC19DF6C8B001CE994 /* Quartz.framework in Frameworks */,
 				C9307BDB19DCD09E002AFF07 /* OpenCL.framework in Frameworks */,
 				C9307BDC19DCD09E002AFF07 /* SpriteKit.framework in Frameworks */,
 			);
@@ -72,6 +75,7 @@
 		C9307BA419DCCA3B002AFF07 = {
 			isa = PBXGroup;
 			children = (
+				C96946FB19DF6C8B001CE994 /* Quartz.framework */,
 				C9307BAF19DCCA3B002AFF07 /* Plexus */,
 				C9307BC519DCCA3C002AFF07 /* PlexusTests */,
 				C9307BAE19DCCA3B002AFF07 /* Products */,

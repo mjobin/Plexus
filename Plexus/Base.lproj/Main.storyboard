@@ -2,6 +2,7 @@
 <document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="6249" systemVersion="14A361c" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" initialViewController="B8D-0N-5wS">
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="6249"/>
+        <plugIn identifier="com.apple.imagekit.ibplugin" version="6249"/>
     </dependencies>
     <scenes>
         <!--Application-->
@@ -1174,6 +1175,19 @@
                     <view key="view" id="XGY-1L-pJw">
                         <rect key="frame" x="0.0" y="0.0" width="214" height="300"/>
                         <autoresizingMask key="autoresizingMask"/>
+                        <subviews>
+                            <ikImageBrowserView autoresizesSubviews="NO" zoomValue="0.61101007461547852" translatesAutoresizingMaskIntoConstraints="NO" id="yyF-8E-yjJ">
+                                <rect key="frame" x="0.0" y="0.0" width="214" height="300"/>
+                                <autoresizingMask key="contentResizingMask" heightSizable="YES"/>
+                                <size key="cellSize" width="100" height="100"/>
+                            </ikImageBrowserView>
+                        </subviews>
+                        <constraints>
+                            <constraint firstAttribute="trailing" secondItem="yyF-8E-yjJ" secondAttribute="trailing" id="6R0-Bi-a9i"/>
+                            <constraint firstAttribute="bottom" secondItem="yyF-8E-yjJ" secondAttribute="bottom" id="aIi-TJ-FkF"/>
+                            <constraint firstItem="yyF-8E-yjJ" firstAttribute="leading" secondItem="XGY-1L-pJw" secondAttribute="leading" id="oZ0-nF-ZgN"/>
+                            <constraint firstItem="yyF-8E-yjJ" firstAttribute="top" secondItem="XGY-1L-pJw" secondAttribute="top" id="zHa-iY-8c3"/>
+                        </constraints>
                     </view>
                 </viewController>
                 <customObject id="J32-Wg-HDr" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
