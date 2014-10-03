@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		C9307BB319DCCA3B002AFF07 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9307BB219DCCA3B002AFF07 /* AppDelegate.swift */; };
-		C9307BB519DCCA3B002AFF07 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9307BB419DCCA3B002AFF07 /* ViewController.swift */; };
 		C9307BB819DCCA3B002AFF07 /* Plexus.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = C9307BB619DCCA3B002AFF07 /* Plexus.xcdatamodeld */; };
 		C9307BBA19DCCA3B002AFF07 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C9307BB919DCCA3B002AFF07 /* Images.xcassets */; };
 		C9307BBD19DCCA3B002AFF07 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C9307BBB19DCCA3B002AFF07 /* Main.storyboard */; };
@@ -17,6 +16,10 @@
 		C9307BD419DCCD16002AFF07 /* PlexusMainSplitViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9307BD219DCCD16002AFF07 /* PlexusMainSplitViewController.swift */; };
 		C9307BD719DCCD51002AFF07 /* PlexusMainWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9307BD619DCCD51002AFF07 /* PlexusMainWindowController.swift */; };
 		C9307BD819DCCD51002AFF07 /* PlexusMainWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9307BD619DCCD51002AFF07 /* PlexusMainWindowController.swift */; };
+		C9307BDB19DCD09E002AFF07 /* OpenCL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C9307BD919DCD09E002AFF07 /* OpenCL.framework */; };
+		C9307BDC19DCD09E002AFF07 /* SpriteKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C9307BDA19DCD09E002AFF07 /* SpriteKit.framework */; };
+		C9D28F0819DDF22E005FD24D /* PlexusBNViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9D28F0719DDF22E005FD24D /* PlexusBNViewController.swift */; };
+		C9D28F0919DDF22E005FD24D /* PlexusBNViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9D28F0719DDF22E005FD24D /* PlexusBNViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -33,7 +36,6 @@
 		C9307BAD19DCCA3B002AFF07 /* Plexus.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Plexus.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C9307BB119DCCA3B002AFF07 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C9307BB219DCCA3B002AFF07 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		C9307BB419DCCA3B002AFF07 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		C9307BB719DCCA3B002AFF07 /* Plexus.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Plexus.xcdatamodel; sourceTree = "<group>"; };
 		C9307BB919DCCA3B002AFF07 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		C9307BBC19DCCA3B002AFF07 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -42,6 +44,9 @@
 		C9307BC819DCCA3C002AFF07 /* PlexusTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlexusTests.swift; sourceTree = "<group>"; };
 		C9307BD219DCCD16002AFF07 /* PlexusMainSplitViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlexusMainSplitViewController.swift; sourceTree = "<group>"; };
 		C9307BD619DCCD51002AFF07 /* PlexusMainWindowController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlexusMainWindowController.swift; sourceTree = "<group>"; };
+		C9307BD919DCD09E002AFF07 /* OpenCL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenCL.framework; path = System/Library/Frameworks/OpenCL.framework; sourceTree = SDKROOT; };
+		C9307BDA19DCD09E002AFF07 /* SpriteKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SpriteKit.framework; path = System/Library/Frameworks/SpriteKit.framework; sourceTree = SDKROOT; };
+		C9D28F0719DDF22E005FD24D /* PlexusBNViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlexusBNViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -49,6 +54,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C9307BDB19DCD09E002AFF07 /* OpenCL.framework in Frameworks */,
+				C9307BDC19DCD09E002AFF07 /* SpriteKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -84,12 +91,12 @@
 			isa = PBXGroup;
 			children = (
 				C9307BB219DCCA3B002AFF07 /* AppDelegate.swift */,
-				C9307BB419DCCA3B002AFF07 /* ViewController.swift */,
 				C9307BB919DCCA3B002AFF07 /* Images.xcassets */,
 				C9307BBB19DCCA3B002AFF07 /* Main.storyboard */,
 				C9307BD619DCCD51002AFF07 /* PlexusMainWindowController.swift */,
 				C9307BD519DCCD1A002AFF07 /* View Controllers */,
 				C9307BB619DCCA3B002AFF07 /* Plexus.xcdatamodeld */,
+				C9B4AC9219DDF02F00B95662 /* Views */,
 				C9307BB019DCCA3B002AFF07 /* Supporting Files */,
 			);
 			path = Plexus;
@@ -98,6 +105,8 @@
 		C9307BB019DCCA3B002AFF07 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				C9307BD919DCD09E002AFF07 /* OpenCL.framework */,
+				C9307BDA19DCD09E002AFF07 /* SpriteKit.framework */,
 				C9307BB119DCCA3B002AFF07 /* Info.plist */,
 			);
 			name = "Supporting Files";
@@ -123,9 +132,17 @@
 		C9307BD519DCCD1A002AFF07 /* View Controllers */ = {
 			isa = PBXGroup;
 			children = (
+				C9D28F0719DDF22E005FD24D /* PlexusBNViewController.swift */,
 				C9307BD219DCCD16002AFF07 /* PlexusMainSplitViewController.swift */,
 			);
 			name = "View Controllers";
+			sourceTree = "<group>";
+		};
+		C9B4AC9219DDF02F00B95662 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Views;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -228,10 +245,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C9307BB519DCCA3B002AFF07 /* ViewController.swift in Sources */,
 				C9307BB319DCCA3B002AFF07 /* AppDelegate.swift in Sources */,
 				C9307BB819DCCA3B002AFF07 /* Plexus.xcdatamodeld in Sources */,
 				C9307BD719DCCD51002AFF07 /* PlexusMainWindowController.swift in Sources */,
+				C9D28F0819DDF22E005FD24D /* PlexusBNViewController.swift in Sources */,
 				C9307BD319DCCD16002AFF07 /* PlexusMainSplitViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -243,6 +260,7 @@
 				C9307BD819DCCD51002AFF07 /* PlexusMainWindowController.swift in Sources */,
 				C9307BC919DCCA3C002AFF07 /* PlexusTests.swift in Sources */,
 				C9307BD419DCCD16002AFF07 /* PlexusMainSplitViewController.swift in Sources */,
+				C9D28F0919DDF22E005FD24D /* PlexusBNViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -424,6 +442,7 @@
 				C9307BCE19DCCA3C002AFF07 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		C9307BCF19DCCA3C002AFF07 /* Build configuration list for PBXNativeTarget "PlexusTests" */ = {
 			isa = XCConfigurationList;
@@ -432,6 +451,7 @@
 				C9307BD119DCCA3C002AFF07 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 
