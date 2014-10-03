@@ -19,6 +19,7 @@
 		C9307BDB19DCD09E002AFF07 /* OpenCL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C9307BD919DCD09E002AFF07 /* OpenCL.framework */; };
 		C9307BDC19DCD09E002AFF07 /* SpriteKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C9307BDA19DCD09E002AFF07 /* SpriteKit.framework */; };
 		C96946FC19DF6C8B001CE994 /* Quartz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C96946FB19DF6C8B001CE994 /* Quartz.framework */; };
+		C96946FE19DF6CC1001CE994 /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C96946FD19DF6CC1001CE994 /* MapKit.framework */; };
 		C9D28F0819DDF22E005FD24D /* PlexusBNViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9D28F0719DDF22E005FD24D /* PlexusBNViewController.swift */; };
 		C9D28F0919DDF22E005FD24D /* PlexusBNViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9D28F0719DDF22E005FD24D /* PlexusBNViewController.swift */; };
 /* End PBXBuildFile section */
@@ -48,6 +49,8 @@
 		C9307BD919DCD09E002AFF07 /* OpenCL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenCL.framework; path = System/Library/Frameworks/OpenCL.framework; sourceTree = SDKROOT; };
 		C9307BDA19DCD09E002AFF07 /* SpriteKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SpriteKit.framework; path = System/Library/Frameworks/SpriteKit.framework; sourceTree = SDKROOT; };
 		C96946FB19DF6C8B001CE994 /* Quartz.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Quartz.framework; path = System/Library/Frameworks/Quartz.framework; sourceTree = SDKROOT; };
+		C96946FD19DF6CC1001CE994 /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
+		C96946FF19DF6CC1001CE994 /* Plexus.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = Plexus.entitlements; sourceTree = "<group>"; };
 		C9D28F0719DDF22E005FD24D /* PlexusBNViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlexusBNViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -58,6 +61,7 @@
 			files = (
 				C96946FC19DF6C8B001CE994 /* Quartz.framework in Frameworks */,
 				C9307BDB19DCD09E002AFF07 /* OpenCL.framework in Frameworks */,
+				C96946FE19DF6CC1001CE994 /* MapKit.framework in Frameworks */,
 				C9307BDC19DCD09E002AFF07 /* SpriteKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -75,7 +79,6 @@
 		C9307BA419DCCA3B002AFF07 = {
 			isa = PBXGroup;
 			children = (
-				C96946FB19DF6C8B001CE994 /* Quartz.framework */,
 				C9307BAF19DCCA3B002AFF07 /* Plexus */,
 				C9307BC519DCCA3C002AFF07 /* PlexusTests */,
 				C9307BAE19DCCA3B002AFF07 /* Products */,
@@ -94,6 +97,7 @@
 		C9307BAF19DCCA3B002AFF07 /* Plexus */ = {
 			isa = PBXGroup;
 			children = (
+				C96946FF19DF6CC1001CE994 /* Plexus.entitlements */,
 				C9307BB219DCCA3B002AFF07 /* AppDelegate.swift */,
 				C9307BB919DCCA3B002AFF07 /* Images.xcassets */,
 				C9307BBB19DCCA3B002AFF07 /* Main.storyboard */,
@@ -109,6 +113,8 @@
 		C9307BB019DCCA3B002AFF07 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				C96946FD19DF6CC1001CE994 /* MapKit.framework */,
+				C96946FB19DF6C8B001CE994 /* Quartz.framework */,
 				C9307BD919DCD09E002AFF07 /* OpenCL.framework */,
 				C9307BDA19DCD09E002AFF07 /* SpriteKit.framework */,
 				C9307BB119DCCA3B002AFF07 /* Info.plist */,
@@ -199,6 +205,11 @@
 					C9307BAC19DCCA3B002AFF07 = {
 						CreatedOnToolsVersion = 6.1;
 						DevelopmentTeam = 2ZV6Q2H5B8;
+						SystemCapabilities = {
+							com.apple.Maps.Mac = {
+								enabled = 1;
+							};
+						};
 					};
 					C9307BC119DCCA3C002AFF07 = {
 						CreatedOnToolsVersion = 6.1;
@@ -371,11 +382,14 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Plexus/Plexus.entitlements;
 				CODE_SIGN_IDENTITY = "Mac Developer";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				COMBINE_HIDPI_IMAGES = YES;
 				INFOPLIST_FILE = Plexus/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 			};
 			name = Debug;
 		};
@@ -383,11 +397,14 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Plexus/Plexus.entitlements;
 				CODE_SIGN_IDENTITY = "Mac Developer";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				COMBINE_HIDPI_IMAGES = YES;
 				INFOPLIST_FILE = Plexus/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 			};
 			name = Release;
 		};

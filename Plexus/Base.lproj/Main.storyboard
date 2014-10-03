@@ -2,6 +2,7 @@
 <document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="6249" systemVersion="14A361c" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" initialViewController="B8D-0N-5wS">
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="6249"/>
+        <plugIn identifier="com.apple.MapKitIBPlugin" version="6249"/>
         <plugIn identifier="com.apple.imagekit.ibplugin" version="6249"/>
     </dependencies>
     <scenes>
@@ -1201,6 +1202,17 @@
                     <view key="view" id="0Bu-oU-8WI">
                         <rect key="frame" x="0.0" y="0.0" width="271" height="300"/>
                         <autoresizingMask key="autoresizingMask"/>
+                        <subviews>
+                            <mapView mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="R17-Gg-Wl7">
+                                <rect key="frame" x="0.0" y="0.0" width="271" height="300"/>
+                            </mapView>
+                        </subviews>
+                        <constraints>
+                            <constraint firstItem="R17-Gg-Wl7" firstAttribute="leading" secondItem="0Bu-oU-8WI" secondAttribute="leading" id="8bC-Lk-cNz"/>
+                            <constraint firstAttribute="bottom" secondItem="R17-Gg-Wl7" secondAttribute="bottom" id="Nmp-JU-AfY"/>
+                            <constraint firstItem="R17-Gg-Wl7" firstAttribute="top" secondItem="0Bu-oU-8WI" secondAttribute="top" id="a9D-Zy-URO"/>
+                            <constraint firstAttribute="trailing" secondItem="R17-Gg-Wl7" secondAttribute="trailing" id="tip-0N-Ytq"/>
+                        </constraints>
                     </view>
                 </viewController>
                 <customObject id="wt7-X7-gP0" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
