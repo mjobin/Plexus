@@ -164,17 +164,6 @@ class PlexusBNScene: SKScene {
             println("hit")
             
             
-            if(touchedNode.name == "flipButton") {
-                //segue to flipped view
-                println("flip")
-                //Yes i know this breaks MVC...
-                //  self.view?.window.rootViewController.detailButton()
-                //view.detailButton()
-            }
-                
-            else {
-                
-            }
             
             
             
