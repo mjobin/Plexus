@@ -707,17 +707,17 @@
                         </toolbar>
                     </window>
                     <connections>
-                        <outlet property="moc" destination="7TD-Ev-7dP" id="oO2-vs-2m4"/>
+                        <outlet property="moc" destination="rNg-de-2by" id="jdY-LC-Ssy"/>
                         <segue destination="vdt-QS-Jtu" kind="relationship" relationship="window.shadowedContentViewController" id="rbE-Ek-Sz7"/>
                     </connections>
                 </windowController>
                 <customObject id="Oky-zY-oP4" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
                 <arrayController mode="entity" entityName="Dataset" automaticallyPreparesContent="YES" id="RSx-fX-J7D">
                     <connections>
-                        <outlet property="managedObjectContext" destination="7TD-Ev-7dP" id="DfI-EI-q6c"/>
+                        <binding destination="B8D-0N-5wS" name="managedObjectContext" keyPath="moc" id="74X-EV-xkJ"/>
                     </connections>
                 </arrayController>
-                <managedObjectContext id="7TD-Ev-7dP"/>
+                <managedObjectContext id="rNg-de-2by"/>
             </objects>
             <point key="canvasLocation" x="75" y="333"/>
         </scene>
@@ -826,10 +826,10 @@
                                     <nil key="backgroundColor"/>
                                 </clipView>
                                 <constraints>
-                                    <constraint firstAttribute="width" relation="lessThanOrEqual" constant="300" id="RTx-0T-qeq"/>
+                                    <constraint firstAttribute="width" relation="lessThanOrEqual" constant="200" id="RTx-0T-qeq"/>
                                     <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="150" id="tkd-PM-bDy"/>
                                 </constraints>
-                                <scroller key="horizontalScroller" verticalHuggingPriority="750" horizontal="YES" id="Chq-V5-NBz">
+                                <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="YES" id="Chq-V5-NBz">
                                     <rect key="frame" x="1" y="119" width="238" height="15"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                 </scroller>
@@ -969,7 +969,7 @@
                                     </subviews>
                                     <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
                                 </clipView>
-                                <scroller key="horizontalScroller" verticalHuggingPriority="750" horizontal="YES" id="zUX-40-JdP">
+                                <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="YES" id="zUX-40-JdP">
                                     <rect key="frame" x="1" y="119" width="223" height="15"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                 </scroller>
@@ -1029,7 +1029,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="169" height="300"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
-                            <scrollView autohidesScrollers="YES" horizontalLineScroll="19" horizontalPageScroll="10" verticalLineScroll="19" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="cAO-sO-kXg">
+                            <scrollView horizontalHuggingPriority="750" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" verticalCompressionResistancePriority="250" autohidesScrollers="YES" horizontalLineScroll="19" horizontalPageScroll="10" verticalLineScroll="19" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="cAO-sO-kXg">
                                 <rect key="frame" x="0.0" y="0.0" width="169" height="300"/>
                                 <clipView key="contentView" drawsBackground="NO" id="eDS-Mj-nhl">
                                     <rect key="frame" x="1" y="1" width="148" height="398"/>
@@ -1060,7 +1060,7 @@
                                                             <subviews>
                                                                 <textField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PiI-1K-NQi">
                                                                     <rect key="frame" x="0.0" y="1" width="145" height="14"/>
-                                                                    <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" title="HEADER CELL" id="RHo-ef-99C">
+                                                                    <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" title="Models" id="RHo-ef-99C">
                                                                         <font key="font" metaFont="smallSystemBold"/>
                                                                         <color key="textColor" name="headerColor" catalog="System" colorSpace="catalog"/>
                                                                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -1102,7 +1102,7 @@
                                 </clipView>
                                 <constraints>
                                     <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="150" id="Jmv-Ga-qtZ"/>
-                                    <constraint firstAttribute="width" relation="lessThanOrEqual" constant="300" id="hWc-dV-bnG"/>
+                                    <constraint firstAttribute="width" relation="lessThanOrEqual" constant="200" id="hWc-dV-bnG"/>
                                 </constraints>
                                 <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="YES" id="b9i-Y1-btl">
                                     <rect key="frame" x="1" y="382.99915599822998" width="148" height="16"/>
@@ -1254,7 +1254,7 @@
                                     </subviews>
                                     <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
                                 </clipView>
-                                <scroller key="horizontalScroller" verticalHuggingPriority="750" horizontal="YES" id="6q7-D0-oas">
+                                <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="YES" id="6q7-D0-oas">
                                     <rect key="frame" x="1" y="119" width="223" height="15"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                 </scroller>
