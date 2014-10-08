@@ -7,13 +7,27 @@
 //
 
 import Cocoa
+import CoreData
 
-class PlexusMainWindowController: NSWindowController {
+class PlexusMainWindowController: NSWindowController, ProgressViewControllerDelegate {
     
-    
+    @IBOutlet var moc : NSManagedObjectContext!
+    var progressViewController : PlexusProgressPanel?
 
     override func windowDidLoad() {
         super.windowDidLoad()
+        
+        //let appDelegate = (NSApplication.sharedApplication().delegate as AppDelegate)
+        
+        
+ //       let moc:NSManagedObjectContext = appDelegate.managedObjectContext!
+        let appDelegate : AppDelegate = NSApplication.sharedApplication().delegate as AppDelegate
+        moc = appDelegate.managedObjectContext
+        
+        println(moc.persistentStoreCoordinator)
+        
+       // moc.persistentStoreCoordinator = appDelegate.persistentStoreCoordinator
+        
     
         // Implement this method to handle any initialization after your window controller's window has been loaded from its nib file.
     }
@@ -28,6 +42,27 @@ class PlexusMainWindowController: NSWindowController {
 
         
         
+        
+    }
+    
+    @IBAction func  calculate(x:NSToolbarItem){
+        println("calc Tapped: \(x)")
+
+        //instatntiate progress controller
+        if self.progressViewController == nil {
+            let storyboard = NSStoryboard(name:"Main", bundle:nil)
+            self.progressViewController = storyboard!.instantiateControllerWithIdentifier("ProgressViewController") as? PlexusProgressPanel
+        }
+        self.progressViewController?.delegate = self
+       // self.presentViewControllerAsSheet(self.progressViewController!)
+        
+        //self.window?.beginSheet(progressViewController, completionHandler: <#((NSModalResponse) -> Void)?##(NSModalResponse) -> Void#>)
+        
+        self.contentViewController?.presentViewControllerAsSheet(self.progressViewController!)
+        //swap it in?
+        
+        
+        //then tear it down again
         
     }
     
@@ -48,6 +83,10 @@ class PlexusMainWindowController: NSWindowController {
         if (inFile != nil){ // operate on iput file
             
             /*
+            
+        
+            
+            
             let theStreamReader = StreamReader(path: inFile.path!)
             
             while let line = theStreamReader.nextLine() {
@@ -66,6 +105,11 @@ class PlexusMainWindowController: NSWindowController {
             
         }
         
+    }
+    
+    func progressViewControllerDidCancel(progressViewController: PlexusProgressPanel) {
+        println("Cancelled progress")
+        self.contentViewController?.dismissViewController(self.progressViewController!)
     }
 
 }
