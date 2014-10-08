@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="6249" systemVersion="14A379a" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" initialViewController="B8D-0N-5wS">
+<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="6249" systemVersion="14A386a" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" initialViewController="B8D-0N-5wS">
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="6249"/>
         <plugIn identifier="com.apple.MapKitIBPlugin" version="6249"/>
@@ -646,7 +646,7 @@
                 <customObject id="Voe-Tx-rLC" customClass="AppDelegate" customModule="Plexus" customModuleProvider="target"/>
                 <customObject id="Ady-hI-5gd" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="75" y="0.0"/>
+            <point key="canvasLocation" x="161" y="-166"/>
         </scene>
         <!--Window Controller-->
         <scene sceneID="R2V-B0-nI4">
@@ -655,8 +655,9 @@
                     <window key="window" title="Plexus" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" oneShot="NO" releasedWhenClosed="NO" showsToolbarButton="NO" visibleAtLaunch="NO" animationBehavior="default" id="IQv-IB-iLA">
                         <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
                         <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
-                        <rect key="contentRect" x="196" y="240" width="480" height="270"/>
+                        <rect key="contentRect" x="135" y="356" width="1024" height="600"/>
                         <rect key="screenRect" x="0.0" y="0.0" width="1680" height="1027"/>
+                        <value key="minSize" type="size" width="600" height="600"/>
                         <toolbar key="toolbar" implicitIdentifier="FC5FD341-A73E-4141-80CC-F9D05CFAA252" autosavesConfiguration="NO" displayMode="iconAndLabel" sizeMode="regular" id="pyn-dH-y2N">
                             <allowedToolbarItems>
                                 <toolbarItem implicitItemIdentifier="NSToolbarShowColorsItem" id="1qw-cg-2Ce"/>
@@ -695,6 +696,11 @@
                                     </connections>
                                 </toolbarItem>
                                 <toolbarItem implicitItemIdentifier="C52ABAEC-EEFB-40B9-A69C-517CBEDA0171" label="Copy Dataset" paletteLabel="Copy Dataset" tag="-1" image="NSInfo" id="tYP-cr-HVe"/>
+                                <toolbarItem implicitItemIdentifier="54996549-9BC3-4C8D-8E7B-A28EA9026930" label="Calculate" paletteLabel="Calculate" tag="-1" id="dgg-D5-0xQ">
+                                    <connections>
+                                        <action selector="calculate:" target="B8D-0N-5wS" id="VCg-wJ-cZX"/>
+                                    </connections>
+                                </toolbarItem>
                             </allowedToolbarItems>
                             <defaultToolbarItems>
                                 <toolbarItem reference="6MP-iC-Y3U"/>
@@ -703,6 +709,7 @@
                                 <toolbarItem reference="tYP-cr-HVe"/>
                                 <toolbarItem reference="3e1-GX-aR9"/>
                                 <toolbarItem reference="awY-S1-VNi"/>
+                                <toolbarItem reference="dgg-D5-0xQ"/>
                             </defaultToolbarItems>
                         </toolbar>
                     </window>
@@ -719,7 +726,7 @@
                 </arrayController>
                 <managedObjectContext id="rNg-de-2by"/>
             </objects>
-            <point key="canvasLocation" x="75" y="333"/>
+            <point key="canvasLocation" x="25" y="361"/>
         </scene>
         <!--Plexus Main Split View Controller-->
         <scene sceneID="ftQ-hJ-gwv">
@@ -744,7 +751,7 @@
                 </splitViewController>
                 <customObject id="qt2-b7-esq" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="117" y="803"/>
+            <point key="canvasLocation" x="111" y="996"/>
         </scene>
         <!--View Controller-->
         <scene sceneID="7Uc-mb-Yol">
@@ -754,7 +761,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="150" height="300"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
-                            <scrollView autohidesScrollers="YES" horizontalLineScroll="19" horizontalPageScroll="10" verticalLineScroll="19" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="diS-fa-DAZ">
+                            <scrollView horizontalHuggingPriority="750" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" verticalCompressionResistancePriority="250" autohidesScrollers="YES" horizontalLineScroll="19" horizontalPageScroll="10" verticalLineScroll="19" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="diS-fa-DAZ">
                                 <rect key="frame" x="0.0" y="0.0" width="150" height="300"/>
                                 <clipView key="contentView" drawsBackground="NO" id="96Z-KP-12r">
                                     <rect key="frame" x="1" y="1" width="148" height="398"/>
@@ -849,12 +856,12 @@
                 </viewController>
                 <customObject id="uS5-BA-2G8" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-75" y="1321"/>
+            <point key="canvasLocation" x="-65" y="1456"/>
         </scene>
         <!--Tab View Controller-->
         <scene sceneID="EXq-nA-BCj">
             <objects>
-                <tabViewController selectedTabViewItemIndex="4" id="8tL-eR-LSA" sceneMemberID="viewController">
+                <tabViewController selectedTabViewItemIndex="0" id="8tL-eR-LSA" sceneMemberID="viewController">
                     <tabViewItems>
                         <tabViewItem label="Traits" identifier="" id="SBa-pX-IRF"/>
                         <tabViewItem label="Structures" identifier="" id="aoJ-JI-ITM"/>
@@ -878,7 +885,7 @@
                 </tabViewController>
                 <customObject id="gQk-Z4-DYn" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="694" y="1322"/>
+            <point key="canvasLocation" x="538" y="1442"/>
         </scene>
         <!--Traits-->
         <scene sceneID="JOB-Q9-xpM">
@@ -1020,6 +1027,48 @@
                 <customObject id="arN-xX-TfV" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="981" y="1805"/>
+        </scene>
+        <!--Calculating...-->
+        <scene sceneID="xgP-Ks-UFl">
+            <objects>
+                <viewController title="Calculating..." storyboardIdentifier="ProgressViewController" id="dxZ-pc-hFQ" customClass="PlexusProgressPanel" customModule="Plexus" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" id="U7z-T2-coZ">
+                        <rect key="frame" x="0.0" y="0.0" width="574" height="302"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <subviews>
+                            <progressIndicator fixedFrame="YES" maxValue="100" indeterminate="YES" style="bar" translatesAutoresizingMaskIntoConstraints="NO" id="nB7-Ey-ym8">
+                                <rect key="frame" x="20" y="234" width="534" height="20"/>
+                            </progressIndicator>
+                            <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="mIT-iF-pNa">
+                                <rect key="frame" x="478" y="254" width="83" height="32"/>
+                                <buttonCell key="cell" type="push" title="Cancel" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="42b-dd-VLq">
+                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                    <string key="keyEquivalent" base64-UTF8="YES">
+Gw
+</string>
+                                </buttonCell>
+                                <connections>
+                                    <action selector="cancelButton:" target="dxZ-pc-hFQ" id="0pt-C5-CNx"/>
+                                </connections>
+                            </button>
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="kLp-OE-xxU">
+                                <rect key="frame" x="245" y="265" width="85" height="17"/>
+                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Calculating..." id="s9w-Hr-MDq">
+                                    <font key="font" metaFont="system"/>
+                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
+                        </subviews>
+                    </view>
+                    <connections>
+                        <outlet property="progressBar" destination="nB7-Ey-ym8" id="5gE-To-IqH"/>
+                    </connections>
+                </viewController>
+                <customObject id="5H9-M4-FOn" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="991" y="310"/>
         </scene>
         <!--View Controller-->
         <scene sceneID="V2l-RG-rvG">
