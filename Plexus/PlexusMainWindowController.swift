@@ -12,6 +12,7 @@ import CoreData
 class PlexusMainWindowController: NSWindowController, ProgressViewControllerDelegate {
     
     @IBOutlet var moc : NSManagedObjectContext!
+    var mainSplitViewController = PlexusMainSplitViewController()
     var progressViewController : PlexusProgressPanel?
 
     override func windowDidLoad() {
@@ -19,6 +20,7 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
         
         //let appDelegate = (NSApplication.sharedApplication().delegate as AppDelegate)
         
+        mainSplitViewController = contentViewController as PlexusMainSplitViewController
         
  //       let moc:NSManagedObjectContext = appDelegate.managedObjectContext!
         let appDelegate : AppDelegate = NSApplication.sharedApplication().delegate as AppDelegate
@@ -40,8 +42,7 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
     @IBAction func  toggleModels(x:NSToolbarItem){
         println("Toggle models Tapped: \(x)")
 
-        
-        
+        mainSplitViewController.toggleModels(x)
         
     }
     
