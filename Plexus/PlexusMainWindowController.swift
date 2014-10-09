@@ -11,10 +11,22 @@ import CoreData
 
 class PlexusMainWindowController: NSWindowController, ProgressViewControllerDelegate {
     
+    
+
+  
     @IBOutlet var moc : NSManagedObjectContext!
     var mainSplitViewController = PlexusMainSplitViewController()
     var progressViewController : PlexusProgressPanel?
 
+    
+    override func windowWillLoad() {
+        let appDelegate : AppDelegate = NSApplication.sharedApplication().delegate as AppDelegate
+        moc = appDelegate.managedObjectContext
+        println("loading main window controller")
+        println(moc.persistentStoreCoordinator)
+        
+    }
+    
     override func windowDidLoad() {
         super.windowDidLoad()
         
@@ -23,10 +35,9 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
         mainSplitViewController = contentViewController as PlexusMainSplitViewController
         
  //       let moc:NSManagedObjectContext = appDelegate.managedObjectContext!
-        let appDelegate : AppDelegate = NSApplication.sharedApplication().delegate as AppDelegate
-        moc = appDelegate.managedObjectContext
+
         
-        println(moc.persistentStoreCoordinator)
+        
         
        // moc.persistentStoreCoordinator = appDelegate.persistentStoreCoordinator
         
