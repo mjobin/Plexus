@@ -14,32 +14,56 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
     
 
   
-    @IBOutlet var moc : NSManagedObjectContext!
+    var moc : NSManagedObjectContext!
     var mainSplitViewController = PlexusMainSplitViewController()
     var progressViewController : PlexusProgressPanel?
 
     
     override func windowWillLoad() {
+
+        //Get MOC from App delegate
         let appDelegate : AppDelegate = NSApplication.sharedApplication().delegate as AppDelegate
         moc = appDelegate.managedObjectContext
-        println("loading main window controller")
-        println(moc.persistentStoreCoordinator)
+        
+        println(moc)
+        
+       // perfromsegue?????
+
+       // mainSplitViewController = contentViewController as PlexusMainSplitViewController
+       // mainSplitViewController.moc = moc
+
+        
+        //create a dataset if there are none
+        let request = NSFetchRequest(entityName: "Dataset")
+        var anyError: NSError?
+        let fetchedDatasets = moc.executeFetchRequest(request, error:&anyError)
+        
+        if fetchedDatasets == nil {
+            println("error")
+
+        }
+        
+        let initDatasets = fetchedDatasets as [NSManagedObject]
+        if(initDatasets.count == 0){
+            println("no datasets")
+            //so make an initial one
+            let newDataset = NSEntityDescription.insertNewObjectForEntityForName("Dataset", inManagedObjectContext: moc) as NSManagedObject
+            moc.save(&anyError)
+
+        }
+        
+        
         
     }
     
     override func windowDidLoad() {
         super.windowDidLoad()
         
-        //let appDelegate = (NSApplication.sharedApplication().delegate as AppDelegate)
+
         
         mainSplitViewController = contentViewController as PlexusMainSplitViewController
         
- //       let moc:NSManagedObjectContext = appDelegate.managedObjectContext!
 
-        
-        
-        
-       // moc.persistentStoreCoordinator = appDelegate.persistentStoreCoordinator
         
     
         // Implement this method to handle any initialization after your window controller's window has been loaded from its nib file.
@@ -66,9 +90,7 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
             self.progressViewController = storyboard!.instantiateControllerWithIdentifier("ProgressViewController") as? PlexusProgressPanel
         }
         self.progressViewController?.delegate = self
-       // self.presentViewControllerAsSheet(self.progressViewController!)
-        
-        //self.window?.beginSheet(progressViewController, completionHandler: <#((NSModalResponse) -> Void)?##(NSModalResponse) -> Void#>)
+
         
         self.contentViewController?.presentViewControllerAsSheet(self.progressViewController!)
         //swap it in?
@@ -90,10 +112,12 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
         op.allowedFileTypes = ["csv"]
         op.runModal()
         
-        var inFile = op.URL
+        var inFile  = op.URL
         
         if (inFile != nil){ // operate on iput file
             
+           var newDataset : NSManagedObject = NSManagedObject(entity: NSEntityDescription.entityForName("Dataset", inManagedObjectContext: moc)!, insertIntoManagedObjectContext: moc)
+            newDataset.setValue(inFile!.lastPathComponent, forKey: "name")
             /*
             
         
@@ -106,7 +130,7 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
             
             // var newEntry : NSManagedObject = NSEntityDescription.insertNewObjectForEntityForName("Entry", inManagedObjectContext: moc) as NSManagedObject
             
-            NSManagedObject(entity: NSEntityDescription.entityForName("Dataset", inManagedObjectContext: moc)!, insertIntoManagedObjectContext: moc)
+            
             
             
             
@@ -114,7 +138,7 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
             moc.save(errorPtr)
             }
             */
-            
+            moc.save(errorPtr)
         }
         
     }

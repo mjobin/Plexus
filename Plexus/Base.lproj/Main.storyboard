@@ -651,7 +651,7 @@
         <!--Window Controller-->
         <scene sceneID="R2V-B0-nI4">
             <objects>
-                <windowController id="B8D-0N-5wS" customClass="PlexusMainWindowController" customModule="Plexus" customModuleProvider="target" sceneMemberID="viewController">
+                <windowController storyboardIdentifier="Main Window Controller" id="B8D-0N-5wS" customClass="PlexusMainWindowController" customModule="Plexus" customModuleProvider="target" sceneMemberID="viewController">
                     <window key="window" title="Plexus" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" oneShot="NO" releasedWhenClosed="NO" showsToolbarButton="NO" visibleAtLaunch="NO" animationBehavior="default" id="IQv-IB-iLA">
                         <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
                         <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
@@ -683,6 +683,9 @@
                                                 </items>
                                             </menu>
                                         </popUpButtonCell>
+                                        <connections>
+                                            <binding destination="RSx-fX-J7D" name="content" keyPath="arrangedObjects.name" id="Rqf-IS-PYK"/>
+                                        </connections>
                                     </popUpButton>
                                 </toolbarItem>
                                 <toolbarItem implicitItemIdentifier="F02B1A4A-C9A3-4FA0-8798-740E9E9D5BAB" label="ImportCSV" paletteLabel="ImportCSV" tag="-1" id="6MP-iC-Y3U">
@@ -695,20 +698,24 @@
                                         <action selector="toggleModels:" target="B8D-0N-5wS" id="Rxh-Cs-kdO"/>
                                     </connections>
                                 </toolbarItem>
-                                <toolbarItem implicitItemIdentifier="C52ABAEC-EEFB-40B9-A69C-517CBEDA0171" label="Copy Dataset" paletteLabel="Copy Dataset" tag="-1" image="NSInfo" id="tYP-cr-HVe"/>
+                                <toolbarItem implicitItemIdentifier="C52ABAEC-EEFB-40B9-A69C-517CBEDA0171" label="Manage Datasets" paletteLabel="Manage Datasets" tag="-1" image="NSInfo" id="tYP-cr-HVe">
+                                    <connections>
+                                        <segue destination="xgZ-xw-JYg" kind="popover" popoverAnchorView="tYP-cr-HVe" popoverBehavior="t" preferredEdge="maxY" id="CDx-BG-ApR"/>
+                                    </connections>
+                                </toolbarItem>
                                 <toolbarItem implicitItemIdentifier="54996549-9BC3-4C8D-8E7B-A28EA9026930" label="Calculate" paletteLabel="Calculate" tag="-1" id="dgg-D5-0xQ">
                                     <connections>
                                         <action selector="calculate:" target="B8D-0N-5wS" id="VCg-wJ-cZX"/>
                                     </connections>
                                 </toolbarItem>
-                                <toolbarItem implicitItemIdentifier="E18303A5-037B-44FE-878B-72401FAAC926" label="Models" paletteLabel="Models" image="FEF6C996-807B-46FB-A4BC-D5103E5B5B24" id="VR9-AM-azT">
+                                <toolbarItem implicitItemIdentifier="E18303A5-037B-44FE-878B-72401FAAC926" label="Models" paletteLabel="Models" image="2186294A-D77F-4AB9-91AC-E2420A0FB63F" id="VR9-AM-azT">
                                     <nil key="toolTip"/>
                                     <size key="minSize" width="13" height="13"/>
                                     <size key="maxSize" width="37" height="34"/>
                                     <button key="view" horizontalHuggingPriority="750" verticalHuggingPriority="750" id="vcL-Vh-Set">
                                         <rect key="frame" x="5" y="14" width="37" height="34"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="squareTextured" bezelStyle="texturedSquare" image="FEF6C996-807B-46FB-A4BC-D5103E5B5B24" imagePosition="only" alignment="left" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="s8L-6c-2d7">
+                                        <buttonCell key="cell" type="squareTextured" bezelStyle="texturedSquare" image="2186294A-D77F-4AB9-91AC-E2420A0FB63F" imagePosition="only" alignment="left" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="s8L-6c-2d7">
                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
@@ -730,17 +737,15 @@
                         </toolbar>
                     </window>
                     <connections>
-                        <outlet property="moc" destination="rNg-de-2by" id="jdY-LC-Ssy"/>
                         <segue destination="vdt-QS-Jtu" kind="relationship" relationship="window.shadowedContentViewController" id="rbE-Ek-Sz7"/>
                     </connections>
                 </windowController>
                 <customObject id="Oky-zY-oP4" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
-                <arrayController mode="entity" entityName="Dataset" automaticallyPreparesContent="YES" id="RSx-fX-J7D">
+                <arrayController mode="entity" entityName="Dataset" automaticallyPreparesContent="YES" id="RSx-fX-J7D" userLabel="Dataset Controller">
                     <connections>
-                        <binding destination="B8D-0N-5wS" name="managedObjectContext" keyPath="moc" id="74X-EV-xkJ"/>
+                        <binding destination="B8D-0N-5wS" name="managedObjectContext" keyPath="moc" id="TZQ-5N-m5g"/>
                     </connections>
                 </arrayController>
-                <managedObjectContext id="rNg-de-2by"/>
             </objects>
             <point key="canvasLocation" x="25" y="361"/>
         </scene>
@@ -769,10 +774,10 @@
             </objects>
             <point key="canvasLocation" x="111" y="996"/>
         </scene>
-        <!--View Controller-->
+        <!--Plexus Entry View Controller-->
         <scene sceneID="7Uc-mb-Yol">
             <objects>
-                <viewController id="QF4-CV-Jth" sceneMemberID="viewController">
+                <viewController id="QF4-CV-Jth" customClass="PlexusEntryViewController" customModule="Plexus" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" id="s3H-VE-B97">
                         <rect key="frame" x="0.0" y="0.0" width="150" height="300"/>
                         <autoresizingMask key="autoresizingMask"/>
@@ -1016,7 +1021,7 @@
                 </viewController>
                 <customObject id="MOB-bH-HhY" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="416.5" y="1819"/>
+            <point key="canvasLocation" x="241.5" y="1970"/>
         </scene>
         <!--Structures-->
         <scene sceneID="cO8-WG-9XU">
@@ -1029,7 +1034,7 @@
                 </viewController>
                 <customObject id="SE4-mA-2W4" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="716" y="1811"/>
+            <point key="canvasLocation" x="599" y="2006"/>
         </scene>
         <!--Connections-->
         <scene sceneID="Ojl-cW-2f5">
@@ -1042,7 +1047,108 @@
                 </viewController>
                 <customObject id="arN-xX-TfV" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="981" y="1805"/>
+            <point key="canvasLocation" x="928" y="2063"/>
+        </scene>
+        <!--Plexus Dataset View Controller-->
+        <scene sceneID="K2u-hZ-HUR">
+            <objects>
+                <viewController id="xgZ-xw-JYg" customClass="PlexusDatasetViewController" customModule="Plexus" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" id="AT7-kd-Ahs">
+                        <rect key="frame" x="0.0" y="0.0" width="450" height="300"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <subviews>
+                            <textField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ETH-jb-SdC">
+                                <rect key="frame" x="20" y="258" width="338" height="22"/>
+                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" drawsBackground="YES" id="gAC-tY-tZH">
+                                    <font key="font" metaFont="system"/>
+                                    <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
+                            <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="czc-5z-MSA">
+                                <rect key="frame" x="354" y="13" width="76" height="32"/>
+                                <buttonCell key="cell" type="push" title="Close" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="odG-OH-hLy">
+                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                </buttonCell>
+                                <connections>
+                                    <action selector="dismissController:" target="xgZ-xw-JYg" id="ZrG-We-ZCd"/>
+                                </connections>
+                            </button>
+                            <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="vdk-fw-x0e">
+                                <rect key="frame" x="14" y="13" width="68" height="32"/>
+                                <buttonCell key="cell" type="push" title="New" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="AJK-41-8bN">
+                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                </buttonCell>
+                                <connections>
+                                    <action selector="dismissController:" target="xgZ-xw-JYg" id="yp9-1m-mb8"/>
+                                </connections>
+                            </button>
+                            <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="mLk-po-fiC">
+                                <rect key="frame" x="364" y="260" width="68" height="18"/>
+                                <buttonCell key="cell" type="check" title="Locked" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="4Ly-0K-Ujs">
+                                    <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                </buttonCell>
+                            </button>
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="yI8-fo-ziT">
+                                <rect key="frame" x="20" y="233" width="90" height="17"/>
+                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Date Created:" id="mKG-Ki-gup">
+                                    <font key="font" metaFont="system"/>
+                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Z9W-oq-aua">
+                                <rect key="frame" x="116" y="233" width="106" height="17"/>
+                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Label" id="hq3-17-rpH">
+                                    <dateFormatter key="formatter" dateStyle="short" id="6VI-uV-57B"/>
+                                    <font key="font" metaFont="system"/>
+                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="RrV-XD-yde">
+                                <rect key="frame" x="230" y="233" width="95" height="17"/>
+                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Date Modified:" id="VGc-wE-ZkG">
+                                    <font key="font" metaFont="system"/>
+                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="cdh-94-R79">
+                                <rect key="frame" x="326" y="233" width="106" height="17"/>
+                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Label" id="vCo-WS-mZE">
+                                    <dateFormatter key="formatter" dateStyle="short" id="FEK-hH-4Ux"/>
+                                    <font key="font" metaFont="system"/>
+                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
+                            <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Bcf-FD-JTY">
+                                <rect key="frame" x="82" y="13" width="73" height="32"/>
+                                <buttonCell key="cell" type="push" title="Copy" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="dr2-rJ-1Hl">
+                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                </buttonCell>
+                                <connections>
+                                    <action selector="dismissController:" target="xgZ-xw-JYg" id="poH-Tm-dn7"/>
+                                </connections>
+                            </button>
+                            <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="KpW-dR-veD">
+                                <rect key="frame" x="155" y="13" width="80" height="32"/>
+                                <buttonCell key="cell" type="push" title="Delete" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="8lH-eX-Xvb">
+                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                </buttonCell>
+                            </button>
+                        </subviews>
+                    </view>
+                </viewController>
+                <customObject id="qBl-fQ-gKG" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="981" y="-18"/>
         </scene>
         <!--Calculating...-->
         <scene sceneID="xgP-Ks-UFl">
@@ -1084,7 +1190,7 @@ Gw
                 </viewController>
                 <customObject id="5H9-M4-FOn" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="991" y="310"/>
+            <point key="canvasLocation" x="987" y="412"/>
         </scene>
         <!--View Controller-->
         <scene sceneID="V2l-RG-rvG">
@@ -1369,7 +1475,7 @@ Gw
                 </viewController>
                 <customObject id="J32-Wg-HDr" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1248" y="1810"/>
+            <point key="canvasLocation" x="1230" y="2068"/>
         </scene>
         <!--Map-->
         <scene sceneID="FZ9-iU-uVi">
@@ -1393,11 +1499,11 @@ Gw
                 </viewController>
                 <customObject id="wt7-X7-gP0" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1518.5" y="1805"/>
+            <point key="canvasLocation" x="1572.5" y="2043"/>
         </scene>
     </scenes>
     <resources>
-        <image name="FEF6C996-807B-46FB-A4BC-D5103E5B5B24" width="1" height="1">
+        <image name="2186294A-D77F-4AB9-91AC-E2420A0FB63F" width="1" height="1">
             <mutableData key="keyedArchiveRepresentation">
 YnBsaXN0MDDUAQIDBAUGPj9YJHZlcnNpb25YJG9iamVjdHNZJGFyY2hpdmVyVCR0b3ASAAGGoK4HCBMU
 GR4fIyQsLzI4O1UkbnVsbNUJCgsMDQ4PEBESVk5TU2l6ZVYkY2xhc3NcTlNJbWFnZUZsYWdzVk5TUmVw
