@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="6249" systemVersion="14A386a" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" initialViewController="B8D-0N-5wS">
+<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="6249" systemVersion="14A388a" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" initialViewController="B8D-0N-5wS">
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="6249"/>
         <plugIn identifier="com.apple.MapKitIBPlugin" version="6249"/>
@@ -708,14 +708,14 @@
                                         <action selector="calculate:" target="B8D-0N-5wS" id="VCg-wJ-cZX"/>
                                     </connections>
                                 </toolbarItem>
-                                <toolbarItem implicitItemIdentifier="E18303A5-037B-44FE-878B-72401FAAC926" label="Models" paletteLabel="Models" image="2186294A-D77F-4AB9-91AC-E2420A0FB63F" id="VR9-AM-azT">
+                                <toolbarItem implicitItemIdentifier="E18303A5-037B-44FE-878B-72401FAAC926" label="Models" paletteLabel="Models" image="9614C813-C530-4D91-8D41-5B6136D0BBFC" id="VR9-AM-azT">
                                     <nil key="toolTip"/>
                                     <size key="minSize" width="13" height="13"/>
                                     <size key="maxSize" width="37" height="34"/>
                                     <button key="view" horizontalHuggingPriority="750" verticalHuggingPriority="750" id="vcL-Vh-Set">
                                         <rect key="frame" x="5" y="14" width="37" height="34"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="squareTextured" bezelStyle="texturedSquare" image="2186294A-D77F-4AB9-91AC-E2420A0FB63F" imagePosition="only" alignment="left" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="s8L-6c-2d7">
+                                        <buttonCell key="cell" type="squareTextured" bezelStyle="texturedSquare" image="9614C813-C530-4D91-8D41-5B6136D0BBFC" imagePosition="only" alignment="left" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="s8L-6c-2d7">
                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
@@ -752,7 +752,7 @@
         <!--Plexus Main Split View Controller-->
         <scene sceneID="ftQ-hJ-gwv">
             <objects>
-                <splitViewController id="vdt-QS-Jtu" customClass="PlexusMainSplitViewController" customModule="Plexus" customModuleProvider="target" sceneMemberID="viewController">
+                <splitViewController storyboardIdentifier="MainSplitController" id="vdt-QS-Jtu" customClass="PlexusMainSplitViewController" customModule="Plexus" customModuleProvider="target" sceneMemberID="viewController">
                     <splitViewItems>
                         <splitViewItem id="D4I-Ct-Cn5"/>
                         <splitViewItem id="A15-Wu-erN"/>
@@ -779,11 +779,11 @@
             <objects>
                 <viewController id="QF4-CV-Jth" customClass="PlexusEntryViewController" customModule="Plexus" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" id="s3H-VE-B97">
-                        <rect key="frame" x="0.0" y="0.0" width="150" height="300"/>
+                        <rect key="frame" x="0.0" y="0.0" width="164" height="300"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
                             <scrollView horizontalHuggingPriority="750" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" verticalCompressionResistancePriority="250" autohidesScrollers="YES" horizontalLineScroll="19" horizontalPageScroll="10" verticalLineScroll="19" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="diS-fa-DAZ">
-                                <rect key="frame" x="0.0" y="0.0" width="150" height="300"/>
+                                <rect key="frame" x="0.0" y="0.0" width="164" height="300"/>
                                 <clipView key="contentView" drawsBackground="NO" id="96Z-KP-12r">
                                     <rect key="frame" x="1" y="1" width="148" height="398"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -794,7 +794,7 @@
                                             <color key="backgroundColor" name="_sourceListBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             <color key="gridColor" name="gridColor" catalog="System" colorSpace="catalog"/>
                                             <tableColumns>
-                                                <tableColumn width="145" minWidth="16" maxWidth="1000" id="tZN-KX-vQU">
+                                                <tableColumn width="159" minWidth="16" maxWidth="1000" id="tZN-KX-vQU">
                                                     <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="left">
                                                         <font key="font" metaFont="smallSystem"/>
                                                         <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
@@ -808,7 +808,7 @@
                                                     <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
                                                     <prototypeCellViews>
                                                         <tableCellView identifier="HeaderCell" id="uSw-oc-hcM">
-                                                            <rect key="frame" x="0.0" y="0.0" width="145" height="17"/>
+                                                            <rect key="frame" x="1" y="1" width="159" height="17"/>
                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                             <subviews>
                                                                 <textField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="YoZ-w3-CrG">
@@ -825,7 +825,7 @@
                                                             </connections>
                                                         </tableCellView>
                                                         <tableCellView identifier="DataCell" id="c2P-gv-say">
-                                                            <rect key="frame" x="0.0" y="0.0" width="145" height="17"/>
+                                                            <rect key="frame" x="1" y="20" width="159" height="17"/>
                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                             <subviews>
                                                                 <imageView fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="f2f-eA-Iby">
@@ -849,6 +849,10 @@
                                                     </prototypeCellViews>
                                                 </tableColumn>
                                             </tableColumns>
+                                            <connections>
+                                                <binding destination="XEu-Mn-vSE" name="content" keyPath="arrangedObjects" id="lVw-rp-MhQ"/>
+                                                <binding destination="XEu-Mn-vSE" name="selectionIndexPaths" keyPath="selectionIndexPaths" previousBinding="lVw-rp-MhQ" id="8TS-hL-nUM"/>
+                                            </connections>
                                         </outlineView>
                                     </subviews>
                                     <nil key="backgroundColor"/>
@@ -876,8 +880,13 @@
                     </view>
                 </viewController>
                 <customObject id="uS5-BA-2G8" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
+                <treeController mode="entity" entityName="Entry" fetchPredicateFormat="parent == nil" automaticallyPreparesContent="YES" childrenKeyPath="children" id="XEu-Mn-vSE">
+                    <connections>
+                        <binding destination="QF4-CV-Jth" name="managedObjectContext" keyPath="moc" id="73Z-IR-AUP"/>
+                    </connections>
+                </treeController>
             </objects>
-            <point key="canvasLocation" x="-65" y="1456"/>
+            <point key="canvasLocation" x="-58" y="1456"/>
         </scene>
         <!--Tab View Controller-->
         <scene sceneID="EXq-nA-BCj">
@@ -1503,7 +1512,7 @@ Gw
         </scene>
     </scenes>
     <resources>
-        <image name="2186294A-D77F-4AB9-91AC-E2420A0FB63F" width="1" height="1">
+        <image name="9614C813-C530-4D91-8D41-5B6136D0BBFC" width="1" height="1">
             <mutableData key="keyedArchiveRepresentation">
 YnBsaXN0MDDUAQIDBAUGPj9YJHZlcnNpb25YJG9iamVjdHNZJGFyY2hpdmVyVCR0b3ASAAGGoK4HCBMU
 GR4fIyQsLzI4O1UkbnVsbNUJCgsMDQ4PEBESVk5TU2l6ZVYkY2xhc3NcTlNJbWFnZUZsYWdzVk5TUmVw
