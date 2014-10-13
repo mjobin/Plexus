@@ -1,4 +1,15 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model name="untitled.xcdatamodel" userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="1" systemVersion="11A491" minimumToolsVersion="Automatic" macOSVersion="Automatic" iOSVersion="Automatic">
-    <elements/>
+<model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="6252" systemVersion="14A388a" minimumToolsVersion="Automatic" macOSVersion="Automatic" iOSVersion="Automatic">
+    <entity name="Dataset" syncable="YES">
+        <attribute name="name" optional="YES" attributeType="String" defaultValueString="Unnamed Dataset" syncable="YES"/>
+    </entity>
+    <entity name="Entry" syncable="YES">
+        <attribute name="name" optional="YES" attributeType="String" defaultValueString="Unnamed Entry" syncable="YES"/>
+        <relationship name="children" optional="YES" toMany="YES" deletionRule="Nullify" ordered="YES" destinationEntity="Entry" inverseName="parent" inverseEntity="Entry" syncable="YES"/>
+        <relationship name="parent" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Entry" inverseName="children" inverseEntity="Entry" syncable="YES"/>
+    </entity>
+    <elements>
+        <element name="Dataset" positionX="-63" positionY="-18" width="128" height="60"/>
+        <element name="Entry" positionX="-63" positionY="-9" width="128" height="90"/>
+    </elements>
 </model>
