@@ -15,11 +15,10 @@ class PlexusEntryViewController: NSViewController {
     
     required init?(coder aDecoder: NSCoder)
     {
-        println("coder")
+
         let appDelegate : AppDelegate = NSApplication.sharedApplication().delegate as AppDelegate
         moc = appDelegate.managedObjectContext
-        
-        println(moc)
+
         super.init(coder: aDecoder)
     }
     
@@ -28,8 +27,10 @@ class PlexusEntryViewController: NSViewController {
         // Do view setup here.
         let appDelegate : AppDelegate = NSApplication.sharedApplication().delegate as AppDelegate
         moc = appDelegate.managedObjectContext
-        
-        println(moc)
+
     }
+    
+    
+
     
 }
