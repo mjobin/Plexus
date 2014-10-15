@@ -24,8 +24,7 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
         //Get MOC from App delegate
         let appDelegate : AppDelegate = NSApplication.sharedApplication().delegate as AppDelegate
         moc = appDelegate.managedObjectContext
-        
-        println(moc)
+
         
        // perfromsegue?????
 
@@ -101,7 +100,7 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
     }
     
     @IBAction func importCSV(x:NSToolbarItem){
-        println("Tapped: \(x)")
+       // println("Tapped: \(x)")
         
         var errorPtr : NSErrorPointer = nil
         
@@ -114,32 +113,64 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
         
         var inFile  = op.URL
         
+        op.orderOut(self)
+        op.close()
+        
         if (inFile != nil){ // operate on iput file
+            
+            
+            //instatntiate progress controller
+            if self.progressViewController == nil {
+                let storyboard = NSStoryboard(name:"Main", bundle:nil)
+                self.progressViewController = storyboard!.instantiateControllerWithIdentifier("ProgressViewController") as? PlexusProgressPanel
+            }
+            self.progressViewController?.delegate = self
+                       
+            
+            self.contentViewController?.presentViewControllerAsSheet(self.progressViewController!)
+            
             
            var newDataset : NSManagedObject = NSManagedObject(entity: NSEntityDescription.entityForName("Dataset", inManagedObjectContext: moc)!, insertIntoManagedObjectContext: moc)
             newDataset.setValue(inFile!.lastPathComponent, forKey: "name")
-            /*
             
-        
+
             
+            let fileContents : String = NSString(contentsOfFile: inFile!.path!, encoding: NSUTF8StringEncoding, error: nil)!
+           // print(fileContents)
+            var fileLines : [String] = fileContents.componentsSeparatedByString("\n")
             
-            let theStreamReader = StreamReader(path: inFile.path!)
+            var lineCount = Double(fileLines.count)
             
-            while let line = theStreamReader.nextLine() {
-            //println(line)
-            
-            // var newEntry : NSManagedObject = NSEntityDescription.insertNewObjectForEntityForName("Entry", inManagedObjectContext: moc) as NSManagedObject
-            
-            
-            
-            
-            
-            theStreamReader.close()
-            moc.save(errorPtr)
+            for thisLine : String in fileLines {
+                var newEntry : NSManagedObject = NSManagedObject(entity: NSEntityDescription.entityForName("Entry", inManagedObjectContext: moc)!, insertIntoManagedObjectContext: moc)
+                newEntry.setValue("test", forKey: "name")
+                //  println(thisLine)
+                //  println("\n********************************************\n")
+                
+                var theTraits : [String] = thisLine.componentsSeparatedByString(",")
+                for thisTrait in theTraits {
+                 //println(thisTrait)
+                    var newTrait : NSManagedObject = NSManagedObject(entity: NSEntityDescription.entityForName("Trait", inManagedObjectContext: moc)!, insertIntoManagedObjectContext: moc)
+                    newTrait.setValue("test", forKey: "name")
+                    newTrait.setValue(thisTrait, forKey: "value")
+                    newTrait.setValue(newEntry, forKey: "entry")
+                    
+                
+                    //FIXME then add trait to entry
+                }
+                
+                self.progressViewController!.progressBar.incrementBy(lineCount)
+              
             }
-            */
+
+
+
             moc.save(errorPtr)
         }
+        
+        
+        self.contentViewController?.dismissViewController(self.progressViewController!)
+        
         
     }
     
