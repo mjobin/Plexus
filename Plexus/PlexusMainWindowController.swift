@@ -17,7 +17,6 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
     var moc : NSManagedObjectContext!
     var mainSplitViewController = PlexusMainSplitViewController()
     var progressViewController : PlexusProgressPanel?
-    //@IBOutlet var datasetController : NSArrayController?
     @IBOutlet var datasetController : NSArrayController!
 
     
@@ -45,14 +44,15 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
             println("no datasets")
             //so make an initial one
             let newDataset = NSEntityDescription.insertNewObjectForEntityForName("Dataset", inManagedObjectContext: moc) as NSManagedObject
+
+            var newModel = NSEntityDescription.insertNewObjectForEntityForName("Model", inManagedObjectContext: moc) as NSManagedObject
+            newModel.setValue("newmodel", forKey: "name")
+            newModel.setValue(newDataset, forKey: "dataset")
             moc.save(&anyError)
 
         }
 
-        //FIXME add a dummy model
-        var newModel = NSEntityDescription.insertNewObjectForEntityForName("Model", inManagedObjectContext: moc) as NSManagedObject
-        newModel.setValue("newmodel", forKey: "name")
-        moc.save(&anyError)
+
         
         
         
@@ -191,7 +191,7 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
                 i++
             }
 
-             println(newDataset.entry)
+             //println(newDataset.entry)
 
             moc.save(errorPtr)
         }
