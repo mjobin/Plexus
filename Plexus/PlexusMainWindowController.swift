@@ -17,6 +17,8 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
     var moc : NSManagedObjectContext!
     var mainSplitViewController = PlexusMainSplitViewController()
     var progressViewController : PlexusProgressPanel?
+    //@IBOutlet var datasetController : NSArrayController?
+    @IBOutlet var datasetController : NSArrayController!
 
     
     override func windowWillLoad() {
@@ -26,10 +28,6 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
         moc = appDelegate.managedObjectContext
 
         
-       // perfromsegue?????
-
-       // mainSplitViewController = contentViewController as PlexusMainSplitViewController
-       // mainSplitViewController.moc = moc
 
         
         //create a dataset if there are none
@@ -50,6 +48,11 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
             moc.save(&anyError)
 
         }
+
+        //FIXME add a dummy model
+        var newModel = NSEntityDescription.insertNewObjectForEntityForName("Model", inManagedObjectContext: moc) as NSManagedObject
+        newModel.setValue("newmodel", forKey: "name")
+        moc.save(&anyError)
         
         
         
@@ -61,7 +64,15 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
 
         
         mainSplitViewController = contentViewController as PlexusMainSplitViewController
+        //mainSplitViewController.mainWindowController = self
+        mainSplitViewController.datasetController = self.datasetController
+       // println(self.datasetController)
+        //println(mainSplitViewController.datasetController)
         
+        
+     //   println(datasetController!.selectionIndexes)
+        
+       // datasetController!.setSelectionIndex(0)
 
         
     
@@ -77,6 +88,18 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
         println("Toggle models Tapped: \(x)")
 
         mainSplitViewController.toggleModels(x)
+        
+    }
+    
+    @IBAction func  chkDataset(x:NSToolbarItem){
+        println("MAIN WINDOW CONTROLLER:")
+        println(datasetController)
+        println(datasetController!.selectionIndexes)
+        println(datasetController!.selection)
+        println(datasetController.selectedObjects)
+       // println(datasetController!.selectedObjects.objectAtIndex(0))
+        
+        mainSplitViewController.chkDataset(x)
         
     }
     
@@ -116,6 +139,8 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
         op.orderOut(self)
         op.close()
         
+        var i = 1
+        
         if (inFile != nil){ // operate on iput file
             
             
@@ -130,7 +155,7 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
             self.contentViewController?.presentViewControllerAsSheet(self.progressViewController!)
             
             
-           var newDataset : NSManagedObject = NSManagedObject(entity: NSEntityDescription.entityForName("Dataset", inManagedObjectContext: moc)!, insertIntoManagedObjectContext: moc)
+           var newDataset : Dataset = Dataset(entity: NSEntityDescription.entityForName("Dataset", inManagedObjectContext: moc)!, insertIntoManagedObjectContext: moc)
             newDataset.setValue(inFile!.lastPathComponent, forKey: "name")
             
 
@@ -142,8 +167,11 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
             var lineCount = Double(fileLines.count)
             
             for thisLine : String in fileLines {
-                var newEntry : NSManagedObject = NSManagedObject(entity: NSEntityDescription.entityForName("Entry", inManagedObjectContext: moc)!, insertIntoManagedObjectContext: moc)
-                newEntry.setValue("test", forKey: "name")
+                var newEntry : Entry = Entry(entity: NSEntityDescription.entityForName("Entry", inManagedObjectContext: moc)!, insertIntoManagedObjectContext: moc)
+               // newEntry.setValue("test", forKey: "name")
+                 newEntry.setValue(String(i), forKey: "name")
+                newEntry.setValue(newDataset, forKey: "dataset")
+                newDataset.addEntryObject(newEntry)
                 //  println(thisLine)
                 //  println("\n********************************************\n")
                 
@@ -156,18 +184,19 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
                     newTrait.setValue(newEntry, forKey: "entry")
                     
                 
-                    //FIXME then add trait to entry
+                    
                 }
                 
                 self.progressViewController!.progressBar.incrementBy(lineCount)
-              
+                i++
             }
 
-
+             println(newDataset.entry)
 
             moc.save(errorPtr)
         }
         
+       
         
         self.contentViewController?.dismissViewController(self.progressViewController!)
         
