@@ -709,14 +709,14 @@
                                         <action selector="calculate:" target="B8D-0N-5wS" id="VCg-wJ-cZX"/>
                                     </connections>
                                 </toolbarItem>
-                                <toolbarItem implicitItemIdentifier="E18303A5-037B-44FE-878B-72401FAAC926" label="Models" paletteLabel="Models" image="CB3A7D31-2707-48B7-97CB-114E9C09C37D" id="VR9-AM-azT">
+                                <toolbarItem implicitItemIdentifier="E18303A5-037B-44FE-878B-72401FAAC926" label="Models" paletteLabel="Models" image="94498A97-BA40-4CBD-B6A4-FFF165B41F11" id="VR9-AM-azT">
                                     <nil key="toolTip"/>
                                     <size key="minSize" width="13" height="13"/>
                                     <size key="maxSize" width="37" height="34"/>
                                     <button key="view" horizontalHuggingPriority="750" verticalHuggingPriority="750" id="vcL-Vh-Set">
                                         <rect key="frame" x="5" y="14" width="37" height="34"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="squareTextured" bezelStyle="texturedSquare" image="CB3A7D31-2707-48B7-97CB-114E9C09C37D" imagePosition="only" alignment="left" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="s8L-6c-2d7">
+                                        <buttonCell key="cell" type="squareTextured" bezelStyle="texturedSquare" image="94498A97-BA40-4CBD-B6A4-FFF165B41F11" imagePosition="only" alignment="left" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="s8L-6c-2d7">
                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
@@ -756,8 +756,6 @@
                                 <toolbarItem reference="3e1-GX-aR9"/>
                                 <toolbarItem reference="dgg-D5-0xQ"/>
                                 <toolbarItem reference="VR9-AM-azT"/>
-                                <toolbarItem reference="XS1-50-OiQ"/>
-                                <toolbarItem reference="KOH-A2-sFc"/>
                             </defaultToolbarItems>
                         </toolbar>
                     </window>
@@ -889,26 +887,53 @@
                                     <autoresizingMask key="autoresizingMask"/>
                                 </tableHeaderView>
                             </scrollView>
-                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" ambiguous="YES" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="wUf-XI-dpU">
-                                <rect key="frame" x="18" y="0.0" width="136" height="17"/>
-                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Label" id="kFZ-b0-Emf">
-                                    <font key="font" metaFont="system"/>
-                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                                </textFieldCell>
+                            <button misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="0KG-3C-KG3">
+                                <rect key="frame" x="0.0" y="0.0" width="24" height="20"/>
+                                <buttonCell key="cell" type="smallSquare" title="+" bezelStyle="smallSquare" imagePosition="overlaps" alignment="center" state="on" imageScaling="proportionallyDown" inset="2" id="P6a-LH-btc">
+                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                    <font key="font" metaFont="system" size="16"/>
+                                </buttonCell>
                                 <connections>
-                                    <binding destination="QF4-CV-Jth" name="value" keyPath="datasetController.selection.name" id="8zL-Su-den"/>
+                                    <action selector="add:" target="XEu-Mn-vSE" id="Asu-Ai-yWg"/>
                                 </connections>
-                            </textField>
+                            </button>
+                            <button misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="zSk-NI-zGS">
+                                <rect key="frame" x="24" y="0.0" width="24" height="20"/>
+                                <buttonCell key="cell" type="smallSquare" title="-" bezelStyle="smallSquare" imagePosition="overlaps" alignment="center" state="on" imageScaling="proportionallyDown" inset="2" id="xnV-E6-eq9">
+                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                    <font key="font" metaFont="system" size="16"/>
+                                </buttonCell>
+                                <connections>
+                                    <action selector="removeEntry" target="QF4-CV-Jth" id="YSy-31-AyQ"/>
+                                </connections>
+                            </button>
+                            <button misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="sXj-98-5xA">
+                                <rect key="frame" x="48" y="0.0" width="24" height="20"/>
+                                <buttonCell key="cell" type="smallSquare" title="c" bezelStyle="smallSquare" imagePosition="overlaps" alignment="center" state="on" imageScaling="proportionallyDown" inset="2" id="R3F-Hv-s9m">
+                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                    <font key="font" metaFont="system" size="16"/>
+                                </buttonCell>
+                                <connections>
+                                    <action selector="addChild:" target="XEu-Mn-vSE" id="0ht-tq-FjL"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <constraints>
+                            <constraint firstAttribute="bottom" secondItem="sXj-98-5xA" secondAttribute="bottom" id="0Xa-pu-bi7"/>
+                            <constraint firstAttribute="bottom" secondItem="0KG-3C-KG3" secondAttribute="bottom" id="9ns-3r-sOy"/>
+                            <constraint firstItem="zSk-NI-zGS" firstAttribute="leading" secondItem="0KG-3C-KG3" secondAttribute="trailing" id="Ban-b8-4Qz"/>
                             <constraint firstItem="Aop-un-4g6" firstAttribute="leading" secondItem="s3H-VE-B97" secondAttribute="leading" id="Djb-tT-MAz"/>
-                            <constraint firstAttribute="bottom" secondItem="wUf-XI-dpU" secondAttribute="bottom" id="FHA-ih-ShB"/>
                             <constraint firstAttribute="trailing" secondItem="Aop-un-4g6" secondAttribute="trailing" id="IeS-j0-y8J"/>
                             <constraint firstAttribute="bottom" secondItem="Aop-un-4g6" secondAttribute="bottom" constant="20" id="Vlp-t8-alX"/>
+                            <constraint firstItem="0KG-3C-KG3" firstAttribute="leading" secondItem="s3H-VE-B97" secondAttribute="leading" id="bwK-hl-q1S"/>
                             <constraint firstItem="Aop-un-4g6" firstAttribute="top" secondItem="s3H-VE-B97" secondAttribute="top" id="dRr-kE-YOs"/>
+                            <constraint firstItem="sXj-98-5xA" firstAttribute="leading" secondItem="zSk-NI-zGS" secondAttribute="trailing" id="hlW-fK-F11"/>
+                            <constraint firstAttribute="bottom" secondItem="zSk-NI-zGS" secondAttribute="bottom" id="xhv-JM-Br8"/>
                         </constraints>
                     </view>
+                    <connections>
+                        <outlet property="entryTreeController" destination="XEu-Mn-vSE" id="JZO-yQ-WYe"/>
+                    </connections>
                 </viewController>
                 <customObject id="uS5-BA-2G8" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
                 <treeController mode="entity" entityName="Entry" fetchPredicateFormat="" automaticallyPreparesContent="YES" childrenKeyPath="children" id="XEu-Mn-vSE" userLabel="Entry Tree Controller">
@@ -917,18 +942,13 @@
                         <binding destination="QF4-CV-Jth" name="managedObjectContext" keyPath="moc" id="73Z-IR-AUP"/>
                     </connections>
                 </treeController>
-                <arrayController mode="entity" entityName="Dataset" automaticallyPreparesContent="YES" id="KBp-eo-X7d" userLabel="Dataset Controller">
-                    <connections>
-                        <binding destination="QF4-CV-Jth" name="managedObjectContext" keyPath="moc" id="0RQ-uv-x7b"/>
-                    </connections>
-                </arrayController>
             </objects>
             <point key="canvasLocation" x="-31.5" y="1456"/>
         </scene>
-        <!--Tab View Controller-->
+        <!--Plexus Entry Tab View Controller-->
         <scene sceneID="EXq-nA-BCj">
             <objects>
-                <tabViewController selectedTabViewItemIndex="0" id="8tL-eR-LSA" sceneMemberID="viewController">
+                <tabViewController selectedTabViewItemIndex="1" id="8tL-eR-LSA" customClass="PlexusEntryTabViewController" customModule="Plexus" customModuleProvider="target" sceneMemberID="viewController">
                     <tabViewItems>
                         <tabViewItem label="Traits" identifier="" id="SBa-pX-IRF"/>
                         <tabViewItem label="Structures" identifier="" id="aoJ-JI-ITM"/>
@@ -957,7 +977,7 @@
         <!--Traits-->
         <scene sceneID="JOB-Q9-xpM">
             <objects>
-                <viewController title="Traits" id="32A-M1-Qeb" sceneMemberID="viewController">
+                <viewController title="Traits" id="32A-M1-Qeb" customClass="PlexusTraitViewController" customModule="Plexus" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" id="yUY-qS-jyP">
                         <rect key="frame" x="0.0" y="0.0" width="257" height="300"/>
                         <autoresizingMask key="autoresizingMask"/>
@@ -1201,14 +1221,14 @@
             <objects>
                 <viewController title="Calculating..." storyboardIdentifier="ProgressViewController" id="dxZ-pc-hFQ" customClass="PlexusProgressPanel" customModule="Plexus" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" id="U7z-T2-coZ">
-                        <rect key="frame" x="0.0" y="0.0" width="574" height="302"/>
+                        <rect key="frame" x="0.0" y="0.0" width="574" height="104"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
                             <progressIndicator fixedFrame="YES" maxValue="100" indeterminate="YES" style="bar" translatesAutoresizingMaskIntoConstraints="NO" id="nB7-Ey-ym8">
-                                <rect key="frame" x="20" y="234" width="534" height="20"/>
+                                <rect key="frame" x="20" y="36" width="534" height="20"/>
                             </progressIndicator>
                             <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="mIT-iF-pNa">
-                                <rect key="frame" x="478" y="254" width="83" height="32"/>
+                                <rect key="frame" x="478" y="56" width="83" height="32"/>
                                 <buttonCell key="cell" type="push" title="Cancel" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="42b-dd-VLq">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="system"/>
@@ -1221,7 +1241,7 @@ Gw
                                 </connections>
                             </button>
                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="kLp-OE-xxU">
-                                <rect key="frame" x="245" y="265" width="85" height="17"/>
+                                <rect key="frame" x="245" y="67" width="85" height="17"/>
                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Calculating..." id="s9w-Hr-MDq">
                                     <font key="font" metaFont="system"/>
                                     <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
@@ -1236,7 +1256,7 @@ Gw
                 </viewController>
                 <customObject id="5H9-M4-FOn" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="987" y="412"/>
+            <point key="canvasLocation" x="987" y="313"/>
         </scene>
         <!--Plexus Model View Controller-->
         <scene sceneID="V2l-RG-rvG">
@@ -1551,7 +1571,7 @@ Gw
         </scene>
     </scenes>
     <resources>
-        <image name="CB3A7D31-2707-48B7-97CB-114E9C09C37D" width="1" height="1">
+        <image name="94498A97-BA40-4CBD-B6A4-FFF165B41F11" width="1" height="1">
             <mutableData key="keyedArchiveRepresentation">
 YnBsaXN0MDDUAQIDBAUGPj9YJHZlcnNpb25YJG9iamVjdHNZJGFyY2hpdmVyVCR0b3ASAAGGoK4HCBMU
 GR4fIyQsLzI4O1UkbnVsbNUJCgsMDQ4PEBESVk5TU2l6ZVYkY2xhc3NcTlNJbWFnZUZsYWdzVk5TUmVw
