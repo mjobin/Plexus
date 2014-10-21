@@ -11,7 +11,17 @@ import CoreData
 
 class PlexusDatasetViewController: NSViewController {
 
-   // var moc : NSManagedObjectContext!
+    var moc : NSManagedObjectContext!
+    dynamic var datasetController : NSArrayController!
+   
+    required init?(coder aDecoder: NSCoder)
+    {
+        
+        let appDelegate : AppDelegate = NSApplication.sharedApplication().delegate as AppDelegate
+        moc = appDelegate.managedObjectContext
+        
+        super.init(coder: aDecoder)
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()

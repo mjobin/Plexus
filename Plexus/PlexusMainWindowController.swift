@@ -203,6 +203,16 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
         
     }
     
+    override func prepareForSegue(segue: NSStoryboardSegue, sender: AnyObject!) {
+
+        if (segue.identifier == "DatasetPopover") {
+
+            let datasetViewController = segue.destinationController as PlexusDatasetViewController
+            datasetViewController.datasetController = self.datasetController
+            
+        }
+    }
+    
     func progressViewControllerDidCancel(progressViewController: PlexusProgressPanel) {
         println("Cancelled progress")
         self.contentViewController?.dismissViewController(self.progressViewController!)
