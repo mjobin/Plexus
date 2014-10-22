@@ -13,6 +13,7 @@ class PlexusEntryViewController: NSViewController {
     var moc : NSManagedObjectContext!
     //var datasetController : NSArrayController?
    dynamic var datasetController : NSArrayController!
+    @IBOutlet dynamic var entryTreeController : NSTreeController!
  //   @IBOutlet var entryDatasetController : NSArrayController!
     
     
@@ -42,16 +43,24 @@ class PlexusEntryViewController: NSViewController {
         println(datasetController!.selectionIndexes)
         println(datasetController!.selection)
         println(datasetController!.selectedObjects)
-      //  println(datasetController.selectedObjects.objectAt.0)
-        
-        
-    //    println("ENTRY VIEW CONTROLLER duplicate:")
-      //  println(entryDatasetController.selectionIndexes)
-      //  println(entryDatasetController.selection)
-      //  println(entryDatasetController.selectedObjects)
+
         
     }
     
+    @IBAction func addEntry(sender : AnyObject){
+        println("add entry")
+        
+    }
+    
+    @IBAction func removeEntry(sender : AnyObject){
+        println("remove entry")
+        
+    }
+    
+    @IBAction func addChildEntry(sender : AnyObject){
+        println("add child entry")
+        
+    }
 
     
 }
