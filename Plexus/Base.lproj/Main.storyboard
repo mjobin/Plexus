@@ -709,14 +709,14 @@
                                         <action selector="calculate:" target="B8D-0N-5wS" id="VCg-wJ-cZX"/>
                                     </connections>
                                 </toolbarItem>
-                                <toolbarItem implicitItemIdentifier="E18303A5-037B-44FE-878B-72401FAAC926" label="Models" paletteLabel="Models" image="57640D64-4CC6-409E-8958-2A54939D76A6" id="VR9-AM-azT">
+                                <toolbarItem implicitItemIdentifier="E18303A5-037B-44FE-878B-72401FAAC926" label="Models" paletteLabel="Models" image="AF18C530-0FF5-4403-9CFF-DDE7BB2EC93B" id="VR9-AM-azT">
                                     <nil key="toolTip"/>
                                     <size key="minSize" width="13" height="13"/>
                                     <size key="maxSize" width="37" height="34"/>
                                     <button key="view" horizontalHuggingPriority="750" verticalHuggingPriority="750" id="vcL-Vh-Set">
                                         <rect key="frame" x="5" y="14" width="37" height="34"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="squareTextured" bezelStyle="texturedSquare" image="57640D64-4CC6-409E-8958-2A54939D76A6" imagePosition="only" alignment="left" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="s8L-6c-2d7">
+                                        <buttonCell key="cell" type="squareTextured" bezelStyle="texturedSquare" image="AF18C530-0FF5-4403-9CFF-DDE7BB2EC93B" imagePosition="only" alignment="left" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="s8L-6c-2d7">
                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
@@ -747,11 +747,32 @@
                                         <action selector="chkDataset:" target="B8D-0N-5wS" id="kNI-tm-5Lv"/>
                                     </connections>
                                 </toolbarItem>
+                                <toolbarItem implicitItemIdentifier="2CB4B42F-9C2D-4A6A-8723-9EDE6333DB19" label="Lock" paletteLabel="Lock" image="NSLockLockedTemplate" id="EB6-A3-dHZ">
+                                    <nil key="toolTip"/>
+                                    <size key="minSize" width="48" height="48"/>
+                                    <size key="maxSize" width="48" height="48"/>
+                                    <button key="view" id="RoU-4I-Ucg">
+                                        <rect key="frame" x="0.0" y="0.0" width="48" height="48"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                        <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="NSLockLockedTemplate" imagePosition="only" alignment="center" alternateImage="NSLockUnlockedTemplate" imageScaling="proportionallyDown" inset="2" id="V9D-sm-5VC">
+                                            <behavior key="behavior" pushIn="YES" changeContents="YES" lightByContents="YES"/>
+                                            <font key="font" metaFont="system"/>
+                                        </buttonCell>
+                                        <connections>
+                                            <binding destination="RSx-fX-J7D" name="value" keyPath="selection.locked" id="vNB-31-HBF">
+                                                <dictionary key="options">
+                                                    <string key="NSValueTransformerName">NSNegateBoolean</string>
+                                                </dictionary>
+                                            </binding>
+                                        </connections>
+                                    </button>
+                                </toolbarItem>
                             </allowedToolbarItems>
                             <defaultToolbarItems>
                                 <toolbarItem reference="6MP-iC-Y3U"/>
                                 <toolbarItem reference="3e1-GX-aR9"/>
                                 <toolbarItem reference="KjS-aq-GvX"/>
+                                <toolbarItem reference="EB6-A3-dHZ"/>
                                 <toolbarItem reference="tYP-cr-HVe"/>
                                 <toolbarItem reference="3e1-GX-aR9"/>
                                 <toolbarItem reference="dgg-D5-0xQ"/>
@@ -895,6 +916,11 @@
                                 </buttonCell>
                                 <connections>
                                     <action selector="add:" target="XEu-Mn-vSE" id="Asu-Ai-yWg"/>
+                                    <binding destination="QF4-CV-Jth" name="enabled" keyPath="datasetController.selection.locked" id="QDg-V2-1rO">
+                                        <dictionary key="options">
+                                            <string key="NSValueTransformerName">NSNegateBoolean</string>
+                                        </dictionary>
+                                    </binding>
                                 </connections>
                             </button>
                             <button misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="zSk-NI-zGS">
@@ -905,6 +931,11 @@
                                 </buttonCell>
                                 <connections>
                                     <action selector="removeEntry" target="QF4-CV-Jth" id="YSy-31-AyQ"/>
+                                    <binding destination="QF4-CV-Jth" name="enabled" keyPath="datasetController.selection.locked" id="a3X-6l-dAP">
+                                        <dictionary key="options">
+                                            <string key="NSValueTransformerName">NSNegateBoolean</string>
+                                        </dictionary>
+                                    </binding>
                                 </connections>
                             </button>
                             <button misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="sXj-98-5xA">
@@ -915,6 +946,11 @@
                                 </buttonCell>
                                 <connections>
                                     <action selector="addChild:" target="XEu-Mn-vSE" id="0ht-tq-FjL"/>
+                                    <binding destination="QF4-CV-Jth" name="enabled" keyPath="datasetController.selection.locked" id="PEQ-hy-Nbq">
+                                        <dictionary key="options">
+                                            <string key="NSValueTransformerName">NSNegateBoolean</string>
+                                        </dictionary>
+                                    </binding>
                                 </connections>
                             </button>
                         </subviews>
@@ -1134,13 +1170,6 @@
                                     <binding destination="Fdh-nj-cFa" name="value" keyPath="selection.name" id="t9G-BO-2gF"/>
                                 </connections>
                             </textField>
-                            <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="mLk-po-fiC">
-                                <rect key="frame" x="364" y="100" width="68" height="18"/>
-                                <buttonCell key="cell" type="check" title="Locked" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="4Ly-0K-Ujs">
-                                    <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
-                                    <font key="font" metaFont="system"/>
-                                </buttonCell>
-                            </button>
                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="yI8-fo-ziT">
                                 <rect key="frame" x="20" y="73" width="90" height="17"/>
                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Date Created:" id="mKG-Ki-gup">
@@ -1157,6 +1186,9 @@
                                     <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
+                                <connections>
+                                    <binding destination="Fdh-nj-cFa" name="value" keyPath="selection.dateCreated" id="XNg-z8-1GM"/>
+                                </connections>
                             </textField>
                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="RrV-XD-yde">
                                 <rect key="frame" x="230" y="73" width="95" height="17"/>
@@ -1174,6 +1206,9 @@
                                     <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
+                                <connections>
+                                    <binding destination="Fdh-nj-cFa" name="value" keyPath="selection.dateModified" id="Tta-cS-WLO"/>
+                                </connections>
                             </textField>
                             <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="czc-5z-MSA">
                                 <rect key="frame" x="354" y="26" width="76" height="32"/>
@@ -1583,7 +1618,7 @@ Gw
         </scene>
     </scenes>
     <resources>
-        <image name="57640D64-4CC6-409E-8958-2A54939D76A6" width="1" height="1">
+        <image name="AF18C530-0FF5-4403-9CFF-DDE7BB2EC93B" width="1" height="1">
             <mutableData key="keyedArchiveRepresentation">
 YnBsaXN0MDDUAQIDBAUGPj9YJHZlcnNpb25YJG9iamVjdHNZJGFyY2hpdmVyVCR0b3ASAAGGoK4HCBMU
 GR4fIyQsLzI4O1UkbnVsbNUJCgsMDQ4PEBESVk5TU2l6ZVYkY2xhc3NcTlNJbWFnZUZsYWdzVk5TUmVw
@@ -1636,5 +1671,7 @@ AAAAAAAAAAAAAAAAAAozA
         </image>
         <image name="NSActionTemplate" width="14" height="14"/>
         <image name="NSInfo" width="32" height="32"/>
+        <image name="NSLockLockedTemplate" width="10" height="14"/>
+        <image name="NSLockUnlockedTemplate" width="10" height="14"/>
     </resources>
 </document>

@@ -48,6 +48,7 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
             var newModel = NSEntityDescription.insertNewObjectForEntityForName("Model", inManagedObjectContext: moc) as NSManagedObject
             newModel.setValue("newmodel", forKey: "name")
             newModel.setValue(newDataset, forKey: "dataset")
+           // newModel.setValue(NSDate(), forKey: "dateCreated")
             moc.save(&anyError)
 
         }
