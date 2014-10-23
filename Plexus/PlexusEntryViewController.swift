@@ -11,10 +11,12 @@ import Cocoa
 class PlexusEntryViewController: NSViewController {
 
     var moc : NSManagedObjectContext!
-    //var datasetController : NSArrayController?
    dynamic var datasetController : NSArrayController!
     @IBOutlet dynamic var entryTreeController : NSTreeController!
- //   @IBOutlet var entryDatasetController : NSArrayController!
+    @IBOutlet var iconController : NSArrayController!
+
+    var iconDictionary : NSMutableDictionary!
+    
     
     
     
@@ -32,6 +34,14 @@ class PlexusEntryViewController: NSViewController {
         // Do view setup here.
         let appDelegate : AppDelegate = NSApplication.sharedApplication().delegate as AppDelegate
         moc = appDelegate.managedObjectContext
+        
+        
+        var iconImages = NSArray(objects: NSImage(named: "PlexusTest")!, NSImage(named: "PlexusTest")!)
+            var iconKeys = NSArray(objects: "entry", "site")
+        iconDictionary = NSMutableDictionary(objects: iconImages, forKeys: iconKeys)
+
+       // println(iconDictionary)
+        
 
     }
     
