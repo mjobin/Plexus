@@ -111,6 +111,7 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
         if self.progressViewController == nil {
             let storyboard = NSStoryboard(name:"Main", bundle:nil)
             self.progressViewController = storyboard!.instantiateControllerWithIdentifier("ProgressViewController") as? PlexusProgressPanel
+            
         }
         self.progressViewController?.delegate = self
 
@@ -151,6 +152,7 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
                 self.progressViewController = storyboard!.instantiateControllerWithIdentifier("ProgressViewController") as? PlexusProgressPanel
             }
             self.progressViewController?.delegate = self
+
                        
             
             self.contentViewController?.presentViewControllerAsSheet(self.progressViewController!)
@@ -158,7 +160,7 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
             
            var newDataset : Dataset = Dataset(entity: NSEntityDescription.entityForName("Dataset", inManagedObjectContext: moc)!, insertIntoManagedObjectContext: moc)
             newDataset.setValue(inFile!.lastPathComponent, forKey: "name")
-            
+            datasetController.addObject(newDataset)
 
             
             let fileContents : String = NSString(contentsOfFile: inFile!.path!, encoding: NSUTF8StringEncoding, error: nil)!
@@ -192,12 +194,12 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
                 i++
             }
 
-             //println(newDataset.entry)
 
             moc.save(errorPtr)
         }
         
-       
+        
+
         
         self.contentViewController?.dismissViewController(self.progressViewController!)
         
