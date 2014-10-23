@@ -196,12 +196,13 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
 
 
             moc.save(errorPtr)
+            self.contentViewController?.dismissViewController(self.progressViewController!)
         }
         
         
 
         
-        self.contentViewController?.dismissViewController(self.progressViewController!)
+        
         
         
     }
