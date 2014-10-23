@@ -15,4 +15,9 @@ extension Dataset {
         var items = self.mutableSetValueForKey("entry");
         items.addObject(value)
     }
+    
+    func addModelObject(value:Model) {
+        var items = self.mutableSetValueForKey("model");
+        items.addObject(value)
+    }
 }
