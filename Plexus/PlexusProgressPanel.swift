@@ -15,6 +15,7 @@ protocol ProgressViewControllerDelegate : class {
 class PlexusProgressPanel: NSViewController {
     
     @IBOutlet weak var progressBar: NSProgressIndicator!
+    @IBOutlet var progressLabel : NSTextField!
     weak var delegate : ProgressViewControllerDelegate?
 
     override func viewDidLoad() {
@@ -25,7 +26,9 @@ class PlexusProgressPanel: NSViewController {
     }
     
     override func viewWillAppear() {
+        self.progressBar.indeterminate = true
         self.progressBar.startAnimation(self)
+       
     }
     
     override func viewWillDisappear() {
