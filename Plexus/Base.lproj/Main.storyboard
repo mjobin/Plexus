@@ -709,14 +709,14 @@
                                         <action selector="calculate:" target="B8D-0N-5wS" id="VCg-wJ-cZX"/>
                                     </connections>
                                 </toolbarItem>
-                                <toolbarItem implicitItemIdentifier="E18303A5-037B-44FE-878B-72401FAAC926" label="Models" paletteLabel="Models" image="E88423C4-7FC8-4EE8-BEB5-B8C0610D39B5" id="VR9-AM-azT">
+                                <toolbarItem implicitItemIdentifier="E18303A5-037B-44FE-878B-72401FAAC926" label="Models" paletteLabel="Models" image="007CFD1A-A433-4617-928D-87F5EAF52FD8" id="VR9-AM-azT">
                                     <nil key="toolTip"/>
                                     <size key="minSize" width="13" height="13"/>
                                     <size key="maxSize" width="37" height="34"/>
                                     <button key="view" horizontalHuggingPriority="750" verticalHuggingPriority="750" id="vcL-Vh-Set">
                                         <rect key="frame" x="5" y="14" width="37" height="34"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="squareTextured" bezelStyle="texturedSquare" image="E88423C4-7FC8-4EE8-BEB5-B8C0610D39B5" imagePosition="only" alignment="left" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="s8L-6c-2d7">
+                                        <buttonCell key="cell" type="squareTextured" bezelStyle="texturedSquare" image="007CFD1A-A433-4617-928D-87F5EAF52FD8" imagePosition="only" alignment="left" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="s8L-6c-2d7">
                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
@@ -1161,7 +1161,7 @@
                                     <font key="font" metaFont="system" size="16"/>
                                 </buttonCell>
                                 <connections>
-                                    <action selector="add:" target="XEu-Mn-vSE" id="axa-U8-jOt"/>
+                                    <action selector="add:" target="eMI-or-z1S" id="0Kc-zj-PDe"/>
                                     <binding destination="QF4-CV-Jth" name="enabled" keyPath="datasetController.selection.locked" id="AnM-i4-s6J">
                                         <dictionary key="options">
                                             <string key="NSValueTransformerName">NSNegateBoolean</string>
@@ -1180,7 +1180,7 @@
                                     <font key="font" metaFont="system" size="16"/>
                                 </buttonCell>
                                 <connections>
-                                    <action selector="removeEntry" target="QF4-CV-Jth" id="kL0-HJ-T5Q"/>
+                                    <action selector="remove:" target="eMI-or-z1S" id="NEJ-R6-QQc"/>
                                     <binding destination="QF4-CV-Jth" name="enabled" keyPath="datasetController.selection.locked" id="hfX-Ck-Km4">
                                         <dictionary key="options">
                                             <string key="NSValueTransformerName">NSNegateBoolean</string>
@@ -1678,7 +1678,7 @@ Gw
                                     <font key="font" metaFont="system" size="16"/>
                                 </buttonCell>
                                 <connections>
-                                    <action selector="add:" target="XEu-Mn-vSE" id="IzM-0T-NRW"/>
+                                    <action selector="addImages:" target="cT1-7Y-gGU" id="OSX-oD-Et6"/>
                                     <binding destination="QF4-CV-Jth" name="enabled" keyPath="datasetController.selection.locked" id="34J-oI-pYu">
                                         <dictionary key="options">
                                             <string key="NSValueTransformerName">NSNegateBoolean</string>
@@ -1697,7 +1697,6 @@ Gw
                                     <font key="font" metaFont="system" size="16"/>
                                 </buttonCell>
                                 <connections>
-                                    <action selector="removeEntry" target="QF4-CV-Jth" id="p8O-AS-8pZ"/>
                                     <binding destination="QF4-CV-Jth" name="enabled" keyPath="datasetController.selection.locked" id="eu5-ob-oTU">
                                         <dictionary key="options">
                                             <string key="NSValueTransformerName">NSNegateBoolean</string>
@@ -1717,6 +1716,10 @@ Gw
                             <constraint firstItem="yyF-8E-yjJ" firstAttribute="top" secondItem="XGY-1L-pJw" secondAttribute="top" id="zHa-iY-8c3"/>
                         </constraints>
                     </view>
+                    <connections>
+                        <outlet property="imageBrowser" destination="yyF-8E-yjJ" id="F2F-wb-aZw"/>
+                        <outlet property="imageController" destination="FGv-CN-6bW" id="6y3-Lx-aFX"/>
+                    </connections>
                 </viewController>
                 <customObject id="J32-Wg-HDr" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
                 <arrayController mode="entity" entityName="Image" automaticallyPreparesContent="YES" id="FGv-CN-6bW" userLabel="Image Controller">
@@ -1754,7 +1757,7 @@ Gw
         </scene>
     </scenes>
     <resources>
-        <image name="E88423C4-7FC8-4EE8-BEB5-B8C0610D39B5" width="1" height="1">
+        <image name="007CFD1A-A433-4617-928D-87F5EAF52FD8" width="1" height="1">
             <mutableData key="keyedArchiveRepresentation">
 YnBsaXN0MDDUAQIDBAUGPj9YJHZlcnNpb25YJG9iamVjdHNZJGFyY2hpdmVyVCR0b3ASAAGGoK4HCBMU
 GR4fIyQsLzI4O1UkbnVsbNUJCgsMDQ4PEBESVk5TU2l6ZVYkY2xhc3NcTlNJbWFnZUZsYWdzVk5TUmVw
