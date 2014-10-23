@@ -161,6 +161,12 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
            var newDataset : Dataset = Dataset(entity: NSEntityDescription.entityForName("Dataset", inManagedObjectContext: moc)!, insertIntoManagedObjectContext: moc)
             newDataset.setValue(inFile!.lastPathComponent, forKey: "name")
             datasetController.addObject(newDataset)
+            
+            //give it an initial model
+            var newModel : Model = Model(entity: NSEntityDescription.entityForName("Model", inManagedObjectContext: moc)!, insertIntoManagedObjectContext: moc)
+            newModel.setValue("First Model", forKey: "name")
+            newModel.setValue(newDataset, forKey: "dataset")
+            newDataset.addModelObject(newModel)
 
             
             let fileContents : String = NSString(contentsOfFile: inFile!.path!, encoding: NSUTF8StringEncoding, error: nil)!
