@@ -709,14 +709,14 @@
                                         <action selector="calculate:" target="B8D-0N-5wS" id="VCg-wJ-cZX"/>
                                     </connections>
                                 </toolbarItem>
-                                <toolbarItem implicitItemIdentifier="E18303A5-037B-44FE-878B-72401FAAC926" label="Models" paletteLabel="Models" image="9F7CC4B5-DAC5-4252-87F6-2F8AC94AF95F" id="VR9-AM-azT">
+                                <toolbarItem implicitItemIdentifier="E18303A5-037B-44FE-878B-72401FAAC926" label="Models" paletteLabel="Models" image="33ADB029-DDD3-4423-975B-EAD81F2F5595" id="VR9-AM-azT">
                                     <nil key="toolTip"/>
                                     <size key="minSize" width="13" height="13"/>
                                     <size key="maxSize" width="37" height="34"/>
                                     <button key="view" horizontalHuggingPriority="750" verticalHuggingPriority="750" id="vcL-Vh-Set">
                                         <rect key="frame" x="5" y="14" width="37" height="34"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="squareTextured" bezelStyle="texturedSquare" image="9F7CC4B5-DAC5-4252-87F6-2F8AC94AF95F" imagePosition="only" alignment="left" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="s8L-6c-2d7">
+                                        <buttonCell key="cell" type="squareTextured" bezelStyle="texturedSquare" image="33ADB029-DDD3-4423-975B-EAD81F2F5595" imagePosition="only" alignment="left" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="s8L-6c-2d7">
                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
@@ -969,6 +969,7 @@
                     </view>
                     <connections>
                         <outlet property="entryTreeController" destination="XEu-Mn-vSE" id="JZO-yQ-WYe"/>
+                        <outlet property="iconController" destination="GU4-t4-PLz" id="CCb-1Y-OfC"/>
                     </connections>
                 </viewController>
                 <customObject id="uS5-BA-2G8" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
@@ -978,6 +979,11 @@
                         <binding destination="QF4-CV-Jth" name="managedObjectContext" keyPath="moc" id="73Z-IR-AUP"/>
                     </connections>
                 </treeController>
+                <arrayController id="GU4-t4-PLz" userLabel="Icon Controller">
+                    <connections>
+                        <binding destination="QF4-CV-Jth" name="contentArray" keyPath="iconDictionary" id="pBU-zq-s2L"/>
+                    </connections>
+                </arrayController>
             </objects>
             <point key="canvasLocation" x="-31.5" y="1456"/>
         </scene>
@@ -1286,16 +1292,16 @@
             </objects>
             <point key="canvasLocation" x="741" y="-61"/>
         </scene>
-        <!--Calculating...-->
+        <!--Plexus Progress Panel-->
         <scene sceneID="xgP-Ks-UFl">
             <objects>
-                <viewController title="Calculating..." storyboardIdentifier="ProgressViewController" id="dxZ-pc-hFQ" customClass="PlexusProgressPanel" customModule="Plexus" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="ProgressViewController" id="dxZ-pc-hFQ" customClass="PlexusProgressPanel" customModule="Plexus" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" id="U7z-T2-coZ">
                         <rect key="frame" x="0.0" y="0.0" width="574" height="104"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
                             <progressIndicator fixedFrame="YES" maxValue="100" indeterminate="YES" style="bar" translatesAutoresizingMaskIntoConstraints="NO" id="nB7-Ey-ym8">
-                                <rect key="frame" x="20" y="36" width="534" height="20"/>
+                                <rect key="frame" x="20" y="35" width="534" height="20"/>
                             </progressIndicator>
                             <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="mIT-iF-pNa">
                                 <rect key="frame" x="478" y="56" width="83" height="32"/>
@@ -1311,8 +1317,8 @@ Gw
                                 </connections>
                             </button>
                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="kLp-OE-xxU">
-                                <rect key="frame" x="245" y="67" width="85" height="17"/>
-                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Calculating..." id="s9w-Hr-MDq">
+                                <rect key="frame" x="70" y="65" width="85" height="17"/>
+                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" placeholderString="Working..." id="s9w-Hr-MDq">
                                     <font key="font" metaFont="system"/>
                                     <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -1322,11 +1328,12 @@ Gw
                     </view>
                     <connections>
                         <outlet property="progressBar" destination="nB7-Ey-ym8" id="5gE-To-IqH"/>
+                        <outlet property="progressLabel" destination="kLp-OE-xxU" id="n3Q-aN-Tk6"/>
                     </connections>
                 </viewController>
                 <customObject id="5H9-M4-FOn" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="987" y="313"/>
+            <point key="canvasLocation" x="797" y="308"/>
         </scene>
         <!--Plexus Model View Controller-->
         <scene sceneID="V2l-RG-rvG">
@@ -1377,7 +1384,7 @@ Gw
                                                                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                                                     </textFieldCell>
                                                                     <connections>
-                                                                        <binding destination="VFX-pf-qsb" name="value" keyPath="objectValue.name" id="ET0-QO-JX1">
+                                                                        <binding destination="VFX-pf-qsb" name="value" keyPath="objectValue.name" id="boh-3t-LDB">
                                                                             <dictionary key="options">
                                                                                 <bool key="NSConditionallySetsEditable" value="YES"/>
                                                                             </dictionary>
@@ -1394,8 +1401,8 @@ Gw
                                                 </tableColumn>
                                             </tableColumns>
                                             <connections>
-                                                <binding destination="twQ-tO-BoE" name="content" keyPath="arrangedObjects" id="aNJ-y6-bKz"/>
-                                                <binding destination="twQ-tO-BoE" name="selectionIndexPaths" keyPath="selectionIndexPaths" previousBinding="aNJ-y6-bKz" id="g7X-Zd-VuQ"/>
+                                                <binding destination="twQ-tO-BoE" name="content" keyPath="arrangedObjects" id="u3r-oi-Cnh"/>
+                                                <binding destination="twQ-tO-BoE" name="selectionIndexPaths" keyPath="selectionIndexPaths" previousBinding="u3r-oi-Cnh" id="mwT-RZ-aX3"/>
                                             </connections>
                                         </outlineView>
                                     </subviews>
@@ -1432,6 +1439,7 @@ Gw
                 <customObject id="NXB-81-NNu" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
                 <treeController mode="entity" entityName="Model" automaticallyPreparesContent="YES" childrenKeyPath="children" id="twQ-tO-BoE" userLabel="Model Tree Controller">
                     <connections>
+                        <binding destination="m5e-8Z-RLG" name="contentSet" keyPath="datasetController.selection.model" id="DIA-TX-KJK"/>
                         <binding destination="m5e-8Z-RLG" name="managedObjectContext" keyPath="moc" id="MwW-iz-MHE"/>
                     </connections>
                 </treeController>
@@ -1644,7 +1652,7 @@ Gw
         </scene>
     </scenes>
     <resources>
-        <image name="9F7CC4B5-DAC5-4252-87F6-2F8AC94AF95F" width="1" height="1">
+        <image name="33ADB029-DDD3-4423-975B-EAD81F2F5595" width="1" height="1">
             <mutableData key="keyedArchiveRepresentation">
 YnBsaXN0MDDUAQIDBAUGPj9YJHZlcnNpb25YJG9iamVjdHNZJGFyY2hpdmVyVCR0b3ASAAGGoK4HCBMU
 GR4fIyQsLzI4O1UkbnVsbNUJCgsMDQ4PEBESVk5TU2l6ZVYkY2xhc3NcTlNJbWFnZUZsYWdzVk5TUmVw
