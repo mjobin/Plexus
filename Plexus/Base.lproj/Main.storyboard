@@ -689,7 +689,7 @@
                                         </connections>
                                     </popUpButton>
                                 </toolbarItem>
-                                <toolbarItem implicitItemIdentifier="F02B1A4A-C9A3-4FA0-8798-740E9E9D5BAB" label="ImportCSV" paletteLabel="ImportCSV" tag="-1" id="6MP-iC-Y3U">
+                                <toolbarItem implicitItemIdentifier="F02B1A4A-C9A3-4FA0-8798-740E9E9D5BAB" label="ImportCSV" paletteLabel="ImportCSV" tag="-1" image="PlexusImportCSV" id="6MP-iC-Y3U">
                                     <connections>
                                         <action selector="importCSV:" target="B8D-0N-5wS" id="bJm-yu-oXx"/>
                                     </connections>
@@ -709,14 +709,14 @@
                                         <action selector="calculate:" target="B8D-0N-5wS" id="VCg-wJ-cZX"/>
                                     </connections>
                                 </toolbarItem>
-                                <toolbarItem implicitItemIdentifier="E18303A5-037B-44FE-878B-72401FAAC926" label="Models" paletteLabel="Models" image="9D00A7EA-6061-4213-A5A7-0CCA103A71D7" id="VR9-AM-azT">
+                                <toolbarItem implicitItemIdentifier="E18303A5-037B-44FE-878B-72401FAAC926" label="Models" paletteLabel="Models" image="E88423C4-7FC8-4EE8-BEB5-B8C0610D39B5" id="VR9-AM-azT">
                                     <nil key="toolTip"/>
                                     <size key="minSize" width="13" height="13"/>
                                     <size key="maxSize" width="37" height="34"/>
                                     <button key="view" horizontalHuggingPriority="750" verticalHuggingPriority="750" id="vcL-Vh-Set">
                                         <rect key="frame" x="5" y="14" width="37" height="34"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="squareTextured" bezelStyle="texturedSquare" image="9D00A7EA-6061-4213-A5A7-0CCA103A71D7" imagePosition="only" alignment="left" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="s8L-6c-2d7">
+                                        <buttonCell key="cell" type="squareTextured" bezelStyle="texturedSquare" image="E88423C4-7FC8-4EE8-BEB5-B8C0610D39B5" imagePosition="only" alignment="left" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="s8L-6c-2d7">
                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
@@ -792,7 +792,7 @@
                     </connections>
                 </arrayController>
             </objects>
-            <point key="canvasLocation" x="-98" y="326"/>
+            <point key="canvasLocation" x="-251" y="207"/>
         </scene>
         <!--Plexus Main Split View Controller-->
         <scene sceneID="ftQ-hJ-gwv">
@@ -1754,7 +1754,7 @@ Gw
         </scene>
     </scenes>
     <resources>
-        <image name="9D00A7EA-6061-4213-A5A7-0CCA103A71D7" width="1" height="1">
+        <image name="E88423C4-7FC8-4EE8-BEB5-B8C0610D39B5" width="1" height="1">
             <mutableData key="keyedArchiveRepresentation">
 YnBsaXN0MDDUAQIDBAUGPj9YJHZlcnNpb25YJG9iamVjdHNZJGFyY2hpdmVyVCR0b3ASAAGGoK4HCBMU
 GR4fIyQsLzI4O1UkbnVsbNUJCgsMDQ4PEBESVk5TU2l6ZVYkY2xhc3NcTlNJbWFnZUZsYWdzVk5TUmVw
@@ -1812,5 +1812,6 @@ AAAAAAAAAAAAAAAAAAozA
         <image name="NSLockUnlockedTemplate" width="10" height="14"/>
         <image name="NSRemoveTemplate" width="11" height="11"/>
         <image name="PlexusAddChild" width="48" height="48"/>
+        <image name="PlexusImportCSV" width="32" height="32"/>
     </resources>
 </document>
