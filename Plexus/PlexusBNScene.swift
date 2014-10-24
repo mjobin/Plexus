@@ -158,6 +158,10 @@ class PlexusBNScene: SKScene {
             
             self.physicsWorld.addJoint(labelJoint)
             */
+            
+            
+            
+            
         }
             
         else {//touched existing node, can draw line between
@@ -201,6 +205,7 @@ class PlexusBNScene: SKScene {
         joinLine.glowWidth = 1
         
         
+        
         self.addChild(joinLine)
         
         
@@ -215,16 +220,44 @@ class PlexusBNScene: SKScene {
         var releasedNode : SKNode = self.nodeAtPoint(loc)
         
         if(!startNode.isEqualTo(self) && startNode.name == "bnNode" && !releasedNode.isEqualTo(self) && releasedNode.name == "bnNode") {
-            println("blammo")
+           // println("blammo")
             //create physics joint between these two
             
             let theJoint = SKPhysicsJointSpring.jointWithBodyA(startNode.physicsBody, bodyB: releasedNode.physicsBody, anchorA: startNode.position, anchorB: releasedNode.position)
             
             
             
+            
             self.physicsWorld.addJoint(theJoint)
             
-            //make
+
+         //   then create a line and pin it to the nodes duh
+            
+            var joinPath = CGPathCreateMutable()
+            CGPathMoveToPoint(joinPath, nil, startNode.position.x, startNode.position.y)
+            CGPathAddLineToPoint(joinPath, nil, loc.x, loc.y)
+            // CGPathCloseSubpath(joinPath)
+            
+            let arrowPath = CGPath.bezierPathWithArrowFromPoint(CGPointMake(startNode.position.x,startNode.position.y), endPoint: CGPointMake(loc.x,loc.y), tailWidth: 4, headWidth: 10, headLength: 10)
+            
+            
+            var joinLine = SKShapeNode(path: arrowPath)
+            joinLine.name = "nodeLine"
+            joinLine.zPosition = -1
+            joinLine.glowWidth = 1
+            joinLine.physicsBody = SKPhysicsBody(polygonFromPath: arrowPath)
+            joinLine.physicsBody?.affectedByGravity = false
+            
+            
+            self.addChild(joinLine)
+            
+
+            
+            let startJoint = SKPhysicsJointPin.jointWithBodyA(startNode.physicsBody, bodyB: joinLine.physicsBody, anchor: startNode.position)
+            self.physicsWorld.addJoint(startJoint)
+
+            let endJoint = SKPhysicsJointPin.jointWithBodyA(releasedNode.physicsBody, bodyB: joinLine.physicsBody, anchor: releasedNode.position)
+            self.physicsWorld.addJoint(endJoint)
             
             
             
@@ -252,93 +285,61 @@ class PlexusBNScene: SKScene {
         
         
         //remove all existing lines
+        
         self.enumerateChildNodesWithName("joinLine", usingBlock: { thisLine, stop in
             thisLine.removeFromParent()
         })
     }
     
     
-    
+    /*
     override func didSimulatePhysics() {
         
         //remove all existing lines
-        
+        /*
         self.enumerateChildNodesWithName("nodeLine", usingBlock: { thisLine, stop in
             thisLine.removeFromParent()
         })
+        */
+
         
-        
-        
-        
-        self.enumerateChildNodesWithName("bnNode", usingBlock: { thisNode, stop in
+        self.enumerateChildNodesWithName("bnNode", usingBlock: { thisKid, stop in
             
+            var shortestDistance = self.size.width
             
-            
-            
-            //   var theJoints : AnyObject = thisNode.physicsBody.joints
-            
-            //silly test just to draw lines
-            /*
-            
-            self.enumerateChildNodesWithName("bnNode", usingBlock: { thatNode, stop in
-            var joinPath = CGPathCreateMutable()
-            CGPathMoveToPoint(joinPath, nil, thisNode.position.x,thisNode.position.y)
-            CGPathAddLineToPoint(joinPath, nil, thatNode.position.x, thatNode.position.y)
-            CGPathCloseSubpath(joinPath)
-            
-            var joinLine = SKShapeNode(path: joinPath)
-            joinLine.name = "nodeLine"
-            joinLine.zPosition = -1
-            
-            
-            self.addChild(joinLine)
-            
+            self.enumerateChildNodesWithName("bnNode", usingBlock: { thatKid, stop in
+                if(!thisKid.isEqualTo(thatKid)){
+                    
+                   
+
+                    
+                    
+                    
+                    
+                    
+                    
+                }
+                
             })
-            */
             
-            
-            
-            for thisJoint in thisNode.physicsBody!.joints {
-                //   println(thisJoint)
-            }
-            
-            
-            
-            
-            //    println(thisNode)
-            
-            
-            
-            
-            
-            
-            
-            
-            /*
-            for  thisJoint in thisNode.physicsBody.joints as [SKPhysicsJoint] {
-            
-            
-            
-            
-            
-            
-            var joinPath = CGPathCreateMutable()
-            CGPathMoveToPoint(joinPath, nil, thisJoint.bodyA.node.position.x,thisJoint.bodyA.node.position.y)
-            
-            }
-            */
-            
+
             
         })
         
+
+        
         
     }
-    
+    */
     
     
     override func update(currentTime: CFTimeInterval) {
+        
+        
         /* Called before each frame is rendered */
         var angle : CGFloat = 1.0
+        
+
         
         
         self.enumerateChildNodesWithName("bnNode", usingBlock: { thisKid, stop in
@@ -360,6 +361,12 @@ class PlexusBNScene: SKScene {
                         
                     }
                     
+                    
+
+
+
+                    
+                    
                 }
                 
             })
@@ -369,6 +376,8 @@ class PlexusBNScene: SKScene {
         })
         
         
+        
+     
         
         
         
