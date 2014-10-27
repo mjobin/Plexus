@@ -134,76 +134,102 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
         op.canChooseDirectories = false
         op.canChooseFiles = true
         op.allowedFileTypes = ["csv"]
-        op.runModal()
-        
-        var inFile  = op.URL
-        
-        op.orderOut(self)
-        op.close()
-        
-        var i = 1
-        
-        if (inFile != nil){ // operate on iput file
-            
-            
-            //instatntiate progress controller
-            if self.progressViewController == nil {
-                let storyboard = NSStoryboard(name:"Main", bundle:nil)
-                self.progressViewController = storyboard!.instantiateControllerWithIdentifier("ProgressViewController") as? PlexusProgressPanel
-            }
-            self.progressViewController?.delegate = self
 
-                       
-            
-            self.contentViewController?.presentViewControllerAsSheet(self.progressViewController!)
-            
-            
-           var newDataset : Dataset = Dataset(entity: NSEntityDescription.entityForName("Dataset", inManagedObjectContext: moc)!, insertIntoManagedObjectContext: moc)
-            newDataset.setValue(inFile!.lastPathComponent, forKey: "name")
-            datasetController.addObject(newDataset)
-            
-            //give it an initial model
-            var newModel : Model = Model(entity: NSEntityDescription.entityForName("Model", inManagedObjectContext: moc)!, insertIntoManagedObjectContext: moc)
-            newModel.setValue("First Model", forKey: "name")
-            newModel.setValue(newDataset, forKey: "dataset")
-            newDataset.addModelObject(newModel)
 
-            
-            let fileContents : String = NSString(contentsOfFile: inFile!.path!, encoding: NSUTF8StringEncoding, error: nil)!
-           // print(fileContents)
-            var fileLines : [String] = fileContents.componentsSeparatedByString("\n")
-            
-            var lineCount = Double(fileLines.count)
-            
-            for thisLine : String in fileLines {
-                var newEntry : Entry = Entry(entity: NSEntityDescription.entityForName("Entry", inManagedObjectContext: moc)!, insertIntoManagedObjectContext: moc)
-               // newEntry.setValue("test", forKey: "name")
-                 newEntry.setValue(String(i), forKey: "name")
-                newEntry.setValue(newDataset, forKey: "dataset")
-                newDataset.addEntryObject(newEntry)
-                //  println(thisLine)
-                //  println("\n********************************************\n")
+        
+
+        
+        op.beginSheetModalForWindow(window!, completionHandler: {(result:Int) -> Void in
+            if (result == NSFileHandlingPanelOKButton) {
                 
-                var theTraits : [String] = thisLine.componentsSeparatedByString(",")
-                for thisTrait in theTraits {
-                 //println(thisTrait)
-                    var newTrait : NSManagedObject = NSManagedObject(entity: NSEntityDescription.entityForName("Trait", inManagedObjectContext: moc)!, insertIntoManagedObjectContext: moc)
-                    newTrait.setValue("test", forKey: "name")
-                    newTrait.setValue(thisTrait, forKey: "value")
-                    newTrait.setValue(newEntry, forKey: "entry")
-                    
+
+               // println(op.URL)
+                var inFile  = op.URL
+               // println(inFile)
                 
+                op.close()
+                
+                var i = 1
+                
+                if (inFile != nil){ // operate on iput file
+                    //println("inFile not nil")
                     
+                    //instatntiate progress controller
+                    if self.progressViewController == nil {
+                        let storyboard = NSStoryboard(name:"Main", bundle:nil)
+                        self.progressViewController = storyboard!.instantiateControllerWithIdentifier("ProgressViewController") as? PlexusProgressPanel
+                    }
+                    self.progressViewController?.delegate = self
+                    
+                    
+                    
+                    self.contentViewController?.presentViewControllerAsSheet(self.progressViewController!)
+                    
+                    
+                    var newDataset : Dataset = Dataset(entity: NSEntityDescription.entityForName("Dataset", inManagedObjectContext: self.moc)!, insertIntoManagedObjectContext: self.moc)
+                    newDataset.setValue(inFile!.lastPathComponent, forKey: "name")
+                    self.datasetController.addObject(newDataset)
+                    
+                    //give it an initial model
+                    var newModel : Model = Model(entity: NSEntityDescription.entityForName("Model", inManagedObjectContext: self.moc)!, insertIntoManagedObjectContext: self.moc)
+                    newModel.setValue("First Model", forKey: "name")
+                    newModel.setValue(newDataset, forKey: "dataset")
+                    newDataset.addModelObject(newModel)
+                    
+                    
+                    let fileContents : String = NSString(contentsOfFile: inFile!.path!, encoding: NSUTF8StringEncoding, error: nil)!
+                    // print(fileContents)
+                    var fileLines : [String] = fileContents.componentsSeparatedByString("\n")
+                    
+                    var lineCount = Double(fileLines.count)
+                    
+                    for thisLine : String in fileLines {
+                        var newEntry : Entry = Entry(entity: NSEntityDescription.entityForName("Entry", inManagedObjectContext: self.moc)!, insertIntoManagedObjectContext: self.moc)
+                        // newEntry.setValue("test", forKey: "name")
+                        newEntry.setValue(String(i), forKey: "name")
+                        newEntry.setValue(newDataset, forKey: "dataset")
+                        newDataset.addEntryObject(newEntry)
+                        //  println(thisLine)
+                        //  println("\n********************************************\n")
+                        
+                        var theTraits : [String] = thisLine.componentsSeparatedByString(",")
+                        for thisTrait in theTraits {
+                            //println(thisTrait)
+                            var newTrait : NSManagedObject = NSManagedObject(entity: NSEntityDescription.entityForName("Trait", inManagedObjectContext: self.moc)!, insertIntoManagedObjectContext: self.moc)
+                            newTrait.setValue("test", forKey: "name")
+                            newTrait.setValue(thisTrait, forKey: "value")
+                            newTrait.setValue(newEntry, forKey: "entry")
+                            
+                            
+                            
+                        }
+                        
+                        self.progressViewController!.progressBar.incrementBy(lineCount)
+                        i++
+                    }
+                    
+                    
+                    self.moc.save(errorPtr)
+                    self.contentViewController?.dismissViewController(self.progressViewController!)
                 }
                 
-                self.progressViewController!.progressBar.incrementBy(lineCount)
-                i++
+                
+                
             }
+            else { return }
+        })
+            
 
 
-            moc.save(errorPtr)
-            self.contentViewController?.dismissViewController(self.progressViewController!)
-        }
+
+      //  op.runModal()
+        
+        
+
+        
+        
+      //  op.orderOut(self)
+      
         
         
 
