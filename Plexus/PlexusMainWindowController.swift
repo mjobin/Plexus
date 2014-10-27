@@ -16,7 +16,7 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
   
     var moc : NSManagedObjectContext!
     var mainSplitViewController = PlexusMainSplitViewController()
-    var progressViewController : PlexusProgressPanel?
+    var progressViewController : PlexusProgressPanel!
     @IBOutlet var datasetController : NSArrayController!
 
     
@@ -152,14 +152,16 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
                 var i = 1
                 
                 if (inFile != nil){ // operate on iput file
-                    //println("inFile not nil")
+
                     
                     //instatntiate progress controller
                     if self.progressViewController == nil {
                         let storyboard = NSStoryboard(name:"Main", bundle:nil)
-                        self.progressViewController = storyboard!.instantiateControllerWithIdentifier("ProgressViewController") as? PlexusProgressPanel
+                        self.progressViewController = storyboard!.instantiateControllerWithIdentifier("ProgressViewController") as PlexusProgressPanel
                     }
-                    self.progressViewController?.delegate = self
+                    self.progressViewController.delegate = self
+                  // self.progressViewController.changeLabel(String("Importing..."))
+                    
                     
                     
                     
@@ -204,7 +206,10 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
                             
                         }
                         
-                        self.progressViewController!.progressBar.incrementBy(lineCount)
+
+                        self.progressViewController.moveBar(1/lineCount*100)
+   
+
                         i++
                     }
                     
@@ -222,13 +227,6 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
 
 
 
-      //  op.runModal()
-        
-        
-
-        
-        
-      //  op.orderOut(self)
       
         
         
@@ -253,5 +251,7 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
         println("Cancelled progress")
         self.contentViewController?.dismissViewController(self.progressViewController!)
     }
+    
+
 
 }
