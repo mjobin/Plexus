@@ -23,12 +23,13 @@ class PlexusProgressPanel: NSViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do view setup here.
+
         self.progressBar.usesThreadedAnimation = true
         self.progressBar.indeterminate = false
         self.progressBar.minValue = 0.0
         self.progressBar.maxValue = 100.0
         self.progressBar.doubleValue = 5.5
+        self.progressLabel.stringValue = "Working..."
 
         
     }
@@ -56,8 +57,8 @@ class PlexusProgressPanel: NSViewController {
     
     func changeLabel(newLabel : String) {
         
-        progressLabel.stringValue = newLabel
-        progressLabel.needsDisplay = true
+        self.progressLabel.stringValue = newLabel
+        self.progressLabel.needsDisplay = true
     }
     
 }

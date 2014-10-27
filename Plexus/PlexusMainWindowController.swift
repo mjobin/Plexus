@@ -157,16 +157,18 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
                     //instatntiate progress controller
                     if self.progressViewController == nil {
                         let storyboard = NSStoryboard(name:"Main", bundle:nil)
-                        self.progressViewController = storyboard!.instantiateControllerWithIdentifier("ProgressViewController") as PlexusProgressPanel
+                        self.progressViewController = storyboard!.instantiateControllerWithIdentifier("ProgressViewController") as? PlexusProgressPanel
                     }
                     self.progressViewController.delegate = self
-                  // self.progressViewController.changeLabel(String("Importing..."))
+                  
                     
                     
                     
                     
                     self.contentViewController?.presentViewControllerAsSheet(self.progressViewController!)
                     
+                    
+                    self.progressViewController?.changeLabel(String("Importing..."))
                     
                     var newDataset : Dataset = Dataset(entity: NSEntityDescription.entityForName("Dataset", inManagedObjectContext: self.moc)!, insertIntoManagedObjectContext: self.moc)
                     newDataset.setValue(inFile!.lastPathComponent, forKey: "name")
