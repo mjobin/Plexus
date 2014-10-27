@@ -646,7 +646,7 @@
                 <customObject id="Voe-Tx-rLC" customClass="AppDelegate" customModule="Plexus" customModuleProvider="target"/>
                 <customObject id="Ady-hI-5gd" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="161" y="-166"/>
+            <point key="canvasLocation" x="-98" y="-266"/>
         </scene>
         <!--Window Controller-->
         <scene sceneID="R2V-B0-nI4">
@@ -710,14 +710,14 @@
                                         <action selector="calculate:" target="B8D-0N-5wS" id="VCg-wJ-cZX"/>
                                     </connections>
                                 </toolbarItem>
-                                <toolbarItem implicitItemIdentifier="E18303A5-037B-44FE-878B-72401FAAC926" label="Models" paletteLabel="Models" image="49F8AF32-4829-4645-8EED-56F64A127419" id="VR9-AM-azT">
+                                <toolbarItem implicitItemIdentifier="E18303A5-037B-44FE-878B-72401FAAC926" label="Models" paletteLabel="Models" image="F002C3C0-902E-4DCF-90DE-B8D9F9F87D91" id="VR9-AM-azT">
                                     <nil key="toolTip"/>
                                     <size key="minSize" width="13" height="13"/>
                                     <size key="maxSize" width="37" height="34"/>
                                     <button key="view" horizontalHuggingPriority="750" verticalHuggingPriority="750" id="vcL-Vh-Set">
                                         <rect key="frame" x="5" y="14" width="37" height="34"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="squareTextured" bezelStyle="texturedSquare" image="49F8AF32-4829-4645-8EED-56F64A127419" imagePosition="only" alignment="left" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="s8L-6c-2d7">
+                                        <buttonCell key="cell" type="squareTextured" bezelStyle="texturedSquare" image="F002C3C0-902E-4DCF-90DE-B8D9F9F87D91" imagePosition="only" alignment="left" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="s8L-6c-2d7">
                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
@@ -1004,7 +1004,7 @@
         <!--Plexus Entry Tab View Controller-->
         <scene sceneID="EXq-nA-BCj">
             <objects>
-                <tabViewController selectedTabViewItemIndex="0" id="8tL-eR-LSA" customClass="PlexusEntryTabViewController" customModule="Plexus" customModuleProvider="target" sceneMemberID="viewController">
+                <tabViewController selectedTabViewItemIndex="2" id="8tL-eR-LSA" customClass="PlexusEntryTabViewController" customModule="Plexus" customModuleProvider="target" sceneMemberID="viewController">
                     <tabViewItems>
                         <tabViewItem label="Traits" identifier="" id="SBa-pX-IRF"/>
                         <tabViewItem label="Structures" identifier="" id="aoJ-JI-ITM"/>
@@ -1229,11 +1229,14 @@
         <!--Connections-->
         <scene sceneID="Ojl-cW-2f5">
             <objects>
-                <viewController title="Connections" id="VHm-NV-mJM" sceneMemberID="viewController">
-                    <view key="view" id="F4B-D3-QA6">
+                <viewController title="Connections" id="VHm-NV-mJM" customClass="PlexusConnectionsViewController" customModule="Plexus" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" id="F4B-D3-QA6" customClass="SKView">
                         <rect key="frame" x="0.0" y="0.0" width="216" height="290"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </view>
+                    <connections>
+                        <outlet property="skView" destination="F4B-D3-QA6" id="qWV-jY-gvG"/>
+                    </connections>
                 </viewController>
                 <customObject id="arN-xX-TfV" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
@@ -1592,7 +1595,7 @@ Gw
                         <autoresizingMask key="autoresizingMask"/>
                     </view>
                     <connections>
-                        <outlet property="skView" destination="uG5-Ht-xWD" id="XLf-12-moo"/>
+                        <outlet property="skView" destination="uG5-Ht-xWD" id="Sp3-Ky-8qo"/>
                     </connections>
                 </viewController>
                 <customObject id="TkJ-RL-grg" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
@@ -1817,7 +1820,7 @@ Gw
         </scene>
     </scenes>
     <resources>
-        <image name="49F8AF32-4829-4645-8EED-56F64A127419" width="1" height="1">
+        <image name="F002C3C0-902E-4DCF-90DE-B8D9F9F87D91" width="1" height="1">
             <mutableData key="keyedArchiveRepresentation">
 YnBsaXN0MDDUAQIDBAUGPj9YJHZlcnNpb25YJG9iamVjdHNZJGFyY2hpdmVyVCR0b3ASAAGGoK4HCBMU
 GR4fIyQsLzI4O1UkbnVsbNUJCgsMDQ4PEBESVk5TU2l6ZVYkY2xhc3NcTlNJbWFnZUZsYWdzVk5TUmVw
