@@ -17,6 +17,8 @@ class PlexusProgressPanel: NSViewController {
     
     @IBOutlet var progressBar: NSProgressIndicator!
     @IBOutlet var progressLabel : NSTextField!
+    @IBOutlet var maxWork : NSTextField!
+    @IBOutlet var curWork : NSTextField!
     weak var delegate : ProgressViewControllerDelegate?
     
 
@@ -37,6 +39,7 @@ class PlexusProgressPanel: NSViewController {
     override func viewWillAppear() {
         
         self.progressBar.startAnimation(self)
+        self.view.needsDisplay = true
        
     }
     
@@ -52,13 +55,25 @@ class PlexusProgressPanel: NSViewController {
     func moveBar(inc: Double) {
 
         progressBar.incrementBy(inc)
-        progressBar.needsDisplay = true
+        self.view.needsDisplay = true
     }
     
     func changeLabel(newLabel : String) {
         
         self.progressLabel.stringValue = newLabel
-        self.progressLabel.needsDisplay = true
+        self.view.needsDisplay = true
+    }
+    
+    func changeCurWork(inc: Int) {
+        
+        self.curWork.integerValue = inc
+        self.view.needsDisplay = true
+    }
+    
+    func changeMaxWork(inc: Int) {
+        
+        self.maxWork.integerValue = inc
+        self.view.needsDisplay = true
     }
     
 }
