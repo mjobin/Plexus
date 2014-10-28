@@ -114,13 +114,26 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
             
         }
         self.progressViewController?.delegate = self
+        
 
         
         self.contentViewController?.presentViewControllerAsSheet(self.progressViewController!)
         //swap it in?
         
+        self.progressViewController?.changeLabel(String("Calculating..."))
+        self.progressViewController?.changeMaxWork(10000)
+        
+        for i in 0...10000 {
+            self.progressViewController?.changeCurWork(i)
+        }
+        
+
         
         //then tear it down again
+        
+
+        
+        self.contentViewController?.dismissViewController(self.progressViewController!)
         
     }
     
