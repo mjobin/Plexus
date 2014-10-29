@@ -11,29 +11,28 @@ import Cocoa
 class PlexusIconTransformer: NSValueTransformer {
     
 
-    
+    override class func transformedValueClass() -> AnyClass {
+        return NSImage.self
+    }
     
     override func transformedValue(value: AnyObject!) -> (AnyObject!) {
         
-        var rPath = NSBundle.mainBundle().resourcePath
-        println(rPath)
-        println(value)
         
-       // let urImage = NSImage(named: value)
-        
-        switch value {
-            /*
-            case "PlexusTest":
-            println("sdjkhdjskhkdsjhfds Plexus test")
-            case "PlexusEntry":
-            println("sdjkhdjskhkdsjhfds Plexus enrty")
-            */
-        default:
-            println("deeefault")
-            return NSImage(named: "PlexusEntry")
+        if(value == nil) {
+            return NSImage(named: "PlexusTest")
         }
         
-        return rPath
+        switch value.stringValue {
+            /*
+            case "PlexusTest":
+                return NSImage(named: "PlexusTest")
+*/
+
+        default:
+            return NSImage(named: "PlexusEntry") //not really needed
+        }
+        
+
     }
 
 
