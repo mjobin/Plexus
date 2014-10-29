@@ -43,6 +43,8 @@
 		C9D80BC119E7031B003A7575 /* PlexusDatasetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9D80BBF19E7031B003A7575 /* PlexusDatasetViewController.swift */; };
 		C9D80BC319E74779003A7575 /* PlexusEntryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9D80BC219E74779003A7575 /* PlexusEntryViewController.swift */; };
 		C9D80BC419E74779003A7575 /* PlexusEntryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9D80BC219E74779003A7575 /* PlexusEntryViewController.swift */; };
+		C9E374251A005D3700112F5A /* PlexusIconTransformer.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9E374241A005D3700112F5A /* PlexusIconTransformer.swift */; };
+		C9E374261A005D3700112F5A /* PlexusIconTransformer.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9E374241A005D3700112F5A /* PlexusIconTransformer.swift */; };
 		C9F4ABE319F70E0400E74B35 /* DatasetExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9F4ABE219F70E0400E74B35 /* DatasetExtension.swift */; };
 		C9F4ABE519F70FC200E74B35 /* PlexusEntryTabViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9F4ABE419F70FC200E74B35 /* PlexusEntryTabViewController.swift */; };
 		C9F4ABE719F7115A00E74B35 /* PlexusTraitViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9F4ABE619F7115A00E74B35 /* PlexusTraitViewController.swift */; };
@@ -90,6 +92,7 @@
 		C9D7D3E819F9BD5B00025ABA /* Image.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Image.swift; sourceTree = "<group>"; };
 		C9D80BBF19E7031B003A7575 /* PlexusDatasetViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlexusDatasetViewController.swift; sourceTree = "<group>"; };
 		C9D80BC219E74779003A7575 /* PlexusEntryViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlexusEntryViewController.swift; sourceTree = "<group>"; };
+		C9E374241A005D3700112F5A /* PlexusIconTransformer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlexusIconTransformer.swift; sourceTree = "<group>"; };
 		C9F4ABE219F70E0400E74B35 /* DatasetExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DatasetExtension.swift; sourceTree = "<group>"; };
 		C9F4ABE419F70FC200E74B35 /* PlexusEntryTabViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlexusEntryTabViewController.swift; sourceTree = "<group>"; };
 		C9F4ABE619F7115A00E74B35 /* PlexusTraitViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlexusTraitViewController.swift; sourceTree = "<group>"; };
@@ -162,6 +165,7 @@
 				C9307BDA19DCD09E002AFF07 /* SpriteKit.framework */,
 				C9307BB119DCCA3B002AFF07 /* Info.plist */,
 				C969470319DF6DEF001CE994 /* CGPath+Arrow.swift */,
+				C9E374241A005D3700112F5A /* PlexusIconTransformer.swift */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -332,6 +336,7 @@
 				C9307BB819DCCA3B002AFF07 /* Plexus.xcdatamodeld in Sources */,
 				C94CFAAA19FED53C001BE9B9 /* PlexusConnectionsViewController.swift in Sources */,
 				C9D80BC019E7031B003A7575 /* PlexusDatasetViewController.swift in Sources */,
+				C9E374251A005D3700112F5A /* PlexusIconTransformer.swift in Sources */,
 				C9F4ABE719F7115A00E74B35 /* PlexusTraitViewController.swift in Sources */,
 				C9F4ABE319F70E0400E74B35 /* DatasetExtension.swift in Sources */,
 				C9F4ABE519F70FC200E74B35 /* PlexusEntryTabViewController.swift in Sources */,
@@ -366,6 +371,7 @@
 				C9D28F0919DDF22E005FD24D /* PlexusBNViewController.swift in Sources */,
 				C9C0AFE219E591D9001F65FB /* PlexusProgressPanel.swift in Sources */,
 				C9BFBFBC19EF12E400EF1A86 /* PlexusModelViewController.swift in Sources */,
+				C9E374261A005D3700112F5A /* PlexusIconTransformer.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
