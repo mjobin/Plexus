@@ -11,10 +11,13 @@ import Cocoa
 @NSApplicationMain
 class AppDelegate: NSObject, NSApplicationDelegate {
 
+    let plexusIconTransformer = PlexusIconTransformer()
+
 
 
     func applicationDidFinishLaunching(aNotification: NSNotification) {
         // Insert code here to initialize your application
+        NSValueTransformer.setValueTransformer(plexusIconTransformer, forName: "PlexusIconTransformer")
     }
 
     func applicationWillTerminate(aNotification: NSNotification) {
