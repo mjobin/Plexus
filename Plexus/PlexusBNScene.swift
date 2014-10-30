@@ -8,8 +8,15 @@
 
 import Cocoa
 import SpriteKit
+import CoreData
 
 class PlexusBNScene: SKScene {
+    
+    enum ColliderType: UInt32 {
+        case Node = 1
+        case NodeLine = 2
+
+    }
 
     var dragStart = CGPointMake(0.0, 0.0)
     var startNode = SKNode()
@@ -118,8 +125,15 @@ class PlexusBNScene: SKScene {
             shape.name = "bnNode"
             shape.physicsBody?.affectedByGravity = false
             shape.physicsBody?.dynamic = true
+            shape.physicsBody?.collisionBitMask = ColliderType.Node.rawValue
             shape.strokeColor = NSColor.blueColor()
             shape.fillColor = NSColor.grayColor()
+            
+            let shapeDictionary = NSMutableDictionary(capacity: 1)
+            
+
+            
+            shape.userData = shapeDictionary
             
             
             
@@ -196,12 +210,13 @@ class PlexusBNScene: SKScene {
         CGPathAddLineToPoint(joinPath, nil, loc.x, loc.y)
         // CGPathCloseSubpath(joinPath)
         
-        let arrowPath = CGPath.bezierPathWithArrowFromPoint(CGPointMake(startNode.position.x,startNode.position.y), endPoint: CGPointMake(loc.x,loc.y), tailWidth: 4, headWidth: 10, headLength: 10)
+        let arrowPath = CGPath.bezierPathWithArrowFromPoint(CGPointMake(startNode.position.x,startNode.position.y), endPoint: CGPointMake(loc.x,loc.y), tailWidth: 2, headWidth: 10, headLength: 10)
         
         
         var joinLine = SKShapeNode(path: arrowPath)
         joinLine.name = "joinLine"
         joinLine.zPosition = -1
+        joinLine.fillColor = NSColor.whiteColor()
         joinLine.glowWidth = 1
         
         
@@ -238,16 +253,17 @@ class PlexusBNScene: SKScene {
             CGPathAddLineToPoint(joinPath, nil, loc.x, loc.y)
             // CGPathCloseSubpath(joinPath)
             
-            let arrowPath = CGPath.bezierPathWithArrowFromPoint(CGPointMake(startNode.position.x,startNode.position.y), endPoint: CGPointMake(loc.x,loc.y), tailWidth: 4, headWidth: 10, headLength: 10)
+            let arrowPath = CGPath.bezierPathWithArrowFromPoint(CGPointMake(startNode.position.x,startNode.position.y), endPoint: CGPointMake(loc.x,loc.y), tailWidth: 2, headWidth: 10, headLength: 10)
             
             
             var joinLine = SKShapeNode(path: arrowPath)
             joinLine.name = "nodeLine"
             joinLine.zPosition = -1
-            joinLine.glowWidth = 1
+            //joinLine.glowWidth = 1
+            joinLine.fillColor = NSColor.whiteColor()
             joinLine.physicsBody = SKPhysicsBody(polygonFromPath: arrowPath)
             joinLine.physicsBody?.affectedByGravity = false
-            
+            joinLine.physicsBody?.collisionBitMask = ColliderType.NodeLine.rawValue
             
             self.addChild(joinLine)
             
