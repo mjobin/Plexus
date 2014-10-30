@@ -74,7 +74,7 @@ extension CGPath {
     }
     
     
-    class func bezierPathWithArrowFromPoint(startPoint:CGPoint, endPoint: CGPoint, tailWidth: CGFloat, headWidth: CGFloat, headLength: CGFloat) -> CGPath {
+    class func bezierPathWithArrowFromPoint(startPoint:CGPoint, endPoint: CGPoint, tailWidth: CGFloat, headWidth: CGFloat, headLength: CGFloat, d1: CGFloat, d2: CGFloat) -> CGPath {
         
         let xdiff: Float = Float(endPoint.x) - Float(startPoint.x)
         let ydiff: Float = Float(endPoint.y) - Float(startPoint.y)
@@ -82,7 +82,7 @@ extension CGPath {
         
         var points = [CGPoint]()
        // self.getAxisAlignedArrowPoints(&points, forLength: CGFloat(length), tailWidth: tailWidth, headWidth: headWidth, headLength: headLength)
-        self.getAxisAlignedDoubleArrowPoints(&points, forLength: CGFloat(length), tailWidth: tailWidth, headWidth: headWidth, headLength: headLength, distance1: 0.33, distance2: 0.66)
+        self.getAxisAlignedDoubleArrowPoints(&points, forLength: CGFloat(length), tailWidth: tailWidth, headWidth: headWidth, headLength: headLength, distance1: d1, distance2: d2)
         
         var transform: CGAffineTransform = self.transformForStartPoint(startPoint, endPoint: endPoint, length:  CGFloat(length))
         

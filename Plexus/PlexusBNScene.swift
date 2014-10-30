@@ -20,6 +20,8 @@ class PlexusBNScene: SKScene {
 
     var dragStart = CGPointMake(0.0, 0.0)
     var startNode = SKNode()
+    var d1 : CGFloat = 0.3
+    var d2 : CGFloat = 0.8
     
     
     
@@ -210,7 +212,13 @@ class PlexusBNScene: SKScene {
         CGPathAddLineToPoint(joinPath, nil, loc.x, loc.y)
         // CGPathCloseSubpath(joinPath)
         
-        let arrowPath = CGPath.bezierPathWithArrowFromPoint(CGPointMake(startNode.position.x,startNode.position.y), endPoint: CGPointMake(loc.x,loc.y), tailWidth: 2, headWidth: 10, headLength: 10)
+        let arrowPath = CGPath.bezierPathWithArrowFromPoint(CGPointMake(startNode.position.x,startNode.position.y), endPoint: CGPointMake(loc.x,loc.y), tailWidth: 2, headWidth: 10, headLength: 10, d1: d1, d2: d2)
+        d1+=0.1
+        d2+=0.1
+        if (d2>=1){
+            d2=d1
+            d1=0
+        }
         
         
         var joinLine = SKShapeNode(path: arrowPath)
@@ -253,7 +261,7 @@ class PlexusBNScene: SKScene {
             CGPathAddLineToPoint(joinPath, nil, loc.x, loc.y)
             // CGPathCloseSubpath(joinPath)
             
-            let arrowPath = CGPath.bezierPathWithArrowFromPoint(CGPointMake(startNode.position.x,startNode.position.y), endPoint: CGPointMake(loc.x,loc.y), tailWidth: 2, headWidth: 10, headLength: 10)
+            let arrowPath = CGPath.bezierPathWithArrowFromPoint(CGPointMake(startNode.position.x,startNode.position.y), endPoint: CGPointMake(loc.x,loc.y), tailWidth: 2, headWidth: 10, headLength: 10, d1: 0.25, d2: 0.75)
             
             
             var joinLine = SKShapeNode(path: arrowPath)
