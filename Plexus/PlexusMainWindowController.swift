@@ -194,7 +194,7 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
                         var newEntry : Entry = Entry(entity: NSEntityDescription.entityForName("Entry", inManagedObjectContext: self.moc)!, insertIntoManagedObjectContext: self.moc)
                         // newEntry.setValue("test", forKey: "name")
                         newEntry.setValue(String(i), forKey: "name")
-                        newEntry.setValue("PlexusTest", forKey: "icon")
+                        newEntry.setValue("PlexusEntry", forKey: "icon")
                         //newEntry.setValue(NSImage(named: "PlexusTest.png"), forKey: "icon")
                         newEntry.setValue(newDataset, forKey: "dataset")
                         newDataset.addEntryObject(newEntry)
