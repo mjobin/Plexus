@@ -8,12 +8,13 @@
 
 import Cocoa
 
-class PlexusEntryViewController: NSViewController {
+class PlexusEntryViewController: NSViewController, NSOutlineViewDelegate, NSOutlineViewDataSource {
 
     var moc : NSManagedObjectContext!
    dynamic var datasetController : NSArrayController!
     @IBOutlet dynamic var entryTreeController : NSTreeController!
     @IBOutlet var iconController : NSArrayController!
+   // @IBOutlet var
 
     var iconDictionary : NSMutableDictionary!
     
@@ -71,6 +72,31 @@ class PlexusEntryViewController: NSViewController {
         println("add child entry")
         
     }
+
+    //nsoutlineview delegate methods
+    func outlineView(outlineView: NSOutlineView, viewForTableColumn tableColumn: NSTableColumn?, item: AnyObject) -> NSView? {
+
+        var thisView : NSTableCellView = outlineView.makeViewWithIdentifier("Entry Cell", owner: self) as NSTableCellView
+        
+        
+       // println(item)
+        var thisEntry = item.representedObject
+       // println(thisEntry)
+        //thisView.imageView?.image = NSImage(named: "PlexusTest")
+        
+        return thisView
+        
+    }
+    
+    /*
+    
+    func outlineView(outlineView: NSOutlineView, objectValueForTableColumn tableColumn: NSTableColumn?, byItem item: AnyObject?) -> AnyObject? {
+        
+       // var thisEntry = item
+        println(item)
+        return item
+    }
+    */
 
     
 }
