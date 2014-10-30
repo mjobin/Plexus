@@ -22,15 +22,15 @@ class PlexusIconTransformer: NSValueTransformer {
             return NSImage(named: "PlexusTest")
         }
         
-        switch value.stringValue {
-            /*
+        
+        switch value as NSString {
+            
             case "PlexusTest":
                 return NSImage(named: "PlexusTest")
-*/
+
 
         default:
-            return NSImage(named: "PlexusEntry") //not really needed
-        }
+            return NSImage(named: "PlexusEntry")         }
         
 
     }
