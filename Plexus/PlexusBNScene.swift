@@ -127,6 +127,8 @@ class PlexusBNScene: SKScene {
             shape.name = "bnNode"
             shape.physicsBody?.affectedByGravity = false
             shape.physicsBody?.dynamic = true
+            shape.physicsBody?.allowsRotation = false
+            shape.physicsBody?.categoryBitMask = ColliderType.Node.rawValue
             shape.physicsBody?.collisionBitMask = ColliderType.Node.rawValue
             shape.strokeColor = NSColor.blueColor()
             shape.fillColor = NSColor.grayColor()
@@ -271,7 +273,11 @@ class PlexusBNScene: SKScene {
             joinLine.fillColor = NSColor.whiteColor()
             joinLine.physicsBody = SKPhysicsBody(polygonFromPath: arrowPath)
             joinLine.physicsBody?.affectedByGravity = false
-            joinLine.physicsBody?.collisionBitMask = ColliderType.NodeLine.rawValue
+            
+             joinLine.physicsBody?.categoryBitMask = ColliderType.NodeLine.rawValue
+            //joinLine.physicsBody?.collisionBitMask = ColliderType.NodeLine.rawValue
+            joinLine.physicsBody?.collisionBitMask = 0
+
             
             self.addChild(joinLine)
             
