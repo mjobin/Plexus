@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		C92115491A01D9D7006E0183 /* bn_kernel.cl in Sources */ = {isa = PBXBuildFile; fileRef = C92115481A01D9D7006E0183 /* bn_kernel.cl */; };
+		C921154A1A01D9D7006E0183 /* bn_kernel.cl in Sources */ = {isa = PBXBuildFile; fileRef = C92115481A01D9D7006E0183 /* bn_kernel.cl */; };
 		C9307BB319DCCA3B002AFF07 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9307BB219DCCA3B002AFF07 /* AppDelegate.swift */; };
 		C9307BB819DCCA3B002AFF07 /* Plexus.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = C9307BB619DCCA3B002AFF07 /* Plexus.xcdatamodeld */; };
 		C9307BBA19DCCA3B002AFF07 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C9307BB919DCCA3B002AFF07 /* Images.xcassets */; };
@@ -61,6 +63,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		C92115481A01D9D7006E0183 /* bn_kernel.cl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.opencl; path = bn_kernel.cl; sourceTree = "<group>"; };
 		C9307BAD19DCCA3B002AFF07 /* Plexus.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Plexus.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C9307BB119DCCA3B002AFF07 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C9307BB219DCCA3B002AFF07 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -158,6 +161,7 @@
 		C9307BB019DCCA3B002AFF07 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				C92115481A01D9D7006E0183 /* bn_kernel.cl */,
 				C9423AFE19E2FFC200EE109C /* CoreData.framework */,
 				C96946FD19DF6CC1001CE994 /* MapKit.framework */,
 				C96946FB19DF6C8B001CE994 /* Quartz.framework */,
@@ -347,6 +351,7 @@
 				C9307BD719DCCD51002AFF07 /* PlexusMainWindowController.swift in Sources */,
 				C9D80BC319E74779003A7575 /* PlexusEntryViewController.swift in Sources */,
 				C9CEAE2C19F9748000BE6BB1 /* PlexusImageViewController.swift in Sources */,
+				C92115491A01D9D7006E0183 /* bn_kernel.cl in Sources */,
 				C969470119DF6D79001CE994 /* PlexusBNScene.swift in Sources */,
 				C9CA532A19F72CDA0043E5D3 /* Dataset.swift in Sources */,
 				C969470419DF6DEF001CE994 /* CGPath+Arrow.swift in Sources */,
@@ -362,6 +367,7 @@
 			files = (
 				C9D80BC119E7031B003A7575 /* PlexusDatasetViewController.swift in Sources */,
 				C94CFAAB19FED53C001BE9B9 /* PlexusConnectionsViewController.swift in Sources */,
+				C921154A1A01D9D7006E0183 /* bn_kernel.cl in Sources */,
 				C9307BD819DCCD51002AFF07 /* PlexusMainWindowController.swift in Sources */,
 				C9307BC919DCCA3C002AFF07 /* PlexusTests.swift in Sources */,
 				C969470519DF6DEF001CE994 /* CGPath+Arrow.swift in Sources */,

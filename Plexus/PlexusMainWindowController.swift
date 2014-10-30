@@ -92,17 +92,7 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
         
     }
     
-    @IBAction func  chkDataset(x:NSToolbarItem){
-        println("MAIN WINDOW CONTROLLER:")
-        println(datasetController)
-        println(datasetController!.selectionIndexes)
-        println(datasetController!.selection)
-        println(datasetController.selectedObjects)
-       // println(datasetController!.selectedObjects.objectAtIndex(0))
-        
-        mainSplitViewController.chkDataset(x)
-        
-    }
+
     
     @IBAction func  calculate(x:NSToolbarItem){
         println("calc Tapped: \(x)")

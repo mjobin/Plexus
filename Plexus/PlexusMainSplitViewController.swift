@@ -68,15 +68,6 @@ class PlexusMainSplitViewController: NSSplitViewController {
         
     }
     
-    func  chkDataset(x:NSToolbarItem){
-        println("MAIN SPLIT VIEW CONTROLLER:")
-        println(datasetController)
-        println(datasetController!.selectionIndexes)
-        println(datasetController!.selection)
-        println(datasetController!.selectedObjects)
-        
-        entryViewController!.chkDataset(x)
-        
-    }
+
     
 }
