@@ -17,7 +17,7 @@ class PlexusBNViewController: NSViewController {
         super.viewDidLoad()
         var scene: PlexusBNScene = PlexusBNScene(size: self.skView.bounds.size)
         
-         scene.scaleMode = SKSceneScaleMode.Fill
+         scene.scaleMode = SKSceneScaleMode.ResizeFill
         
         
        // var skt : SKTransition = SKTransition.flipHorizontalWithDuration(2)

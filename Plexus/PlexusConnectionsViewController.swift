@@ -19,7 +19,7 @@ class PlexusConnectionsViewController: NSViewController {
         
         var scene: PlexusBNScene = PlexusBNScene(size: self.skView.bounds.size)
         
-        scene.scaleMode = SKSceneScaleMode.Fill
+        scene.scaleMode = SKSceneScaleMode.ResizeFill
         
         
         

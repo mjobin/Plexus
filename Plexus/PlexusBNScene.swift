@@ -41,12 +41,12 @@ class PlexusBNScene: SKScene {
         // Name label
         
         
-        let nameLabel = SKLabelNode(text: "Bayesian Network 0")
-        nameLabel.fontSize = 18
-        nameLabel.zPosition = 1
-        nameLabel.position = CGPointMake(self.frame.width*0.5, self.frame.height*0.95)
+        //let nameLabel = SKLabelNode(text: "Bayesian Network 0")
+       // nameLabel.fontSize = 18
+       // nameLabel.zPosition = 1
+       // nameLabel.position = CGPointMake(self.frame.width*0.5, self.frame.height*0.95)
         
-        self.addChild(nameLabel)
+       // self.addChild(nameLabel)
         
         
         
@@ -284,6 +284,7 @@ class PlexusBNScene: SKScene {
 
             
             let startJoint = SKPhysicsJointPin.jointWithBodyA(startNode.physicsBody, bodyB: joinLine.physicsBody, anchor: startNode.position)
+            //let startSpringJoint = SKPhysicsJointSpring.jointWithBodyA(startNode.physicsBody, bodyB: joinLine.physicsBody, anchorA: startNode.position, anchorB:
             self.physicsWorld.addJoint(startJoint)
 
             let endJoint = SKPhysicsJointPin.jointWithBodyA(releasedNode.physicsBody, bodyB: joinLine.physicsBody, anchor: releasedNode.position)
@@ -364,6 +365,10 @@ class PlexusBNScene: SKScene {
     
     
     override func update(currentTime: CFTimeInterval) {
+        
+        var inset : CGRect = CGRectMake(self.frame.width*0.05, self.frame.height*0.05, self.frame.width*0.9, self.frame.height*0.9)
+        var borderBody = SKPhysicsBody(edgeLoopFromRect: inset)
+        self.physicsBody = borderBody
         
         
         /* Called before each frame is rendered */
