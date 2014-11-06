@@ -204,12 +204,12 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
                         var theTraits : [String] = thisLine.componentsSeparatedByString(",")
                         for thisTrait in theTraits {
                             //println(thisTrait)
-                            var newTrait : NSManagedObject = NSManagedObject(entity: NSEntityDescription.entityForName("Trait", inManagedObjectContext: self.moc)!, insertIntoManagedObjectContext: self.moc)
+                            var newTrait : Trait = Trait(entity: NSEntityDescription.entityForName("Trait", inManagedObjectContext: self.moc)!, insertIntoManagedObjectContext: self.moc)
                             newTrait.setValue("test", forKey: "name")
                             newTrait.setValue(thisTrait, forKey: "value")
                             newTrait.setValue(newEntry, forKey: "entry")
                             
-                            
+                            newEntry.addTraitObject(newTrait)
                             
                         }
                         
