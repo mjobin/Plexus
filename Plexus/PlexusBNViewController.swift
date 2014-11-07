@@ -12,9 +12,22 @@ import SpriteKit
 class PlexusBNViewController: NSViewController {
     
     @IBOutlet weak var skView: SKView!
+    @IBOutlet weak var visView: NSVisualEffectView!
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+
+        visView.blendingMode = NSVisualEffectBlendingMode.BehindWindow
+        
+            
+
+        visView.material = NSVisualEffectMaterial.Dark
+        
+
+        visView.state = NSVisualEffectState.Active
+
+        
         var scene: PlexusBNScene = PlexusBNScene(size: self.skView.bounds.size)
         
          scene.scaleMode = SKSceneScaleMode.ResizeFill

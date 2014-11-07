@@ -710,14 +710,14 @@
                                         <action selector="calculate:" target="B8D-0N-5wS" id="VCg-wJ-cZX"/>
                                     </connections>
                                 </toolbarItem>
-                                <toolbarItem implicitItemIdentifier="E18303A5-037B-44FE-878B-72401FAAC926" label="Models" paletteLabel="Models" image="AA2CEE27-7A53-4EE8-8E26-1C78B66D840B" id="VR9-AM-azT">
+                                <toolbarItem implicitItemIdentifier="E18303A5-037B-44FE-878B-72401FAAC926" label="Models" paletteLabel="Models" image="172A3FB1-BA32-4341-8FC4-C3391327EA06" id="VR9-AM-azT">
                                     <nil key="toolTip"/>
                                     <size key="minSize" width="13" height="13"/>
                                     <size key="maxSize" width="37" height="34"/>
                                     <button key="view" horizontalHuggingPriority="750" verticalHuggingPriority="750" id="vcL-Vh-Set">
                                         <rect key="frame" x="5" y="14" width="37" height="34"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="squareTextured" bezelStyle="texturedSquare" image="AA2CEE27-7A53-4EE8-8E26-1C78B66D840B" imagePosition="only" alignment="left" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="s8L-6c-2d7">
+                                        <buttonCell key="cell" type="squareTextured" bezelStyle="texturedSquare" image="172A3FB1-BA32-4341-8FC4-C3391327EA06" imagePosition="only" alignment="left" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="s8L-6c-2d7">
                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
@@ -1000,7 +1000,7 @@
         <!--Plexus Entry Tab View Controller-->
         <scene sceneID="EXq-nA-BCj">
             <objects>
-                <tabViewController selectedTabViewItemIndex="2" id="8tL-eR-LSA" customClass="PlexusEntryTabViewController" customModule="Plexus" customModuleProvider="target" sceneMemberID="viewController">
+                <tabViewController selectedTabViewItemIndex="0" id="8tL-eR-LSA" customClass="PlexusEntryTabViewController" customModule="Plexus" customModuleProvider="target" sceneMemberID="viewController">
                     <tabViewItems>
                         <tabViewItem label="Traits" identifier="" id="SBa-pX-IRF"/>
                         <tabViewItem label="Structures" identifier="" id="aoJ-JI-ITM"/>
@@ -1612,12 +1612,24 @@ Gw
         <scene sceneID="LDh-q9-LxR">
             <objects>
                 <viewController id="gOh-yH-JNE" customClass="PlexusBNViewController" customModule="Plexus" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" id="uG5-Ht-xWD" customClass="SKView">
+                    <view key="view" id="uG5-Ht-xWD" customClass="NSVisualEffectView">
                         <rect key="frame" x="0.0" y="0.0" width="450" height="300"/>
                         <autoresizingMask key="autoresizingMask"/>
+                        <subviews>
+                            <customView translatesAutoresizingMaskIntoConstraints="NO" id="8t5-A3-8a0" customClass="SKView">
+                                <rect key="frame" x="0.0" y="0.0" width="450" height="300"/>
+                            </customView>
+                        </subviews>
+                        <constraints>
+                            <constraint firstItem="8t5-A3-8a0" firstAttribute="leading" secondItem="uG5-Ht-xWD" secondAttribute="leading" id="8Pa-cZ-HMd"/>
+                            <constraint firstAttribute="bottom" secondItem="8t5-A3-8a0" secondAttribute="bottom" id="NSI-GJ-uSS"/>
+                            <constraint firstItem="8t5-A3-8a0" firstAttribute="top" secondItem="uG5-Ht-xWD" secondAttribute="top" id="Vmw-t6-xwZ"/>
+                            <constraint firstAttribute="trailing" secondItem="8t5-A3-8a0" secondAttribute="trailing" id="bzH-hG-uWn"/>
+                        </constraints>
                     </view>
                     <connections>
-                        <outlet property="skView" destination="uG5-Ht-xWD" id="Sp3-Ky-8qo"/>
+                        <outlet property="skView" destination="8t5-A3-8a0" id="7qH-f8-Oyx"/>
+                        <outlet property="visView" destination="uG5-Ht-xWD" id="8ur-sA-ziy"/>
                     </connections>
                 </viewController>
                 <customObject id="TkJ-RL-grg" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
@@ -1842,7 +1854,7 @@ Gw
         </scene>
     </scenes>
     <resources>
-        <image name="AA2CEE27-7A53-4EE8-8E26-1C78B66D840B" width="1" height="1">
+        <image name="172A3FB1-BA32-4341-8FC4-C3391327EA06" width="1" height="1">
             <mutableData key="keyedArchiveRepresentation">
 YnBsaXN0MDDUAQIDBAUGPj9YJHZlcnNpb25YJG9iamVjdHNZJGFyY2hpdmVyVCR0b3ASAAGGoK4HCBMU
 GR4fIyQsLzI4O1UkbnVsbNUJCgsMDQ4PEBESVk5TU2l6ZVYkY2xhc3NcTlNJbWFnZUZsYWdzVk5TUmVw
