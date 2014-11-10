@@ -130,6 +130,11 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
     @IBAction func importCSV(x:NSToolbarItem){
        // println("Tapped: \(x)")
         
+        
+       // let undoM : NSUndoManager = moc.undoManager!
+       // moc.undoManager = nil
+
+        
         var errorPtr : NSErrorPointer = nil
         
         let op:NSOpenPanel = NSOpenPanel()
@@ -155,6 +160,13 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
                 var i = 1
                 
                 if (inFile != nil){ // operate on iput file
+                    
+                    //Create a MOC
+                  //  let appDelegate : AppDelegate = NSApplication.sharedApplication().delegate as AppDelegate
+                  //  var inPSC: NSPersistentStoreCoordinator = appDelegate.persistentStoreCoordinator!
+                  //  var inMOC = NSManagedObjectContext()
+                  //  inMOC.persistentStoreCoordinator = inPSC
+                  //  inMOC.undoManager = nil
 
                     
                     //instatntiate progress controller
@@ -174,8 +186,18 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
                     self.progressViewController?.changeLabel(String("Importing..."))
                     
                     var newDataset : Dataset = Dataset(entity: NSEntityDescription.entityForName("Dataset", inManagedObjectContext: self.moc)!, insertIntoManagedObjectContext: self.moc)
+                    
                     newDataset.setValue(inFile!.lastPathComponent, forKey: "name")
-                    self.datasetController.addObject(newDataset)
+
+
+
+                    
+                    self.moc.save(errorPtr)
+                    
+
+                    let datasetID = newDataset.objectID
+
+
                     
                     //give it an initial model
                     var newModel : Model = Model(entity: NSEntityDescription.entityForName("Model", inManagedObjectContext: self.moc)!, insertIntoManagedObjectContext: self.moc)
@@ -189,6 +211,8 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
                     var fileLines : [String] = fileContents.componentsSeparatedByString("\n")
                     
                     var lineCount = Double(fileLines.count)
+                    
+                    var batchCount : Int = 0
                     
                     for thisLine : String in fileLines {
                         var newEntry : Entry = Entry(entity: NSEntityDescription.entityForName("Entry", inManagedObjectContext: self.moc)!, insertIntoManagedObjectContext: self.moc)
@@ -218,11 +242,52 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
    
 
                         i++
+                        batchCount++
+                        if(batchCount > 100){
+                            self.moc.save(errorPtr)
+                            batchCount = 0
+                            self.moc.reset()
+
+                            
+                            newDataset = self.moc.objectWithID(datasetID) as Dataset
+
+
+
+                            
+                            
+                        }
                     }
                     
                     
+                    
                     self.moc.save(errorPtr)
+                    self.moc.reset()
+                    
+                  //  self.moc.undoManager = undoM
+                    
+                  //clear controller
+
+
+                    let datafetch = NSFetchRequest(entityName: "Dataset")
+                    let datasets : [Dataset] = self.moc.executeFetchRequest(datafetch, error: errorPtr) as [Dataset]
+                    
+                    
+                    self.datasetController.addObjects(datasets)
+
+                    newDataset = self.moc.objectWithID(datasetID) as Dataset
+
+                    
+                    let nDarray : [Dataset] = [newDataset]
+
+                    
+                    self.datasetController.setSelectedObjects(nDarray)
+
+
+                    
+
                     self.contentViewController?.dismissViewController(self.progressViewController!)
+                    
+                    
                 }
                 
                 
