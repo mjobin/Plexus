@@ -28,6 +28,9 @@ class PlexusBNScene: SKScene {
     
     
     override func didMoveToView(view: SKView) {
+        
+        self.backgroundColor = SKColor.clearColor()
+        
         self.physicsWorld.gravity = CGVectorMake(0, 0)
         
         var inset : CGRect = CGRectMake(self.frame.width*0.05, self.frame.height*0.05, self.frame.width*0.9, self.frame.height*0.9)
