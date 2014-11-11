@@ -17,5 +17,7 @@ class Entry: NSManagedObject {
     @NSManaged var dataset: Dataset
     @NSManaged var parent: NSSet
     @NSManaged var trait: NSSet
+    @NSManaged var latitude: Double
+    @NSManaged var longitude: Double
 
 }
