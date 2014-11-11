@@ -710,14 +710,14 @@
                                         <action selector="calculate:" target="B8D-0N-5wS" id="VCg-wJ-cZX"/>
                                     </connections>
                                 </toolbarItem>
-                                <toolbarItem implicitItemIdentifier="E18303A5-037B-44FE-878B-72401FAAC926" label="Models" paletteLabel="Models" image="70339632-392B-494D-9FB2-5ECDF67A56F3" id="VR9-AM-azT">
+                                <toolbarItem implicitItemIdentifier="E18303A5-037B-44FE-878B-72401FAAC926" label="Models" paletteLabel="Models" image="9F3EC894-BC6D-4165-A0C8-AAD0BCD4A585" id="VR9-AM-azT">
                                     <nil key="toolTip"/>
                                     <size key="minSize" width="13" height="13"/>
                                     <size key="maxSize" width="37" height="34"/>
                                     <button key="view" horizontalHuggingPriority="750" verticalHuggingPriority="750" id="vcL-Vh-Set">
                                         <rect key="frame" x="5" y="14" width="37" height="34"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="squareTextured" bezelStyle="texturedSquare" image="70339632-392B-494D-9FB2-5ECDF67A56F3" imagePosition="only" alignment="left" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="s8L-6c-2d7">
+                                        <buttonCell key="cell" type="squareTextured" bezelStyle="texturedSquare" image="9F3EC894-BC6D-4165-A0C8-AAD0BCD4A585" imagePosition="only" alignment="left" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="s8L-6c-2d7">
                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
@@ -1831,12 +1831,12 @@ Gw
         <!--Map-->
         <scene sceneID="FZ9-iU-uVi">
             <objects>
-                <viewController title="Map" id="z80-Dq-Ica" sceneMemberID="viewController">
+                <viewController title="Map" id="z80-Dq-Ica" customClass="PlexusMapViewController" customModule="Plexus" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" id="0Bu-oU-8WI">
                         <rect key="frame" x="0.0" y="0.0" width="271" height="300"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
-                            <mapView mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="R17-Gg-Wl7">
+                            <mapView mapType="satellite" showsBuildings="NO" showsPointsOfInterest="NO" showsScale="YES" translatesAutoresizingMaskIntoConstraints="NO" id="R17-Gg-Wl7">
                                 <rect key="frame" x="0.0" y="0.0" width="271" height="300"/>
                             </mapView>
                         </subviews>
@@ -1847,14 +1847,24 @@ Gw
                             <constraint firstAttribute="trailing" secondItem="R17-Gg-Wl7" secondAttribute="trailing" id="tip-0N-Ytq"/>
                         </constraints>
                     </view>
+                    <connections>
+                        <outlet property="entryObject" destination="7ts-Ce-PNi" id="ogi-F5-fqp"/>
+                        <outlet property="mapView" destination="R17-Gg-Wl7" id="Vkc-mp-NVG"/>
+                    </connections>
                 </viewController>
                 <customObject id="wt7-X7-gP0" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
+                <objectController mode="entity" entityName="Entry" automaticallyPreparesContent="YES" id="7ts-Ce-PNi" userLabel="Map Controller">
+                    <connections>
+                        <binding destination="z80-Dq-Ica" name="contentObject" keyPath="entryTreeController.selection" id="GbB-hf-X5t"/>
+                        <binding destination="z80-Dq-Ica" name="managedObjectContext" keyPath="moc" id="gHO-WQ-kKF"/>
+                    </connections>
+                </objectController>
             </objects>
             <point key="canvasLocation" x="1572.5" y="2043"/>
         </scene>
     </scenes>
     <resources>
-        <image name="70339632-392B-494D-9FB2-5ECDF67A56F3" width="1" height="1">
+        <image name="9F3EC894-BC6D-4165-A0C8-AAD0BCD4A585" width="1" height="1">
             <mutableData key="keyedArchiveRepresentation">
 YnBsaXN0MDDUAQIDBAUGPj9YJHZlcnNpb25YJG9iamVjdHNZJGFyY2hpdmVyVCR0b3ASAAGGoK4HCBMU
 GR4fIyQsLzI4O1UkbnVsbNUJCgsMDQ4PEBESVk5TU2l6ZVYkY2xhc3NcTlNJbWFnZUZsYWdzVk5TUmVw
