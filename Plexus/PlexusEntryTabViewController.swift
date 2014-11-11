@@ -13,6 +13,7 @@ class PlexusEntryTabViewController: NSTabViewController {
     
     var traitViewController : PlexusTraitViewController? = nil
     var imageViewController : PlexusImageViewController? = nil
+    var mapViewController : PlexusMapViewController? = nil
     
     dynamic var entryTreeController : NSTreeController!
 
@@ -23,6 +24,8 @@ class PlexusEntryTabViewController: NSTabViewController {
         
         traitViewController = childViewControllers[0] as? PlexusTraitViewController
         imageViewController = childViewControllers[3] as? PlexusImageViewController
+        mapViewController = childViewControllers[4] as? PlexusMapViewController
+        
         
 
     }
@@ -34,6 +37,7 @@ class PlexusEntryTabViewController: NSTabViewController {
         
         traitViewController!.entryTreeController = self.entryTreeController
         imageViewController!.entryTreeController = self.entryTreeController
+        mapViewController!.entryTreeController = self.entryTreeController
     }
     
 }
