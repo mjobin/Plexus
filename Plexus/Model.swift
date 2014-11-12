@@ -15,5 +15,6 @@ class Model: NSManagedObject {
     @NSManaged var children: NSOrderedSet
     @NSManaged var dataset: Dataset
     @NSManaged var parent: NSSet
+    @NSManaged var bnnode: NSSet
 
 }
