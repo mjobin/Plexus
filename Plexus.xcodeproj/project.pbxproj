@@ -28,6 +28,7 @@
 		C936A70B19F1DDDA00DFB23C /* Trait.swift in Sources */ = {isa = PBXBuildFile; fileRef = C936A70A19F1DDDA00DFB23C /* Trait.swift */; };
 		C936A70D19F1DDDA00DFB23C /* Entry.swift in Sources */ = {isa = PBXBuildFile; fileRef = C936A70C19F1DDDA00DFB23C /* Entry.swift */; };
 		C9423AFF19E2FFC200EE109C /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C9423AFE19E2FFC200EE109C /* CoreData.framework */; };
+		C947DFC01A12D6E2003564C4 /* PlexusModelTabViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C947DFBF1A12D6E2003564C4 /* PlexusModelTabViewController.swift */; };
 		C94CFAAA19FED53C001BE9B9 /* PlexusConnectionsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C94CFAA919FED53C001BE9B9 /* PlexusConnectionsViewController.swift */; };
 		C94CFAAB19FED53C001BE9B9 /* PlexusConnectionsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C94CFAA919FED53C001BE9B9 /* PlexusConnectionsViewController.swift */; };
 		C955B6981A119B260025E8F8 /* PlexusMapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C955B6971A119B260025E8F8 /* PlexusMapViewController.swift */; };
@@ -91,6 +92,7 @@
 		C936A70A19F1DDDA00DFB23C /* Trait.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Trait.swift; sourceTree = "<group>"; };
 		C936A70C19F1DDDA00DFB23C /* Entry.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Entry.swift; sourceTree = "<group>"; };
 		C9423AFE19E2FFC200EE109C /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
+		C947DFBF1A12D6E2003564C4 /* PlexusModelTabViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlexusModelTabViewController.swift; sourceTree = "<group>"; };
 		C94CFAA919FED53C001BE9B9 /* PlexusConnectionsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlexusConnectionsViewController.swift; sourceTree = "<group>"; };
 		C955B6971A119B260025E8F8 /* PlexusMapViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlexusMapViewController.swift; sourceTree = "<group>"; };
 		C96946FB19DF6C8B001CE994 /* Quartz.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Quartz.framework; path = System/Library/Frameworks/Quartz.framework; sourceTree = SDKROOT; };
@@ -212,6 +214,7 @@
 				C9D80BBF19E7031B003A7575 /* PlexusDatasetViewController.swift */,
 				C9D80BC219E74779003A7575 /* PlexusEntryViewController.swift */,
 				C9BFBFBA19EF12E400EF1A86 /* PlexusModelViewController.swift */,
+				C947DFBF1A12D6E2003564C4 /* PlexusModelTabViewController.swift */,
 				C9F4ABE419F70FC200E74B35 /* PlexusEntryTabViewController.swift */,
 				C9F4ABE619F7115A00E74B35 /* PlexusTraitViewController.swift */,
 				C9CEAE2B19F9748000BE6BB1 /* PlexusImageViewController.swift */,
@@ -368,6 +371,7 @@
 				C9F4ABE519F70FC200E74B35 /* PlexusEntryTabViewController.swift in Sources */,
 				C936A70B19F1DDDA00DFB23C /* Trait.swift in Sources */,
 				C936A70919F1DDD900DFB23C /* Model.swift in Sources */,
+				C947DFC01A12D6E2003564C4 /* PlexusModelTabViewController.swift in Sources */,
 				C9077D9A1A1178AA00997C0D /* Node.swift in Sources */,
 				C9D7D3E919F9BD5B00025ABA /* Image.swift in Sources */,
 				C9BFBFBB19EF12E400EF1A86 /* PlexusModelViewController.swift in Sources */,
