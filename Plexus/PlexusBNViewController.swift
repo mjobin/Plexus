@@ -11,6 +11,8 @@ import SpriteKit
 
 class PlexusBNViewController: NSViewController {
     
+    dynamic var modelTreeController : NSTreeController!
+    
     @IBOutlet weak var skView: SKView!
     @IBOutlet weak var visView: NSVisualEffectView!
 
@@ -29,6 +31,7 @@ class PlexusBNViewController: NSViewController {
 
         
         var scene: PlexusBNScene = PlexusBNScene(size: self.skView.bounds.size)
+
         
          scene.scaleMode = SKSceneScaleMode.ResizeFill
         
