@@ -130,6 +130,7 @@ class PlexusBNScene: SKScene {
         
         
         var touchedNode : SKNode = self.nodeAtPoint(loc)
+
         startNode = touchedNode
         
         //for now, spawn a new node if you did not touch an exisitng node
@@ -190,11 +191,12 @@ class PlexusBNScene: SKScene {
             
             //  self.addChild(sprite)
             
-            
+            /*
             
             let myLabel = SKLabelNode(text: "Hi there")
             myLabel.fontSize = 12
             myLabel.zPosition = 1
+            myLabel.userInteractionEnabled = false
             myLabel.position = shape.position
             myLabel.physicsBody = SKPhysicsBody(rectangleOfSize: CGRectMake(-15, -15, 30, 30).size)
             
@@ -204,7 +206,7 @@ class PlexusBNScene: SKScene {
             
             self.physicsWorld.addJoint(labelJoint)
 
-            
+            */
             
             
             
@@ -271,6 +273,20 @@ class PlexusBNScene: SKScene {
         var loc = theEvent.locationInNode(self)
         
         var releasedNode : SKNode = self.nodeAtPoint(loc)
+        
+        /*
+        var releasedNodes : [SKNode] = self.nodesAtPoint(loc) as [SKNode]
+        for chkNode in releasedNodes{
+
+            if(chkNode.name == "bnNode"){
+                releasedNode = chkNode
+                break
+            }
+        }
+        
+        println(startNode)
+        println(releasedNode)
+        */
         
         if(!startNode.isEqualTo(self) && startNode.name == "bnNode" && !releasedNode.isEqualTo(self) && releasedNode.name == "bnNode") {
            // println("blammo")
