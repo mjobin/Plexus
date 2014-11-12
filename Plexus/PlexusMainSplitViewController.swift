@@ -16,9 +16,11 @@ class PlexusMainSplitViewController: NSSplitViewController {
     var entryViewController : PlexusEntryViewController? = nil
     var modelViewController : PlexusModelViewController? = nil
     var entryTabViewController : PlexusEntryTabViewController? = nil
+    var modelTabViewController :  PlexusModelTabViewController? = nil
     
     dynamic var datasetController : NSArrayController!
     dynamic var entryTreeController : NSTreeController!
+    dynamic var modelTreeController : NSTreeController!
     
 
     override func viewDidLoad() {
@@ -32,6 +34,7 @@ class PlexusMainSplitViewController: NSSplitViewController {
         
         entryViewController = childViewControllers[0] as? PlexusEntryViewController
         entryTabViewController = childViewControllers[1] as? PlexusEntryTabViewController
+        modelTabViewController = childViewControllers[2] as? PlexusModelTabViewController
         modelViewController = childViewControllers[3] as? PlexusModelViewController
         
         
@@ -49,6 +52,8 @@ class PlexusMainSplitViewController: NSSplitViewController {
         entryTreeController = entryViewController?.entryTreeController
         entryTabViewController!.entryTreeController = self.entryTreeController
         
+        modelTreeController = modelViewController?.modelTreeController
+        modelTabViewController!.modelTreeController = self.modelTreeController
         
 
     }
