@@ -12,6 +12,9 @@ import CoreData
 
 class PlexusBNScene: SKScene {
     
+    var moc : NSManagedObjectContext!
+   // dynamic var modelTreeController : NSTreeController!
+    
     enum ColliderType: UInt32 {
         case Node = 1
         case NodeLine = 2
@@ -24,10 +27,26 @@ class PlexusBNScene: SKScene {
     var d2 : CGFloat = 0.8
     
     
-    
+    /*
+    init( size: CGSize, inModel: Model) {
+        
+        
+        super.init(size:size)
+    }
+
+    */
     
     
     override func didMoveToView(view: SKView) {
+        
+            
+            let appDelegate : AppDelegate = NSApplication.sharedApplication().delegate as AppDelegate
+            moc = appDelegate.managedObjectContext
+        
+
+            
+
+        
         
         self.backgroundColor = SKColor.clearColor()
         
@@ -103,7 +122,7 @@ class PlexusBNScene: SKScene {
     }
     
     override func mouseDown(theEvent: NSEvent) {
-        /* Called when a mouse click occurs */
+        var errorPtr : NSErrorPointer = nil
         
         var loc = theEvent.locationInNode(self)
         dragStart = loc
@@ -122,7 +141,7 @@ class PlexusBNScene: SKScene {
             
             var shapePath = CGPathCreateWithRoundedRect(CGRectMake(-30, -15, 60, 30), 4, 4, nil) //reaplce with size of name eventually
             
-            let shape = SKShapeNode(path: shapePath)
+            let shape = PlexusBNNode(path: shapePath)
             shape.position = loc
             shape.physicsBody = SKPhysicsBody(rectangleOfSize: CGRectMake(-15, -15, 30, 30).size)
             shape.physicsBody?.mass = 1.0
@@ -136,12 +155,18 @@ class PlexusBNScene: SKScene {
             shape.strokeColor = NSColor.blueColor()
             shape.fillColor = NSColor.grayColor()
             
-            let shapeDictionary = NSMutableDictionary(capacity: 1)
-            
 
             
-            shape.userData = shapeDictionary
+            //give it an initial model
+            var newNode : BNNode = BNNode(entity: NSEntityDescription.entityForName("BNNode", inManagedObjectContext: moc)!, insertIntoManagedObjectContext: moc)
+            newNode.setValue("test", forKey: "name")
+            shape.node = newNode
+//            newDataset.addModelObject(newModel)
             
+            
+            
+            moc.save(errorPtr)
+            self.addChild(shape)
             
             
             /*
@@ -165,20 +190,20 @@ class PlexusBNScene: SKScene {
             
             //  self.addChild(sprite)
             
-            self.addChild(shape)
-            /*
+            
+            
             let myLabel = SKLabelNode(text: "Hi there")
             myLabel.fontSize = 12
             myLabel.zPosition = 1
-            myLabel.position = sprite.position
+            myLabel.position = shape.position
+            myLabel.physicsBody = SKPhysicsBody(rectangleOfSize: CGRectMake(-15, -15, 30, 30).size)
             
             self.addChild(myLabel)
             
-            // let labelJoint = SKPhysicsJointSpring.jointWithBodyA(myLabel.physicsBody, bodyB: sprite.physicsBody, anchorA: myLabel.position, anchorB: sprite.position)
-            let labelJoint = SKPhysicsJointFixed.jointWithBodyA(myLabel.physicsBody, bodyB: sprite.physicsBody, anchor: sprite.position)
+            let labelJoint = SKPhysicsJointFixed.jointWithBodyA(myLabel.physicsBody, bodyB: shape.physicsBody, anchor: shape.position)
             
             self.physicsWorld.addJoint(labelJoint)
-            */
+
             
             
             
