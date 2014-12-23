@@ -32,6 +32,7 @@
 		C94CFAAA19FED53C001BE9B9 /* PlexusConnectionsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C94CFAA919FED53C001BE9B9 /* PlexusConnectionsViewController.swift */; };
 		C94CFAAB19FED53C001BE9B9 /* PlexusConnectionsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C94CFAA919FED53C001BE9B9 /* PlexusConnectionsViewController.swift */; };
 		C955B6981A119B260025E8F8 /* PlexusMapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C955B6971A119B260025E8F8 /* PlexusMapViewController.swift */; };
+		C96531771A49204700804E64 /* CorePlot.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C96531741A491FBC00804E64 /* CorePlot.framework */; };
 		C96946FC19DF6C8B001CE994 /* Quartz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C96946FB19DF6C8B001CE994 /* Quartz.framework */; };
 		C96946FE19DF6CC1001CE994 /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C96946FD19DF6CC1001CE994 /* MapKit.framework */; };
 		C969470119DF6D79001CE994 /* PlexusBNScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = C969470019DF6D79001CE994 /* PlexusBNScene.swift */; };
@@ -67,6 +68,27 @@
 			remoteGlobalIDString = C9307BAC19DCCA3B002AFF07;
 			remoteInfo = Plexus;
 		};
+		C96531731A491FBC00804E64 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C965316D1A491FBB00804E64 /* CorePlot.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8DC2EF5B0486A6940098B216;
+			remoteInfo = CorePlot;
+		};
+		C96531751A491FBC00804E64 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C965316D1A491FBB00804E64 /* CorePlot.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0730F600109492D800E95162;
+			remoteInfo = UnitTests;
+		};
+		C96531781A49207E00804E64 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C965316D1A491FBB00804E64 /* CorePlot.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 8DC2EF4F0486A6940098B216;
+			remoteInfo = CorePlot;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
@@ -95,6 +117,7 @@
 		C947DFBF1A12D6E2003564C4 /* PlexusModelTabViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlexusModelTabViewController.swift; sourceTree = "<group>"; };
 		C94CFAA919FED53C001BE9B9 /* PlexusConnectionsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlexusConnectionsViewController.swift; sourceTree = "<group>"; };
 		C955B6971A119B260025E8F8 /* PlexusMapViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlexusMapViewController.swift; sourceTree = "<group>"; };
+		C965316D1A491FBB00804E64 /* CorePlot.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = CorePlot.xcodeproj; path = "../core-plot-master/framework/CorePlot.xcodeproj"; sourceTree = "<group>"; };
 		C96946FB19DF6C8B001CE994 /* Quartz.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Quartz.framework; path = System/Library/Frameworks/Quartz.framework; sourceTree = SDKROOT; };
 		C96946FD19DF6CC1001CE994 /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
 		C96946FF19DF6CC1001CE994 /* Plexus.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = Plexus.entitlements; sourceTree = "<group>"; };
@@ -125,6 +148,7 @@
 				C9307BDB19DCD09E002AFF07 /* OpenCL.framework in Frameworks */,
 				C96946FE19DF6CC1001CE994 /* MapKit.framework in Frameworks */,
 				C9307BDC19DCD09E002AFF07 /* SpriteKit.framework in Frameworks */,
+				C96531771A49204700804E64 /* CorePlot.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -141,6 +165,7 @@
 		C9307BA419DCCA3B002AFF07 = {
 			isa = PBXGroup;
 			children = (
+				C965316D1A491FBB00804E64 /* CorePlot.xcodeproj */,
 				C9307BAF19DCCA3B002AFF07 /* Plexus */,
 				C9307BC519DCCA3C002AFF07 /* PlexusTests */,
 				C9307BAE19DCCA3B002AFF07 /* Products */,
@@ -224,6 +249,15 @@
 			name = "View Controllers";
 			sourceTree = "<group>";
 		};
+		C965316E1A491FBB00804E64 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				C96531741A491FBC00804E64 /* CorePlot.framework */,
+				C96531761A491FBC00804E64 /* UnitTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		C97EAD1719EEECEF0004FF42 /* Models */ = {
 			isa = PBXGroup;
 			children = (
@@ -265,6 +299,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				C96531791A49207E00804E64 /* PBXTargetDependency */,
 			);
 			name = Plexus;
 			productName = Plexus;
@@ -324,6 +359,12 @@
 			mainGroup = C9307BA419DCCA3B002AFF07;
 			productRefGroup = C9307BAE19DCCA3B002AFF07 /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = C965316E1A491FBB00804E64 /* Products */;
+					ProjectRef = C965316D1A491FBB00804E64 /* CorePlot.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				C9307BAC19DCCA3B002AFF07 /* Plexus */,
@@ -331,6 +372,23 @@
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		C96531741A491FBC00804E64 /* CorePlot.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = CorePlot.framework;
+			remoteRef = C96531731A491FBC00804E64 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		C96531761A491FBC00804E64 /* UnitTests.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = UnitTests.xctest;
+			remoteRef = C96531751A491FBC00804E64 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		C9307BAB19DCCA3B002AFF07 /* Resources */ = {
@@ -416,6 +474,11 @@
 			isa = PBXTargetDependency;
 			target = C9307BAC19DCCA3B002AFF07 /* Plexus */;
 			targetProxy = C9307BC319DCCA3C002AFF07 /* PBXContainerItemProxy */;
+		};
+		C96531791A49207E00804E64 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = CorePlot;
+			targetProxy = C96531781A49207E00804E64 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -518,6 +581,7 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				INFOPLIST_FILE = Plexus/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 			};
@@ -533,6 +597,7 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				INFOPLIST_FILE = Plexus/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 			};
