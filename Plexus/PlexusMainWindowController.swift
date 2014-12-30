@@ -8,6 +8,7 @@
 
 import Cocoa
 import CoreData
+import OpenCL
 
 class PlexusMainWindowController: NSWindowController, ProgressViewControllerDelegate {
     
@@ -18,6 +19,8 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
     var mainSplitViewController = PlexusMainSplitViewController()
     var progressViewController : PlexusProgressPanel!
     @IBOutlet var datasetController : NSArrayController!
+    
+
 
     
     override func windowWillLoad() {
@@ -96,10 +99,26 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
     
     @IBAction func  calculate(x:NSToolbarItem){
         println("calc Tapped: \(x)")
+        
+        let context = gcl_get_context()
+        let queue = gcl_create_dispatch_queue(cl_queue_flags(CL_DEVICE_TYPE_GPU), nil)
+        let deviceId = gcl_get_device_id_with_dispatch_queue(queue)
+        
+        let deviceName = getStringInfo(deviceId, deviceInfo: CL_DEVICE_NAME)
+        let addressData = getNumericalInfo(deviceId, deviceInfo: CL_DEVICE_ADDRESS_BITS)
+        let gMemSize = getNumericalInfo(deviceId, deviceInfo: CL_DEVICE_GLOBAL_MEM_SIZE)
+        let extData = getStringInfo(deviceId, deviceInfo: CL_DEVICE_EXTENSIONS)
+        
+        println("Name: \(deviceName)")
+        println("Address Width: \(addressData)")
+        println("Global Memory Size: \(gMemSize))")
+        println("Extensions: \(extData)")
+        
 
         //instatntiate progress controller
         if self.progressViewController == nil {
             let storyboard = NSStoryboard(name:"Main", bundle:nil)
+            println(storyboard!)
             self.progressViewController = storyboard!.instantiateControllerWithIdentifier("ProgressViewController") as? PlexusProgressPanel
             
         }
@@ -324,6 +343,21 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
         self.contentViewController?.dismissViewController(self.progressViewController!)
     }
     
+
+    func getStringInfo(deviceId: cl_device_id, deviceInfo: Int32) -> String {
+        var valueSize: size_t = 0
+        clGetDeviceInfo(deviceId, cl_device_info(deviceInfo), 0, nil, &valueSize)
+        var value = Array<CChar>(count: Int(valueSize), repeatedValue: CChar(32))
+        clGetDeviceInfo(deviceId, cl_device_info(deviceInfo), valueSize, &value, nil)
+        let stringValue = NSString(bytes: &value, length: Int(valueSize), encoding: NSASCIIStringEncoding)
+        return stringValue as String
+    }
+    
+    func getNumericalInfo(deviceId: cl_device_id, deviceInfo: Int32) -> cl_uint {
+        var value = cl_uint(0)
+        clGetDeviceInfo(deviceId, cl_device_info(deviceInfo), UInt(sizeof(cl_uint)), &value, nil)
+        return value
+    }
 
 
 }
