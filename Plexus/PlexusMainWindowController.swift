@@ -144,6 +144,21 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
         
         self.contentViewController?.dismissViewController(self.progressViewController!)
         
+        
+        var notification:NSUserNotification = NSUserNotification()
+        notification.title = "Plexus"
+        notification.subtitle = "Yur stuff are done"
+        notification.informativeText = "Yus"
+        
+        notification.soundName = NSUserNotificationDefaultSoundName
+        
+        notification.deliveryDate = NSDate(timeIntervalSinceNow: 5)
+        var notificationcenter:NSUserNotificationCenter = NSUserNotificationCenter.defaultUserNotificationCenter()
+
+        notificationcenter.scheduleNotification(notification)
+        
+        
+        
     }
     
     @IBAction func importCSV(x:NSToolbarItem){
