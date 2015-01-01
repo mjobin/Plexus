@@ -714,14 +714,14 @@
                                         <action selector="calculate:" target="B8D-0N-5wS" id="VCg-wJ-cZX"/>
                                     </connections>
                                 </toolbarItem>
-                                <toolbarItem implicitItemIdentifier="E18303A5-037B-44FE-878B-72401FAAC926" label="Models" paletteLabel="Models" image="FA51F4F8-AB96-4085-8823-6AFB4A21F103" id="VR9-AM-azT">
+                                <toolbarItem implicitItemIdentifier="E18303A5-037B-44FE-878B-72401FAAC926" label="Models" paletteLabel="Models" image="B7BEC8F9-ACBE-4431-903B-D87B1B0AC7E7" id="VR9-AM-azT">
                                     <nil key="toolTip"/>
                                     <size key="minSize" width="13" height="13"/>
                                     <size key="maxSize" width="37" height="34"/>
                                     <button key="view" horizontalHuggingPriority="750" verticalHuggingPriority="750" id="vcL-Vh-Set">
                                         <rect key="frame" x="5" y="14" width="37" height="34"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="squareTextured" bezelStyle="texturedSquare" image="FA51F4F8-AB96-4085-8823-6AFB4A21F103" imagePosition="only" alignment="left" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="s8L-6c-2d7">
+                                        <buttonCell key="cell" type="squareTextured" bezelStyle="texturedSquare" image="B7BEC8F9-ACBE-4431-903B-D87B1B0AC7E7" imagePosition="only" alignment="left" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="s8L-6c-2d7">
                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
@@ -1718,11 +1718,18 @@ Gw
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="nodesController" destination="CUz-zw-Nql" id="Z8I-ZF-bfa"/>
                         <outlet property="skView" destination="8t5-A3-8a0" id="7qH-f8-Oyx"/>
                         <outlet property="visView" destination="uG5-Ht-xWD" id="8ur-sA-ziy"/>
                     </connections>
                 </viewController>
                 <customObject id="TkJ-RL-grg" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
+                <arrayController mode="entity" entityName="BNNode" automaticallyPreparesContent="YES" id="CUz-zw-Nql" userLabel="Nodes">
+                    <connections>
+                        <binding destination="gOh-yH-JNE" name="contentSet" keyPath="modelTreeController.selection.bnnode" id="SPK-Qp-YeE"/>
+                        <binding destination="gOh-yH-JNE" name="managedObjectContext" keyPath="moc" id="q9s-jT-YeA"/>
+                    </connections>
+                </arrayController>
             </objects>
             <point key="canvasLocation" x="2008" y="1115"/>
         </scene>
@@ -2038,7 +2045,7 @@ Gw
         </scene>
     </scenes>
     <resources>
-        <image name="FA51F4F8-AB96-4085-8823-6AFB4A21F103" width="1" height="1">
+        <image name="B7BEC8F9-ACBE-4431-903B-D87B1B0AC7E7" width="1" height="1">
             <mutableData key="keyedArchiveRepresentation">
 YnBsaXN0MDDUAQIDBAUGPj9YJHZlcnNpb25YJG9iamVjdHNZJGFyY2hpdmVyVCR0b3ASAAGGoK4HCBMU
 GR4fIyQsLzI4O1UkbnVsbNUJCgsMDQ4PEBESVk5TU2l6ZVYkY2xhc3NcTlNJbWFnZUZsYWdzVk5TUmVw
