@@ -13,7 +13,8 @@ import CoreData
 class PlexusBNScene: SKScene {
     
     var moc : NSManagedObjectContext!
-   // dynamic var modelTreeController : NSTreeController!
+    dynamic var modelTreeController : NSTreeController!
+    dynamic var nodesController : NSArrayController!
     
     enum ColliderType: UInt32 {
         case Node = 1
@@ -44,7 +45,7 @@ class PlexusBNScene: SKScene {
             moc = appDelegate.managedObjectContext
         
 
-            
+ 
 
         
         
@@ -164,7 +165,18 @@ class PlexusBNScene: SKScene {
             shape.node = newNode
 //            newDataset.addModelObject(newModel)
             
+
             
+          //FIXME  will need to get the current model from parent VC
+            
+            var curModels : [Model] = modelTreeController.selectedObjects as [Model]
+            var curModel : Model = curModels[0]
+            
+
+            curModel.addBNNodeObject(newNode)
+            newNode.setValue(curModel, forKey: "model")
+
+
             
             moc.save(errorPtr)
             self.addChild(shape)
@@ -215,6 +227,25 @@ class PlexusBNScene: SKScene {
         else {//touched existing node, can draw line between
             println("hit")
             
+            
+            /*
+            //create data popover
+            let ndVC = PlexusNodeDataPopover()
+            let ndPop = NSPopover()
+           // ndPop.contentSize(NSMakeSize(100.0, 100.0))
+            ndPop.contentViewController = ndVC
+            ndPop.behavior = NSPopoverBehavior.Transient
+            ndPop.showRelativeToRect(view!.bounds, ofView: view!, preferredEdge: NSMaxXEdge)
+            */
+            
+            
+          //  let storyboard = NSStoryboard(name:"Main", bundle:nil)
+           // println(storyboard!)
+           // ndPop.contentViewController = storyboard!.instantiateControllerWithIdentifier("NodeDataVC") as? NSViewController
+            
+
+            
+
             
             
             
@@ -415,8 +446,16 @@ class PlexusBNScene: SKScene {
         self.physicsBody = borderBody
         
         
+     //   let curNodes  = nodesController.arrangedObjects as [BNNode]
+      //  println(curNodes.count)
+        
+        
         /* Called before each frame is rendered */
         var angle : CGFloat = 1.0
+        
+        
+        
+        
         
 
         
@@ -481,4 +520,5 @@ class PlexusBNScene: SKScene {
         return atan2(nodeB.position.y - nodeA.position.y, nodeB.position.x - nodeA.position.x)
         
     }
+
 }
