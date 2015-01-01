@@ -39,6 +39,8 @@
 		C969470219DF6D79001CE994 /* PlexusBNScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = C969470019DF6D79001CE994 /* PlexusBNScene.swift */; };
 		C969470419DF6DEF001CE994 /* CGPath+Arrow.swift in Sources */ = {isa = PBXBuildFile; fileRef = C969470319DF6DEF001CE994 /* CGPath+Arrow.swift */; };
 		C969470519DF6DEF001CE994 /* CGPath+Arrow.swift in Sources */ = {isa = PBXBuildFile; fileRef = C969470319DF6DEF001CE994 /* CGPath+Arrow.swift */; };
+		C97B06EF1A4DE7E100514730 /* PlexusModelTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C97B06EE1A4DE7E100514730 /* PlexusModelTableViewController.swift */; };
+		C9AEEC0A1A4DD08F0088182A /* PlexusNodeDataPopover.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9AEEC091A4DD08F0088182A /* PlexusNodeDataPopover.swift */; };
 		C9BFBFBB19EF12E400EF1A86 /* PlexusModelViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9BFBFBA19EF12E400EF1A86 /* PlexusModelViewController.swift */; };
 		C9BFBFBC19EF12E400EF1A86 /* PlexusModelViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9BFBFBA19EF12E400EF1A86 /* PlexusModelViewController.swift */; };
 		C9C0AFE119E591D9001F65FB /* PlexusProgressPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9C0AFE019E591D9001F65FB /* PlexusProgressPanel.swift */; };
@@ -123,6 +125,8 @@
 		C96946FF19DF6CC1001CE994 /* Plexus.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = Plexus.entitlements; sourceTree = "<group>"; };
 		C969470019DF6D79001CE994 /* PlexusBNScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlexusBNScene.swift; sourceTree = "<group>"; };
 		C969470319DF6DEF001CE994 /* CGPath+Arrow.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "CGPath+Arrow.swift"; sourceTree = "<group>"; };
+		C97B06EE1A4DE7E100514730 /* PlexusModelTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlexusModelTableViewController.swift; sourceTree = "<group>"; };
+		C9AEEC091A4DD08F0088182A /* PlexusNodeDataPopover.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlexusNodeDataPopover.swift; sourceTree = "<group>"; };
 		C9BFBFBA19EF12E400EF1A86 /* PlexusModelViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlexusModelViewController.swift; sourceTree = "<group>"; };
 		C9C0AFE019E591D9001F65FB /* PlexusProgressPanel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlexusProgressPanel.swift; sourceTree = "<group>"; };
 		C9C9C2C01A0AECB200EF0A6A /* EntryExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EntryExtension.swift; sourceTree = "<group>"; };
@@ -165,9 +169,9 @@
 		C9307BA419DCCA3B002AFF07 = {
 			isa = PBXGroup;
 			children = (
-				C965316D1A491FBB00804E64 /* CorePlot.xcodeproj */,
 				C9307BAF19DCCA3B002AFF07 /* Plexus */,
 				C9307BC519DCCA3C002AFF07 /* PlexusTests */,
+				C965316D1A491FBB00804E64 /* CorePlot.xcodeproj */,
 				C9307BAE19DCCA3B002AFF07 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -245,6 +249,8 @@
 				C9CEAE2B19F9748000BE6BB1 /* PlexusImageViewController.swift */,
 				C94CFAA919FED53C001BE9B9 /* PlexusConnectionsViewController.swift */,
 				C955B6971A119B260025E8F8 /* PlexusMapViewController.swift */,
+				C9AEEC091A4DD08F0088182A /* PlexusNodeDataPopover.swift */,
+				C97B06EE1A4DE7E100514730 /* PlexusModelTableViewController.swift */,
 			);
 			name = "View Controllers";
 			sourceTree = "<group>";
@@ -425,6 +431,7 @@
 				C9D80BC019E7031B003A7575 /* PlexusDatasetViewController.swift in Sources */,
 				C9E374251A005D3700112F5A /* PlexusIconTransformer.swift in Sources */,
 				C9F4ABE719F7115A00E74B35 /* PlexusTraitViewController.swift in Sources */,
+				C9AEEC0A1A4DD08F0088182A /* PlexusNodeDataPopover.swift in Sources */,
 				C9F4ABE319F70E0400E74B35 /* DatasetExtension.swift in Sources */,
 				C9F4ABE519F70FC200E74B35 /* PlexusEntryTabViewController.swift in Sources */,
 				C936A70B19F1DDDA00DFB23C /* Trait.swift in Sources */,
@@ -437,6 +444,7 @@
 				C9D80BC319E74779003A7575 /* PlexusEntryViewController.swift in Sources */,
 				C9CEAE2C19F9748000BE6BB1 /* PlexusImageViewController.swift in Sources */,
 				C92115491A01D9D7006E0183 /* bn_kernel.cl in Sources */,
+				C97B06EF1A4DE7E100514730 /* PlexusModelTableViewController.swift in Sources */,
 				C969470119DF6D79001CE994 /* PlexusBNScene.swift in Sources */,
 				C9CA532A19F72CDA0043E5D3 /* Dataset.swift in Sources */,
 				C969470419DF6DEF001CE994 /* CGPath+Arrow.swift in Sources */,
