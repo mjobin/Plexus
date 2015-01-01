@@ -18,6 +18,15 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(aNotification: NSNotification) {
         // Insert code here to initialize your application
         NSValueTransformer.setValueTransformer(plexusIconTransformer, forName: "PlexusIconTransformer")
+        
+        
+        //Register defaults
+        let defaults = NSUserDefaults.standardUserDefaults()
+        var pTypes: [String] = ["Expert", "Point", "Uniform", "Gaussian"]
+        let defaultValues = ["PriorTypes": pTypes]
+        defaults.registerDefaults(defaultValues)
+        
+        
     }
 
     func applicationWillTerminate(aNotification: NSNotification) {
