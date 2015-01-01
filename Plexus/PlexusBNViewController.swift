@@ -11,10 +11,22 @@ import SpriteKit
 
 class PlexusBNViewController: NSViewController {
     
+    var moc : NSManagedObjectContext!
     dynamic var modelTreeController : NSTreeController!
+    @IBOutlet dynamic var nodesController : NSArrayController!
     
     @IBOutlet weak var skView: SKView!
     @IBOutlet weak var visView: NSVisualEffectView!
+    var scene: PlexusBNScene!
+    
+    required init?(coder aDecoder: NSCoder)
+    {
+        
+        let appDelegate : AppDelegate = NSApplication.sharedApplication().delegate as AppDelegate
+        moc = appDelegate.managedObjectContext
+        
+        super.init(coder: aDecoder)
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -30,7 +42,9 @@ class PlexusBNViewController: NSViewController {
         visView.state = NSVisualEffectState.Active
 
         
-        var scene: PlexusBNScene = PlexusBNScene(size: self.skView.bounds.size)
+        scene = PlexusBNScene(size: self.skView.bounds.size)
+        
+        
 
         
          scene.scaleMode = SKSceneScaleMode.ResizeFill
@@ -45,7 +59,14 @@ class PlexusBNViewController: NSViewController {
         self.skView!.showsFPS = true
         self.skView!.showsNodeCount = true
         
+      //  self.performSegueWithIdentifier("NodeData", sender: self)
+        
 
     }
-    
+    override func viewDidAppear() {
+        super.viewDidAppear()
+
+        scene.modelTreeController = self.modelTreeController
+        scene.nodesController = self.nodesController
+    }
 }
