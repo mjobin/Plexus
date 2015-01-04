@@ -141,11 +141,12 @@ class PlexusBNScene: SKScene {
             
             //create path
             
-            var shapePath = CGPathCreateWithRoundedRect(CGRectMake(-30, -15, 60, 30), 4, 4, nil) //reaplce with size of name eventually
+            var shapePath = CGPathCreateWithRoundedRect(CGRectMake(-50, -25, 100, 50), 4, 4, nil) //reaplce with size of name eventually
             
             let shape = PlexusBNNode(path: shapePath)
             shape.position = loc
-            shape.physicsBody = SKPhysicsBody(rectangleOfSize: CGRectMake(-15, -15, 30, 30).size)
+            //shape.userInteractionEnabled = true
+            shape.physicsBody = SKPhysicsBody(rectangleOfSize: CGRectMake(-25, -25, 50, 50).size)
             shape.physicsBody?.mass = 1.0
             shape.physicsBody?.restitution = 0.3
             shape.name = "bnNode"
@@ -203,14 +204,14 @@ class PlexusBNScene: SKScene {
             
             //  self.addChild(sprite)
             
-            /*
             
-            let myLabel = SKLabelNode(text: "Hi there")
-            myLabel.fontSize = 12
+            
+            let myLabel = SKLabelNode(text: "New Node")
+            myLabel.fontSize = 18
             myLabel.zPosition = 1
             myLabel.userInteractionEnabled = false
             myLabel.position = shape.position
-            myLabel.physicsBody = SKPhysicsBody(rectangleOfSize: CGRectMake(-15, -15, 30, 30).size)
+            myLabel.physicsBody = SKPhysicsBody(rectangleOfSize: CGRectMake(-25, -25, 50, 50).size)
             
             self.addChild(myLabel)
             
@@ -218,14 +219,32 @@ class PlexusBNScene: SKScene {
             
             self.physicsWorld.addJoint(labelJoint)
 
-            */
+
             
             
             
         }
             
         else {//touched existing node, can draw line between
-            println("hit")
+            println("hit \(touchedNode)")
+            if(touchedNode.name == "bnNode"){
+                
+                
+                self.enumerateChildNodesWithName("bnNode", usingBlock: { thisNode, stop in
+                    var noglowNode : SKShapeNode = thisNode as SKShapeNode
+                    noglowNode.glowWidth = 0
+
+                })
+                
+               var idNode : PlexusBNNode = touchedNode as PlexusBNNode
+                
+                idNode.glowWidth = 5
+                let idArray : [PlexusBNNode] = [idNode]
+                
+                nodesController.setSelectedObjects(idArray)
+            }
+
+            
             
             
             /*
@@ -446,7 +465,7 @@ class PlexusBNScene: SKScene {
         self.physicsBody = borderBody
         
         
-     //   let curNodes  = nodesController.arrangedObjects as [BNNode]
+       // let curNodes : [BNNode]  = nodesController.arrangedObjects as [BNNode]
       //  println(curNodes.count)
         
         
