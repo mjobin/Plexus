@@ -13,14 +13,14 @@ class PlexusModelTabViewController: NSTabViewController {
     dynamic var modelTreeController : NSTreeController!
 
     
-    var bnViewController : PlexusBNViewController? = nil
+  
+    var bnSplitViewController : PlexusBNSplitViewController? = nil
     var modelTableViewController : PlexusModelTableViewController? = nil
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do view setup here.
         
-        bnViewController = childViewControllers[0] as? PlexusBNViewController
+        bnSplitViewController = childViewControllers[0] as? PlexusBNSplitViewController
         modelTableViewController = childViewControllers[1] as? PlexusModelTableViewController
         
         
@@ -30,8 +30,8 @@ class PlexusModelTabViewController: NSTabViewController {
         super.viewDidAppear()
         
         
-        
-        bnViewController!.modelTreeController = self.modelTreeController
+       
+        bnSplitViewController!.modelTreeController = self.modelTreeController
         modelTableViewController!.modelTreeController = self.modelTreeController
 
     }
