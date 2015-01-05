@@ -13,6 +13,7 @@ class PlexusModelTableViewController: NSViewController {
     var moc : NSManagedObjectContext!
     
     dynamic var modelTreeController : NSTreeController!
+    dynamic var nodesController : NSArrayController!
 
     
     required init?(coder aDecoder: NSCoder)
