@@ -13,7 +13,7 @@ class PlexusBNViewController: NSViewController {
     
     var moc : NSManagedObjectContext!
     dynamic var modelTreeController : NSTreeController!
-    @IBOutlet dynamic var nodesController : NSArrayController!
+    dynamic var nodesController : NSArrayController!
     
     @IBOutlet weak var skView: SKView!
     @IBOutlet weak var visView: NSVisualEffectView!
@@ -33,12 +33,7 @@ class PlexusBNViewController: NSViewController {
         
 
         visView.blendingMode = NSVisualEffectBlendingMode.BehindWindow
-        
-            
-
         visView.material = NSVisualEffectMaterial.Dark
-        
-
         visView.state = NSVisualEffectState.Active
 
         
