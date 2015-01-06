@@ -10,5 +10,6 @@
 #define Plexus_Plexus_Bridging_Header_h
 
 #import <CorePlot/CorePlot.h>
+#import "CPTMutablePlotRange+SwiftCompat.h"
 
 #endif
