@@ -34,6 +34,8 @@ class PlexusBNSingleNodeViewController: NSViewController, CPTScatterPlotDataSour
         visView.material = NSVisualEffectMaterial.Dark
         visView.state = NSVisualEffectState.Active
         
+
+        
         var graph = CPTXYGraph(frame:self.graphView.bounds)
         self.graphView.hostedGraph = graph
         
@@ -44,6 +46,8 @@ class PlexusBNSingleNodeViewController: NSViewController, CPTScatterPlotDataSour
         plotSpace.allowsUserInteraction = false
         var xRange = plotSpace.xRange.mutableCopy() as CPTMutablePlotRange
         var yRange = plotSpace.yRange.mutableCopy() as CPTMutablePlotRange
+        
+        
         xRange.setLengthFloat(1.2)
         yRange.setLengthFloat(1.2)
         plotSpace.xRange = xRange
@@ -52,30 +56,14 @@ class PlexusBNSingleNodeViewController: NSViewController, CPTScatterPlotDataSour
         // Axes
         
         var axisSet = CPTXYAxisSet(frame:self.graphView.bounds)
-       // var xAxis = CPTXYAxis(frame:self.graphView.bounds)
-      //  var yAxis = CPTXYAxis(frame:self.graphView.bounds)
         axisSet.xAxis.majorTickLength = 0.5
         axisSet.yAxis.majorTickLength = 0.5
+        
 
         
         graph.axisSet = axisSet
         
-        
 
-            
-        
-        /*
-        CPTXYAxisSet *axisSet = (CPTXYAxisSet *)graph.axisSet;
-        CPTXYAxis *x = axisSet.xAxis;
-        x.majorIntervalLength = CPTDecimalFromString(@"0.5");
-        x.orthogonalCoordinateDecimal = CPTDecimalFromString(@"0.0");
-        x.minorTicksPerInterval = 2;
-        
-        CPTXYAxis *y = axisSet.yAxis;
-        y.majorIntervalLength = CPTDecimalFromString(@"0.5");
-        y.minorTicksPerInterval = 5;
-        y.orthogonalCoordinateDecimal = CPTDecimalFromString(@"0.0");
-            */
         
         
         var priorPlot = CPTScatterPlot(frame:graph.bounds)
@@ -86,13 +74,14 @@ class PlexusBNSingleNodeViewController: NSViewController, CPTScatterPlotDataSour
         priorLineStyle.lineColor = CPTColor.greenColor()
         priorPlot.dataLineStyle = priorLineStyle
         
-        priorPlot.interpolation = CPTScatterPlotInterpolation(rawValue: 3)! //curved
+        //priorPlot.interpolation = CPTScatterPlotInterpolation(rawValue: 3)! //curved
         
         priorPlot.dataSource = self
         priorPlot.delegate = self
         
         //FIXME dummy data
-        self.dataForChart = [0.05, 0.4, 0.2, 0.08]
+        self.dataForChart = [Double](count: 100, repeatedValue: 0.5)
+        
 
         
         graph.addPlot(priorPlot)
@@ -117,15 +106,61 @@ class PlexusBNSingleNodeViewController: NSViewController, CPTScatterPlotDataSour
     
     
     func numberOfRecordsForPlot(plot: CPTPlot!) -> UInt {
-       // println("self.dataForChart.count: \(UInt(self.dataForChart.count))");
+        println("self.dataForChart.count: \(UInt(self.dataForChart.count))");
         return UInt(self.dataForChart.count)
     
     }
     
     
     func numberForPlot(plot: CPTPlot!, field fieldEnum: UInt, recordIndex idx: Int) -> NSNumber! {
-        println("numberForPlot: \(self.dataForChart[idx])")
-        return self.dataForChart[idx] as NSNumber
+        
+        println(idx)
+        
+        //FIXME dummy util i can get the real data
+        var dummyPDist = 1
+        var dummyV1 = 0.4
+        var dummyV2 = 0.7
+        
+        if(plot.identifier.isEqual("PriorPlot")){
+            println("prior plot")
+            
+            let nidx = (Double(idx)/100)
+            let nnidx = (Double(idx+1)/100)
+            
+            switch dummyPDist {
+                
+            case 0:  //point/expert
+                if(nidx <= dummyV1 && nnidx > dummyV1){
+                    return 1
+                }
+                else {
+                    return 0
+                }
+              
+            case 1: //uniform
+                if(nidx >= dummyV1 && nidx < dummyV2){
+                    return 1
+                }
+                else {
+                    return 0
+                }
+                
+            default:
+                return 0
+            }
+
+            
+            //Get selected node
+           // var curNodes : [BNNode] = nodesController.selectedObjects as [BNNode]
+           // var curNode : BNNode = curNodes[0]
+            
+        }
+        
+       // println("numberForPlot: \(self.dataForChart[idx] as NSNumber)")
+       // return self.dataForChart[idx] as NSNumber
+        return 0
+        
+
     }
 
 
