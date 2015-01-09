@@ -8,10 +8,16 @@
 
 import Cocoa
 
+
+
 class PlexusBNSingleNodeViewController: NSViewController, CPTScatterPlotDataSource, CPTScatterPlotDelegate {
     var moc : NSManagedObjectContext!
     dynamic var modelTreeController : NSTreeController!
     dynamic var nodesController : NSArrayController!
+    
+    
+    var curNode : BNNode!
+    var graph : CPTXYGraph!
     
     @IBOutlet var graphView : CPTGraphHostingView!
     @IBOutlet weak var visView: NSVisualEffectView!
@@ -29,18 +35,22 @@ class PlexusBNSingleNodeViewController: NSViewController, CPTScatterPlotDataSour
 
     override func viewDidLoad() {
         super.viewDidLoad()
+  
+
+
         
         visView.blendingMode = NSVisualEffectBlendingMode.BehindWindow
         visView.material = NSVisualEffectMaterial.Dark
         visView.state = NSVisualEffectState.Active
         
 
+
         
-        var graph = CPTXYGraph(frame:self.graphView.bounds)
+        graph = CPTXYGraph(frame:self.graphView.bounds)
         self.graphView.hostedGraph = graph
         
         graph.title = "Graph Title"
-       // graph.axisSet = nil
+
         
         var plotSpace : CPTXYPlotSpace = graph.defaultPlotSpace as CPTXYPlotSpace
         plotSpace.allowsUserInteraction = false
@@ -74,13 +84,12 @@ class PlexusBNSingleNodeViewController: NSViewController, CPTScatterPlotDataSour
         priorLineStyle.lineColor = CPTColor.greenColor()
         priorPlot.dataLineStyle = priorLineStyle
         
-        //priorPlot.interpolation = CPTScatterPlotInterpolation(rawValue: 3)! //curved
+        priorPlot.interpolation = CPTScatterPlotInterpolation(rawValue: 3)! //curved
         
         priorPlot.dataSource = self
         priorPlot.delegate = self
         
-        //FIXME dummy data
-        self.dataForChart = [Double](count: 100, repeatedValue: 0.5)
+
         
 
         
@@ -92,21 +101,35 @@ class PlexusBNSingleNodeViewController: NSViewController, CPTScatterPlotDataSour
         
 
     }
-    /*
-    func numberOfRecordsForPlot(plot: CPTPlot!) -> UInt {
-        return 4
-    }
 
-    
-    func numberForPlot(plot: CPTPlot!, field fieldEnum: UInt, recordIndex idx: UInt) -> NSNumber! {
-        return idx
+    override func viewDidAppear() {
+        super.viewDidAppear()
+        
+        let options = NSKeyValueObservingOptions.New | NSKeyValueObservingOptions.Old
+        nodesController.addObserver(self, forKeyPath: "selectionIndex", options: options, context: nil)
+
     }
-*/
+    
+    func reloadData() {
+        //Get selected node
+        var curNodes : [BNNode] = nodesController.selectedObjects as [BNNode]
+        if(curNodes.count>0) {
+            curNode = curNodes[0]
+        }
+        
+        println("reload Data")
+        
+        //FIXME dummy data
+        self.dataForChart = [Double](count: 100, repeatedValue: 0.5)
+        
+        graph.reloadData()
+        
+    }
     
     
     
     func numberOfRecordsForPlot(plot: CPTPlot!) -> UInt {
-        println("self.dataForChart.count: \(UInt(self.dataForChart.count))");
+       // println("self.dataForChart.count: \(UInt(self.dataForChart.count))");
         return UInt(self.dataForChart.count)
     
     }
@@ -114,7 +137,6 @@ class PlexusBNSingleNodeViewController: NSViewController, CPTScatterPlotDataSour
     
     func numberForPlot(plot: CPTPlot!, field fieldEnum: UInt, recordIndex idx: Int) -> NSNumber! {
         
-        println(idx)
         
         //FIXME dummy util i can get the real data
         var dummyPDist = 1
@@ -122,7 +144,7 @@ class PlexusBNSingleNodeViewController: NSViewController, CPTScatterPlotDataSour
         var dummyV2 = 0.7
         
         if(plot.identifier.isEqual("PriorPlot")){
-            println("prior plot")
+            //println(idx)
             
             let nidx = (Double(idx)/100)
             let nnidx = (Double(idx+1)/100)
@@ -131,6 +153,7 @@ class PlexusBNSingleNodeViewController: NSViewController, CPTScatterPlotDataSour
                 
             case 0:  //point/expert
                 if(nidx <= dummyV1 && nnidx > dummyV1){
+                    println ("yus")
                     return 1
                 }
                 else {
@@ -150,9 +173,7 @@ class PlexusBNSingleNodeViewController: NSViewController, CPTScatterPlotDataSour
             }
 
             
-            //Get selected node
-           // var curNodes : [BNNode] = nodesController.selectedObjects as [BNNode]
-           // var curNode : BNNode = curNodes[0]
+
             
         }
         
@@ -163,6 +184,19 @@ class PlexusBNSingleNodeViewController: NSViewController, CPTScatterPlotDataSour
 
     }
 
+    
+    override func observeValueForKeyPath(keyPath: String, ofObject object: AnyObject, change: [NSObject : AnyObject], context: UnsafeMutablePointer<Void>) {
+        
+        switch (keyPath) {
+        case("selectionIndex"):
+
+            
+            self.reloadData()
+            
+        default:
+            super.observeValueForKeyPath(keyPath, ofObject: object, change: change, context: context)
+        }
+    }
 
     
 }
