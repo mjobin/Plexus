@@ -11,6 +11,13 @@ import CoreData
 
 class BNNode: Node {
 
-    @NSManaged var model: Model
+   
+    @NSManaged var priorDistType: NSNumber
+    @NSManaged var priorV1: NSNumber
+    @NSManaged var priorV2: NSNumber
+     @NSManaged var model: Model
+    @NSManaged var nodeLink: NSManagedObject
+    @NSManaged var influences: NSSet
+    @NSManaged var influencedBy: NSSet
 
 }
