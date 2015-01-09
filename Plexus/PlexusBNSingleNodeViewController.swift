@@ -84,7 +84,7 @@ class PlexusBNSingleNodeViewController: NSViewController, CPTScatterPlotDataSour
         priorLineStyle.lineColor = CPTColor.greenColor()
         priorPlot.dataLineStyle = priorLineStyle
         
-        priorPlot.interpolation = CPTScatterPlotInterpolation(rawValue: 3)! //curved
+                priorPlot.interpolation = CPTScatterPlotInterpolation.Curved
         
         priorPlot.dataSource = self
         priorPlot.delegate = self
@@ -117,7 +117,7 @@ class PlexusBNSingleNodeViewController: NSViewController, CPTScatterPlotDataSour
             curNode = curNodes[0]
         }
         
-        println("reload Data")
+        //println("reload Data")
         
         //FIXME dummy data
         self.dataForChart = [Double](count: 100, repeatedValue: 0.5)
