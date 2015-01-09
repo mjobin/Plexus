@@ -168,7 +168,7 @@ class PlexusBNScene: SKScene {
             
 
             
-          //FIXME  will need to get the current model from parent VC
+
             
             var curModels : [Model] = modelTreeController.selectedObjects as [Model]
             var curModel : Model = curModels[0]
@@ -464,10 +464,34 @@ class PlexusBNScene: SKScene {
         var borderBody = SKPhysicsBody(edgeLoopFromRect: inset)
         self.physicsBody = borderBody
         
+        //make sure all listed nodes are drawn
+        if(nodesController != nil){
         
-       // let curNodes : [BNNode]  = nodesController.arrangedObjects as [BNNode]
-      //  println(curNodes.count)
-        
+            let curNodes : [BNNode]  = nodesController.arrangedObjects as [BNNode]
+           // println(curNodes.count)
+            for curNode :BNNode in curNodes{
+                
+                var matchNode = false
+                
+                self.enumerateChildNodesWithName("bnNode", usingBlock: { thisNode, stop in
+                    
+                    var idNode : PlexusBNNode = thisNode as PlexusBNNode
+                    
+                    if(idNode.node == curNode){
+                        matchNode = true
+                    }
+                    
+                })
+                
+                if(!matchNode){//no visible node exists, so make one
+                    //println("no match")
+                    self.makeNode(curNode)
+                    
+                }
+
+                
+            }
+        }
         
         /* Called before each frame is rendered */
         var angle : CGFloat = 1.0
@@ -521,6 +545,47 @@ class PlexusBNScene: SKScene {
         
         
     }
+    
+    func makeNode(inNode : BNNode){
+        
+        var shapePath = CGPathCreateWithRoundedRect(CGRectMake(-50, -25, 100, 50), 4, 4, nil) //reaplce with size of name eventually
+        
+        let shape = PlexusBNNode(path: shapePath)
+        shape.position = CGPointMake(self.frame.width*0.5,  self.frame.height*0.5)
+        //shape.userInteractionEnabled = true
+        shape.physicsBody = SKPhysicsBody(rectangleOfSize: CGRectMake(-25, -25, 50, 50).size)
+        shape.physicsBody?.mass = 1.0
+        shape.physicsBody?.restitution = 0.3
+        shape.name = "bnNode"
+        shape.physicsBody?.affectedByGravity = false
+        shape.physicsBody?.dynamic = true
+        shape.physicsBody?.allowsRotation = false
+        shape.physicsBody?.categoryBitMask = ColliderType.Node.rawValue
+        shape.physicsBody?.collisionBitMask = ColliderType.Node.rawValue
+        shape.strokeColor = NSColor.blueColor()
+        shape.fillColor = NSColor.grayColor()
+
+        shape.node = inNode
+        
+        self.addChild(shape)
+        
+        
+        let myLabel = SKLabelNode(text: inNode.name)
+        myLabel.fontSize = 18
+        myLabel.zPosition = 1
+        myLabel.userInteractionEnabled = false
+        myLabel.position = shape.position
+        myLabel.physicsBody = SKPhysicsBody(rectangleOfSize: CGRectMake(-25, -25, 50, 50).size)
+        
+        self.addChild(myLabel)
+        
+        let labelJoint = SKPhysicsJointFixed.jointWithBodyA(myLabel.physicsBody, bodyB: shape.physicsBody, anchor: shape.position)
+        
+        self.physicsWorld.addJoint(labelJoint)
+        
+        
+    }
+
     
     func distanceBetween(p: CGPoint, q: CGPoint) -> CGFloat {
         return hypot(p.x - q.x, p.y - q.y)
