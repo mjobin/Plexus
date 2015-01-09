@@ -5,6 +5,8 @@
         <attribute name="priorDistType" optional="YES" attributeType="Integer 32" minValueString="0" defaultValueString="0" syncable="YES"/>
         <attribute name="priorV1" optional="YES" attributeType="Double" defaultValueString="0.0" syncable="YES"/>
         <attribute name="priorV2" optional="YES" attributeType="Double" defaultValueString="0.0" syncable="YES"/>
+        <relationship name="influencedBy" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="BNNode" inverseName="influences" inverseEntity="BNNode" syncable="YES"/>
+        <relationship name="influences" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="BNNode" inverseName="influencedBy" inverseEntity="BNNode" syncable="YES"/>
         <relationship name="model" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Model" inverseName="bnnode" inverseEntity="Model" syncable="YES"/>
         <relationship name="nodeLink" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="NodeLink" inverseName="bnNode" inverseEntity="NodeLink" syncable="YES"/>
     </entity>
@@ -53,13 +55,13 @@
         <relationship name="entry" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Entry" inverseName="trait" inverseEntity="Entry" syncable="YES"/>
     </entity>
     <elements>
-        <element name="BNNode" positionX="54" positionY="18" width="128" height="133"/>
+        <element name="BNNode" positionX="54" positionY="18" width="128" height="163"/>
         <element name="ConnectionNode" positionX="-29" positionY="207" width="128" height="58"/>
         <element name="Dataset" positionX="63" positionY="-157" width="128" height="133"/>
-        <element name="Entry" positionX="-297" positionY="-18" width="128" height="193"/>
+        <element name="Entry" positionX="-468" positionY="-36" width="128" height="193"/>
         <element name="Image" positionX="-108" positionY="324" width="128" height="90"/>
         <element name="Model" positionX="349" positionY="-9" width="128" height="133"/>
-        <element name="Trait" positionX="-279" positionY="317" width="128" height="88"/>
         <element name="NodeLink" positionX="-297" positionY="-126" width="128" height="58"/>
+        <element name="Trait" positionX="-279" positionY="317" width="128" height="88"/>
     </elements>
 </model>
