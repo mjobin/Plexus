@@ -319,24 +319,13 @@ class PlexusBNScene: SKScene {
     
     
     override func mouseUp(theEvent: NSEvent) {
+        var errorPtr : NSErrorPointer = nil
         
         var loc = theEvent.locationInNode(self)
         
         var releasedNode : SKNode = self.nodeAtPoint(loc)
         
-        /*
-        var releasedNodes : [SKNode] = self.nodesAtPoint(loc) as [SKNode]
-        for chkNode in releasedNodes{
 
-            if(chkNode.name == "bnNode"){
-                releasedNode = chkNode
-                break
-            }
-        }
-        
-        println(startNode)
-        println(releasedNode)
-        */
         
         if(!startNode.isEqualTo(self) && startNode.name == "bnNode" && !releasedNode.isEqualTo(self) && releasedNode.name == "bnNode") {
            // println("blammo")
@@ -383,6 +372,17 @@ class PlexusBNScene: SKScene {
 
             let endJoint = SKPhysicsJointPin.jointWithBodyA(releasedNode.physicsBody, bodyB: joinLine.physicsBody, anchor: releasedNode.position)
             self.physicsWorld.addJoint(endJoint)
+            
+            //now add the necessary relationships in the data
+            var startIDNode : PlexusBNNode = startNode as PlexusBNNode
+            var releasedIDNode : PlexusBNNode = releasedNode as PlexusBNNode
+            
+            
+            startIDNode.node.addInfluencesObject(releasedIDNode.node)
+            releasedIDNode.node.addInfluencesObject(startIDNode.node)
+            moc.save(errorPtr)
+
+            
             
             
             
@@ -468,7 +468,7 @@ class PlexusBNScene: SKScene {
         if(nodesController != nil){
         
             let curNodes : [BNNode]  = nodesController.arrangedObjects as [BNNode]
-           // println(curNodes.count)
+
             for curNode :BNNode in curNodes{
                 
                 var matchNode = false
@@ -484,7 +484,7 @@ class PlexusBNScene: SKScene {
                 })
                 
                 if(!matchNode){//no visible node exists, so make one
-                    //println("no match")
+
                     self.makeNode(curNode)
                     
                 }
@@ -492,6 +492,20 @@ class PlexusBNScene: SKScene {
                 
             }
         }
+        
+        
+        //Draw any missing arrows
+        
+        self.enumerateChildNodesWithName("bnNode", usingBlock: { thisNode, stop in
+            
+            var idNode : PlexusBNNode = thisNode as PlexusBNNode
+            var dataNode : BNNode = idNode.node
+            //var theInfluenced : [BNNode] = dataNode.influences as [BNNode]
+            
+
+            
+        })
+        
         
         /* Called before each frame is rendered */
         var angle : CGFloat = 1.0
@@ -548,12 +562,32 @@ class PlexusBNScene: SKScene {
     
     func makeNode(inNode : BNNode){
         
-        var shapePath = CGPathCreateWithRoundedRect(CGRectMake(-50, -25, 100, 50), 4, 4, nil) //reaplce with size of name eventually
+        
+        let myLabel = SKLabelNode(text: inNode.name)
+        myLabel.fontSize = 18
+        myLabel.zPosition = 1
+        myLabel.verticalAlignmentMode = SKLabelVerticalAlignmentMode.Center
+
+
+        
+        myLabel.userInteractionEnabled = false
+        
+        
+        //now get size of that text?
+        println(myLabel.frame.size)
+        let nodeWidth = (myLabel.frame.size.width)*1.2
+        let nodeHeight = (myLabel.frame.size.height)*1.2
+        
+        
+        
+        var shapePath = CGPathCreateWithRoundedRect(CGRectMake(-(nodeWidth/2), -(nodeHeight/2), nodeWidth, nodeHeight), 4, 4, nil)
+
+       // var shapePath = CGPathCreateWithRoundedRect(CGRectMake(-50, -25, 100, 50), 4, 4, nil) //reaplce with size of name eventually
         
         let shape = PlexusBNNode(path: shapePath)
         shape.position = CGPointMake(self.frame.width*0.5,  self.frame.height*0.5)
         //shape.userInteractionEnabled = true
-        shape.physicsBody = SKPhysicsBody(rectangleOfSize: CGRectMake(-25, -25, 50, 50).size)
+        shape.physicsBody = SKPhysicsBody(rectangleOfSize: CGRectMake(-(nodeWidth/2), -(nodeHeight/2), nodeWidth, nodeHeight).size)
         shape.physicsBody?.mass = 1.0
         shape.physicsBody?.restitution = 0.3
         shape.name = "bnNode"
@@ -569,13 +603,9 @@ class PlexusBNScene: SKScene {
         
         self.addChild(shape)
         
-        
-        let myLabel = SKLabelNode(text: inNode.name)
-        myLabel.fontSize = 18
-        myLabel.zPosition = 1
-        myLabel.userInteractionEnabled = false
+        myLabel.physicsBody = SKPhysicsBody(rectangleOfSize: CGRectMake(-(nodeWidth/2), -(nodeHeight/2), nodeWidth, nodeHeight).size)
         myLabel.position = shape.position
-        myLabel.physicsBody = SKPhysicsBody(rectangleOfSize: CGRectMake(-25, -25, 50, 50).size)
+        
         
         self.addChild(myLabel)
         
