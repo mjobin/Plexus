@@ -33,6 +33,11 @@ class PlexusBNSplitViewController: NSSplitViewController {
         // Do view setup here.
         bnViewController = childViewControllers[0] as? PlexusBNViewController
         bnSingleViewController = childViewControllers[1] as? PlexusBNSingleNodeViewController
+        
+        var singleNodeViewItem = self.splitViewItems[1] as NSSplitViewItem  // 1 is lower pane
+        singleNodeViewItem.animator().collapsed = true
+        
+        
     }
     
     override func viewDidAppear() {
@@ -47,5 +52,13 @@ class PlexusBNSplitViewController: NSSplitViewController {
          bnSingleViewController!.nodesController = self.nodesController
 
 
+    }
+    
+    func toggleSingleNodeView(){
+        
+        var singleNodeViewItem = self.splitViewItems[1] as NSSplitViewItem  // 1 is lower pane
+        singleNodeViewItem.animator().collapsed = !singleNodeViewItem.collapsed
+        
+        
     }
 }
