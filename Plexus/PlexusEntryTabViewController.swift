@@ -23,8 +23,8 @@ class PlexusEntryTabViewController: NSTabViewController {
         // Do view setup here.
         
         traitViewController = childViewControllers[0] as? PlexusTraitViewController
-        imageViewController = childViewControllers[3] as? PlexusImageViewController
-        mapViewController = childViewControllers[4] as? PlexusMapViewController
+        imageViewController = childViewControllers[2] as? PlexusImageViewController
+        mapViewController = childViewControllers[3] as? PlexusMapViewController
         
         
 

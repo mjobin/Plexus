@@ -656,7 +656,7 @@
         <scene sceneID="R2V-B0-nI4">
             <objects>
                 <windowController storyboardIdentifier="Main Window Controller" id="B8D-0N-5wS" customClass="PlexusMainWindowController" customModule="Plexus" customModuleProvider="target" sceneMemberID="viewController">
-                    <window key="window" title="Plexus" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" oneShot="NO" releasedWhenClosed="NO" showsToolbarButton="NO" visibleAtLaunch="NO" animationBehavior="default" id="IQv-IB-iLA">
+                    <window key="window" title="Plexus" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" oneShot="NO" releasedWhenClosed="NO" showsToolbarButton="NO" visibleAtLaunch="NO" frameAutosaveName="MainWindow" animationBehavior="default" id="IQv-IB-iLA">
                         <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
                         <windowCollectionBehavior key="collectionBehavior" fullScreenPrimary="YES"/>
                         <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
@@ -714,14 +714,14 @@
                                         <action selector="calculate:" target="B8D-0N-5wS" id="VCg-wJ-cZX"/>
                                     </connections>
                                 </toolbarItem>
-                                <toolbarItem implicitItemIdentifier="E18303A5-037B-44FE-878B-72401FAAC926" label="Models" paletteLabel="Models" image="CBF2256C-E61B-472C-A1FC-237558495467" id="VR9-AM-azT">
+                                <toolbarItem implicitItemIdentifier="E18303A5-037B-44FE-878B-72401FAAC926" label="Models" paletteLabel="Models" image="354A6ED3-5142-41F6-9585-32E7843AF6D5" id="VR9-AM-azT">
                                     <nil key="toolTip"/>
                                     <size key="minSize" width="13" height="13"/>
                                     <size key="maxSize" width="37" height="34"/>
                                     <button key="view" horizontalHuggingPriority="750" verticalHuggingPriority="750" id="vcL-Vh-Set">
                                         <rect key="frame" x="5" y="14" width="37" height="34"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="squareTextured" bezelStyle="texturedSquare" image="CBF2256C-E61B-472C-A1FC-237558495467" imagePosition="only" alignment="left" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="s8L-6c-2d7">
+                                        <buttonCell key="cell" type="squareTextured" bezelStyle="texturedSquare" image="354A6ED3-5142-41F6-9585-32E7843AF6D5" imagePosition="only" alignment="left" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="s8L-6c-2d7">
                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
@@ -1004,23 +1004,21 @@
         <!--Plexus Entry Tab View Controller-->
         <scene sceneID="EXq-nA-BCj">
             <objects>
-                <tabViewController selectedTabViewItemIndex="0" id="8tL-eR-LSA" customClass="PlexusEntryTabViewController" customModule="Plexus" customModuleProvider="target" sceneMemberID="viewController">
+                <tabViewController selectedTabViewItemIndex="1" id="8tL-eR-LSA" customClass="PlexusEntryTabViewController" customModule="Plexus" customModuleProvider="target" sceneMemberID="viewController">
                     <tabViewItems>
                         <tabViewItem label="Traits" identifier="" id="SBa-pX-IRF"/>
-                        <tabViewItem label="Structures" identifier="" id="aoJ-JI-ITM"/>
                         <tabViewItem label="Connections" id="ekf-NO-U0i"/>
                         <tabViewItem label="Images" id="lWn-Tj-Y3Z"/>
                         <tabViewItem label="Map" id="9zi-Yb-Xhg"/>
                     </tabViewItems>
                     <tabView key="tabView" type="noTabsNoBorder" id="GHP-gr-RqR">
-                        <rect key="frame" x="0.0" y="0.0" width="450" height="300"/>
+                        <rect key="frame" x="0.0" y="0.0" width="385" height="300"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <font key="font" metaFont="message"/>
                         <tabViewItems/>
                     </tabView>
                     <connections>
                         <segue destination="32A-M1-Qeb" kind="relationship" relationship="tabItems" id="Mzk-98-etI"/>
-                        <segue destination="QH2-Z9-4Ug" kind="relationship" relationship="tabItems" id="fHw-Da-Wsh"/>
                         <segue destination="VHm-NV-mJM" kind="relationship" relationship="tabItems" id="h8F-ci-1wx"/>
                         <segue destination="cT1-7Y-gGU" kind="relationship" relationship="tabItems" id="VNd-61-hyX"/>
                         <segue destination="z80-Dq-Ica" kind="relationship" relationship="tabItems" id="YgC-dK-0R8"/>
@@ -1028,7 +1026,7 @@
                 </tabViewController>
                 <customObject id="gQk-Z4-DYn" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="538" y="1442"/>
+            <point key="canvasLocation" x="505.5" y="1442"/>
         </scene>
         <!--Traits-->
         <scene sceneID="JOB-Q9-xpM">
@@ -1212,19 +1210,6 @@
                 </arrayController>
             </objects>
             <point key="canvasLocation" x="241.5" y="1970"/>
-        </scene>
-        <!--Structures-->
-        <scene sceneID="cO8-WG-9XU">
-            <objects>
-                <viewController title="Structures" id="QH2-Z9-4Ug" sceneMemberID="viewController">
-                    <view key="view" id="UXR-jd-hF2">
-                        <rect key="frame" x="0.0" y="0.0" width="238" height="302"/>
-                        <autoresizingMask key="autoresizingMask"/>
-                    </view>
-                </viewController>
-                <customObject id="SE4-mA-2W4" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="599" y="2006"/>
         </scene>
         <!--Connections-->
         <scene sceneID="Ojl-cW-2f5">
@@ -1488,7 +1473,8 @@ Gw
                                     <nil key="backgroundColor"/>
                                 </clipView>
                                 <constraints>
-                                    <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="150" id="qjB-h3-7B3"/>
+                                    <constraint firstAttribute="width" relation="greaterThanOrEqual" priority="750" constant="150" id="qjB-h3-7B3"/>
+                                    <constraint firstAttribute="width" relation="lessThanOrEqual" constant="250" id="xB8-2b-ddf"/>
                                 </constraints>
                                 <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="YES" id="Qqx-jE-fvC">
                                     <rect key="frame" x="1" y="119" width="223" height="15"/>
@@ -1786,7 +1772,7 @@ Gw
                 </viewController>
                 <customObject id="vxP-we-sAQ" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2155" y="1109"/>
+            <point key="canvasLocation" x="2197" y="1100"/>
         </scene>
         <!--Plexus Model Table View Controller-->
         <scene sceneID="AUI-wJ-lHx">
@@ -2078,7 +2064,7 @@ Gw
         </scene>
     </scenes>
     <resources>
-        <image name="CBF2256C-E61B-472C-A1FC-237558495467" width="1" height="1">
+        <image name="354A6ED3-5142-41F6-9585-32E7843AF6D5" width="1" height="1">
             <mutableData key="keyedArchiveRepresentation">
 YnBsaXN0MDDUAQIDBAUGPj9YJHZlcnNpb25YJG9iamVjdHNZJGFyY2hpdmVyVCR0b3ASAAGGoK4HCBMU
 GR4fIyQsLzI4O1UkbnVsbNUJCgsMDQ4PEBESVk5TU2l6ZVYkY2xhc3NcTlNJbWFnZUZsYWdzVk5TUmVw
