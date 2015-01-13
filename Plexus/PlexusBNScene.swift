@@ -28,14 +28,7 @@ class PlexusBNScene: SKScene {
     var d2 : CGFloat = 0.8
     
     
-    /*
-    init( size: CGSize, inModel: Model) {
-        
-        
-        super.init(size:size)
-    }
 
-    */
     
     
     override func didMoveToView(view: SKView) {
@@ -131,6 +124,7 @@ class PlexusBNScene: SKScene {
         
         
         var touchedNode : SKNode = self.nodeAtPoint(loc)
+        //println("touched \(touchedNode) name: \(touchedNode.name) ue: \(touchedNode.userInteractionEnabled)")
 
         startNode = touchedNode
         
@@ -209,6 +203,7 @@ class PlexusBNScene: SKScene {
             let myLabel = SKLabelNode(text: "New Node")
             myLabel.fontSize = 18
             myLabel.zPosition = 1
+            myLabel.name = "nodeName"
             myLabel.userInteractionEnabled = false
             myLabel.position = shape.position
             myLabel.physicsBody = SKPhysicsBody(rectangleOfSize: CGRectMake(-25, -25, 50, 50).size)
@@ -226,7 +221,21 @@ class PlexusBNScene: SKScene {
         }
             
         else {//touched existing node, can draw line between
-            println("hit \(touchedNode)")
+            
+            if(touchedNode.name == "nodeName"){//passing mouseDown to node beenath
+                var allNodes : [SKNode] = self.nodesAtPoint(touchedNode.position) as [SKNode]
+                for theNode : SKNode in allNodes {
+                    //println(theNode)
+                   // println("\(theNode) pos: \(theNode.position)")
+                    if(theNode.name == "bnNode" && theNode.position == touchedNode.position)
+                    {
+                        //println("BINGO \(theNode) pos: \(theNode.position)")
+                        touchedNode = theNode //switch to the bnNode in the position of the label
+                    }
+                }
+                
+            }
+
             if(touchedNode.name == "bnNode"){
                 
                 
@@ -242,25 +251,21 @@ class PlexusBNScene: SKScene {
                 let idArray : [PlexusBNNode] = [idNode]
                 
                 nodesController.setSelectedObjects(idArray)
+                
+                
+                if(theEvent.clickCount > 1){ //double-clicks open single node view
+                    NSNotificationCenter.defaultCenter().postNotificationName("edu.scu.Plexus.toggleSingleNode", object: self)
+                    
+                }
+                
+                
+                
             }
 
             
             
             
-            /*
-            //create data popover
-            let ndVC = PlexusNodeDataPopover()
-            let ndPop = NSPopover()
-           // ndPop.contentSize(NSMakeSize(100.0, 100.0))
-            ndPop.contentViewController = ndVC
-            ndPop.behavior = NSPopoverBehavior.Transient
-            ndPop.showRelativeToRect(view!.bounds, ofView: view!, preferredEdge: NSMaxXEdge)
-            */
-            
-            
-          //  let storyboard = NSStoryboard(name:"Main", bundle:nil)
-           // println(storyboard!)
-           // ndPop.contentViewController = storyboard!.instantiateControllerWithIdentifier("NodeDataVC") as? NSViewController
+
             
 
             
@@ -270,7 +275,7 @@ class PlexusBNScene: SKScene {
             
             
         }
-        
+        touchedNode.physicsBody?.applyImpulse(CGVectorMake(0.0, 0.0))
     }
     
     
@@ -313,7 +318,7 @@ class PlexusBNScene: SKScene {
         
         self.addChild(joinLine)
         
-        
+        touchedNode.physicsBody?.applyImpulse(CGVectorMake(0.0, 0.0))
         
     }
     
@@ -414,6 +419,9 @@ class PlexusBNScene: SKScene {
         self.enumerateChildNodesWithName("joinLine", usingBlock: { thisLine, stop in
             thisLine.removeFromParent()
         })
+        
+        releasedNode.physicsBody?.applyImpulse(CGVectorMake(0.0, 0.0))
+        
     }
     
     
@@ -491,24 +499,96 @@ class PlexusBNScene: SKScene {
 
                 
             }
+            
+            for curNode :BNNode in curNodes{
+                
+                let theInfluenced = curNode.influences.allObjects as [BNNode]
+                
+               // println(theInfluenced.count)
+                
+                for thisInfluenced : BNNode in theInfluenced {
+                   // println(thisInfluenced)
+                    
+                    
+                }
+                
+
+                
+                
+            }
         }
         
         
-        //Draw any missing arrows
+
         
+        /*
         self.enumerateChildNodesWithName("bnNode", usingBlock: { thisNode, stop in
             
             var idNode : PlexusBNNode = thisNode as PlexusBNNode
             var dataNode : BNNode = idNode.node
-            //var theInfluenced : [BNNode] = dataNode.influences as [BNNode]
+            let theInfluenced  = dataNode.influences.allObjects as [BNNode]
+            for thisInfluenced : BNNode in theInfluenced {
+                
+                
+                //FIXME this is s stupid way to do this
+                var infNode : PlexusBNNode!
+                
+                self.enumerateChildNodesWithName("bnNode", usingBlock: { thatNode, stop in
+                    
+                    var thatidNode : PlexusBNNode = thatNode as PlexusBNNode
+                    
+                    if(thatidNode.node == thisInfluenced){
+                        infNode = thatidNode
+                    }
+                    
+                })
+                
+                if (infNode != nil) {
+                
+                    var joinPath = CGPathCreateMutable()
+                    CGPathMoveToPoint(joinPath, nil, thisNode.position.x, thisNode.position.y)
+                    CGPathAddLineToPoint(joinPath, nil, infNode.position.x, infNode.position.y)
+   
+                    
+                    let arrowPath = CGPath.bezierPathWithArrowFromPoint(CGPointMake(idNode.position.x,idNode.position.y), endPoint: CGPointMake(infNode.position.x,infNode.position.y), tailWidth: 2, headWidth: 10, headLength: 10, d1: 0.25, d2: 0.75)
+                    
+                    
+                    var joinLine = SKShapeNode(path: arrowPath)
+                    joinLine.name = "nodeLine"
+                    joinLine.zPosition = -1
+
+                    joinLine.fillColor = NSColor.whiteColor()
+                    joinLine.physicsBody = SKPhysicsBody(polygonFromPath: arrowPath)
+                    joinLine.physicsBody?.affectedByGravity = false
+                    
+                    joinLine.physicsBody?.categoryBitMask = ColliderType.NodeLine.rawValue
+                    //joinLine.physicsBody?.collisionBitMask = ColliderType.NodeLine.rawValue
+                    joinLine.physicsBody?.collisionBitMask = 0
+                    
+                    
+                    self.addChild(joinLine)
+                    
+                    
+                    
+                    let startJoint = SKPhysicsJointPin.jointWithBodyA(idNode.physicsBody, bodyB: joinLine.physicsBody, anchor: idNode.position)
+                    self.physicsWorld.addJoint(startJoint)
+                    
+                    let endJoint = SKPhysicsJointPin.jointWithBodyA(infNode.physicsBody, bodyB: joinLine.physicsBody, anchor: infNode.position)
+                    self.physicsWorld.addJoint(endJoint)
+                }
+                
+                
+            }
+            
             
 
             
         })
+*/
         
         
         /* Called before each frame is rendered */
-        var angle : CGFloat = 1.0
+        var angle : CGFloat = 0.0
         
         
         
@@ -550,8 +630,14 @@ class PlexusBNScene: SKScene {
             
         })
         
-        
-        
+        //check if frame of node is outside bounds
+        /*
+        self.enumerateChildNodesWithName("bnNode", usingBlock: { thisKid, stop in
+            println(thisKid.frame)
+            println(self.frame)
+            
+        })
+        */
      
         
         
@@ -566,15 +652,13 @@ class PlexusBNScene: SKScene {
         let myLabel = SKLabelNode(text: inNode.name)
         myLabel.fontSize = 18
         myLabel.zPosition = 1
+        myLabel.name = "nodeName"
         myLabel.verticalAlignmentMode = SKLabelVerticalAlignmentMode.Center
-
-
-        
-        myLabel.userInteractionEnabled = false
+       // myLabel.userInteractionEnabled = true
         
         
         //now get size of that text?
-        println(myLabel.frame.size)
+        //println(myLabel.frame.size)
         let nodeWidth = (myLabel.frame.size.width)*1.2
         let nodeHeight = (myLabel.frame.size.height)*1.2
         
@@ -582,11 +666,11 @@ class PlexusBNScene: SKScene {
         
         var shapePath = CGPathCreateWithRoundedRect(CGRectMake(-(nodeWidth/2), -(nodeHeight/2), nodeWidth, nodeHeight), 4, 4, nil)
 
-       // var shapePath = CGPathCreateWithRoundedRect(CGRectMake(-50, -25, 100, 50), 4, 4, nil) //reaplce with size of name eventually
+
         
         let shape = PlexusBNNode(path: shapePath)
         shape.position = CGPointMake(self.frame.width*0.5,  self.frame.height*0.5)
-        //shape.userInteractionEnabled = true
+        shape.userInteractionEnabled = true
         shape.physicsBody = SKPhysicsBody(rectangleOfSize: CGRectMake(-(nodeWidth/2), -(nodeHeight/2), nodeWidth, nodeHeight).size)
         shape.physicsBody?.mass = 1.0
         shape.physicsBody?.restitution = 0.3
