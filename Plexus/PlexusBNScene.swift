@@ -124,9 +124,9 @@ class PlexusBNScene: SKScene {
         
         
         var touchedNode : SKNode = self.nodeAtPoint(loc)
-        //println("touched \(touchedNode) name: \(touchedNode.name) ue: \(touchedNode.userInteractionEnabled)")
+        //println("mousDown touched \(touchedNode) name: \(touchedNode.name) ue: \(touchedNode.userInteractionEnabled)")
 
-        startNode = touchedNode
+ 
         
         //for now, spawn a new node if you did not touch an exisitng node
         if(touchedNode.isEqualTo(self)) {
@@ -276,6 +276,8 @@ class PlexusBNScene: SKScene {
             
         }
         touchedNode.physicsBody?.applyImpulse(CGVectorMake(0.0, 0.0))
+        
+               startNode = touchedNode
     }
     
     
@@ -286,6 +288,20 @@ class PlexusBNScene: SKScene {
         
         var loc : CGPoint = theEvent.locationInNode(self)
         var touchedNode : SKNode = self.nodeAtPoint(loc)
+        
+        if(touchedNode.name == "nodeName"){//passing mouseDown to node beenath
+            var allNodes : [SKNode] = self.nodesAtPoint(touchedNode.position) as [SKNode]
+            for theNode : SKNode in allNodes {
+                //println(theNode)
+                // println("\(theNode) pos: \(theNode.position)")
+                if(theNode.name == "bnNode" && theNode.position == touchedNode.position)
+                {
+                    //println("BINGO \(theNode) pos: \(theNode.position)")
+                    touchedNode = theNode //switch to the bnNode in the position of the label
+                }
+            }
+            
+        }
         
         
         //remove all existing lines
@@ -330,10 +346,26 @@ class PlexusBNScene: SKScene {
         
         var releasedNode : SKNode = self.nodeAtPoint(loc)
         
+        
+        if(releasedNode.name == "nodeName"){//passing mouseDown to node beenath
+            var allNodes : [SKNode] = self.nodesAtPoint(releasedNode.position) as [SKNode]
+            for theNode : SKNode in allNodes {
+                //println(theNode)
+                // println("\(theNode) pos: \(theNode.position)")
+                if(theNode.name == "bnNode" && theNode.position == releasedNode.position)
+                {
+                    //println("BINGO \(theNode) pos: \(theNode.position)")
+                    releasedNode = theNode //switch to the bnNode in the position of the label
+                }
+            }
+            
+        }
+        
 
+        //println("\(startNode) to \(releasedNode)")
         
         if(!startNode.isEqualTo(self) && startNode.name == "bnNode" && !releasedNode.isEqualTo(self) && releasedNode.name == "bnNode") {
-           // println("blammo")
+            //println("blammo")
             //create physics joint between these two
             
             let theJoint = SKPhysicsJointSpring.jointWithBodyA(startNode.physicsBody, bodyB: releasedNode.physicsBody, anchorA: startNode.position, anchorB: releasedNode.position)
@@ -500,6 +532,10 @@ class PlexusBNScene: SKScene {
                 
             }
             
+            
+
+            
+            
             for curNode :BNNode in curNodes{
                 
                 let theInfluenced = curNode.influences.allObjects as [BNNode]
@@ -519,12 +555,38 @@ class PlexusBNScene: SKScene {
         }
         
         
+        //self.frame.width*0.05, self.frame.height*0.05, self.frame.width*0.9, self.frame.height*0.9)
+        
+        self.enumerateChildNodesWithName("bnNode", usingBlock: { thisNode, stop in
+            var idNode : PlexusBNNode = thisNode as PlexusBNNode
+            if(idNode.position.x < self.frame.width*0.05){
+                idNode.position.x = self.frame.width*0.05
+                
+                idNode.physicsBody?.applyImpulse(CGVectorMake(10.0, 0.0))
+            }
+            if(idNode.position.y < self.frame.height*0.05){
+                idNode.position.y = self.frame.height*0.05
+                idNode.physicsBody?.applyImpulse(CGVectorMake(0.0, 10.0))
+            }
+            
+            if(idNode.position.x > self.frame.width*0.95){
+                idNode.position.x = self.frame.width*0.95
+                idNode.physicsBody?.applyImpulse(CGVectorMake(-10.0, 0.0))
+            }
+            if(idNode.position.y > self.frame.height*0.95){
+                idNode.position.y = self.frame.height*0.95
+                idNode.physicsBody?.applyImpulse(CGVectorMake(0.0, -10.0))
+            }
+        
+            
+            
+            })
 
         
         /*
         self.enumerateChildNodesWithName("bnNode", usingBlock: { thisNode, stop in
             
-            var idNode : PlexusBNNode = thisNode as PlexusBNNode
+        
             var dataNode : BNNode = idNode.node
             let theInfluenced  = dataNode.influences.allObjects as [BNNode]
             for thisInfluenced : BNNode in theInfluenced {
@@ -669,7 +731,14 @@ class PlexusBNScene: SKScene {
 
         
         let shape = PlexusBNNode(path: shapePath)
-        shape.position = CGPointMake(self.frame.width*0.5,  self.frame.height*0.5)
+        //FIXME node will probably be drag/droppped
+        var xrand = (CGFloat(arc4random()) /  CGFloat(UInt32.max))
+        var yrand = (CGFloat(arc4random()) /  CGFloat(UInt32.max))
+
+        
+        //shape.position = CGPointMake((Float(arc4random()) /  Float(UInt32.max))*self.frame.width, (Float(arc4random()) /  Float(UInt32.max))*self.frame.width)
+        shape.position = CGPointMake(self.frame.width*xrand,  self.frame.height*yrand)
+       // shape.position = CGPointMake(self.frame.width*0.5,  self.frame.height*0.5)
         shape.userInteractionEnabled = true
         shape.physicsBody = SKPhysicsBody(rectangleOfSize: CGRectMake(-(nodeWidth/2), -(nodeHeight/2), nodeWidth, nodeHeight).size)
         shape.physicsBody?.mass = 1.0
