@@ -714,14 +714,14 @@
                                         <action selector="calculate:" target="B8D-0N-5wS" id="VCg-wJ-cZX"/>
                                     </connections>
                                 </toolbarItem>
-                                <toolbarItem implicitItemIdentifier="E18303A5-037B-44FE-878B-72401FAAC926" label="Models" paletteLabel="Models" image="354A6ED3-5142-41F6-9585-32E7843AF6D5" id="VR9-AM-azT">
+                                <toolbarItem implicitItemIdentifier="E18303A5-037B-44FE-878B-72401FAAC926" label="Models" paletteLabel="Models" image="F8E2ACB7-D144-4F8D-A009-E0BA4BE07B95" id="VR9-AM-azT">
                                     <nil key="toolTip"/>
                                     <size key="minSize" width="13" height="13"/>
                                     <size key="maxSize" width="37" height="34"/>
                                     <button key="view" horizontalHuggingPriority="750" verticalHuggingPriority="750" id="vcL-Vh-Set">
                                         <rect key="frame" x="5" y="14" width="37" height="34"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="squareTextured" bezelStyle="texturedSquare" image="354A6ED3-5142-41F6-9585-32E7843AF6D5" imagePosition="only" alignment="left" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="s8L-6c-2d7">
+                                        <buttonCell key="cell" type="squareTextured" bezelStyle="texturedSquare" image="F8E2ACB7-D144-4F8D-A009-E0BA4BE07B95" imagePosition="only" alignment="left" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="s8L-6c-2d7">
                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
@@ -1667,7 +1667,7 @@ Gw
                 <splitViewController title="Nodes" id="m4M-Pg-zor" customClass="PlexusBNSplitViewController" customModule="Plexus" customModuleProvider="target" sceneMemberID="viewController">
                     <splitViewItems>
                         <splitViewItem id="rC7-2C-Sd5"/>
-                        <splitViewItem id="d64-bh-l4T"/>
+                        <splitViewItem canCollapse="YES" id="d64-bh-l4T"/>
                     </splitViewItems>
                     <splitView key="splitView" dividerStyle="thin" id="gUE-z4-Q3G">
                         <rect key="frame" x="0.0" y="0.0" width="450" height="300"/>
@@ -2064,7 +2064,7 @@ Gw
         </scene>
     </scenes>
     <resources>
-        <image name="354A6ED3-5142-41F6-9585-32E7843AF6D5" width="1" height="1">
+        <image name="F8E2ACB7-D144-4F8D-A009-E0BA4BE07B95" width="1" height="1">
             <mutableData key="keyedArchiveRepresentation">
 YnBsaXN0MDDUAQIDBAUGPj9YJHZlcnNpb25YJG9iamVjdHNZJGFyY2hpdmVyVCR0b3ASAAGGoK4HCBMU
 GR4fIyQsLzI4O1UkbnVsbNUJCgsMDQ4PEBESVk5TU2l6ZVYkY2xhc3NcTlNJbWFnZUZsYWdzVk5TUmVw
