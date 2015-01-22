@@ -459,7 +459,7 @@ class PlexusBNScene: SKScene {
     }
     
     
-    /*
+    
     override func didSimulatePhysics() {
         
         //remove all existing lines
@@ -469,7 +469,8 @@ class PlexusBNScene: SKScene {
         })
         */
 
-        
+
+  /*
         self.enumerateChildNodesWithName("bnNode", usingBlock: { thisKid, stop in
             
             var shortestDistance = self.size.width
@@ -493,169 +494,40 @@ class PlexusBNScene: SKScene {
             
         })
         
+*/
+        
+        
+    }
 
-        
-        
-    }
-    */
     
     
-    func drawInitial () {
-        
-        if(nodesController != nil){
-            
-            let curNodes : [BNNode]  = nodesController.arrangedObjects as [BNNode]
-            
-            //draw nodes
-            for curNode :BNNode in curNodes{
-                println("curNode")
-                
-                var matchNode = false
-                
-                self.enumerateChildNodesWithName("bnNode", usingBlock: { thisNode, stop in
-                    
-                    var idNode : PlexusBNNode = thisNode as PlexusBNNode
-                    
-                    if(idNode.node == curNode){
-                        matchNode = true
-                    }
-                    
-                })
-                
-                if(!matchNode){//no visible node exists, so make one
-                    
-                    self.makeNode(curNode)
-                    
-                }
-                
-                
-            }
-            
-            
-            //draw arrows FIXME
-            
-            /*
-            for curNode :BNNode in curNodes{
-                
-                var idNode : PlexusBNNode!
-                
-                self.enumerateChildNodesWithName("bnNode", usingBlock: { thisNode, stop in
-                    
-                    var thisidNode : PlexusBNNode = thisNode as PlexusBNNode
-                    
-                    if(thisidNode.node == curNode){
-                        idNode = thisidNode
-                        println("bingo")
-                    }
-                    
-                })
-                
-                
-                let theInfluenced : [BNNode] = curNode.influences.allObjects as [BNNode]
-                
-                // println("cur: \(curNode)  inf  \(theInfluenced.count)")
-                
-                
-                for thisInfluenced : BNNode in theInfluenced as [BNNode] {
-                    // println(thisInfluenced)
-                    
-                    //FIXME this is s stupid way to do this
-                    var infNode : PlexusBNNode!
-                    
-                    self.enumerateChildNodesWithName("bnNode", usingBlock: { thatNode, stop in
-                        
-                        var thatidNode : PlexusBNNode = thatNode as PlexusBNNode
-                        
-                        if(thatidNode.node == thisInfluenced){
-                            infNode = thatidNode
-                            println("bongo")
-                        }
-                        
-                    })
-                    
-                    var idJoints = idNode.physicsBody?.joints
-                    
-                    if (idNode != nil && infNode != nil) {
-                        
-                        
-                        // println("\(idNode) \(idNode.position) and \(infNode) \(infNode.position)")
-                        
-                        var matchJoint = false
-                        var idJoints = idNode.physicsBody?.joints
-                        var infJoints = infNode.physicsBody?.joints
-                        
-                        /*
-                        for idJoint : SKPhysicsJoint in [idJoints] as [SKPhysicsJoint] {
-                        for infJoint : SKNode in [infJoints] as SKNode {
-                        println(" \(idJoint.bodyB) and \(infJoint.bodyB)")
-                        // if (idJoint == infJoint){
-                        //   println("MATCH \(idJoint) and \(infJoint)")
-                        // }
-                        }
-                        }
-                        */
-                        
-                        
-                        
-                        
-                        
-                        let arrowPath = CGPath.bezierPathWithArrowFromPoint(CGPointMake(idNode.position.x,idNode.position.y), endPoint: CGPointMake(infNode.position.x,infNode.position.y), tailWidth: 2, headWidth: 10, headLength: 10, d1: 0.25, d2: 0.75)
-                        
-                        
-                        var joinLine = SKShapeNode(path: arrowPath)
-                        joinLine.name = "nodeLine"
-                        joinLine.zPosition = -1
-                        joinLine.fillColor = NSColor.whiteColor()
-                        
-                        
-                        println(joinLine.position)
-                        
-                        joinLine.physicsBody = SKPhysicsBody(polygonFromPath: arrowPath)
-                        joinLine.physicsBody?.affectedByGravity = false
-                        
-                        joinLine.physicsBody?.categoryBitMask = ColliderType.NodeLine.rawValue
-                        joinLine.physicsBody?.collisionBitMask = 0
-                        
-                        
-                        self.addChild(joinLine)
-                        
-                        
-                        
-                        let startJoint = SKPhysicsJointPin.jointWithBodyA(idNode.physicsBody, bodyB: joinLine.physicsBody, anchor: idNode.position)
-                        self.physicsWorld.addJoint(startJoint)
-                        
-                        let endJoint = SKPhysicsJointPin.jointWithBodyA(infNode.physicsBody, bodyB: joinLine.physicsBody, anchor: infNode.position)
-                        self.physicsWorld.addJoint(endJoint)
-                    }
-                    
-                    
-                }
-                
-                
-                
-                
-            }
-            */
-            
-        }
-    }
+    
     
     
     
     override func update(currentTime: CFTimeInterval) {
         
+
+        
         var inset : CGRect = CGRectMake(self.frame.width*0.05, self.frame.height*0.05, self.frame.width*0.9, self.frame.height*0.9)
         var borderBody = SKPhysicsBody(edgeLoopFromRect: inset)
         self.physicsBody = borderBody
         
+        
+        self.enumerateChildNodesWithName("nodeLine", usingBlock: { thisLine, stop in
+        thisLine.removeFromParent()
+        })
+
+
+        
         //make sure all listed nodes are drawn
         
-        if(nodesController != nil && firstUpdate){
+        if(nodesController != nil ){
         
             let curNodes : [BNNode]  = nodesController.arrangedObjects as [BNNode]
 
             for curNode :BNNode in curNodes{
-     
+                
                 
                 var matchNode = false
                 
@@ -665,6 +537,7 @@ class PlexusBNScene: SKScene {
                     
                     if(idNode.node == curNode){
                         matchNode = true
+                       
                     }
                     
                 })
@@ -693,7 +566,7 @@ class PlexusBNScene: SKScene {
                     
                     if(thisidNode.node == curNode){
                         idNode = thisidNode
-                        println("bingo")
+                       // println("bingo")
                     }
                     
                 })
@@ -716,12 +589,12 @@ class PlexusBNScene: SKScene {
                         
                         if(thatidNode.node == thisInfluenced){
                             infNode = thatidNode
-                            println("bongo")
+                          //  println("bongo")
                         }
                         
                     })
                     
-                    var idJoints = idNode.physicsBody?.joints
+                    
                     
                     if (idNode != nil && infNode != nil) {
                        
@@ -729,8 +602,6 @@ class PlexusBNScene: SKScene {
         
 
                         
-                        
-//FIXMEchange it so that every new upodate a new line is drawn?
                         
                         
                         let arrowPath = CGPath.bezierPathWithArrowFromPoint(CGPointMake(idNode.position.x,idNode.position.y), endPoint: CGPointMake(infNode.position.x,infNode.position.y), tailWidth: 2, headWidth: 10, headLength: 10, d1: 0.25, d2: 0.75)
@@ -742,26 +613,12 @@ class PlexusBNScene: SKScene {
                         joinLine.fillColor = NSColor.whiteColor()
                         
                         
-                        println(joinLine.position)
-                        
-                        joinLine.physicsBody = SKPhysicsBody(polygonFromPath: arrowPath)
-                        joinLine.physicsBody?.affectedByGravity = false
-                        
-                        joinLine.physicsBody?.categoryBitMask = ColliderType.NodeLine.rawValue
-                        joinLine.physicsBody?.collisionBitMask = 0
-                        
                         
                         self.addChild(joinLine)
                         
                         
                         
-                        let startJoint = SKPhysicsJointPin.jointWithBodyA(idNode.physicsBody, bodyB: joinLine.physicsBody, anchor: idNode.position)
-                       //  let startJoint = SKPhysicsJointSpring.jointWithBodyA(idNode.physicsBody, bodyB: infNode.physicsBody, anchorA: idNode.position, anchorB: infNode.position)
-                        self.physicsWorld.addJoint(startJoint)
-                        
-                        let endJoint = SKPhysicsJointPin.jointWithBodyA(infNode.physicsBody, bodyB: joinLine.physicsBody, anchor: infNode.position)
-                        // let endJoint = SKPhysicsJointSpring.jointWithBodyA(infNode.physicsBody, bodyB: idNode.physicsBody, anchorA: infNode.position, anchorB: idNode.position)
-                        self.physicsWorld.addJoint(endJoint)
+
                     }
                     
                     
@@ -772,41 +629,14 @@ class PlexusBNScene: SKScene {
                 
             }
 
-            firstUpdate = false //damn this is ugly
+           
         }
 
 
         
         
-        //self.frame.width*0.05, self.frame.height*0.05, self.frame.width*0.9, self.frame.height*0.9)
-        
-        self.enumerateChildNodesWithName("bnNode", usingBlock: { thisNode, stop in
-            var idNode : PlexusBNNode = thisNode as PlexusBNNode
-            if(idNode.position.x < self.frame.width*0.05){
-                idNode.position.x = self.frame.width*0.05
-                
-                //idNode.physicsBody?.applyImpulse(CGVectorMake(10.0, 0.0))
-            }
-            if(idNode.position.y < self.frame.height*0.05){
-                idNode.position.y = self.frame.height*0.05
-                //idNode.physicsBody?.applyImpulse(CGVectorMake(0.0, 10.0))
-            }
-            
-            if(idNode.position.x > self.frame.width*0.95){
-                idNode.position.x = self.frame.width*0.95
-                //idNode.physicsBody?.applyImpulse(CGVectorMake(-10.0, 0.0))
-            }
-            if(idNode.position.y > self.frame.height*0.95){
-                idNode.position.y = self.frame.height*0.95
-               // idNode.physicsBody?.applyImpulse(CGVectorMake(0.0, -10.0))
-            }
-        
-            
-            
-            })
-
-        
       
+        
         
         
         /* Called before each frame is rendered */
@@ -852,18 +682,42 @@ class PlexusBNScene: SKScene {
             
         })
         
-        //check if frame of node is outside bounds
-        /*
-        self.enumerateChildNodesWithName("bnNode", usingBlock: { thisKid, stop in
-            println(thisKid.frame)
-            println(self.frame)
-            
-        })
-        */
+
      
         
         
         
+        
+        
+    }
+    
+    func redrawNodes() {
+
+       self.enumerateChildNodesWithName("bnNode", usingBlock: { thisNode, stop in
+            var idNode : PlexusBNNode = thisNode as PlexusBNNode
+
+            if(idNode.position.x < self.frame.width*0.05){
+                idNode.position.x = self.frame.width*0.05
+                
+                
+            }
+            if(idNode.position.y < self.frame.height*0.05){
+                idNode.position.y = self.frame.height*0.05
+                
+            }
+            
+            if((idNode.position.x + idNode.frame.width) > self.frame.width*0.95){
+                idNode.position.x = (self.frame.width*0.95 - idNode.frame.width)
+                
+            }
+            if((idNode.position.y + idNode.frame.height) > self.frame.height*0.95){
+                idNode.position.y = (self.frame.height*0.95 - idNode.frame.height)
+               
+            }
+        
+
+            
+            })
         
         
     }
@@ -881,7 +735,7 @@ class PlexusBNScene: SKScene {
         
         //now get size of that text?
         //println(myLabel.frame.size)
-        let nodeWidth = (myLabel.frame.size.width)*1.2
+        let nodeWidth = (myLabel.frame.size.width)*1.4
         let nodeHeight = (myLabel.frame.size.height)*1.2
         
         
@@ -895,8 +749,8 @@ class PlexusBNScene: SKScene {
         var xrand = (CGFloat(arc4random()) /  CGFloat(UInt32.max))
         var yrand = (CGFloat(arc4random()) /  CGFloat(UInt32.max))
 
-        shape.position = CGPointMake(self.frame.width*xrand,  self.frame.height*yrand)
-       // shape.position = CGPointMake(self.frame.width*0.5,  self.frame.height*0.5)
+       // shape.position = CGPointMake(self.frame.width*xrand,  self.frame.height*yrand)
+        shape.position = CGPointMake(self.frame.width*0.5,  self.frame.height*0.5)
         shape.userInteractionEnabled = true
         shape.physicsBody = SKPhysicsBody(rectangleOfSize: CGRectMake(-(nodeWidth/2), -(nodeHeight/2), nodeWidth, nodeHeight).size)
         shape.physicsBody?.mass = 1.0
