@@ -659,8 +659,7 @@
                     <window key="window" title="Plexus" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" oneShot="NO" releasedWhenClosed="NO" showsToolbarButton="NO" visibleAtLaunch="NO" frameAutosaveName="MainWindow" animationBehavior="default" id="IQv-IB-iLA">
                         <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
                         <windowCollectionBehavior key="collectionBehavior" fullScreenPrimary="YES"/>
-                        <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
-                        <rect key="contentRect" x="300" y="320" width="1024" height="600"/>
+                        <rect key="contentRect" x="101" y="275" width="1024" height="600"/>
                         <rect key="screenRect" x="0.0" y="0.0" width="1680" height="1027"/>
                         <value key="minSize" type="size" width="800" height="600"/>
                         <toolbar key="toolbar" implicitIdentifier="FC5FD341-A73E-4141-80CC-F9D05CFAA252" autosavesConfiguration="NO" displayMode="iconAndLabel" sizeMode="regular" id="pyn-dH-y2N">
@@ -714,14 +713,14 @@
                                         <action selector="calculate:" target="B8D-0N-5wS" id="VCg-wJ-cZX"/>
                                     </connections>
                                 </toolbarItem>
-                                <toolbarItem implicitItemIdentifier="E18303A5-037B-44FE-878B-72401FAAC926" label="Models" paletteLabel="Models" image="F8E2ACB7-D144-4F8D-A009-E0BA4BE07B95" id="VR9-AM-azT">
+                                <toolbarItem implicitItemIdentifier="E18303A5-037B-44FE-878B-72401FAAC926" label="Models" paletteLabel="Models" image="E61C7450-F1C5-4571-8B88-02BA3F7EC46E" id="VR9-AM-azT">
                                     <nil key="toolTip"/>
                                     <size key="minSize" width="13" height="13"/>
                                     <size key="maxSize" width="37" height="34"/>
                                     <button key="view" horizontalHuggingPriority="750" verticalHuggingPriority="750" id="vcL-Vh-Set">
                                         <rect key="frame" x="5" y="14" width="37" height="34"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="squareTextured" bezelStyle="texturedSquare" image="F8E2ACB7-D144-4F8D-A009-E0BA4BE07B95" imagePosition="only" alignment="left" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="s8L-6c-2d7">
+                                        <buttonCell key="cell" type="squareTextured" bezelStyle="texturedSquare" image="E61C7450-F1C5-4571-8B88-02BA3F7EC46E" imagePosition="only" alignment="left" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="s8L-6c-2d7">
                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
@@ -900,9 +899,6 @@
                                     </subviews>
                                     <nil key="backgroundColor"/>
                                 </clipView>
-                                <constraints>
-                                    <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="150" id="WbM-2u-KLy"/>
-                                </constraints>
                                 <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="YES" id="CU7-j7-wLl">
                                     <rect key="frame" x="1" y="119" width="223" height="15"/>
                                     <autoresizingMask key="autoresizingMask"/>
@@ -1026,7 +1022,7 @@
                 </tabViewController>
                 <customObject id="gQk-Z4-DYn" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="505.5" y="1442"/>
+            <point key="canvasLocation" x="504.5" y="1442"/>
         </scene>
         <!--Traits-->
         <scene sceneID="JOB-Q9-xpM">
@@ -1472,10 +1468,6 @@ Gw
                                     </subviews>
                                     <nil key="backgroundColor"/>
                                 </clipView>
-                                <constraints>
-                                    <constraint firstAttribute="width" relation="greaterThanOrEqual" priority="750" constant="150" id="qjB-h3-7B3"/>
-                                    <constraint firstAttribute="width" relation="lessThanOrEqual" constant="250" id="xB8-2b-ddf"/>
-                                </constraints>
                                 <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="YES" id="Qqx-jE-fvC">
                                     <rect key="frame" x="1" y="119" width="223" height="15"/>
                                     <autoresizingMask key="autoresizingMask"/>
@@ -1666,17 +1658,17 @@ Gw
             <objects>
                 <splitViewController title="Nodes" id="m4M-Pg-zor" customClass="PlexusBNSplitViewController" customModule="Plexus" customModuleProvider="target" sceneMemberID="viewController">
                     <splitViewItems>
-                        <splitViewItem id="rC7-2C-Sd5"/>
-                        <splitViewItem canCollapse="YES" id="d64-bh-l4T"/>
+                        <splitViewItem id="GfW-Dc-eBT"/>
+                        <splitViewItem id="M9L-1L-Qtg"/>
                     </splitViewItems>
-                    <splitView key="splitView" dividerStyle="thin" id="gUE-z4-Q3G">
+                    <splitView key="splitView" dividerStyle="thin" id="gUE-z4-Q3G" customClass="PlexusBNSplitView" customModule="Plexus" customModuleProvider="target">
                         <rect key="frame" x="0.0" y="0.0" width="450" height="300"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </splitView>
                     <connections>
                         <outlet property="nodesController" destination="Sj9-by-9cg" id="8bT-f3-L5R"/>
-                        <segue destination="gOh-yH-JNE" kind="relationship" relationship="splitItems" id="6Qj-di-sg2"/>
-                        <segue destination="GU8-QD-h9T" kind="relationship" relationship="splitItems" id="eA3-hB-Tuy"/>
+                        <segue destination="TOl-zI-81A" kind="relationship" relationship="splitItems" id="4tV-qb-zAt"/>
+                        <segue destination="fG4-pY-U5P" kind="relationship" relationship="splitItems" id="GbV-VP-p2f"/>
                     </connections>
                 </splitViewController>
                 <customObject id="4mS-Qf-Qwq" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
@@ -1697,7 +1689,7 @@ Gw
                         <tabViewItem id="KmK-xV-X9q"/>
                         <tabViewItem label="Table" identifier="" id="BUD-ld-ico"/>
                     </tabViewItems>
-                    <tabView key="tabView" type="noTabsNoBorder" id="POO-k7-qdn">
+                    <tabView key="tabView" type="noTabsNoBorder" id="POO-k7-qdn" customClass="PlexusBNTabView" customModule="Plexus" customModuleProvider="target">
                         <rect key="frame" x="0.0" y="0.0" width="450" height="300"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <font key="font" metaFont="message"/>
@@ -1713,66 +1705,82 @@ Gw
             <point key="canvasLocation" x="1040" y="1282"/>
         </scene>
         <!--PlexusBN View Controller-->
-        <scene sceneID="LDh-q9-LxR">
+        <scene sceneID="q3P-6o-O66">
             <objects>
-                <viewController id="gOh-yH-JNE" customClass="PlexusBNViewController" customModule="Plexus" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" id="uG5-Ht-xWD" customClass="NSVisualEffectView">
+                <viewController id="TOl-zI-81A" customClass="PlexusBNViewController" customModule="Plexus" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" id="1ye-Dc-osA">
                         <rect key="frame" x="0.0" y="0.0" width="450" height="300"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
-                            <customView translatesAutoresizingMaskIntoConstraints="NO" id="8t5-A3-8a0" customClass="SKView">
+                            <customView translatesAutoresizingMaskIntoConstraints="NO" id="fzv-fM-0py" customClass="NSVisualEffectView">
                                 <rect key="frame" x="0.0" y="0.0" width="450" height="300"/>
+                                <subviews>
+                                    <customView translatesAutoresizingMaskIntoConstraints="NO" id="ajf-77-zZT" customClass="SKView">
+                                        <rect key="frame" x="0.0" y="0.0" width="450" height="300"/>
+                                    </customView>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstItem="ajf-77-zZT" firstAttribute="top" secondItem="fzv-fM-0py" secondAttribute="top" id="4tj-P4-yWo"/>
+                                    <constraint firstAttribute="trailing" secondItem="ajf-77-zZT" secondAttribute="trailing" id="JoI-dP-stt"/>
+                                    <constraint firstItem="ajf-77-zZT" firstAttribute="leading" secondItem="fzv-fM-0py" secondAttribute="leading" id="LFI-n1-scJ"/>
+                                    <constraint firstAttribute="bottom" secondItem="ajf-77-zZT" secondAttribute="bottom" id="k8t-GQ-nZu"/>
+                                </constraints>
                             </customView>
                         </subviews>
                         <constraints>
-                            <constraint firstItem="8t5-A3-8a0" firstAttribute="leading" secondItem="uG5-Ht-xWD" secondAttribute="leading" id="8Pa-cZ-HMd"/>
-                            <constraint firstAttribute="bottom" secondItem="8t5-A3-8a0" secondAttribute="bottom" id="NSI-GJ-uSS"/>
-                            <constraint firstItem="8t5-A3-8a0" firstAttribute="top" secondItem="uG5-Ht-xWD" secondAttribute="top" id="Vmw-t6-xwZ"/>
-                            <constraint firstAttribute="trailing" secondItem="8t5-A3-8a0" secondAttribute="trailing" id="bzH-hG-uWn"/>
+                            <constraint firstItem="fzv-fM-0py" firstAttribute="leading" secondItem="1ye-Dc-osA" secondAttribute="leading" id="LUr-8c-2br"/>
+                            <constraint firstAttribute="trailing" secondItem="fzv-fM-0py" secondAttribute="trailing" id="bBM-WB-jBL"/>
+                            <constraint firstAttribute="bottom" secondItem="fzv-fM-0py" secondAttribute="bottom" id="t3s-Wn-0qz"/>
+                            <constraint firstItem="fzv-fM-0py" firstAttribute="top" secondItem="1ye-Dc-osA" secondAttribute="top" id="yDY-nZ-2WJ"/>
                         </constraints>
                     </view>
                     <connections>
-                        <outlet property="skView" destination="8t5-A3-8a0" id="7qH-f8-Oyx"/>
-                        <outlet property="visView" destination="uG5-Ht-xWD" id="8ur-sA-ziy"/>
+                        <outlet property="skView" destination="ajf-77-zZT" id="MDe-7r-dEb"/>
+                        <outlet property="visView" destination="fzv-fM-0py" id="rZD-VE-0Hp"/>
                     </connections>
                 </viewController>
-                <customObject id="TkJ-RL-grg" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
-                <arrayController mode="entity" entityName="BNNode" automaticallyPreparesContent="YES" id="CUz-zw-Nql" userLabel="Nodes">
-                    <connections>
-                        <binding destination="gOh-yH-JNE" name="managedObjectContext" keyPath="moc" id="q9s-jT-YeA"/>
-                        <binding destination="gOh-yH-JNE" name="contentSet" keyPath="modelTreeController.selection.bnnode" id="SPK-Qp-YeE"/>
-                    </connections>
-                </arrayController>
+                <customObject id="B3s-l2-b9k" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2183" y="727"/>
+            <point key="canvasLocation" x="2472" y="834"/>
         </scene>
         <!--PlexusBN Single Node View Controller-->
-        <scene sceneID="Xon-fX-Hcw">
+        <scene sceneID="cVO-eo-oLc">
             <objects>
-                <viewController id="GU8-QD-h9T" customClass="PlexusBNSingleNodeViewController" customModule="Plexus" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" id="jWh-AC-eKk" customClass="NSVisualEffectView">
+                <viewController id="fG4-pY-U5P" customClass="PlexusBNSingleNodeViewController" customModule="Plexus" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" id="gCF-gF-5Wd">
                         <rect key="frame" x="0.0" y="0.0" width="450" height="300"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
-                            <customView translatesAutoresizingMaskIntoConstraints="NO" id="6mC-6n-SQE" customClass="CPTGraphHostingView">
+                            <customView translatesAutoresizingMaskIntoConstraints="NO" id="dRy-xB-0PC" customClass="NSVisualEffectView">
                                 <rect key="frame" x="0.0" y="0.0" width="450" height="300"/>
+                                <subviews>
+                                    <customView translatesAutoresizingMaskIntoConstraints="NO" id="DFm-37-9fc" customClass="CPTGraphHostingView">
+                                        <rect key="frame" x="0.0" y="0.0" width="450" height="300"/>
+                                    </customView>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstItem="DFm-37-9fc" firstAttribute="top" secondItem="dRy-xB-0PC" secondAttribute="top" id="06T-pZ-9lH"/>
+                                    <constraint firstItem="DFm-37-9fc" firstAttribute="leading" secondItem="dRy-xB-0PC" secondAttribute="leading" id="CGg-jl-mw4"/>
+                                    <constraint firstAttribute="trailing" secondItem="DFm-37-9fc" secondAttribute="trailing" id="Dz7-8Y-J3X"/>
+                                    <constraint firstAttribute="bottom" secondItem="DFm-37-9fc" secondAttribute="bottom" id="k2R-1V-1fL"/>
+                                </constraints>
                             </customView>
                         </subviews>
                         <constraints>
-                            <constraint firstItem="6mC-6n-SQE" firstAttribute="top" secondItem="jWh-AC-eKk" secondAttribute="top" id="0Qj-6G-oRg"/>
-                            <constraint firstItem="6mC-6n-SQE" firstAttribute="leading" secondItem="jWh-AC-eKk" secondAttribute="leading" id="7tV-th-CC9"/>
-                            <constraint firstAttribute="bottom" secondItem="6mC-6n-SQE" secondAttribute="bottom" id="JIJ-yF-VcE"/>
-                            <constraint firstAttribute="trailing" secondItem="6mC-6n-SQE" secondAttribute="trailing" id="Zsv-qL-YPr"/>
+                            <constraint firstItem="dRy-xB-0PC" firstAttribute="top" secondItem="gCF-gF-5Wd" secondAttribute="top" id="A5X-c0-v02"/>
+                            <constraint firstItem="dRy-xB-0PC" firstAttribute="leading" secondItem="gCF-gF-5Wd" secondAttribute="leading" id="EYo-2G-1u5"/>
+                            <constraint firstAttribute="bottom" secondItem="dRy-xB-0PC" secondAttribute="bottom" id="UpG-NC-vi2"/>
+                            <constraint firstAttribute="trailing" secondItem="dRy-xB-0PC" secondAttribute="trailing" id="zu0-1D-gmD"/>
                         </constraints>
                     </view>
                     <connections>
-                        <outlet property="graphView" destination="6mC-6n-SQE" id="KgV-Tg-0AY"/>
-                        <outlet property="visView" destination="jWh-AC-eKk" id="CFB-it-GOU"/>
+                        <outlet property="graphView" destination="DFm-37-9fc" id="oPU-ds-3IO"/>
+                        <outlet property="visView" destination="dRy-xB-0PC" id="pGJ-Wi-XNY"/>
                     </connections>
                 </viewController>
-                <customObject id="vxP-we-sAQ" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
+                <customObject id="N7X-9w-sLO" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2197" y="1100"/>
+            <point key="canvasLocation" x="2446" y="1289"/>
         </scene>
         <!--Plexus Model Table View Controller-->
         <scene sceneID="AUI-wJ-lHx">
@@ -2001,16 +2009,8 @@ Gw
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                             </textField>
-                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" ambiguous="YES" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LD8-MY-Mel">
-                                <rect key="frame" x="122" y="1" width="39" height="17"/>
-                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Long:" id="ykQ-xE-DUc">
-                                    <font key="font" metaFont="system"/>
-                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                                </textFieldCell>
-                            </textField>
                             <textField verticalHuggingPriority="750" ambiguous="YES" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="bwc-PQ-GHm">
-                                <rect key="frame" x="26" y="-2" width="90" height="22"/>
+                                <rect key="frame" x="26" y="-2" width="36" height="22"/>
                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" drawsBackground="YES" id="f25-N1-V5x">
                                     <font key="font" metaFont="system"/>
                                     <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
@@ -2021,7 +2021,7 @@ Gw
                                 </connections>
                             </textField>
                             <textField verticalHuggingPriority="750" ambiguous="YES" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="f0Z-5e-JTD">
-                                <rect key="frame" x="161" y="-2" width="96" height="22"/>
+                                <rect key="frame" x="161" y="-2" width="23" height="22"/>
                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" drawsBackground="YES" id="jAk-p7-7Lm">
                                     <font key="font" metaFont="system"/>
                                     <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
@@ -2030,6 +2030,14 @@ Gw
                                 <connections>
                                     <binding destination="7ts-Ce-PNi" name="value" keyPath="selection.latitude" id="OPR-MQ-b3B"/>
                                 </connections>
+                            </textField>
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" ambiguous="YES" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LD8-MY-Mel">
+                                <rect key="frame" x="73" y="1" width="39" height="17"/>
+                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Long:" id="ykQ-xE-DUc">
+                                    <font key="font" metaFont="system"/>
+                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
                             </textField>
                         </subviews>
                         <constraints>
@@ -2064,7 +2072,7 @@ Gw
         </scene>
     </scenes>
     <resources>
-        <image name="F8E2ACB7-D144-4F8D-A009-E0BA4BE07B95" width="1" height="1">
+        <image name="E61C7450-F1C5-4571-8B88-02BA3F7EC46E" width="1" height="1">
             <mutableData key="keyedArchiveRepresentation">
 YnBsaXN0MDDUAQIDBAUGPj9YJHZlcnNpb25YJG9iamVjdHNZJGFyY2hpdmVyVCR0b3ASAAGGoK4HCBMU
 GR4fIyQsLzI4O1UkbnVsbNUJCgsMDQ4PEBESVk5TU2l6ZVYkY2xhc3NcTlNJbWFnZUZsYWdzVk5TUmVw
