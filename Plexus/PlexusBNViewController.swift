@@ -32,6 +32,8 @@ class PlexusBNViewController: NSViewController {
         super.viewDidLoad()
         
 
+        
+
         visView.blendingMode = NSVisualEffectBlendingMode.BehindWindow
         visView.material = NSVisualEffectMaterial.Dark
         visView.state = NSVisualEffectState.Active
@@ -43,7 +45,10 @@ class PlexusBNViewController: NSViewController {
 
         
          scene.scaleMode = SKSceneScaleMode.ResizeFill
+        //FIXME this was what was causing nodes to fall off the screen
+      //  scene.scaleMode = SKSceneScaleMode.Fill
         
+
         
        // var skt : SKTransition = SKTransition.flipHorizontalWithDuration(2)
        // self.skView!.presentScene(scene, transition: skt)
@@ -63,5 +68,17 @@ class PlexusBNViewController: NSViewController {
 
         scene.modelTreeController = self.modelTreeController
         scene.nodesController = self.nodesController
+
+
     }
+    
+    
+    override func viewDidLayout() {
+       // println("bnvc views bounds widths: \(view.bounds.width) \(visView.bounds.width) \(skView.bounds.width)")
+        scene.redrawNodes()
+        
+    }
+
+    
+
 }
