@@ -38,8 +38,7 @@ class PlexusBNSplitViewController: NSSplitViewController {
         bnViewController = childViewControllers[0] as? PlexusBNViewController
         bnSingleViewController = childViewControllers[1] as? PlexusBNSingleNodeViewController
         
-        var singleNodeViewItem = self.splitViewItems[1] as NSSplitViewItem  // 1 is lower pane
-        singleNodeViewItem.animator().collapsed = true
+
 
         
         
@@ -57,41 +56,45 @@ class PlexusBNSplitViewController: NSSplitViewController {
          bnSingleViewController!.nodesController = self.nodesController
         
        // println("bnsvc: \(self.view.constraints)")
+        
+        var singleNodeViewItem = self.splitViewItems[1] as NSSplitViewItem  // 1 is lower pane
+        singleNodeViewItem.animator().collapsed = false
+        self.splitView.setPosition((view.frame.height/2), ofDividerAtIndex: 0)
+        self.splitView.adjustSubviews()
 
 
     }
-    /*
-    override func updateViewConstraints() {
-        super.updateViewConstraints()
-        println(view.frame)
-    }
-*/
+
     
     func toggleSingleNodeView(){
-       // println("splitview  \(self.splitView)")
+        println("splitview  \(self.splitView.frame)")
         
         var singleNodeViewItem = self.splitViewItems[1] as NSSplitViewItem  // 1 is lower pane
         
+        
+/*
+        
         singleNodeViewItem.animator().collapsed = false
         self.splitView.setPosition((view.frame.height/2), ofDividerAtIndex: 0)
+        self.splitView.adjustSubviews()
+
+        println("toggle to \(view.frame.height/2) and collapse is now \(singleNodeViewItem.collapsed)")
         
-            /*
+*/
+        
 
         
-
-        
-        println("collapse is nfirst \(singleNodeViewItem.collapsed)")
+        println("collapse is first \(singleNodeViewItem.collapsed)")
         singleNodeViewItem.animator().collapsed = !singleNodeViewItem.collapsed
         
         
         if(singleNodeViewItem.collapsed == false){
-            self.splitView.setPosition((view.frame.height/2), ofDividerAtIndex: 0)
-            //self.splitView.setPosition(0, ofDividerAtIndex: 0)
+        self.splitView.setPosition((view.frame.height/2), ofDividerAtIndex: 0)
              println("toggle to \(view.frame.height/2) and collapse is now \(singleNodeViewItem.collapsed)")
-            //self.splitView.adjustSubviews()
+            self.splitView.adjustSubviews()
         }
         
 
-        */
+
     }
 }
