@@ -54,14 +54,14 @@ class PlexusBNSingleNodeViewController: NSViewController, CPTScatterPlotDataSour
         
         var plotSpace : CPTXYPlotSpace = graph.defaultPlotSpace as CPTXYPlotSpace
         plotSpace.allowsUserInteraction = false
-        var xRange = plotSpace.xRange.mutableCopy() as CPTMutablePlotRange
-        var yRange = plotSpace.yRange.mutableCopy() as CPTMutablePlotRange
+      //  var xRange = plotSpace.xRange.mutableCopy() as CPTMutablePlotRange
+       // var yRange = plotSpace.yRange.mutableCopy() as CPTMutablePlotRange
         
         
-        xRange.setLengthFloat(1.2)
-        yRange.setLengthFloat(1.2)
-        plotSpace.xRange = xRange
-        plotSpace.yRange = yRange
+    //    xRange.setLengthFloat(1.2)
+      //  yRange.setLengthFloat(1.2)
+       // plotSpace.xRange = xRange
+      //  plotSpace.yRange = yRange
         
         // Axes
         
@@ -84,21 +84,29 @@ class PlexusBNSingleNodeViewController: NSViewController, CPTScatterPlotDataSour
         priorLineStyle.lineColor = CPTColor.greenColor()
         priorPlot.dataLineStyle = priorLineStyle
         
-                priorPlot.interpolation = CPTScatterPlotInterpolation.Curved
+        priorPlot.interpolation = CPTScatterPlotInterpolation.Curved
         
         priorPlot.dataSource = self
         priorPlot.delegate = self
         
-
-        
-
+    
         
         graph.addPlot(priorPlot)
 
         
-
-
+        var postPlot = CPTScatterPlot(frame:graph.bounds)
+        postPlot.identifier = "PostPlot"
+        var postLineStyle = CPTMutableLineStyle()
+        postLineStyle.miterLimit = 1.0
+        postLineStyle.lineWidth = 3.0
+        postLineStyle.lineColor = CPTColor.blueColor()
+        postPlot.dataLineStyle = postLineStyle
         
+        postPlot.dataSource = self
+        postPlot.delegate = self
+
+
+        graph.addPlot(postPlot)
 
     }
 
@@ -117,9 +125,10 @@ class PlexusBNSingleNodeViewController: NSViewController, CPTScatterPlotDataSour
             curNode = curNodes[0]
         }
         
-        //println("reload Data")
+      //  println("reload Data")
         
         //FIXME dummy data
+       // self.dataForChart = [0.3, 0.3, 0.1, 0.7]
         self.dataForChart = [Double](count: 100, repeatedValue: 0.5)
         
         graph.reloadData()
@@ -137,48 +146,58 @@ class PlexusBNSingleNodeViewController: NSViewController, CPTScatterPlotDataSour
     
     func numberForPlot(plot: CPTPlot!, field fieldEnum: UInt, recordIndex idx: Int) -> NSNumber! {
         
-        
-        //FIXME dummy util i can get the real data
-        var dummyPDist = 1
-        var dummyV1 = 0.4
-        var dummyV2 = 0.7
-        
-        if(plot.identifier.isEqual("PriorPlot")){
-            //println(idx)
-            
-            let nidx = (Double(idx)/100)
-            let nnidx = (Double(idx+1)/100)
-            
-            switch dummyPDist {
-                
-            case 0:  //point/expert
-                if(nidx <= dummyV1 && nnidx > dummyV1){
-                    println ("yus")
-                    return 1
-                }
-                else {
-                    return 0
-                }
-              
-            case 1: //uniform
-                if(nidx >= dummyV1 && nidx < dummyV2){
-                    return 1
-                }
-                else {
-                    return 0
-                }
-                
-            default:
-                return 0
-            }
 
-            
-
-            
+        if(fieldEnum == 0){//x
+            return (Double(idx)/100)
         }
-        
+        if(fieldEnum == 1){ //y
+            //FIXME dummy util i can get the real data
+            
+            var dummyPDist = 0
+            var dummyV1 = 0.4
+            var dummyV2 = 0.7
+            
+            if(plot.identifier.isEqual("PriorPlot")){
+                // println(idx)
+                
+                let nidx = (Double(idx)/100)
+                let nnidx = (Double(idx+1)/100)
+                
+                switch dummyPDist {
+                    
+                case 0:  //point/expert
+                    if(nidx <= dummyV1 && nnidx > dummyV1){
+                        return 1
+                    }
+                    else {
+                        return 0
+                    }
+                    
+                case 1: //uniform
+                    if(nidx >= dummyV1 && nidx < dummyV2){
+                        return 1
+                    }
+                    else {
+                        return 0
+                    }
+                    
+                default:
+                    return 0
+                }
+                
+                
+                
+                
+            }
+                
+            else if(plot.identifier.isEqual("PostPlot")){
+                return self.dataForChart[idx] as NSNumber
+            }
+        }
+
+
        // println("numberForPlot: \(self.dataForChart[idx] as NSNumber)")
-       // return self.dataForChart[idx] as NSNumber
+       //
         return 0
         
 
