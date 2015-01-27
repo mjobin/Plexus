@@ -114,6 +114,7 @@ class PlexusBNScene: SKScene {
         //     let flip = PlexusFTButtonNode(normalTexture: "Flip Button", selectedTexture: "Flip Button Selected", disabledTexture: "Flip Button Disabled")
         
         
+ 
         
     }
     
@@ -136,7 +137,7 @@ class PlexusBNScene: SKScene {
             
             
             //create path
-            /*
+            
             
             
             var shapePath = CGPathCreateWithRoundedRect(CGRectMake(-50, -25, 100, 50), 4, 4, nil) //reaplce with size of name eventually
@@ -217,7 +218,7 @@ class PlexusBNScene: SKScene {
             let labelJoint = SKPhysicsJointFixed.jointWithBodyA(myLabel.physicsBody, bodyB: shape.physicsBody, anchor: shape.position)
             
             self.physicsWorld.addJoint(labelJoint)
-            */
+            
 
 
             
@@ -472,7 +473,14 @@ class PlexusBNScene: SKScene {
     
     
     
-    
+    func reloadData() { //this just removes the nodes so that update can restopre them
+        self.enumerateChildNodesWithName("bnNode", usingBlock: { thisLine, stop in
+            thisLine.removeFromParent()
+        })
+        self.enumerateChildNodesWithName("nodeName", usingBlock: { thisLine, stop in
+            thisLine.removeFromParent()
+        })
+    }
     
     
     override func update(currentTime: CFTimeInterval) {
@@ -785,5 +793,7 @@ class PlexusBNScene: SKScene {
         return atan2(nodeB.position.y - nodeA.position.y, nodeB.position.x - nodeA.position.x)
         
     }
+    
+
 
 }
