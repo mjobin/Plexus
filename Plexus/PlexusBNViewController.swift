@@ -68,6 +68,9 @@ class PlexusBNViewController: NSViewController {
 
         scene.modelTreeController = self.modelTreeController
         scene.nodesController = self.nodesController
+        
+        let options = NSKeyValueObservingOptions.New | NSKeyValueObservingOptions.Old
+        modelTreeController.addObserver(self, forKeyPath: "selectionIndexPath", options: options, context: nil)
 
 
     }
@@ -78,6 +81,19 @@ class PlexusBNViewController: NSViewController {
         scene.redrawNodes()
         
     }
+    
+    override func observeValueForKeyPath(keyPath: String, ofObject object: AnyObject, change: [NSObject : AnyObject], context: UnsafeMutablePointer<Void>) {
+        
+        switch (keyPath) {
+        case("selectionIndexPath"):
+            scene.reloadData()
+            
+            
+        default:
+            super.observeValueForKeyPath(keyPath, ofObject: object, change: change, context: context)
+        }
+    }
+
 
     
 
