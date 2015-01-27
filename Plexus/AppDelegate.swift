@@ -22,7 +22,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         
         //Register defaults
         let defaults = NSUserDefaults.standardUserDefaults()
-        var pTypes: [String] = ["Expert", "Point", "Uniform", "Gaussian"]
+        var pTypes: [String] = ["Point", "Uniform", "Gaussian", "Gamma"]
         let defaultValues = ["PriorTypes": pTypes]
         defaults.registerDefaults(defaultValues)
         
