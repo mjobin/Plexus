@@ -714,14 +714,14 @@
                                         <action selector="calculate:" target="B8D-0N-5wS" id="VCg-wJ-cZX"/>
                                     </connections>
                                 </toolbarItem>
-                                <toolbarItem implicitItemIdentifier="E18303A5-037B-44FE-878B-72401FAAC926" label="Models" paletteLabel="Models" image="F758D4C8-533E-48CE-9107-9336E3ED4F31" id="VR9-AM-azT">
+                                <toolbarItem implicitItemIdentifier="E18303A5-037B-44FE-878B-72401FAAC926" label="Models" paletteLabel="Models" image="D128FD1B-52B1-4308-A3B2-3121227C1477" id="VR9-AM-azT">
                                     <nil key="toolTip"/>
                                     <size key="minSize" width="13" height="13"/>
                                     <size key="maxSize" width="37" height="34"/>
                                     <button key="view" horizontalHuggingPriority="750" verticalHuggingPriority="750" id="vcL-Vh-Set">
                                         <rect key="frame" x="5" y="14" width="37" height="34"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="squareTextured" bezelStyle="texturedSquare" image="F758D4C8-533E-48CE-9107-9336E3ED4F31" imagePosition="only" alignment="left" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="s8L-6c-2d7">
+                                        <buttonCell key="cell" type="squareTextured" bezelStyle="texturedSquare" image="D128FD1B-52B1-4308-A3B2-3121227C1477" imagePosition="only" alignment="left" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="s8L-6c-2d7">
                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
@@ -1859,7 +1859,10 @@ Gw
                                                         <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
                                                     </tableHeaderCell>
                                                     <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" alignment="left" title="Text Cell" id="fYY-lx-npX">
-                                                        <numberFormatter key="formatter" formatterBehavior="default10_4" numberStyle="decimal" usesGroupingSeparator="NO" minimumIntegerDigits="0" maximumIntegerDigits="42" id="iWD-bI-JZZ"/>
+                                                        <numberFormatter key="formatter" formatterBehavior="custom10_4" numberStyle="decimal" alwaysShowsDecimalSeparator="YES" usesGroupingSeparator="NO" minimumIntegerDigits="1" maximumIntegerDigits="42" minimumFractionDigits="3" maximumFractionDigits="6" id="iWD-bI-JZZ">
+                                                            <real key="minimum" value="0.0"/>
+                                                            <real key="maximum" value="1"/>
+                                                        </numberFormatter>
                                                         <font key="font" metaFont="system"/>
                                                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                         <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -1876,7 +1879,10 @@ Gw
                                                         <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
                                                     </tableHeaderCell>
                                                     <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" alignment="left" title="Text Cell" id="xSG-Fm-VsK">
-                                                        <numberFormatter key="formatter" formatterBehavior="default10_4" usesGroupingSeparator="NO" minimumIntegerDigits="0" maximumIntegerDigits="42" id="k0k-z2-GEe"/>
+                                                        <numberFormatter key="formatter" formatterBehavior="custom10_4" alwaysShowsDecimalSeparator="YES" usesGroupingSeparator="NO" minimumIntegerDigits="1" maximumIntegerDigits="42" minimumFractionDigits="3" maximumFractionDigits="6" id="k0k-z2-GEe">
+                                                            <real key="minimum" value="0.0"/>
+                                                            <real key="maximum" value="1"/>
+                                                        </numberFormatter>
                                                         <font key="font" metaFont="system"/>
                                                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                         <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -2083,7 +2089,7 @@ Gw
         </scene>
     </scenes>
     <resources>
-        <image name="F758D4C8-533E-48CE-9107-9336E3ED4F31" width="1" height="1">
+        <image name="D128FD1B-52B1-4308-A3B2-3121227C1477" width="1" height="1">
             <mutableData key="keyedArchiveRepresentation">
 YnBsaXN0MDDUAQIDBAUGPj9YJHZlcnNpb25YJG9iamVjdHNZJGFyY2hpdmVyVCR0b3ASAAGGoK4HCBMU
 GR4fIyQsLzI4O1UkbnVsbNUJCgsMDQ4PEBESVk5TU2l6ZVYkY2xhc3NcTlNJbWFnZUZsYWdzVk5TUmVw
