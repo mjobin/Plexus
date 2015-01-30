@@ -22,6 +22,9 @@ class PlexusBNSingleNodeViewController: NSViewController, CPTScatterPlotDataSour
     @IBOutlet var graphView : CPTGraphHostingView!
     @IBOutlet weak var visView: NSVisualEffectView!
     
+    var priorDist = 0
+    var V1 = 0.1
+    var V2 = 0.5
     var dataForChart = [NSNumber]()
     
     required init?(coder aDecoder: NSCoder)
@@ -80,7 +83,7 @@ class PlexusBNSingleNodeViewController: NSViewController, CPTScatterPlotDataSour
         priorPlot.identifier = "PriorPlot"
         var priorLineStyle = CPTMutableLineStyle()
         priorLineStyle.miterLimit = 1.0
-        priorLineStyle.lineWidth = 3.0
+        priorLineStyle.lineWidth = 2.0
         priorLineStyle.lineColor = CPTColor.greenColor()
         priorPlot.dataLineStyle = priorLineStyle
         
@@ -98,7 +101,7 @@ class PlexusBNSingleNodeViewController: NSViewController, CPTScatterPlotDataSour
         postPlot.identifier = "PostPlot"
         var postLineStyle = CPTMutableLineStyle()
         postLineStyle.miterLimit = 1.0
-        postLineStyle.lineWidth = 3.0
+        postLineStyle.lineWidth = 2.0
         postLineStyle.lineColor = CPTColor.blueColor()
         postPlot.dataLineStyle = postLineStyle
         
@@ -115,6 +118,7 @@ class PlexusBNSingleNodeViewController: NSViewController, CPTScatterPlotDataSour
         
         let options = NSKeyValueObservingOptions.New | NSKeyValueObservingOptions.Old
         nodesController.addObserver(self, forKeyPath: "selectionIndex", options: options, context: nil)
+      
 
     }
     
@@ -123,13 +127,28 @@ class PlexusBNSingleNodeViewController: NSViewController, CPTScatterPlotDataSour
         var curNodes : [BNNode] = nodesController.selectedObjects as [BNNode]
         if(curNodes.count>0) {
             curNode = curNodes[0]
+            
+            priorDist = Int(curNode.priorDistType)
+            V1 = Double(curNode.priorV1)
+            V2 = Double(curNode.priorV2)
+
+            
         }
         
       //  println("reload Data")
         
+
+        
         //FIXME dummy data
        // self.dataForChart = [0.3, 0.3, 0.1, 0.7]
         self.dataForChart = [Double](count: 100, repeatedValue: 0.5)
+        /*
+        var rmax = arc4random_uniform(100)+50
+        
+        for i in 1...rmax {
+            self.dataForChart.append((CGFloat(arc4random()) /  CGFloat(UInt32.max)))
+        }
+        */
         
         graph.reloadData()
         
@@ -146,27 +165,26 @@ class PlexusBNSingleNodeViewController: NSViewController, CPTScatterPlotDataSour
     
     func numberForPlot(plot: CPTPlot!, field fieldEnum: UInt, recordIndex idx: Int) -> NSNumber! {
         
+        var numrec = Double(numberOfRecordsForPlot(plot))
 
         if(fieldEnum == 0){//x
-            return (Double(idx)/100)
+            return (Double(idx)/numrec)
         }
         if(fieldEnum == 1){ //y
             //FIXME dummy util i can get the real data
             
-            var dummyPDist = 0
-            var dummyV1 = 0.4
-            var dummyV2 = 0.7
+
             
             if(plot.identifier.isEqual("PriorPlot")){
                 // println(idx)
                 
-                let nidx = (Double(idx)/100)
-                let nnidx = (Double(idx+1)/100)
+                let nidx = (Double(idx)/numrec)
+                let nnidx = (Double(idx+1)/numrec)
                 
-                switch dummyPDist {
+                switch priorDist {
                     
                 case 0:  //point/expert
-                    if(nidx <= dummyV1 && nnidx > dummyV1){
+                    if(nidx <= V1 && nnidx > V1){
                         return 1
                     }
                     else {
@@ -174,12 +192,22 @@ class PlexusBNSingleNodeViewController: NSViewController, CPTScatterPlotDataSour
                     }
                     
                 case 1: //uniform
-                    if(nidx >= dummyV1 && nidx < dummyV2){
+                    if(nidx >= V1 && nidx < V2){
                         return 1
                     }
                     else {
                         return 0
                     }
+                    
+                case 2: //gaussian
+                   //// println(gaussian(dummyV1, sigma: dummyV2, x: nidx))
+                    
+                    return gaussian(V1, sigma: V2, x: nidx)
+                    
+                case 3: //gamma
+                    // println("\(nidx) \(tgamma(nidx))")
+                    
+                    return tgamma(nidx)
                     
                 default:
                     return 0
@@ -202,10 +230,25 @@ class PlexusBNSingleNodeViewController: NSViewController, CPTScatterPlotDataSour
         
 
     }
+    
+    func gaussian(mu: Double, sigma: Double, x: Double) -> Double {
+        var result :Double =  exp ( -pow (x - mu, 2) / (2 * pow( sigma, 2)))
+        return result / (sigma * 2 * sqrt(M_PI))
+    }
+    
+    func gausstest(mu: Double, sigma: Double, x: Double) -> Double {
+        var alpha : Double = 1 / (sigma * sqrt(2*M_PI))
+        
+        return alpha * exp ( -pow((x-mu), 2) / (2 * pow(sigma,2)))
+    }
+    
+
+    
+
 
     
     override func observeValueForKeyPath(keyPath: String, ofObject object: AnyObject, change: [NSObject : AnyObject], context: UnsafeMutablePointer<Void>) {
-        
+        //println(keyPath)
         switch (keyPath) {
         case("selectionIndex"):
 
