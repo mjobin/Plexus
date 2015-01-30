@@ -252,9 +252,18 @@ class PlexusBNScene: SKScene {
                var idNode : PlexusBNNode = touchedNode as PlexusBNNode
                 
                 idNode.glowWidth = 5
-                let idArray : [PlexusBNNode] = [idNode]
+                let idArray : [BNNode] = [idNode.node]
+
+                //println (idArray)
                 
+
                 nodesController.setSelectedObjects(idArray)
+                /*
+                var newSels : [BNNode] = nodesController.selectedObjects as [BNNode]
+                for newSel : BNNode in newSels {
+                    println (newSel.name)
+                }
+               */
                 
                 
                 if(theEvent.clickCount > 1){ //double-clicks open single node view
@@ -495,6 +504,19 @@ class PlexusBNScene: SKScene {
         self.enumerateChildNodesWithName("nodeLine", usingBlock: { thisLine, stop in
         thisLine.removeFromParent()
         })
+        
+        /*
+        //set not glowing all
+        self.enumerateChildNodesWithName("bnNode", usingBlock: { thisNode, stop in
+            var noglowNode : SKShapeNode = thisNode as SKShapeNode
+            noglowNode.glowWidth = 0
+            
+        })
+*/
+        
+      
+        
+
 
 
         
@@ -635,9 +657,25 @@ class PlexusBNScene: SKScene {
 
 
         
-        
-      
-        
+
+      /*
+        var selNodes : [BNNode] = nodesController.selectedObjects as [BNNode]
+        for selNode : BNNode in selNodes {
+            
+            self.enumerateChildNodesWithName("bnNode", usingBlock: { thisNode, stop in
+                
+                var idNode : PlexusBNNode = thisNode as PlexusBNNode
+                
+                if(idNode.node == selNode){
+                    idNode.glowWidth = 5
+                    
+                }
+                
+            })
+            
+            
+        }
+        */
         
         
         /* Called before each frame is rendered */
