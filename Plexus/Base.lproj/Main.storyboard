@@ -714,14 +714,14 @@
                                         <action selector="calculate:" target="B8D-0N-5wS" id="VCg-wJ-cZX"/>
                                     </connections>
                                 </toolbarItem>
-                                <toolbarItem implicitItemIdentifier="E18303A5-037B-44FE-878B-72401FAAC926" label="Models" paletteLabel="Models" image="92B32C25-98CD-4EF4-A26D-9F349190719C" id="VR9-AM-azT">
+                                <toolbarItem implicitItemIdentifier="E18303A5-037B-44FE-878B-72401FAAC926" label="Models" paletteLabel="Models" image="E7EDB2C5-8DBB-4538-8AC1-9F39EE006554" id="VR9-AM-azT">
                                     <nil key="toolTip"/>
                                     <size key="minSize" width="13" height="13"/>
                                     <size key="maxSize" width="37" height="34"/>
                                     <button key="view" horizontalHuggingPriority="750" verticalHuggingPriority="750" id="vcL-Vh-Set">
                                         <rect key="frame" x="5" y="14" width="37" height="34"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="squareTextured" bezelStyle="texturedSquare" image="92B32C25-98CD-4EF4-A26D-9F349190719C" imagePosition="only" alignment="left" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="s8L-6c-2d7">
+                                        <buttonCell key="cell" type="squareTextured" bezelStyle="texturedSquare" image="E7EDB2C5-8DBB-4538-8AC1-9F39EE006554" imagePosition="only" alignment="left" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="s8L-6c-2d7">
                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
@@ -1698,7 +1698,7 @@ Gw
                         <tabViewItem label="Table" identifier="" id="BUD-ld-ico"/>
                     </tabViewItems>
                     <tabView key="tabView" type="noTabsNoBorder" id="POO-k7-qdn" customClass="PlexusBNTabView" customModule="Plexus" customModuleProvider="target">
-                        <rect key="frame" x="0.0" y="0.0" width="450" height="300"/>
+                        <rect key="frame" x="0.0" y="0.0" width="450" height="308"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <font key="font" metaFont="message"/>
                         <tabViewItems/>
@@ -1710,7 +1710,7 @@ Gw
                 </tabViewController>
                 <customObject id="gi1-te-RHS" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1040" y="1282"/>
+            <point key="canvasLocation" x="1040" y="1286"/>
         </scene>
         <!--PlexusBN View Controller-->
         <scene sceneID="q3P-6o-O66">
@@ -2092,7 +2092,7 @@ Gw
         </scene>
     </scenes>
     <resources>
-        <image name="92B32C25-98CD-4EF4-A26D-9F349190719C" width="1" height="1">
+        <image name="E7EDB2C5-8DBB-4538-8AC1-9F39EE006554" width="1" height="1">
             <mutableData key="keyedArchiveRepresentation">
 YnBsaXN0MDDUAQIDBAUGPj9YJHZlcnNpb25YJG9iamVjdHNZJGFyY2hpdmVyVCR0b3ASAAGGoK4HCBMU
 GR4fIyQsLzI4O1UkbnVsbNUJCgsMDQ4PEBESVk5TU2l6ZVYkY2xhc3NcTlNJbWFnZUZsYWdzVk5TUmVw
