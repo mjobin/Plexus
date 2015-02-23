@@ -364,9 +364,10 @@ class PlexusBNScene: SKScene {
         }
         
 
+      //  println("start \(startNode) and released \(releasedNode)")
 
         
-        if(!startNode.isEqualTo(self) && startNode.name == "bnNode" && !releasedNode.isEqualTo(self) && releasedNode.name == "bnNode") {
+        if(!startNode.isEqualTo(self) && startNode.name == "bnNode" && !releasedNode.isEqualTo(self) && releasedNode.name == "bnNode" && !startNode.isEqualTo(releasedNode) ) {
 
             //create physics joint between these two
             
