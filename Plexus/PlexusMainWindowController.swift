@@ -64,7 +64,7 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
     
     override func windowDidLoad() {
         super.windowDidLoad()
-        
+
 
         
         mainSplitViewController = contentViewController as PlexusMainSplitViewController
@@ -89,7 +89,7 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
     }
     
     @IBAction func  toggleModels(x:NSToolbarItem){
-        println("Toggle models Tapped: \(x)")
+        //println("Toggle models Tapped: \(x)")
 
         mainSplitViewController.toggleModels(x)
         
@@ -98,27 +98,17 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
 
     
     @IBAction func  calculate(x:NSToolbarItem){
-        println("calc Tapped: \(x)")
         
-        let context = gcl_get_context()
-        let queue = gcl_create_dispatch_queue(cl_queue_flags(CL_DEVICE_TYPE_GPU), nil)
-        let deviceId = gcl_get_device_id_with_dispatch_queue(queue)
+        var i : Int = 0
         
-        let deviceName = getStringInfo(deviceId, deviceInfo: CL_DEVICE_NAME)
-        let addressData = getNumericalInfo(deviceId, deviceInfo: CL_DEVICE_ADDRESS_BITS)
-        let gMemSize = getNumericalInfo(deviceId, deviceInfo: CL_DEVICE_GLOBAL_MEM_SIZE)
-        let extData = getStringInfo(deviceId, deviceInfo: CL_DEVICE_EXTENSIONS)
         
-        println("Name: \(deviceName)")
-        println("Address Width: \(addressData)")
-        println("Global Memory Size: \(gMemSize))")
-        println("Extensions: \(extData)")
+
         
 
         //instatntiate progress controller
         if self.progressViewController == nil {
             let storyboard = NSStoryboard(name:"Main", bundle:nil)
-            println(storyboard!)
+
             self.progressViewController = storyboard!.instantiateControllerWithIdentifier("ProgressViewController") as? PlexusProgressPanel
             
         }
@@ -136,11 +126,24 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
             self.progressViewController?.changeCurWork(i)
         }
         
-
-        
-        //then tear it down again
         
 
+        //collect data
+        var nodesForCalc : [BNNode] = mainSplitViewController.modelTabViewController?.bnSplitViewController?.nodesController.arrangedObjects as [BNNode]
+      
+        
+        
+        var op = PlexusCalculationOperation(nodes: nodesForCalc, withRuns: 100, withBurnin: 10, withComputes: 30000)
+
+        
+        var operr: NSError?
+        
+        operr = op.calc(self)
+       // println("error \(operr)")
+        if(operr == nil){
+            println("no pronl")
+        }
+        
         
         self.contentViewController?.dismissViewController(self.progressViewController!)
         
@@ -372,6 +375,12 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
         var value = cl_uint(0)
         clGetDeviceInfo(deviceId, cl_device_info(deviceInfo), UInt(sizeof(cl_uint)), &value, nil)
         return value
+    }
+    
+    func getArrayNumericalInfo(deviceId: cl_device_id, deviceInfo: Int32) -> [cl_uint] {
+        var values = [cl_uint]()
+        clGetDeviceInfo(deviceId, cl_device_info(deviceInfo), UInt(sizeof(cl_uint)), &values, nil)
+        return values
     }
 
 
