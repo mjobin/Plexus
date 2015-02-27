@@ -8,11 +8,13 @@
 
 import Cocoa
 
-class PlexusTraitViewController: NSViewController {
+class PlexusTraitViewController: NSViewController, NSTableViewDelegate, NSTableViewDataSource {
 
      var moc : NSManagedObjectContext!
 
     dynamic var entryTreeController : NSTreeController!
+    @IBOutlet dynamic var traitsController : NSArrayController!
+    @IBOutlet weak var traitsTableView : NSTableView!
     
     
     required init?(coder aDecoder: NSCoder)
@@ -28,8 +30,40 @@ class PlexusTraitViewController: NSViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do view setup here.
+
+        var registeredTypes:[String] = [kUTTypeURL]
+        traitsTableView.registerForDraggedTypes(registeredTypes)
+        traitsTableView.setDraggingSourceOperationMask(NSDragOperation.Every, forLocal: true)
+        traitsTableView.setDraggingSourceOperationMask(NSDragOperation.Every, forLocal: false)
+        traitsTableView.verticalMotionCanBeginDrag = true
         
     }
     
+    
+    func tableView(tableView: NSTableView, objectValueForTableColumn tableColumn: NSTableColumn?, row: Int) -> AnyObject? {
+        println("obj for table column")
+        return traitsController.arrangedObjects.objectAtIndex(row)
+    }
+    
+    func tableView(aTableView: NSTableView,
+        writeRowsWithIndexes rowIndexes: NSIndexSet,
+        toPasteboard pboard: NSPasteboard) -> Bool
+    {
+        println("write rows")
+        if ((aTableView == traitsTableView))
+        {
+            var data:NSData = NSKeyedArchiver.archivedDataWithRootObject(rowIndexes)
+            var registeredTypes:[String] = [NSStringPboardType]
+            pboard.declareTypes(registeredTypes, owner: self)
+            pboard.setData(data, forType: NSStringPboardType)
+            return true
+            
+        }
+        else
+        {
+            return false
+        }
+    }
+
+
 }
