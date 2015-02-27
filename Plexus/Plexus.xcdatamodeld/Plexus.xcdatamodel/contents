@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="6254" systemVersion="14B25" minimumToolsVersion="Automatic" macOSVersion="Automatic" iOSVersion="Automatic">
+<model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="6254" systemVersion="14C109" minimumToolsVersion="Automatic" macOSVersion="Automatic" iOSVersion="Automatic">
     <entity name="BNNode" representedClassName="Plexus.BNNode" syncable="YES">
         <attribute name="name" optional="YES" attributeType="String" defaultValueString="Unnamed Node" syncable="YES"/>
         <attribute name="priorDistType" optional="YES" attributeType="Integer 32" minValueString="0" defaultValueString="0" syncable="YES"/>
@@ -46,7 +46,7 @@
         <relationship name="dataset" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Dataset" inverseName="model" inverseEntity="Dataset" syncable="YES"/>
         <relationship name="parent" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Model" inverseName="children" inverseEntity="Model" syncable="YES"/>
     </entity>
-    <entity name="NodeLink" syncable="YES">
+    <entity name="NodeLink" representedClassName="NodeLink" isAbstract="YES" syncable="YES">
         <relationship name="bnNode" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="BNNode" inverseName="nodeLink" inverseEntity="BNNode" syncable="YES"/>
     </entity>
     <entity name="Trait" representedClassName="Plexus.Trait" parentEntity="NodeLink" syncable="YES">
