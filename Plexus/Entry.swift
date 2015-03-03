@@ -12,7 +12,7 @@ import CoreData
 
 class Entry: NodeLink  {
 
-    @NSManaged var name: String
+   // @NSManaged var name: String
     @NSManaged var children: NSSet
     @NSManaged var dataset: Dataset
     @NSManaged var parent: NSSet

@@ -25,7 +25,6 @@
         <attribute name="icon" optional="YES" attributeType="String" defaultValueString="PlexusEntry" allowsExternalBinaryDataStorage="YES" syncable="YES"/>
         <attribute name="latitude" optional="YES" attributeType="Double" defaultValueString="0.0" syncable="YES"/>
         <attribute name="longitude" optional="YES" attributeType="Double" defaultValueString="0.0" syncable="YES"/>
-        <attribute name="name" optional="YES" attributeType="String" defaultValueString="Unnamed Entry" syncable="YES"/>
         <relationship name="children" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="Entry" inverseName="parent" inverseEntity="Entry" syncable="YES"/>
         <relationship name="connectionNode" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="ConnectionNode" inverseName="entry" inverseEntity="ConnectionNode" syncable="YES"/>
         <relationship name="dataset" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Dataset" inverseName="entry" inverseEntity="Dataset" syncable="YES"/>
@@ -46,11 +45,11 @@
         <relationship name="dataset" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Dataset" inverseName="model" inverseEntity="Dataset" syncable="YES"/>
         <relationship name="parent" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Model" inverseName="children" inverseEntity="Model" syncable="YES"/>
     </entity>
-    <entity name="NodeLink" representedClassName="NodeLink" isAbstract="YES" syncable="YES">
+    <entity name="NodeLink" representedClassName="Plexus.NodeLink" isAbstract="YES" syncable="YES">
+        <attribute name="name" optional="YES" attributeType="String" defaultValueString="new" syncable="YES"/>
         <relationship name="bnNode" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="BNNode" inverseName="nodeLink" inverseEntity="BNNode" syncable="YES"/>
     </entity>
     <entity name="Trait" representedClassName="Plexus.Trait" parentEntity="NodeLink" syncable="YES">
-        <attribute name="name" optional="YES" attributeType="String" defaultValueString="Unnamed Trait" syncable="YES"/>
         <attribute name="value" optional="YES" attributeType="String" defaultValueString="Unknown Value" syncable="YES"/>
         <relationship name="entry" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Entry" inverseName="trait" inverseEntity="Entry" syncable="YES"/>
     </entity>
@@ -58,10 +57,10 @@
         <element name="BNNode" positionX="54" positionY="18" width="128" height="163"/>
         <element name="ConnectionNode" positionX="-29" positionY="207" width="128" height="58"/>
         <element name="Dataset" positionX="63" positionY="-157" width="128" height="133"/>
-        <element name="Entry" positionX="-468" positionY="-36" width="128" height="193"/>
+        <element name="Entry" positionX="-468" positionY="-36" width="128" height="180"/>
         <element name="Image" positionX="-108" positionY="324" width="128" height="90"/>
         <element name="Model" positionX="349" positionY="-9" width="128" height="133"/>
-        <element name="NodeLink" positionX="-297" positionY="-126" width="128" height="58"/>
-        <element name="Trait" positionX="-279" positionY="317" width="128" height="88"/>
+        <element name="NodeLink" positionX="-297" positionY="-126" width="128" height="75"/>
+        <element name="Trait" positionX="-279" positionY="317" width="128" height="75"/>
     </elements>
 </model>
