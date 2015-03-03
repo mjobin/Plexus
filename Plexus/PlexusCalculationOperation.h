@@ -33,5 +33,6 @@
 
 - (id)initWithNodes:(NSArray *) inNodes withRuns:(NSNumber *) inRuns withBurnin:(NSNumber *) inBurnins withComputes:(NSNumber*) inComputes;
 - (NSError *)calc:(id)sender;
+- (NSMutableArray *)getResults:(id)sender;
 
 @end

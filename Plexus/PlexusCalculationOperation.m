@@ -189,23 +189,23 @@
     //get maximum size of inputs and outputsd
     
     
+
+        
     for (BNNode * fNode in initialNodes) {
-        
-        for (BNNode * fNode in initialNodes) {
-            NSMutableOrderedSet * allInSet = [fNode recursiveInfBy:self infBy:[[NSMutableOrderedSet alloc] init] depth:0];
-            if([allInSet count] > maxCPTSize) maxCPTSize = [allInSet count];
-        }
-        
-        
-        
-        
-        for (BNNode * fNode in initialNodes) {
-            NSMutableOrderedSet * allOutSet = [fNode recursiveInfs:self infs:[[NSMutableOrderedSet alloc] init] depth:0];
-            if([allOutSet count] > maxCPTSize) maxCPTSize = [allOutSet count];
-        }
-        
-        
+        NSMutableOrderedSet * allInSet = [fNode recursiveInfBy:self infBy:[[NSMutableOrderedSet alloc] init] depth:0];
+        if([allInSet count] > maxCPTSize) maxCPTSize = [allInSet count];
     }
+    
+    
+    
+    
+    for (BNNode * fNode in initialNodes) {
+        NSMutableOrderedSet * allOutSet = [fNode recursiveInfs:self infs:[[NSMutableOrderedSet alloc] init] depth:0];
+        if([allOutSet count] > maxCPTSize) maxCPTSize = [allOutSet count];
+    }
+    
+        
+    
     
     
     if(maxCPTSize < 1) return nil; //so that we don't work with completely unlinked graphs
@@ -536,6 +536,7 @@
         
         
         if(gWorkItems > kwBuf) gWorkItems = kwBuf;
+        //if(gWorkItems > [computes intValue]) gWorkItems = [computes intValue];
         
         //TEST set to 1
         //gWorkItems = 1;
@@ -580,6 +581,11 @@
         
         
         for(int dev = 0; dev < num_devices; dev++){
+            
+            int thiswork = (int)worksizes[dev];
+            int remWork = [computes intValue] - ct;
+            if(thiswork > remWork) thiswork = remWork;
+           // if (thiswork < 1) break;
             
             
             
@@ -723,6 +729,7 @@
             ct += worksizes[dev];
             
             //end device loop
+            if(ct >= [computes intValue]) break; //in case we do not need all the devices
         }
         
         
@@ -822,6 +829,10 @@
     
 }
 
+
+- (NSMutableArray *)getResults:(id)sender{
+    return resultNodes;
+}
 
 
 @end
