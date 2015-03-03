@@ -62,7 +62,7 @@ class PlexusEntryViewController: NSViewController, NSOutlineViewDelegate, NSOutl
 
     //nsoutlineview delegate methods
     func outlineView(outlineView: NSOutlineView, viewForTableColumn tableColumn: NSTableColumn?, item: AnyObject) -> NSView? {
-        println("outlineview viewfortabelciom")
+       // println("outlineview viewfortabelciom")
         var thisView : NSTableCellView = outlineView.makeViewWithIdentifier("Entry Cell", owner: self) as NSTableCellView
         
         
@@ -74,19 +74,13 @@ class PlexusEntryViewController: NSViewController, NSOutlineViewDelegate, NSOutl
         
     }
     
-/*
-    func outlineView(outlineView: NSOutlineView, pasteboardWriterForItem item: AnyObject?) -> NSPasteboardWriting! {
-        return item.representedObject
-    }
 
     
-    func outlineView(outlineView: NSOutlineView, pasteboardWriterForItem item: AnyObject?) -> NSPasteboardWriting! {
-        println("outlineview paste")
-        return nil
-    }
-    */
+    
+    
+    
     func outlineView(outlineView: NSOutlineView, writeItems items: [AnyObject], toPasteboard pasteboard: NSPasteboard) -> Bool {
-        println("writeItems")
+        //println("writeItems")
         let mutableArray : NSMutableArray = NSMutableArray()
         
         for object : AnyObject in items{
