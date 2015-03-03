@@ -15,7 +15,7 @@ class PlexusBNViewController: NSViewController {
     dynamic var modelTreeController : NSTreeController!
     dynamic var nodesController : NSArrayController!
     
-    @IBOutlet weak var skView: SKView!
+    @IBOutlet weak var skView: PlexusBNSKView!
     @IBOutlet weak var visView: NSVisualEffectView!
     var scene: PlexusBNScene!
     
@@ -66,6 +66,8 @@ class PlexusBNViewController: NSViewController {
     override func viewDidAppear() {
         super.viewDidAppear()
 
+        skView.nodesController = self.nodesController
+        skView.modelTreeController = self.modelTreeController
         scene.modelTreeController = self.modelTreeController
         scene.nodesController = self.nodesController
         
@@ -95,6 +97,5 @@ class PlexusBNViewController: NSViewController {
     }
 
 
-    
 
 }
