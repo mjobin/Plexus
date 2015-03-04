@@ -42,21 +42,28 @@ extension BNNode {
         
         else {// has parents
             
-            switch(self.nodeLink.entity){
-            case "entry":
-                println("entry")
-                return -999
-                
-            case "trait":
-                println("trait")
-                return -999
-                
-            default:
-                println("damn")
-                return 1 //FIXME
-            
+                        
+            if let typestr = self.nodeLink.entity.name {
+                switch(typestr){
+                case "Entry":
+                    println("Entry")
+                    return 1
+                    
+                case "Trait":
+                    println("Trait")
+                    return 1
+                    
+                default:
+                    println("Error, unknown type")
+                    return -999
+                }
+            }
+            else {//for no nodelink
+                return cl_float(priorV1)
             }
             
+            
+           
         }
 
     }
