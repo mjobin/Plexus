@@ -51,7 +51,8 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
             var newModel = NSEntityDescription.insertNewObjectForEntityForName("Model", inManagedObjectContext: moc) as NSManagedObject
             newModel.setValue("newmodel", forKey: "name")
             newModel.setValue(newDataset, forKey: "dataset")
-           // newModel.setValue(NSDate(), forKey: "dateCreated")
+            newModel.setValue(NSDate(), forKey: "dateCreated")
+            newModel.setValue(NSDate(), forKey: "dateModded")
             moc.save(&anyError)
 
         }
@@ -103,8 +104,6 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
         
         
 
-        
-
         //instatntiate progress controller
         if self.progressViewController == nil {
             let storyboard = NSStoryboard(name:"Main", bundle:nil)
@@ -120,20 +119,31 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
         //swap it in?
         
         self.progressViewController?.changeLabel(String("Calculating..."))
-        self.progressViewController?.changeMaxWork(10000)
         
-        for i in 0...10000 {
-            self.progressViewController?.changeCurWork(i)
-        }
+
         
         
 
         //collect data
         var nodesForCalc : [BNNode] = mainSplitViewController.modelTabViewController?.bnSplitViewController?.nodesController.arrangedObjects as [BNNode]
       
+        let curModels : [Model] = mainSplitViewController.modelTreeController?.selectedObjects as [Model]
+        let curModel : Model = curModels[0]
         
         
-        var op = PlexusCalculationOperation(nodes: nodesForCalc, withRuns: 100, withBurnin: 10, withComputes: 30000)
+        /*
+        self.progressViewController?.changeMaxWork(curModel.runstot.integerValue)
+        
+        for i in 0...10000 {
+            self.progressViewController?.changeCurWork(i)
+        }
+        */
+        
+        
+       // println("runsper \(curModel.runsper)")
+        
+         //var op = PlexusCalculationOperation(nodes: nodesForCalc, withRuns: 100, withBurnin: 10, withComputes: 1200)
+        var op = PlexusCalculationOperation(nodes: nodesForCalc, withRuns: curModel.runsper, withBurnin: curModel.burnins, withComputes: curModel.runstot)
 
         
         var operr: NSError?
@@ -141,7 +151,23 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
         operr = op.calc(self)
        // println("error \(operr)")
         if(operr == nil){
-            println("no pronl")
+            println("no prob")
+            var resultNodes : NSMutableArray = op.getResults(self)
+            var fi = 0
+            for fNode in resultNodes {
+
+                var fline : NSMutableArray = fNode as NSMutableArray
+                var gi = 0
+                for gNode in fline {
+                    println("\(fi) \(gi) \(gNode)")
+                    gi++
+                }
+
+                fi++
+                
+            }
+
+
         }
         
         
@@ -164,6 +190,41 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
         
     }
     
+    @IBAction func exportCSV(x:NSToolbarItem){
+        var errorPtr : NSErrorPointer = nil
+        
+        let sv:NSSavePanel = NSSavePanel()
+        sv.allowedFileTypes = ["csv"]
+        
+        sv.beginSheetModalForWindow(window!, completionHandler: {(result:Int) -> Void in
+            if (result == NSFileHandlingPanelOKButton) {
+                var outFile  = sv.URL
+                 println(outFile)
+                
+                sv.close()
+                
+                //Fetch all Datasets
+                
+                let datafetch = NSFetchRequest(entityName: "Dataset")
+                let datasets : [Dataset] = self.moc.executeFetchRequest(datafetch, error: errorPtr) as [Dataset]
+                
+                for dataset : Dataset in datasets {
+                    let entries : [Entry] = dataset.entry.allObjects as [Entry]
+                    for entry : Entry in entries {
+                        entry.name.writeToURL(sv.URL!, atomically: false, encoding: NSUTF8StringEncoding, error: nil)
+                    }
+                    
+                }
+                
+                
+
+            }
+            
+            else { return }
+        })
+        
+    }
+    
     @IBAction func importCSV(x:NSToolbarItem){
        // println("Tapped: \(x)")
         
@@ -179,9 +240,6 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
         op.canChooseDirectories = false
         op.canChooseFiles = true
         op.allowedFileTypes = ["csv"]
-
-
-        
 
         
         op.beginSheetModalForWindow(window!, completionHandler: {(result:Int) -> Void in
@@ -345,6 +403,8 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
         
         
     }
+    
+
     
     override func prepareForSegue(segue: NSStoryboardSegue, sender: AnyObject!) {
 
