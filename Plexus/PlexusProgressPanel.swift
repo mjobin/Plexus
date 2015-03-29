@@ -27,10 +27,10 @@ class PlexusProgressPanel: NSViewController {
         super.viewDidLoad()
 
         self.progressBar.usesThreadedAnimation = true
-        self.progressBar.indeterminate = false
-        self.progressBar.minValue = 0.0
-        self.progressBar.maxValue = 100.0
-        self.progressBar.doubleValue = 5.5
+        //self.progressBar.indeterminate = false
+       // self.progressBar.minValue = 0.0
+       // self.progressBar.maxValue = 100.0
+       // self.progressBar.doubleValue = 5.5
         self.progressLabel.stringValue = "Working..."
 
         
@@ -40,11 +40,12 @@ class PlexusProgressPanel: NSViewController {
         
         self.progressBar.startAnimation(self)
         self.view.needsDisplay = true
-       
+       //println("start")
     }
     
     override func viewWillDisappear() {
         self.progressBar.stopAnimation(self)
+        //println("stop")
     }
     
     @IBAction func cancelButton(sender: AnyObject) {
@@ -65,7 +66,8 @@ class PlexusProgressPanel: NSViewController {
     }
     
     func changeCurWork(inc: Int) {
-        
+        println("inc \(inc)")
+        ////  self.progressIndicator.doubleValue = progress.fractionCompleted
         self.curWork.integerValue = inc
         self.view.needsDisplay = true
     }
