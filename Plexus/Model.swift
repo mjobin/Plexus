@@ -16,5 +16,12 @@ class Model: NSManagedObject {
     @NSManaged var dataset: Dataset
     @NSManaged var parent: NSSet
     @NSManaged var bnnode: NSSet
+    @NSManaged var burnins: NSNumber
+    @NSManaged var runsper: NSNumber
+    @NSManaged var runstot: NSNumber
+    @NSManaged var dateModded: NSDate
+    @NSManaged var dateCreated: NSDate
+    
+    
 
 }
