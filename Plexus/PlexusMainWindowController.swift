@@ -19,6 +19,8 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
     var mainSplitViewController = PlexusMainSplitViewController()
     var progressViewController : PlexusProgressPanel!
     @IBOutlet var datasetController : NSArrayController!
+    //var pProgress: NSProgress?
+    var queue: dispatch_queue_t = dispatch_queue_create("My Queue", DISPATCH_QUEUE_SERIAL)
     
 
 
@@ -131,35 +133,44 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
         let curModel : Model = curModels[0]
         
         
+     //   pProgress = NSProgress(totalUnitCount: curModel.runstot.integerValue)
+        
+        
+        //self.progressViewController.changeMaxWork(curModel.runstot.integerValue)
         /*
-        self.progressViewController?.changeMaxWork(curModel.runstot.integerValue)
-        
-        for i in 0...10000 {
-            self.progressViewController?.changeCurWork(i)
+        for i in 0...100 {
+           // self.progressViewController?.changeCurWork(i)
+           // sleep(1)
+            
+            dispatch_sync(queue) {
+                
+              //  self.progressIndicator.doubleValue = progress.fractionCompleted
+                self.progressViewController.changeCurWork(i)
+                usleep(320000)
+            }
+            
         }
-        */
+*/
         
-        
-       // println("runsper \(curModel.runsper)")
-        
-         //var op = PlexusCalculationOperation(nodes: nodesForCalc, withRuns: 100, withBurnin: 10, withComputes: 1200)
+
         var op = PlexusCalculationOperation(nodes: nodesForCalc, withRuns: curModel.runsper, withBurnin: curModel.burnins, withComputes: curModel.runstot)
 
         
         var operr: NSError?
         
         operr = op.calc(self)
-       // println("error \(operr)")
+
         if(operr == nil){
             println("no prob")
             var resultNodes : NSMutableArray = op.getResults(self)
+            
             var fi = 0
             for fNode in resultNodes {
 
                 var fline : NSMutableArray = fNode as NSMutableArray
                 var gi = 0
                 for gNode in fline {
-                    println("\(fi) \(gi) \(gNode)")
+                    //println("\(fi) \(gi) \(gNode)")
                     gi++
                 }
 
@@ -169,7 +180,8 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
 
 
         }
-        
+
+
         
         self.contentViewController?.dismissViewController(self.progressViewController!)
         
@@ -177,7 +189,7 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
         var notification:NSUserNotification = NSUserNotification()
         notification.title = "Plexus"
         notification.subtitle = "Yur stuff are done"
-        notification.informativeText = "Yus"
+        notification.informativeText = "\(curModel.runstot.integerValue) runs completed."
         
         notification.soundName = NSUserNotificationDefaultSoundName
         
