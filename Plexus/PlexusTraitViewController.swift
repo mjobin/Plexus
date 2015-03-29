@@ -41,7 +41,7 @@ class PlexusTraitViewController: NSViewController, NSTableViewDelegate, NSTableV
     
     
     func tableView(tableView: NSTableView, objectValueForTableColumn tableColumn: NSTableColumn?, row: Int) -> AnyObject? {
-        println("obj for table column")
+        //println("obj for table column")
         return traitsController.arrangedObjects.objectAtIndex(row)
     }
     
