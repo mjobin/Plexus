@@ -38,8 +38,13 @@
         <relationship name="entry" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Entry" inverseName="image" inverseEntity="Entry" syncable="YES"/>
     </entity>
     <entity name="Model" representedClassName="Plexus.Model" syncable="YES">
+        <attribute name="burnins" optional="YES" attributeType="Integer 32" minValueString="0" defaultValueString="1000" syncable="YES"/>
+        <attribute name="dateCreated" optional="YES" attributeType="Date" syncable="YES"/>
+        <attribute name="dateModded" optional="YES" attributeType="Date" syncable="YES"/>
         <attribute name="image" optional="YES" attributeType="Binary" allowsExternalBinaryDataStorage="YES" syncable="YES"/>
         <attribute name="name" optional="YES" attributeType="String" defaultValueString="New Model" syncable="YES"/>
+        <attribute name="runsper" optional="YES" attributeType="Integer 32" minValueString="0" defaultValueString="10000" syncable="YES"/>
+        <attribute name="runstot" optional="YES" attributeType="Integer 32" minValueString="0" defaultValueString="100000" syncable="YES"/>
         <relationship name="bnnode" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="BNNode" inverseName="model" inverseEntity="BNNode" syncable="YES"/>
         <relationship name="children" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="Model" inverseName="parent" inverseEntity="Model" syncable="YES"/>
         <relationship name="dataset" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Dataset" inverseName="model" inverseEntity="Dataset" syncable="YES"/>
@@ -59,7 +64,7 @@
         <element name="Dataset" positionX="63" positionY="-157" width="128" height="133"/>
         <element name="Entry" positionX="-468" positionY="-36" width="128" height="180"/>
         <element name="Image" positionX="-108" positionY="324" width="128" height="90"/>
-        <element name="Model" positionX="349" positionY="-9" width="128" height="133"/>
+        <element name="Model" positionX="349" positionY="-9" width="128" height="210"/>
         <element name="NodeLink" positionX="-297" positionY="-126" width="128" height="75"/>
         <element name="Trait" positionX="-279" positionY="317" width="128" height="75"/>
     </elements>
