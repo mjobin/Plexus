@@ -70,12 +70,9 @@ class PlexusBNSKView: SKView, NSDraggingDestination {
             
             
             var newNode : BNNode = BNNode(entity: NSEntityDescription.entityForName("BNNode", inManagedObjectContext: moc)!, insertIntoManagedObjectContext: moc)
-            newNode.setValue(mo.name, forKey: "name")
-            //newNode.setValue("added", forKey: "name")
             newNode.setValue(mo, forKey: "nodeLink")
             
 
-        
 
             var curModels : [Model] = modelTreeController.selectedObjects as [Model]
             var curModel : Model = curModels[0]
