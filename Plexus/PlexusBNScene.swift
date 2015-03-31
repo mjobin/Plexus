@@ -39,6 +39,9 @@ class PlexusBNScene: SKScene {
             let appDelegate : AppDelegate = NSApplication.sharedApplication().delegate as AppDelegate
             moc = appDelegate.managedObjectContext
         
+        
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "mocDidChange:", name: NSManagedObjectContextObjectsDidChangeNotification, object: moc)
+        
 
  
         firstUpdate = true
@@ -113,7 +116,7 @@ class PlexusBNScene: SKScene {
         //    let flip = PlexusFTButtonNode(normalTexture: "Flip Button")
         //     let flip = PlexusFTButtonNode(normalTexture: "Flip Button", selectedTexture: "Flip Button Selected", disabledTexture: "Flip Button Disabled")
         
-        
+
  
         
     }
@@ -135,10 +138,38 @@ class PlexusBNScene: SKScene {
         if(touchedNode.isEqualTo(self)) {
             //  println("miss")
             
+            let curModels : [Model] = modelTreeController.selectedObjects as [Model]
+            let curModel : Model = curModels[0]
+            //let curDataset : Dataset = curModel.dataset
+            
+            
+            
+            //create an NodeLink - independet node link for nodes not linked to any other form of data
+            
+            let newNodeLink : NodeLink = NodeLink(entity: NSEntityDescription.entityForName("NodeLink", inManagedObjectContext: self.moc)!, insertIntoManagedObjectContext: self.moc)
+            newNodeLink.setValue("New Node", forKey: "name")
+            
+            
+            let newNode : BNNode = BNNode(entity: NSEntityDescription.entityForName("BNNode", inManagedObjectContext: moc)!, insertIntoManagedObjectContext: moc)
+            newNode.setValue(newNodeLink, forKey: "nodeLink")
+            
+            
+
+            curModel.addBNNodeObject(newNode)
+            
+            newNode.setValue(curModel, forKey: "model")
+            
+            
+            
+            moc.save(errorPtr)
+            
+
+            self.makeNode(newNode, inPos: loc)
+            
             
             //create path
             
-            
+            /*
             
             var shapePath = CGPathCreateWithRoundedRect(CGRectMake(-50, -25, 100, 50), 4, 4, nil) //reaplce with size of name eventually
             
@@ -161,13 +192,10 @@ class PlexusBNScene: SKScene {
             
             //give it an initial model
             var newNode : BNNode = BNNode(entity: NSEntityDescription.entityForName("BNNode", inManagedObjectContext: moc)!, insertIntoManagedObjectContext: moc)
-            newNode.setValue("test", forKey: "name")
             shape.node = newNode
-//            newDataset.addModelObject(newModel)
-            
+        
 
-            
-
+        
             
             var curModels : [Model] = modelTreeController.selectedObjects as [Model]
             var curModel : Model = curModels[0]
@@ -180,6 +208,21 @@ class PlexusBNScene: SKScene {
             
             moc.save(errorPtr)
             self.addChild(shape)
+            
+            let myLabel = SKLabelNode(text: "New Node")
+            myLabel.fontSize = 18
+            myLabel.zPosition = 1
+            myLabel.name = "nodeName"
+            myLabel.userInteractionEnabled = false
+            myLabel.position = shape.position
+            myLabel.physicsBody = SKPhysicsBody(rectangleOfSize: CGRectMake(-25, -25, 50, 50).size)
+            
+            self.addChild(myLabel)
+            
+            let labelJoint = SKPhysicsJointFixed.jointWithBodyA(myLabel.physicsBody, bodyB: shape.physicsBody, anchor: shape.position)
+            
+            self.physicsWorld.addJoint(labelJoint)
+            */
             
             
             /*
@@ -205,19 +248,8 @@ class PlexusBNScene: SKScene {
             
             
             
-            let myLabel = SKLabelNode(text: "New Node")
-            myLabel.fontSize = 18
-            myLabel.zPosition = 1
-            myLabel.name = "nodeName"
-            myLabel.userInteractionEnabled = false
-            myLabel.position = shape.position
-            myLabel.physicsBody = SKPhysicsBody(rectangleOfSize: CGRectMake(-25, -25, 50, 50).size)
             
-            self.addChild(myLabel)
-            
-            let labelJoint = SKPhysicsJointFixed.jointWithBodyA(myLabel.physicsBody, bodyB: shape.physicsBody, anchor: shape.position)
-            
-            self.physicsWorld.addJoint(labelJoint)
+
             
 
 
@@ -378,37 +410,7 @@ class PlexusBNScene: SKScene {
             
             self.physicsWorld.addJoint(theJoint)
             
-
-         //   then create a line and pin it to the nodes duh
             
-/*
-            
-            let arrowPath = CGPath.bezierPathWithArrowFromPoint(CGPointMake(startNode.position.x,startNode.position.y), endPoint: CGPointMake(loc.x,loc.y), tailWidth: 2, headWidth: 10, headLength: 10, d1: 0.25, d2: 0.75)
-            
-            
-            var joinLine = SKShapeNode(path: arrowPath)
-            joinLine.name = "nodeLine"
-            joinLine.zPosition = -1
-            joinLine.fillColor = NSColor.whiteColor()
-            joinLine.physicsBody = SKPhysicsBody(polygonFromPath: arrowPath)
-            joinLine.physicsBody?.affectedByGravity = false
-            
-             joinLine.physicsBody?.categoryBitMask = ColliderType.NodeLine.rawValue
-
-            joinLine.physicsBody?.collisionBitMask = 0
-
-            
-            self.addChild(joinLine)
-            
-
-            
-            let startJoint = SKPhysicsJointPin.jointWithBodyA(startNode.physicsBody, bodyB: joinLine.physicsBody, anchor: startNode.position)
-            //let startSpringJoint = SKPhysicsJointSpring.jointWithBodyA(startNode.physicsBody, bodyB: joinLine.physicsBody, anchorA: startNode.position, anchorB:
-            self.physicsWorld.addJoint(startJoint)
-
-            let endJoint = SKPhysicsJointPin.jointWithBodyA(releasedNode.physicsBody, bodyB: joinLine.physicsBody, anchor: releasedNode.position)
-            self.physicsWorld.addJoint(endJoint)
-            */
             
             //now add the necessary relationships in the data
             var startIDNode : PlexusBNNode = startNode as PlexusBNNode
@@ -425,8 +427,6 @@ class PlexusBNScene: SKScene {
         }
         
 
-        
-        
         
         
         //remove all existing lines
@@ -484,13 +484,26 @@ class PlexusBNScene: SKScene {
     
     
     func reloadData() { //this just removes the nodes so that update can restopre them
-        self.enumerateChildNodesWithName("bnNode", usingBlock: { thisLine, stop in
-            thisLine.removeFromParent()
-        })
+        
         self.enumerateChildNodesWithName("nodeName", usingBlock: { thisLine, stop in
             thisLine.removeFromParent()
         })
+        
+        self.enumerateChildNodesWithName("bnNode", usingBlock: { thisLine, stop in
+            var idNode : PlexusBNNode = thisLine as PlexusBNNode
+
+            let oldPoint : CGPoint = idNode.position
+            let oldNode : BNNode = idNode.node
+            thisLine.removeFromParent()
+            self.makeNode(oldNode, inPos: oldPoint)
+            
+            
+        })
+
+        
+        
     }
+    
     
     
     override func update(currentTime: CFTimeInterval) {
@@ -506,19 +519,6 @@ class PlexusBNScene: SKScene {
         thisLine.removeFromParent()
         })
         
-        /*
-        //set not glowing all
-        self.enumerateChildNodesWithName("bnNode", usingBlock: { thisNode, stop in
-            var noglowNode : SKShapeNode = thisNode as SKShapeNode
-            noglowNode.glowWidth = 0
-            
-        })
-*/
-        
-      
-        
-
-
 
         
         //make sure all listed nodes are drawn
@@ -528,6 +528,8 @@ class PlexusBNScene: SKScene {
             let curNodes : [BNNode]  = nodesController.arrangedObjects as [BNNode]
 
             for curNode :BNNode in curNodes{
+                
+                
                 
                 
                 var matchNode = false
@@ -545,7 +547,7 @@ class PlexusBNScene: SKScene {
                 
                 if(!matchNode){//no visible node exists, so make one
 
-                    self.makeNode(curNode)
+                    self.makeNode(curNode, inPos: CGPointMake(self.frame.width*0.5,  self.frame.height*0.5) )
                     
                 }
 
@@ -627,9 +629,22 @@ class PlexusBNScene: SKScene {
                 
             }
             
+            
+            
+            
+            //match names
+            /*
+            for curNode :BNNode in curNodes{
+                curNode.setValue(curNode.nodeLink.name, forKey: "name")
+            }
+            */
+            
+
+
+            
             //glow selected
             
-            /*
+            
             
             self.enumerateChildNodesWithName("bnNode", usingBlock: { thisNode, stop in
                 var noglowNode : SKShapeNode = thisNode as SKShapeNode
@@ -651,15 +666,15 @@ class PlexusBNScene: SKScene {
                     
                 })
             }
-            */
+
 
            
         }
 
 
         
-
-      /*
+/*
+      
         var selNodes : [BNNode] = nodesController.selectedObjects as [BNNode]
         for selNode : BNNode in selNodes {
             
@@ -671,13 +686,17 @@ class PlexusBNScene: SKScene {
                     idNode.glowWidth = 5
                     
                 }
+                else {
+                    idNode.glowWidth = 0
+                }
+        
                 
             })
             
             
         }
+
         */
-        
         
         /* Called before each frame is rendered */
         var angle : CGFloat = 0.0
@@ -725,23 +744,23 @@ class PlexusBNScene: SKScene {
 
             if(idNode.position.x < self.frame.width*0.05){
                 idNode.position.x = self.frame.width*0.1
-                println("too left")
+                //println("too left")
                 
             }
             if(idNode.position.y < self.frame.height*0.05){
                 idNode.position.y = self.frame.height*0.1
-                println("too low")
+               // println("too low")
                 
             }
             
             if((idNode.position.x + idNode.frame.width) > self.frame.width*0.95){
                 idNode.position.x = (self.frame.width*0.9 - idNode.frame.width)
-                println("too right")
+               // println("too right")
                 
             }
             if((idNode.position.y + idNode.frame.height) > self.frame.height*0.95){
                 idNode.position.y = (self.frame.height*0.9 - idNode.frame.height)
-               println("too high")
+              // println("too high")
             }
         
 
@@ -751,10 +770,10 @@ class PlexusBNScene: SKScene {
         
     }
     
-    func makeNode(inNode : BNNode){
+    func makeNode(inNode : BNNode, inPos: CGPoint){
         
         
-        let myLabel = SKLabelNode(text: inNode.name)
+        let myLabel = SKLabelNode(text: inNode.nodeLink.name)
         myLabel.fontSize = 18
         myLabel.zPosition = 1
         myLabel.name = "nodeName"
@@ -774,16 +793,11 @@ class PlexusBNScene: SKScene {
 
         
         let shape = PlexusBNNode(path: shapePath)
-        //FIXME node will probably be drag/droppped
-        //var xrand = (CGFloat(arc4random()) /  CGFloat(UInt32.max))
-        //var yrand = (CGFloat(arc4random()) /  CGFloat(UInt32.max))
+
+
+       // shape.position = CGPointMake(self.frame.width*0.5,  self.frame.height*0.5)
         
-        //var xrand = (CGFloat(arc4random_uniform(88)+5) / CGFloat(100))
-        //var yrand = (CGFloat(arc4random_uniform(88)+5) / CGFloat(100))
-
-
-       // shape.position = CGPointMake(self.frame.width*xrand,  self.frame.height*yrand)
-        shape.position = CGPointMake(self.frame.width*0.5,  self.frame.height*0.5)
+        shape.position = inPos
         shape.userInteractionEnabled = true
         shape.physicsBody = SKPhysicsBody(rectangleOfSize: CGRectMake(-(nodeWidth/2), -(nodeHeight/2), nodeWidth, nodeHeight).size)
         shape.physicsBody?.mass = 1.0
@@ -832,6 +846,12 @@ class PlexusBNScene: SKScene {
         return atan2(nodeB.position.y - nodeA.position.y, nodeB.position.x - nodeA.position.x)
         
     }
+    
+
+    func mocDidChange(notification: NSNotification){
+        self.reloadData()
+    }
+
     
 
 
