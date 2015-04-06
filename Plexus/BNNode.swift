@@ -19,5 +19,6 @@ class BNNode: Node {
     @NSManaged var nodeLink: NodeLink
     @NSManaged var influences: NSSet
     @NSManaged var influencedBy: NSSet
-
+    @NSManaged var postCount: NSData?
+    @NSManaged var postArray: NSData?
 }
