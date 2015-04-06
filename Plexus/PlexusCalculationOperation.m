@@ -354,7 +354,7 @@
     
     //test inpout
     
-    
+    /*
     
     NSLog(@"\n\ninfluencedby and  influences");
     
@@ -403,7 +403,7 @@
     }
     
     printf("\n\n----------------------\n\n");
-    
+    */
     
     
     //Load the kernel
