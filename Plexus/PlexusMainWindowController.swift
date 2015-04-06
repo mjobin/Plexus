@@ -101,6 +101,7 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
 
     
     @IBAction func  calculate(x:NSToolbarItem){
+        var errorPtr : NSErrorPointer = nil
         
         var i : Int = 0
         
@@ -161,18 +162,65 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
         operr = op.calc(self)
 
         if(operr == nil){
-            println("no prob")
+          //  println("no prob")
             var resultNodes : NSMutableArray = op.getResults(self)
+            
             
             var fi = 0
             for fNode in resultNodes {
+                
+                var postCount = [Int](count: 101, repeatedValue: 0)
+                
+                var curtop = 0
+                
+                var inNode : BNNode = nodesForCalc[fi]  //FIXME is this the same node???
+                
+                
 
-                var fline : NSMutableArray = fNode as NSMutableArray
+                var fline : [Double] = fNode as [Double]
+                
+               // println("flline \(fline)")
+                
+                
+                
                 var gi = 0
-                for gNode in fline {
-                    //println("\(fi) \(gi) \(gNode)")
+                for gNode : Double in fline {
+                    
+
+                    
+                    let newPostPt : BNPostDistPt = BNPostDistPt(entity: NSEntityDescription.entityForName("BNPostDistPt", inManagedObjectContext: self.moc)!, insertIntoManagedObjectContext: self.moc)
+                    newPostPt.setValue(gNode, forKey: "postValue")
+                    
+                    nodesForCalc[fi].addBNPostDistPtObject(newPostPt)
+                    
+                    newPostPt.setValue(nodesForCalc[fi], forKey: "bnNode")
+                    
+                   
+                    if(gNode == gNode && gNode >= 0.0 && gNode <= 1.0) {//fails if nan
+                        
+                        let whut = (Int)(floor(gNode/0.01))
+
+                        postCount[whut]++
+
+                    }
+                    
+                    
+                    else{
+                        println("problem detected in reloadData")
+                    }
+
                     gi++
                 }
+
+                
+    
+                
+                let archivedPostCount = NSKeyedArchiver.archivedDataWithRootObject(postCount)
+                inNode.setValue(archivedPostCount, forKey: "postCount")
+                let archivedPostArray = NSKeyedArchiver.archivedDataWithRootObject(fline)
+                inNode.setValue(archivedPostArray, forKey: "postArray")
+                
+                moc.save(errorPtr)
 
                 fi++
                 
