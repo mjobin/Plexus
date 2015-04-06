@@ -186,15 +186,6 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
                 var gi = 0
                 for gNode : Double in fline {
                     
-
-                    
-                    let newPostPt : BNPostDistPt = BNPostDistPt(entity: NSEntityDescription.entityForName("BNPostDistPt", inManagedObjectContext: self.moc)!, insertIntoManagedObjectContext: self.moc)
-                    newPostPt.setValue(gNode, forKey: "postValue")
-                    
-                    nodesForCalc[fi].addBNPostDistPtObject(newPostPt)
-                    
-                    newPostPt.setValue(nodesForCalc[fi], forKey: "bnNode")
-                    
                    
                     if(gNode == gNode && gNode >= 0.0 && gNode <= 1.0) {//fails if nan
                         
@@ -206,7 +197,7 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
                     
                     
                     else{
-                        println("problem detected in reloadData")
+                        println("problem detected in reloadData. gNode is \(gNode)")
                     }
 
                     gi++
