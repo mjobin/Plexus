@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="6751" systemVersion="14C2513" minimumToolsVersion="Automatic" macOSVersion="Automatic" iOSVersion="Automatic">
     <entity name="BNNode" representedClassName="Plexus.BNNode" syncable="YES">
+        <attribute name="postArray" optional="YES" attributeType="Binary" syncable="YES"/>
+        <attribute name="postCount" optional="YES" attributeType="Binary" valueTransformerName="PlexusBNNodePostArrayTransformer" syncable="YES"/>
         <attribute name="priorDistType" optional="YES" attributeType="Integer 32" minValueString="0" defaultValueString="0" syncable="YES"/>
         <attribute name="priorV1" optional="YES" attributeType="Double" defaultValueString="0.0" syncable="YES"/>
         <attribute name="priorV2" optional="YES" attributeType="Double" defaultValueString="0.0" syncable="YES"/>
@@ -37,13 +39,13 @@
         <relationship name="entry" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Entry" inverseName="image" inverseEntity="Entry" syncable="YES"/>
     </entity>
     <entity name="Model" representedClassName="Plexus.Model" syncable="YES">
-        <attribute name="burnins" optional="YES" attributeType="Integer 32" minValueString="0" defaultValueString="1000" syncable="YES"/>
+        <attribute name="burnins" optional="YES" attributeType="Integer 32" minValueString="0" defaultValueString="100" syncable="YES"/>
         <attribute name="dateCreated" optional="YES" attributeType="Date" syncable="YES"/>
         <attribute name="dateModded" optional="YES" attributeType="Date" syncable="YES"/>
         <attribute name="image" optional="YES" attributeType="Binary" allowsExternalBinaryDataStorage="YES" syncable="YES"/>
         <attribute name="name" optional="YES" attributeType="String" defaultValueString="New Model" syncable="YES"/>
-        <attribute name="runsper" optional="YES" attributeType="Integer 32" minValueString="0" defaultValueString="10000" syncable="YES"/>
-        <attribute name="runstot" optional="YES" attributeType="Integer 32" minValueString="0" defaultValueString="100000" syncable="YES"/>
+        <attribute name="runsper" optional="YES" attributeType="Integer 32" minValueString="0" defaultValueString="1000" syncable="YES"/>
+        <attribute name="runstot" optional="YES" attributeType="Integer 32" minValueString="0" defaultValueString="10000" syncable="YES"/>
         <relationship name="bnnode" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="BNNode" inverseName="model" inverseEntity="BNNode" syncable="YES"/>
         <relationship name="children" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="Model" inverseName="parent" inverseEntity="Model" syncable="YES"/>
         <relationship name="dataset" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Dataset" inverseName="model" inverseEntity="Dataset" syncable="YES"/>
@@ -58,7 +60,7 @@
         <relationship name="entry" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Entry" inverseName="trait" inverseEntity="Entry" syncable="YES"/>
     </entity>
     <elements>
-        <element name="BNNode" positionX="54" positionY="18" width="128" height="150"/>
+        <element name="BNNode" positionX="54" positionY="18" width="128" height="180"/>
         <element name="ConnectionNode" positionX="-29" positionY="207" width="128" height="58"/>
         <element name="Dataset" positionX="63" positionY="-157" width="128" height="133"/>
         <element name="Entry" positionX="-468" positionY="-36" width="128" height="180"/>
