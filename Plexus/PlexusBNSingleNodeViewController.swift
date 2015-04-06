@@ -67,16 +67,11 @@ class PlexusBNSingleNodeViewController: NSViewController, CPTScatterPlotDataSour
       //  plotSpace.yRange = yRange
         
         // Axes
-        
+
         var axisSet = CPTXYAxisSet(frame:self.graphView.bounds)
         axisSet.xAxis.majorTickLength = 0.5
         axisSet.yAxis.majorTickLength = 0.5
-        
-
-        
         graph.axisSet = axisSet
-        
-
         
         
         var priorPlot = CPTScatterPlot(frame:graph.bounds)
@@ -128,27 +123,49 @@ class PlexusBNSingleNodeViewController: NSViewController, CPTScatterPlotDataSour
         if(curNodes.count>0) {
             curNode = curNodes[0]
             
+            graph.title = curNode.nodeLink.name
+            
             priorDist = Int(curNode.priorDistType)
             V1 = Double(curNode.priorV1)
             V2 = Double(curNode.priorV2)
 
+     
+            if curNode.postCount != nil {
+
+                let postCount = NSKeyedUnarchiver.unarchiveObjectWithData(curNode.valueForKey("postCount") as NSData) as [Int]
+                var postData = [NSNumber]()
+                var curtop = 0
+                for thisPost in postCount {
+                    if (curtop < thisPost) {
+                        curtop = thisPost
+                    }
+                }
+                for thisPost : Int in postCount {
+                    postData.append(Double(thisPost)/Double(curtop))
+                }
+                
+                println("postData: \(postData)")
+                
+                self.dataForChart = postData
+            }
+            else {
+                
+                self.dataForChart = [Double](count: 100, repeatedValue: 0.0)
+            }
+
+
+            
             
         }
         
-      //  println("reload Data")
+        else { //no node, just move graph off view
+            priorDist = 0
+            V1 = -10000.000
+            V2 = 0.0
+            self.dataForChart = [Double](count: 100, repeatedValue: 0.0)
+        }
         
 
-        
-        //FIXME dummy data
-       // self.dataForChart = [0.3, 0.3, 0.1, 0.7]
-        self.dataForChart = [Double](count: 100, repeatedValue: 0.5)
-        /*
-        var rmax = arc4random_uniform(100)+50
-        
-        for i in 1...rmax {
-            self.dataForChart.append((CGFloat(arc4random()) /  CGFloat(UInt32.max)))
-        }
-        */
         
         graph.reloadData()
         
@@ -171,12 +188,9 @@ class PlexusBNSingleNodeViewController: NSViewController, CPTScatterPlotDataSour
             return (Double(idx)/numrec)
         }
         if(fieldEnum == 1){ //y
-            //FIXME dummy util i can get the real data
-            
 
-            
             if(plot.identifier.isEqual("PriorPlot")){
-                // println(idx)
+
                 
                 let nidx = (Double(idx)/numrec)
                 let nnidx = (Double(idx+1)/numrec)
@@ -200,7 +214,6 @@ class PlexusBNSingleNodeViewController: NSViewController, CPTScatterPlotDataSour
                     }
                     
                 case 2: //gaussian
-                   //// println(gaussian(dummyV1, sigma: dummyV2, x: nidx))
                     
                     return gaussian(V1, sigma: V2, x: nidx)
                     
