@@ -40,6 +40,7 @@
     </entity>
     <entity name="Model" representedClassName="Plexus.Model" syncable="YES">
         <attribute name="burnins" optional="YES" attributeType="Integer 32" minValueString="0" defaultValueString="100" syncable="YES"/>
+        <attribute name="complete" optional="YES" attributeType="Boolean" defaultValueString="NO" syncable="YES"/>
         <attribute name="dateCreated" optional="YES" attributeType="Date" syncable="YES"/>
         <attribute name="dateModded" optional="YES" attributeType="Date" syncable="YES"/>
         <attribute name="image" optional="YES" attributeType="Binary" allowsExternalBinaryDataStorage="YES" syncable="YES"/>
@@ -65,7 +66,7 @@
         <element name="Dataset" positionX="63" positionY="-157" width="128" height="133"/>
         <element name="Entry" positionX="-468" positionY="-36" width="128" height="180"/>
         <element name="Image" positionX="-108" positionY="324" width="128" height="90"/>
-        <element name="Model" positionX="349" positionY="-9" width="128" height="210"/>
+        <element name="Model" positionX="349" positionY="-9" width="128" height="225"/>
         <element name="NodeLink" positionX="-297" positionY="-126" width="128" height="73"/>
         <element name="Trait" positionX="-279" positionY="317" width="128" height="75"/>
     </elements>
