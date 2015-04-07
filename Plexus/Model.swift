@@ -19,6 +19,7 @@ class Model: NSManagedObject {
     @NSManaged var burnins: NSNumber
     @NSManaged var runsper: NSNumber
     @NSManaged var runstot: NSNumber
+    @NSManaged var complete: NSNumber
     @NSManaged var dateModded: NSDate
     @NSManaged var dateCreated: NSDate
     
