@@ -709,19 +709,19 @@
                                         <segue destination="xgZ-xw-JYg" kind="popover" identifier="DatasetPopover" popoverAnchorView="tYP-cr-HVe" popoverBehavior="t" preferredEdge="maxY" id="CDx-BG-ApR"/>
                                     </connections>
                                 </toolbarItem>
-                                <toolbarItem implicitItemIdentifier="54996549-9BC3-4C8D-8E7B-A28EA9026930" label="Calculate" paletteLabel="Calculate" tag="-1" id="dgg-D5-0xQ">
+                                <toolbarItem implicitItemIdentifier="54996549-9BC3-4C8D-8E7B-A28EA9026930" label="Calculate" paletteLabel="Calculate" tag="-1" image="NSAdvanced" id="dgg-D5-0xQ">
                                     <connections>
                                         <action selector="calculate:" target="B8D-0N-5wS" id="VCg-wJ-cZX"/>
                                     </connections>
                                 </toolbarItem>
-                                <toolbarItem implicitItemIdentifier="E18303A5-037B-44FE-878B-72401FAAC926" label="Models" paletteLabel="Models" image="AE9B9F0B-25EF-4EBA-A7A1-A10F8561CECA" id="VR9-AM-azT">
+                                <toolbarItem implicitItemIdentifier="E18303A5-037B-44FE-878B-72401FAAC926" label="Models" paletteLabel="Models" image="2E134BB0-61FF-41C5-AF7A-949D91F18056" id="VR9-AM-azT">
                                     <nil key="toolTip"/>
                                     <size key="minSize" width="13" height="13"/>
                                     <size key="maxSize" width="37" height="34"/>
                                     <button key="view" horizontalHuggingPriority="750" verticalHuggingPriority="750" id="vcL-Vh-Set">
                                         <rect key="frame" x="5" y="14" width="37" height="34"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="squareTextured" bezelStyle="texturedSquare" image="AE9B9F0B-25EF-4EBA-A7A1-A10F8561CECA" imagePosition="only" alignment="left" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="s8L-6c-2d7">
+                                        <buttonCell key="cell" type="squareTextured" bezelStyle="texturedSquare" image="2E134BB0-61FF-41C5-AF7A-949D91F18056" imagePosition="only" alignment="left" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="s8L-6c-2d7">
                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
@@ -1598,12 +1598,12 @@ Gw
                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                                 <connections>
+                                    <binding destination="twQ-tO-BoE" name="value" keyPath="selection.burnins" id="I5A-I7-NZV"/>
                                     <binding destination="twQ-tO-BoE" name="enabled" keyPath="selection.complete" id="rtV-dw-np6">
                                         <dictionary key="options">
                                             <string key="NSValueTransformerName">NSNegateBoolean</string>
                                         </dictionary>
                                     </binding>
-                                    <binding destination="twQ-tO-BoE" name="value" keyPath="selection.burnins" id="I5A-I7-NZV"/>
                                 </connections>
                             </textField>
                             <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="jRI-9G-sO3">
@@ -2005,8 +2005,8 @@ Gw
                                                         <binding destination="aRr-nD-J4r" name="value" keyPath="arrangedObjects.nodeLink.name" id="z8O-z5-meK"/>
                                                     </connections>
                                                 </tableColumn>
-                                                <tableColumn width="102" minWidth="10" maxWidth="3.4028234663852886e+38" id="MZS-tf-rEZ">
-                                                    <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="left" title="Prior Type">
+                                                <tableColumn width="63.70703125" minWidth="10" maxWidth="3.4028234663852886e+38" id="MZS-tf-rEZ">
+                                                    <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="left" title="Type">
                                                         <font key="font" metaFont="smallSystem"/>
                                                         <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
                                                         <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
@@ -2050,7 +2050,7 @@ Gw
                                                         <binding destination="aRr-nD-J4r" name="value" keyPath="arrangedObjects.priorV1" id="EP3-Rs-05g"/>
                                                     </connections>
                                                 </tableColumn>
-                                                <tableColumn width="116" minWidth="10" maxWidth="3.4028234663852886e+38" id="FRP-g0-djF">
+                                                <tableColumn width="154" minWidth="10" maxWidth="3.4028234663852886e+38" id="FRP-g0-djF">
                                                     <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="left" title="V2">
                                                         <font key="font" metaFont="smallSystem"/>
                                                         <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
@@ -2270,7 +2270,7 @@ Gw
         </scene>
     </scenes>
     <resources>
-        <image name="AE9B9F0B-25EF-4EBA-A7A1-A10F8561CECA" width="1" height="1">
+        <image name="2E134BB0-61FF-41C5-AF7A-949D91F18056" width="1" height="1">
             <mutableData key="keyedArchiveRepresentation">
 YnBsaXN0MDDUAQIDBAUGPj9YJHZlcnNpb25YJG9iamVjdHNZJGFyY2hpdmVyVCR0b3ASAAGGoK4HCBMU
 GR4fIyQsLzI4O1UkbnVsbNUJCgsMDQ4PEBESVk5TU2l6ZVYkY2xhc3NcTlNJbWFnZUZsYWdzVk5TUmVw
@@ -2323,6 +2323,7 @@ AAAAAAAAAAAAAAAAAAozA
         </image>
         <image name="NSActionTemplate" width="14" height="14"/>
         <image name="NSAddTemplate" width="11" height="11"/>
+        <image name="NSAdvanced" width="32" height="32"/>
         <image name="NSInfo" width="32" height="32"/>
         <image name="NSLockLockedTemplate" width="10" height="14"/>
         <image name="NSLockUnlockedTemplate" width="10" height="14"/>
