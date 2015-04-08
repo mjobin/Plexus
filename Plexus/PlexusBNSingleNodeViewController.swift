@@ -52,25 +52,49 @@ class PlexusBNSingleNodeViewController: NSViewController, CPTScatterPlotDataSour
         graph = CPTXYGraph(frame:self.graphView.bounds)
         self.graphView.hostedGraph = graph
         
-        graph.title = "Graph Title"
+        graph.title = ""
 
+        graph.paddingTop = 10.0
+        graph.paddingBottom = 10.0
+        graph.paddingLeft = 10.0
+        graph.paddingRight = 10.0
         
         var plotSpace : CPTXYPlotSpace = graph.defaultPlotSpace as CPTXYPlotSpace
         plotSpace.allowsUserInteraction = false
-      //  var xRange = plotSpace.xRange.mutableCopy() as CPTMutablePlotRange
-       // var yRange = plotSpace.yRange.mutableCopy() as CPTMutablePlotRange
         
         
-    //    xRange.setLengthFloat(1.2)
-      //  yRange.setLengthFloat(1.2)
-       // plotSpace.xRange = xRange
-      //  plotSpace.yRange = yRange
+        var xRange = plotSpace.xRange.mutableCopy() as CPTMutablePlotRange
+        var yRange = plotSpace.yRange.mutableCopy() as CPTMutablePlotRange
+        
+       // xRange.setLengthFloat(1.2)
+        //yRange.setLengthFloat(1.2)
+
+        
+       // println("xR length \(xRange.lengthDouble)")
+
+        plotSpace.xRange = xRange
+        plotSpace.yRange = yRange
+        
+//        graph.defaultPlotSpace = plotSpace
+
         
         // Axes
 
-        var axisSet = CPTXYAxisSet(frame:self.graphView.bounds)
+       // var axisSet = CPTXYAxisSet(frame:self.graphView.bounds)
+        var axisSet = graph.axisSet as CPTXYAxisSet
+        axisSet.xAxis.axisConstraints = CPTConstraints.constraintWithUpperOffset(1.0)
+        axisSet.yAxis.axisConstraints = CPTConstraints.constraintWithUpperOffset(1.0)
+        axisSet.yAxis.axisConstraints = CPTConstraints.constraintWithLowerOffset(0.0)
+        axisSet.xAxis.axisConstraints = CPTConstraints.constraintWithLowerOffset(0.0)
+        axisSet.xAxis.tickDirection = CPTSign.Positive
+        axisSet.yAxis.tickDirection = CPTSign.Positive
+
+
+        
         axisSet.xAxis.majorTickLength = 0.5
+        axisSet.xAxis.minorTicksPerInterval = 3
         axisSet.yAxis.majorTickLength = 0.5
+        axisSet.yAxis.minorTicksPerInterval = 3
         graph.axisSet = axisSet
         
         
@@ -79,7 +103,7 @@ class PlexusBNSingleNodeViewController: NSViewController, CPTScatterPlotDataSour
         var priorLineStyle = CPTMutableLineStyle()
         priorLineStyle.miterLimit = 1.0
         priorLineStyle.lineWidth = 2.0
-        priorLineStyle.lineColor = CPTColor.greenColor()
+        priorLineStyle.lineColor = CPTColor.grayColor()
         priorPlot.dataLineStyle = priorLineStyle
         
         priorPlot.interpolation = CPTScatterPlotInterpolation.Curved
@@ -144,7 +168,7 @@ class PlexusBNSingleNodeViewController: NSViewController, CPTScatterPlotDataSour
                     postData.append(Double(thisPost)/Double(curtop))
                 }
                 
-                println("postData: \(postData)")
+               // println("postData: \(postData)")
                 
                 self.dataForChart = postData
             }
@@ -160,9 +184,9 @@ class PlexusBNSingleNodeViewController: NSViewController, CPTScatterPlotDataSour
         
         else { //no node, just move graph off view
             priorDist = 0
-            V1 = -10000.000
-            V2 = 0.0
-            self.dataForChart = [Double](count: 100, repeatedValue: 0.0)
+            V1 = -10000.0
+            V2 = -10000.0
+            self.dataForChart = [Double](count: 100, repeatedValue: -10000.0)
         }
         
 
