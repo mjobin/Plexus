@@ -175,13 +175,8 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
                 
                 var inNode : BNNode = nodesForCalc[fi]  //FIXME is this the same node???
                 
-                
-
                 var fline : [Double] = fNode as [Double]
-                
-               // println("flline \(fline)")
-                
-                
+
                 
                 var gi = 0
                 for gNode : Double in fline {
@@ -202,9 +197,6 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
 
                     gi++
                 }
-
-                
-    
                 
                 let archivedPostCount = NSKeyedArchiver.archivedDataWithRootObject(postCount)
                 inNode.setValue(archivedPostCount, forKey: "postCount")
@@ -221,6 +213,8 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
         }
 
 
+        curModel.setValue(true, forKey: "complete")
+        moc.save(errorPtr)
         
         self.contentViewController?.dismissViewController(self.progressViewController!)
         
