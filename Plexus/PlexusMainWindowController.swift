@@ -10,6 +10,7 @@ import Cocoa
 import CoreData
 import OpenCL
 
+
 class PlexusMainWindowController: NSWindowController, ProgressViewControllerDelegate {
     
     
@@ -28,7 +29,7 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
     override func windowWillLoad() {
 
         //Get MOC from App delegate
-        let appDelegate : AppDelegate = NSApplication.sharedApplication().delegate as AppDelegate
+        let appDelegate : AppDelegate = NSApplication.sharedApplication().delegate as! AppDelegate
         moc = appDelegate.managedObjectContext
 
         
@@ -44,13 +45,13 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
 
         }
         
-        let initDatasets = fetchedDatasets as [NSManagedObject]
+        let initDatasets = fetchedDatasets as! [NSManagedObject]
         if(initDatasets.count == 0){
             println("no datasets")
             //so make an initial one
-            let newDataset = NSEntityDescription.insertNewObjectForEntityForName("Dataset", inManagedObjectContext: moc) as NSManagedObject
+            let newDataset = NSEntityDescription.insertNewObjectForEntityForName("Dataset", inManagedObjectContext: moc) as! NSManagedObject
 
-            var newModel = NSEntityDescription.insertNewObjectForEntityForName("Model", inManagedObjectContext: moc) as NSManagedObject
+            var newModel = NSEntityDescription.insertNewObjectForEntityForName("Model", inManagedObjectContext: moc) as! NSManagedObject
             newModel.setValue("newmodel", forKey: "name")
             newModel.setValue(newDataset, forKey: "dataset")
             newModel.setValue(NSDate(), forKey: "dateCreated")
@@ -70,7 +71,7 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
 
 
         
-        mainSplitViewController = contentViewController as PlexusMainSplitViewController
+        mainSplitViewController = contentViewController as! PlexusMainSplitViewController
         //mainSplitViewController.mainWindowController = self
         mainSplitViewController.datasetController = self.datasetController
        // println(self.datasetController)
@@ -128,9 +129,9 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
         
 
         //collect data
-        var nodesForCalc : [BNNode] = mainSplitViewController.modelTabViewController?.bnSplitViewController?.nodesController.arrangedObjects as [BNNode]
+        var nodesForCalc : [BNNode] = mainSplitViewController.modelTabViewController?.bnSplitViewController?.nodesController.arrangedObjects as! [BNNode]
       
-        let curModels : [Model] = mainSplitViewController.modelTreeController?.selectedObjects as [Model]
+        let curModels : [Model] = mainSplitViewController.modelTreeController?.selectedObjects as! [Model]
         let curModel : Model = curModels[0]
         
         
@@ -175,7 +176,7 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
                 
                 var inNode : BNNode = nodesForCalc[fi]  //FIXME is this the same node???
                 
-                var fline : [Double] = fNode as [Double]
+                var fline : [Double] = fNode as! [Double]
 
                 
                 var gi = 0
@@ -251,10 +252,10 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
                 //Fetch all Datasets
                 
                 let datafetch = NSFetchRequest(entityName: "Dataset")
-                let datasets : [Dataset] = self.moc.executeFetchRequest(datafetch, error: errorPtr) as [Dataset]
+                let datasets : [Dataset] = self.moc.executeFetchRequest(datafetch, error: errorPtr) as! [Dataset]
                 
                 for dataset : Dataset in datasets {
-                    let entries : [Entry] = dataset.entry.allObjects as [Entry]
+                    let entries : [Entry] = dataset.entry.allObjects as! [Entry]
                     for entry : Entry in entries {
                         entry.name.writeToURL(sv.URL!, atomically: false, encoding: NSUTF8StringEncoding, error: nil)
                     }
@@ -346,7 +347,7 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
                     newDataset.addModelObject(newModel)
                     
                     
-                    let fileContents : String = NSString(contentsOfFile: inFile!.path!, encoding: NSUTF8StringEncoding, error: nil)!
+                    let fileContents : String = NSString(contentsOfFile: inFile!.path!, encoding: NSUTF8StringEncoding, error: nil)! as String
                     // print(fileContents)
                     var fileLines : [String] = fileContents.componentsSeparatedByString("\n")
                     
@@ -389,7 +390,7 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
                             self.moc.reset()
 
                             
-                            newDataset = self.moc.objectWithID(datasetID) as Dataset
+                            newDataset = self.moc.objectWithID(datasetID) as! Dataset
 
 
 
@@ -409,12 +410,12 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
 
 
                     let datafetch = NSFetchRequest(entityName: "Dataset")
-                    let datasets : [Dataset] = self.moc.executeFetchRequest(datafetch, error: errorPtr) as [Dataset]
+                    let datasets : [Dataset] = self.moc.executeFetchRequest(datafetch, error: errorPtr) as! [Dataset]
                     
                     
                     self.datasetController.addObjects(datasets)
 
-                    newDataset = self.moc.objectWithID(datasetID) as Dataset
+                    newDataset = self.moc.objectWithID(datasetID) as! Dataset
 
                     
                     let nDarray : [Dataset] = [newDataset]
@@ -437,13 +438,6 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
         })
             
 
-
-
-      
-        
-        
-
-        
         
         
         
@@ -455,7 +449,7 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
 
         if (segue.identifier == "DatasetPopover") {
 
-            let datasetViewController = segue.destinationController as PlexusDatasetViewController
+            let datasetViewController = segue.destinationController as! PlexusDatasetViewController
             datasetViewController.datasetController = self.datasetController
             
         }
@@ -466,27 +460,6 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
         self.contentViewController?.dismissViewController(self.progressViewController!)
     }
     
-
-    func getStringInfo(deviceId: cl_device_id, deviceInfo: Int32) -> String {
-        var valueSize: size_t = 0
-        clGetDeviceInfo(deviceId, cl_device_info(deviceInfo), 0, nil, &valueSize)
-        var value = Array<CChar>(count: Int(valueSize), repeatedValue: CChar(32))
-        clGetDeviceInfo(deviceId, cl_device_info(deviceInfo), valueSize, &value, nil)
-        let stringValue = NSString(bytes: &value, length: Int(valueSize), encoding: NSASCIIStringEncoding)
-        return stringValue as String
-    }
-    
-    func getNumericalInfo(deviceId: cl_device_id, deviceInfo: Int32) -> cl_uint {
-        var value = cl_uint(0)
-        clGetDeviceInfo(deviceId, cl_device_info(deviceInfo), UInt(sizeof(cl_uint)), &value, nil)
-        return value
-    }
-    
-    func getArrayNumericalInfo(deviceId: cl_device_id, deviceInfo: Int32) -> [cl_uint] {
-        var values = [cl_uint]()
-        clGetDeviceInfo(deviceId, cl_device_info(deviceInfo), UInt(sizeof(cl_uint)), &values, nil)
-        return values
-    }
 
 
 }

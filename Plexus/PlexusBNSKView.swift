@@ -8,6 +8,7 @@
 
 import Cocoa
 import SpriteKit
+import CoreServices
 
 class PlexusBNSKView: SKView, NSDraggingDestination {
     
@@ -19,10 +20,11 @@ class PlexusBNSKView: SKView, NSDraggingDestination {
     {
         
         super.init(coder: aDecoder)
-        var registeredTypes:[String] = [kUTTypeURL]
+        let kString : String = kUTTypeURL as String
+        var registeredTypes:[String] = [kString]
         self.registerForDraggedTypes(registeredTypes)
         
-        let appDelegate : AppDelegate = NSApplication.sharedApplication().delegate as AppDelegate
+        let appDelegate : AppDelegate = NSApplication.sharedApplication().delegate as! AppDelegate
         moc = appDelegate.managedObjectContext
     }
 
@@ -49,13 +51,13 @@ class PlexusBNSKView: SKView, NSDraggingDestination {
         let types : NSArray = pboard.types!
         
         
-        
-        let data : NSData = pboard.dataForType(kUTTypeURL)! as NSData
-        let draggedArray : NSArray = NSKeyedUnarchiver.unarchiveObjectWithData(data) as NSArray
+        let kString : String = kUTTypeURL as String
+        let data : NSData = pboard.dataForType(kString)!
+        let draggedArray : NSArray = NSKeyedUnarchiver.unarchiveObjectWithData(data) as! NSArray
         
 
         for object : AnyObject in draggedArray{
-            self.addNode(object as NSURL)
+            self.addNode(object as! NSURL)
            
         }
 
@@ -66,7 +68,7 @@ class PlexusBNSKView: SKView, NSDraggingDestination {
         var errorPtr : NSErrorPointer = nil
         if let id : NSManagedObjectID? = moc.persistentStoreCoordinator?.managedObjectIDForURIRepresentation(mourl){
             
-            var mo : NodeLink = moc.objectWithID(id!) as NodeLink
+            var mo : NodeLink = moc.objectWithID(id!) as! NodeLink
             
             
             var newNode : BNNode = BNNode(entity: NSEntityDescription.entityForName("BNNode", inManagedObjectContext: moc)!, insertIntoManagedObjectContext: moc)
@@ -74,7 +76,7 @@ class PlexusBNSKView: SKView, NSDraggingDestination {
             
 
 
-            var curModels : [Model] = modelTreeController.selectedObjects as [Model]
+            var curModels : [Model] = modelTreeController.selectedObjects as! [Model]
             var curModel : Model = curModels[0]
             curModel.addBNNodeObject(newNode)
 

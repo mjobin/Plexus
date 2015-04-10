@@ -22,7 +22,7 @@ class PlexusImageViewController: NSViewController {
     required init?(coder aDecoder: NSCoder)
     {
         
-        let appDelegate : AppDelegate = NSApplication.sharedApplication().delegate as AppDelegate
+        let appDelegate : AppDelegate = NSApplication.sharedApplication().delegate as! AppDelegate
         moc = appDelegate.managedObjectContext
         
         

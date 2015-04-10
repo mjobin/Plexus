@@ -17,7 +17,7 @@ class PlexusDatasetViewController: NSViewController {
     required init?(coder aDecoder: NSCoder)
     {
         
-        let appDelegate : AppDelegate = NSApplication.sharedApplication().delegate as AppDelegate
+        let appDelegate : AppDelegate = NSApplication.sharedApplication().delegate as! AppDelegate
         moc = appDelegate.managedObjectContext
         
         super.init(coder: aDecoder)
@@ -34,7 +34,7 @@ class PlexusDatasetViewController: NSViewController {
     
     var errorPtr : NSErrorPointer = nil
         
-        let oldDatasets : [Dataset] = datasetController.selectedObjects as [Dataset]
+        let oldDatasets : [Dataset] = datasetController.selectedObjects as! [Dataset]
         let oldDataset : Dataset = oldDatasets[0]
       //  println(oldDataset.name)
     
@@ -48,7 +48,7 @@ class PlexusDatasetViewController: NSViewController {
     
     
 
-        let oldEntries  = oldDataset.entry.allObjects as [Entry]
+        let oldEntries  = oldDataset.entry.allObjects as! [Entry]
         for oldEntry : Entry in oldEntries {
             
 
@@ -90,7 +90,7 @@ class PlexusDatasetViewController: NSViewController {
         if(parent.count > 0){
             
             
-            let theParents : [Entry]  = parent.allObjects as [Entry]
+            let theParents : [Entry]  = parent.allObjects as! [Entry]
             let theParent : Entry = theParents[0] as Entry
             newEntry.setValue(theParent, forKey: "parent")
             theParent.addChildObject(newEntry)
@@ -101,11 +101,11 @@ class PlexusDatasetViewController: NSViewController {
         
         
         
-        let oldTraits  = inEntry.trait.allObjects as [Trait]
+        let oldTraits  = inEntry.trait.allObjects as! [Trait]
         for oldTrait : Trait in oldTraits {
             var newTrait : Trait = Trait(entity: NSEntityDescription.entityForName("Trait", inManagedObjectContext: self.moc)!, insertIntoManagedObjectContext: self.moc)
             newTrait.setValue(oldTrait.name, forKey: "name")
-            newTrait.setValue(oldTrait.value, forKey: "value")
+            newTrait.setValue(oldTrait.traitValue, forKey: "value")
             newTrait.setValue(newEntry, forKey: "entry")
             newEntry.addTraitObject(newTrait)
         }
@@ -118,7 +118,7 @@ class PlexusDatasetViewController: NSViewController {
             
           //  println(inEntry.name)
             
-            let childEntries  = inEntry.children.allObjects as [Entry]
+            let childEntries  = inEntry.children.allObjects as! [Entry]
             for kid : Entry in childEntries{
                 recurEntry(inDataset, newDataset: newDataset, inEntry: kid, parent: newParent)
             }

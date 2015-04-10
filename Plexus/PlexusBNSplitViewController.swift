@@ -22,7 +22,7 @@ class PlexusBNSplitViewController: NSSplitViewController {
     required init?(coder aDecoder: NSCoder)
     {
         
-        let appDelegate : AppDelegate = NSApplication.sharedApplication().delegate as AppDelegate
+        let appDelegate : AppDelegate = NSApplication.sharedApplication().delegate as! AppDelegate
         moc = appDelegate.managedObjectContext
         
         super.init(coder: aDecoder)
@@ -57,7 +57,7 @@ class PlexusBNSplitViewController: NSSplitViewController {
         
        // println("bnsvc: \(self.view.constraints)")
         
-        var singleNodeViewItem = self.splitViewItems[1] as NSSplitViewItem  // 1 is lower pane
+        var singleNodeViewItem = self.splitViewItems[1] as! NSSplitViewItem  // 1 is lower pane
         singleNodeViewItem.animator().collapsed = false
         self.splitView.setPosition((view.frame.height/2), ofDividerAtIndex: 0)
         self.splitView.adjustSubviews()
@@ -69,7 +69,7 @@ class PlexusBNSplitViewController: NSSplitViewController {
     func toggleSingleNodeView(){
         println("splitview  \(self.splitView.frame)")
         
-        var singleNodeViewItem = self.splitViewItems[1] as NSSplitViewItem  // 1 is lower pane
+        var singleNodeViewItem = self.splitViewItems[1] as! NSSplitViewItem  // 1 is lower pane
         
         
 /*

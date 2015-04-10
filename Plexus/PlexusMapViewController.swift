@@ -21,7 +21,7 @@ class PlexusMapViewController: NSViewController {
     required init?(coder aDecoder: NSCoder)
     {
         
-        let appDelegate : AppDelegate = NSApplication.sharedApplication().delegate as AppDelegate
+        let appDelegate : AppDelegate = NSApplication.sharedApplication().delegate as! AppDelegate
         moc = appDelegate.managedObjectContext
         
         
@@ -42,7 +42,7 @@ class PlexusMapViewController: NSViewController {
         super.viewDidAppear()
         
         
-        let mapEntries : [Entry] = entryTreeController.selectedObjects as [Entry]
+        let mapEntries : [Entry] = entryTreeController.selectedObjects as! [Entry]
         if(mapEntries.count > 0){
             let mapEntry : Entry =  mapEntries[0]
             

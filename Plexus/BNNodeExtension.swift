@@ -73,7 +73,7 @@ extension BNNode {
         
         //println("CPT: Node name \(self.name) at depth \(depth)")
         //for every input node 
-        let theInfluencedBy : [BNNode] = self.influencedBy.allObjects as [BNNode]
+        let theInfluencedBy : [BNNode] = self.influencedBy.allObjects as! [BNNode]
         
 
         if(theInfluencedBy.count > 0){//continue up tree
@@ -121,7 +121,7 @@ extension BNNode {
         }
         
         
-        let theInfluencedBy : [BNNode] = self.influencedBy.allObjects as [BNNode]
+        let theInfluencedBy : [BNNode] = self.influencedBy.allObjects as! [BNNode]
         
         for thisInfluencedBy in theInfluencedBy {
             //skip any acciedntal self influences
@@ -141,7 +141,7 @@ extension BNNode {
         }
         
         
-        let theInfluences : [BNNode] = self.influences.allObjects as [BNNode]
+        let theInfluences : [BNNode] = self.influences.allObjects as! [BNNode]
         
         for thisInfluences in theInfluences {
             //skip any acciedntal self influences

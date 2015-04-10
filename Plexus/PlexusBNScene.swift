@@ -36,7 +36,7 @@ class PlexusBNScene: SKScene {
     override func didMoveToView(view: SKView) {
         
             
-            let appDelegate : AppDelegate = NSApplication.sharedApplication().delegate as AppDelegate
+            let appDelegate : AppDelegate = NSApplication.sharedApplication().delegate as! AppDelegate
             moc = appDelegate.managedObjectContext
         
         
@@ -138,7 +138,7 @@ class PlexusBNScene: SKScene {
         if(touchedNode.isEqualTo(self)) {
             //  println("miss")
             
-            let curModels : [Model] = modelTreeController.selectedObjects as [Model]
+            let curModels : [Model] = modelTreeController.selectedObjects as! [Model]
             let curModel : Model = curModels[0]
             //let curDataset : Dataset = curModel.dataset
             
@@ -261,7 +261,7 @@ class PlexusBNScene: SKScene {
         else {//touched existing node, can draw line between
             
             if(touchedNode.name == "nodeName"){//passing mouseDown to node beenath
-                var allNodes : [SKNode] = self.nodesAtPoint(touchedNode.position) as [SKNode]
+                var allNodes : [SKNode] = self.nodesAtPoint(touchedNode.position) as! [SKNode]
                 for theNode : SKNode in allNodes {
 
                     if(theNode.name == "bnNode" && theNode.position == touchedNode.position)
@@ -276,12 +276,12 @@ class PlexusBNScene: SKScene {
                 
                 
                 self.enumerateChildNodesWithName("bnNode", usingBlock: { thisNode, stop in
-                    var noglowNode : SKShapeNode = thisNode as SKShapeNode
+                    var noglowNode : SKShapeNode = thisNode as! SKShapeNode
                     noglowNode.glowWidth = 0
 
                 })
                 
-               var idNode : PlexusBNNode = touchedNode as PlexusBNNode
+               var idNode : PlexusBNNode = touchedNode as! PlexusBNNode
                 
                 idNode.glowWidth = 5
                 let idArray : [BNNode] = [idNode.node]
@@ -325,7 +325,7 @@ class PlexusBNScene: SKScene {
         var touchedNode : SKNode = self.nodeAtPoint(loc)
         
         if(touchedNode.name == "nodeName"){//passing mouseDown to node beenath
-            var allNodes : [SKNode] = self.nodesAtPoint(touchedNode.position) as [SKNode]
+            var allNodes : [SKNode] = self.nodesAtPoint(touchedNode.position) as! [SKNode]
             for theNode : SKNode in allNodes {
 
                 if(theNode.name == "bnNode" && theNode.position == touchedNode.position)
@@ -385,7 +385,7 @@ class PlexusBNScene: SKScene {
         
         
         if(releasedNode.name == "nodeName"){//passing mouseDown to node beenath
-            var allNodes : [SKNode] = self.nodesAtPoint(releasedNode.position) as [SKNode]
+            var allNodes : [SKNode] = self.nodesAtPoint(releasedNode.position) as! [SKNode]
             for theNode : SKNode in allNodes {
                 if(theNode.name == "bnNode" && theNode.position == releasedNode.position)
                 {
@@ -413,8 +413,8 @@ class PlexusBNScene: SKScene {
             
             
             //now add the necessary relationships in the data
-            var startIDNode : PlexusBNNode = startNode as PlexusBNNode
-            var releasedIDNode : PlexusBNNode = releasedNode as PlexusBNNode
+            var startIDNode : PlexusBNNode = startNode as! PlexusBNNode
+            var releasedIDNode : PlexusBNNode = releasedNode as! PlexusBNNode
             
             
             startIDNode.node.addInfluencesObject(releasedIDNode.node)
@@ -485,22 +485,70 @@ class PlexusBNScene: SKScene {
     
     func reloadData() { //this just removes the nodes so that update can restopre them
         
+      //  let curModels : [Model] = modelTreeController.selectedObjects as [Model]
+       // let curModel : Model = curModels[0]
+       // println("model \(curModel.name)")
+        
         self.enumerateChildNodesWithName("nodeName", usingBlock: { thisLine, stop in
             thisLine.removeFromParent()
         })
         
+        self.enumerateChildNodesWithName("bnNode", usingBlock: { thisLine, stop in
+
+            thisLine.removeFromParent()
+
+        })
+        
+        
+       //FIXME nodescontroller does not seem to know about the change yet
+        /*
+        
+        let curNodes : [BNNode]  = self.nodesController.arrangedObjects as [BNNode]
+        
+        for curNode :BNNode in curNodes{
+            
+            println("node in nodesController \(curNode.nodeLink.name)")
+            
+        }
+        */
+        
+        /*
         self.enumerateChildNodesWithName("bnNode", usingBlock: { thisLine, stop in
             var idNode : PlexusBNNode = thisLine as PlexusBNNode
 
             let oldPoint : CGPoint = idNode.position
             let oldNode : BNNode = idNode.node
             thisLine.removeFromParent()
+            
+            //FIXME
             self.makeNode(oldNode, inPos: oldPoint)
             
+            //recreate nodes - if the BNNode is currently in nodeController
+            
+            let curNodes : [BNNode]  = self.nodesController.arrangedObjects as [BNNode]
+            
+            for curNode :BNNode in curNodes{
+                
+                println("node in nodesController \(curNode.nodeLink.name)")
+                
+                self.enumerateChildNodesWithName("bnNode", usingBlock: { thisNode, stop in
+                    
+                    var idNode : PlexusBNNode = thisNode as PlexusBNNode
+                    
+                    if(idNode.node == curNode){
+                        //self.makeNode(oldNode, inPos: oldPoint)
+
+                    }
+                    
+                })
+
+                
+            }
+ 
             
         })
 
-        
+        */
         
     }
     
@@ -525,7 +573,7 @@ class PlexusBNScene: SKScene {
         
         if(nodesController != nil ){
         
-            let curNodes : [BNNode]  = nodesController.arrangedObjects as [BNNode]
+            let curNodes : [BNNode]  = nodesController.arrangedObjects as! [BNNode]
 
             for curNode :BNNode in curNodes{
                 
@@ -536,7 +584,7 @@ class PlexusBNScene: SKScene {
                 
                 self.enumerateChildNodesWithName("bnNode", usingBlock: { thisNode, stop in
                     
-                    var idNode : PlexusBNNode = thisNode as PlexusBNNode
+                    var idNode : PlexusBNNode = thisNode as! PlexusBNNode
                     
                     if(idNode.node == curNode){
                         matchNode = true
@@ -565,7 +613,7 @@ class PlexusBNScene: SKScene {
                 
                 self.enumerateChildNodesWithName("bnNode", usingBlock: { thisNode, stop in
                     
-                    var thisidNode : PlexusBNNode = thisNode as PlexusBNNode
+                    var thisidNode : PlexusBNNode = thisNode as! PlexusBNNode
                     
                     if(thisidNode.node == curNode){
                         idNode = thisidNode
@@ -575,7 +623,7 @@ class PlexusBNScene: SKScene {
                 })
                 
                 
-                let theInfluenced : [BNNode] = curNode.influences.allObjects as [BNNode]
+                let theInfluenced : [BNNode] = curNode.influences.allObjects as! [BNNode]
                 
 
 
@@ -588,7 +636,7 @@ class PlexusBNScene: SKScene {
                     
                     self.enumerateChildNodesWithName("bnNode", usingBlock: { thatNode, stop in
                         
-                        var thatidNode : PlexusBNNode = thatNode as PlexusBNNode
+                        var thatidNode : PlexusBNNode = thatNode as! PlexusBNNode
                         
                         if(thatidNode.node == thisInfluenced){
                             infNode = thatidNode
@@ -631,13 +679,7 @@ class PlexusBNScene: SKScene {
             
             
             
-            
-            //match names
-            /*
-            for curNode :BNNode in curNodes{
-                curNode.setValue(curNode.nodeLink.name, forKey: "name")
-            }
-            */
+    
             
 
 
@@ -647,17 +689,17 @@ class PlexusBNScene: SKScene {
             
             
             self.enumerateChildNodesWithName("bnNode", usingBlock: { thisNode, stop in
-                var noglowNode : SKShapeNode = thisNode as SKShapeNode
+                var noglowNode : SKShapeNode = thisNode as! SKShapeNode
                 noglowNode.glowWidth = 0
                 
             })
             
             
-            let selNodes : [BNNode]  = nodesController.selectedObjects as [BNNode]
+            let selNodes : [BNNode]  = nodesController.selectedObjects as! [BNNode]
             for selNode : BNNode in selNodes{
                 self.enumerateChildNodesWithName("bnNode", usingBlock: { thisNode, stop in
                     
-                    var idNode : PlexusBNNode = thisNode as PlexusBNNode
+                    var idNode : PlexusBNNode = thisNode as! PlexusBNNode
                     
                     if(idNode.node == selNode){ //found, so make it glow
                         idNode.glowWidth = 5
@@ -740,7 +782,7 @@ class PlexusBNScene: SKScene {
     func redrawNodes() {
 
        self.enumerateChildNodesWithName("bnNode", usingBlock: { thisNode, stop in
-            var idNode : PlexusBNNode = thisNode as PlexusBNNode
+            var idNode : PlexusBNNode = thisNode as! PlexusBNNode
 
             if(idNode.position.x < self.frame.width*0.05){
                 idNode.position.x = self.frame.width*0.1
@@ -849,6 +891,10 @@ class PlexusBNScene: SKScene {
     
 
     func mocDidChange(notification: NSNotification){
+        println(notification.userInfo)
+        
+     //   let updatedObjects = notification.userInfo.
+        
         self.reloadData()
     }
 

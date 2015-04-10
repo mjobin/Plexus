@@ -12,7 +12,7 @@ import CoreData
 class Image: NSManagedObject {
 
     @NSManaged var imageName: String
-    @NSManaged var imageRepresentation: NSData
+    //@NSManaged var imageRepresentation: NSData
     @NSManaged var entry: Entry
 
 }

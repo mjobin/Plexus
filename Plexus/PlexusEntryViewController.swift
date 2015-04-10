@@ -7,6 +7,8 @@
 //
 
 import Cocoa
+import CoreServices
+
 
 class PlexusEntryViewController: NSViewController, NSOutlineViewDelegate, NSOutlineViewDataSource {
 
@@ -23,7 +25,7 @@ class PlexusEntryViewController: NSViewController, NSOutlineViewDelegate, NSOutl
     required init?(coder aDecoder: NSCoder)
     {
 
-        let appDelegate : AppDelegate = NSApplication.sharedApplication().delegate as AppDelegate
+        let appDelegate : AppDelegate = NSApplication.sharedApplication().delegate as! AppDelegate
         moc = appDelegate.managedObjectContext
 
         super.init(coder: aDecoder)
@@ -32,11 +34,12 @@ class PlexusEntryViewController: NSViewController, NSOutlineViewDelegate, NSOutl
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        let appDelegate : AppDelegate = NSApplication.sharedApplication().delegate as AppDelegate
+        let appDelegate : AppDelegate = NSApplication.sharedApplication().delegate as! AppDelegate
         moc = appDelegate.managedObjectContext
         
     
-        var registeredTypes:[String] = [kUTTypeURL]
+        let kString : String = kUTTypeURL as String
+        var registeredTypes:[String] = [kString]
         entryOutlineView.registerForDraggedTypes(registeredTypes)
         entryOutlineView.setDraggingSourceOperationMask(NSDragOperation.Every, forLocal: true)
         entryOutlineView.setDraggingSourceOperationMask(NSDragOperation.Every, forLocal: false)
@@ -63,7 +66,7 @@ class PlexusEntryViewController: NSViewController, NSOutlineViewDelegate, NSOutl
     //nsoutlineview delegate methods
     func outlineView(outlineView: NSOutlineView, viewForTableColumn tableColumn: NSTableColumn?, item: AnyObject) -> NSView? {
        // println("outlineview viewfortabelciom")
-        var thisView : NSTableCellView = outlineView.makeViewWithIdentifier("Entry Cell", owner: self) as NSTableCellView
+        var thisView : NSTableCellView = outlineView.makeViewWithIdentifier("Entry Cell", owner: self) as! NSTableCellView
         
         
 
@@ -90,7 +93,8 @@ class PlexusEntryViewController: NSViewController, NSOutlineViewDelegate, NSOutl
         }
         
         let data : NSData = NSKeyedArchiver.archivedDataWithRootObject(mutableArray)
-        pasteboard.setData(data, forType: kUTTypeURL)
+        let kString : String = kUTTypeURL as String
+        pasteboard.setData(data, forType: kString)
         
         return true
     }

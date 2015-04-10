@@ -30,7 +30,7 @@ class PlexusBNSingleNodeViewController: NSViewController, CPTScatterPlotDataSour
     required init?(coder aDecoder: NSCoder)
     {
         
-        let appDelegate : AppDelegate = NSApplication.sharedApplication().delegate as AppDelegate
+        let appDelegate : AppDelegate = NSApplication.sharedApplication().delegate as! AppDelegate
         moc = appDelegate.managedObjectContext
         
         super.init(coder: aDecoder)
@@ -59,12 +59,12 @@ class PlexusBNSingleNodeViewController: NSViewController, CPTScatterPlotDataSour
         graph.paddingLeft = 10.0
         graph.paddingRight = 10.0
         
-        var plotSpace : CPTXYPlotSpace = graph.defaultPlotSpace as CPTXYPlotSpace
+        var plotSpace : CPTXYPlotSpace = graph.defaultPlotSpace as! CPTXYPlotSpace
         plotSpace.allowsUserInteraction = false
         
         
-        var xRange = plotSpace.xRange.mutableCopy() as CPTMutablePlotRange
-        var yRange = plotSpace.yRange.mutableCopy() as CPTMutablePlotRange
+        var xRange = plotSpace.xRange.mutableCopy() as! CPTMutablePlotRange
+        var yRange = plotSpace.yRange.mutableCopy() as! CPTMutablePlotRange
         
        // xRange.setLengthFloat(1.2)
         //yRange.setLengthFloat(1.2)
@@ -81,7 +81,7 @@ class PlexusBNSingleNodeViewController: NSViewController, CPTScatterPlotDataSour
         // Axes
 
        // var axisSet = CPTXYAxisSet(frame:self.graphView.bounds)
-        var axisSet = graph.axisSet as CPTXYAxisSet
+        var axisSet = graph.axisSet as! CPTXYAxisSet
         axisSet.xAxis.axisConstraints = CPTConstraints.constraintWithUpperOffset(1.0)
         axisSet.yAxis.axisConstraints = CPTConstraints.constraintWithUpperOffset(1.0)
         axisSet.yAxis.axisConstraints = CPTConstraints.constraintWithLowerOffset(0.0)
@@ -143,7 +143,7 @@ class PlexusBNSingleNodeViewController: NSViewController, CPTScatterPlotDataSour
     
     func reloadData() {
         //Get selected node
-        var curNodes : [BNNode] = nodesController.selectedObjects as [BNNode]
+        var curNodes : [BNNode] = nodesController.selectedObjects as! [BNNode]
         if(curNodes.count>0) {
             curNode = curNodes[0]
             
@@ -156,7 +156,7 @@ class PlexusBNSingleNodeViewController: NSViewController, CPTScatterPlotDataSour
      
             if curNode.postCount != nil {
 
-                let postCount = NSKeyedUnarchiver.unarchiveObjectWithData(curNode.valueForKey("postCount") as NSData) as [Int]
+                let postCount = NSKeyedUnarchiver.unarchiveObjectWithData(curNode.valueForKey("postCount") as! NSData) as! [Int]
                 var postData = [NSNumber]()
                 var curtop = 0
                 for thisPost in postCount {
@@ -204,17 +204,16 @@ class PlexusBNSingleNodeViewController: NSViewController, CPTScatterPlotDataSour
     }
     
     
-    func numberForPlot(plot: CPTPlot!, field fieldEnum: UInt, recordIndex idx: Int) -> NSNumber! {
-        
+    func numberForPlot(plot: CPTPlot!, field fieldEnum: UInt, recordIndex idx: UInt) -> AnyObject! {
         var numrec = Double(numberOfRecordsForPlot(plot))
-
+        
         if(fieldEnum == 0){//x
             return (Double(idx)/numrec)
         }
         if(fieldEnum == 1){ //y
-
+            
             if(plot.identifier.isEqual("PriorPlot")){
-
+                
                 
                 let nidx = (Double(idx)/numrec)
                 let nnidx = (Double(idx+1)/numrec)
@@ -256,17 +255,19 @@ class PlexusBNSingleNodeViewController: NSViewController, CPTScatterPlotDataSour
             }
                 
             else if(plot.identifier.isEqual("PostPlot")){
-                return self.dataForChart[idx] as NSNumber
+                //let nidx : NSNumber = NSNumber(unsignedLong: idx)
+                //let nidx : Int = Int(idx)
+                return self.dataForChart[Int(idx)] as NSNumber
             }
         }
-
-
-       // println("numberForPlot: \(self.dataForChart[idx] as NSNumber)")
-       //
-        return 0
         
-
+        
+        // println("numberForPlot: \(self.dataForChart[idx] as NSNumber)")
+        //
+        return 0
     }
+    
+    
     
     func gaussian(mu: Double, sigma: Double, x: Double) -> Double {
         var result :Double =  exp ( -pow (x - mu, 2) / (2 * pow( sigma, 2)))

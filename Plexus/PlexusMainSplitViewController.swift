@@ -65,7 +65,7 @@ class PlexusMainSplitViewController: NSSplitViewController {
        // println(self.splitViewItems.count)
         
         
-        var modelListViewItem = self.splitViewItems[3] as NSSplitViewItem  // 3 is right pane
+        var modelListViewItem = self.splitViewItems[3] as! NSSplitViewItem  // 3 is right pane
         
         modelListViewItem.animator().collapsed = !modelListViewItem.collapsed
         

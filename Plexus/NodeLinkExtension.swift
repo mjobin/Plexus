@@ -7,23 +7,22 @@
 //
 
 import Foundation
-
-
+import CoreServices
 
 extension NodeLink {
 
     func writableTypesForPasteboard(pasteboard: NSPasteboard!) -> [AnyObject] {
-        println("writable types")
-        var registeredTypes:[String] = [kUTTypeURL]
+        let kString : String = kUTTypeURL as String
+        var registeredTypes:[String] = [kString]
         return registeredTypes
     }
 
 
     func pasteboardPropertyListForType(type: String!) -> AnyObject! {
-        println("paste poretylist")
-        if(type == kUTTypeURL){
+        let kString : String = kUTTypeURL as String
+        if(type == kString){
             var moURI : NSURL = self.objectID.URIRepresentation()
-            return moURI.pasteboardPropertyListForType(kUTTypeURL)
+            return moURI.pasteboardPropertyListForType(kString)
         }
         return nil
     }

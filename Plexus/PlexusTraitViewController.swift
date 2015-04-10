@@ -7,6 +7,7 @@
 //
 
 import Cocoa
+import CoreServices
 
 class PlexusTraitViewController: NSViewController, NSTableViewDelegate, NSTableViewDataSource {
 
@@ -20,7 +21,7 @@ class PlexusTraitViewController: NSViewController, NSTableViewDelegate, NSTableV
     required init?(coder aDecoder: NSCoder)
     {
         
-        let appDelegate : AppDelegate = NSApplication.sharedApplication().delegate as AppDelegate
+        let appDelegate : AppDelegate = NSApplication.sharedApplication().delegate as! AppDelegate
         moc = appDelegate.managedObjectContext
         
         
@@ -30,8 +31,9 @@ class PlexusTraitViewController: NSViewController, NSTableViewDelegate, NSTableV
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        var registeredTypes:[String] = [kUTTypeURL]
+        
+        let kString : String = kUTTypeURL as String
+        var registeredTypes:[String] = [kString]
         traitsTableView.registerForDraggedTypes(registeredTypes)
         traitsTableView.setDraggingSourceOperationMask(NSDragOperation.Every, forLocal: true)
         traitsTableView.setDraggingSourceOperationMask(NSDragOperation.Every, forLocal: false)

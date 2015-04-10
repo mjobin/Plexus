@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="6751" systemVersion="14C2513" minimumToolsVersion="Automatic" macOSVersion="Automatic" iOSVersion="Automatic">
+<model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="7549" systemVersion="14D131" minimumToolsVersion="Automatic" macOSVersion="Automatic" iOSVersion="Automatic">
     <entity name="BNNode" representedClassName="Plexus.BNNode" syncable="YES">
         <attribute name="postArray" optional="YES" attributeType="Binary" syncable="YES"/>
         <attribute name="postCount" optional="YES" attributeType="Binary" valueTransformerName="PlexusBNNodePostArrayTransformer" syncable="YES"/>
@@ -57,7 +57,7 @@
         <relationship name="bnNode" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="BNNode" inverseName="nodeLink" inverseEntity="BNNode" syncable="YES"/>
     </entity>
     <entity name="Trait" representedClassName="Plexus.Trait" parentEntity="NodeLink" syncable="YES">
-        <attribute name="value" optional="YES" attributeType="String" defaultValueString="Unknown Value" syncable="YES"/>
+        <attribute name="traitValue" optional="YES" attributeType="String" defaultValueString="Unknown Value" syncable="YES"/>
         <relationship name="entry" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Entry" inverseName="trait" inverseEntity="Entry" syncable="YES"/>
     </entity>
     <elements>
