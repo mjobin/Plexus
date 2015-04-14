@@ -512,10 +512,23 @@ class PlexusBNScene: SKScene {
         }
         */
         
-        /*
-        self.enumerateChildNodesWithName("bnNode", usingBlock: { thisLine, stop in
-            var idNode : PlexusBNNode = thisLine as PlexusBNNode
+        
 
+
+
+        
+    }
+    
+    
+    func reloadLabels() {
+        
+        self.enumerateChildNodesWithName("nodeName", usingBlock: { thisLine, stop in
+            thisLine.removeFromParent()
+        })
+        
+        self.enumerateChildNodesWithName("bnNode", usingBlock: { thisLine, stop in
+            var idNode : PlexusBNNode = thisLine as! PlexusBNNode
+            
             let oldPoint : CGPoint = idNode.position
             let oldNode : BNNode = idNode.node
             thisLine.removeFromParent()
@@ -524,8 +537,9 @@ class PlexusBNScene: SKScene {
             self.makeNode(oldNode, inPos: oldPoint)
             
             //recreate nodes - if the BNNode is currently in nodeController
+            /*
             
-            let curNodes : [BNNode]  = self.nodesController.arrangedObjects as [BNNode]
+            let curNodes : [BNNode]  = self.nodesController.arrangedObjects as! [BNNode]
             
             for curNode :BNNode in curNodes{
                 
@@ -533,25 +547,24 @@ class PlexusBNScene: SKScene {
                 
                 self.enumerateChildNodesWithName("bnNode", usingBlock: { thisNode, stop in
                     
-                    var idNode : PlexusBNNode = thisNode as PlexusBNNode
+                    var idNode : PlexusBNNode = thisNode as! PlexusBNNode
                     
                     if(idNode.node == curNode){
-                        //self.makeNode(oldNode, inPos: oldPoint)
-
+                        self.makeNode(oldNode, inPos: oldPoint)
+                        
                     }
                     
                 })
-
+                
                 
             }
- 
+            */
+            
             
         })
-
-        */
+        
         
     }
-    
     
     
     override func update(currentTime: CFTimeInterval) {
@@ -891,11 +904,58 @@ class PlexusBNScene: SKScene {
     
 
     func mocDidChange(notification: NSNotification){
-        println(notification.userInfo)
+       // println(notification.userInfo)
         
-     //   let updatedObjects = notification.userInfo.
+        var justUpdate = true
         
+       // println("MOC DID CHANGE")
+        
+        if let updatedObjects = notification.userInfo?[NSUpdatedObjectsKey] as? NSSet {
+            for updatedObject in updatedObjects {
+              //  println("UPDATE \(updatedObject)")
+            }
+        }
+        
+        if let refreshedObjects = notification.userInfo?[NSRefreshedObjectsKey] as? NSSet {
+            justUpdate = false
+            for refreshedObject in refreshedObjects {
+              //  println("REFRESHED \(refreshedObject)")
+            }
+        }
+        
+        
+        
+        if let insertedObjects = notification.userInfo?[NSInsertedObjectsKey] as? NSSet {
+            justUpdate = false
+            for insertedObject in insertedObjects {
+              //  println("inserted \(insertedObject)")
+            }
+        }
+        
+        
+        if let deletedObjects = notification.userInfo?[NSDeletedObjectsKey] as? NSSet {
+            justUpdate = false
+            for deletedObject in deletedObjects {
+              //  println("deleted \(deletedObject)")
+            }
+        }
+        else {
+           // println("nodelete")
+        }
         self.reloadData()
+        /*
+        if (justUpdate){
+            self.reloadLabels()
+        }
+
+        else {
+        
+            self.reloadData()
+        }
+        */
+
+        
+        
     }
 
     
