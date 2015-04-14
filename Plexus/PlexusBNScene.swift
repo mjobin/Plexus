@@ -484,87 +484,30 @@ class PlexusBNScene: SKScene {
     
     
     func reloadData() { //this just removes the nodes so that update can restopre them
-        
-      //  let curModels : [Model] = modelTreeController.selectedObjects as [Model]
-       // let curModel : Model = curModels[0]
-       // println("model \(curModel.name)")
+
         
         self.enumerateChildNodesWithName("nodeName", usingBlock: { thisLine, stop in
             thisLine.removeFromParent()
         })
         
-        self.enumerateChildNodesWithName("bnNode", usingBlock: { thisLine, stop in
 
-            thisLine.removeFromParent()
-
-        })
-        
-        
-       //FIXME nodescontroller does not seem to know about the change yet
-        /*
-        
-        let curNodes : [BNNode]  = self.nodesController.arrangedObjects as [BNNode]
-        
-        for curNode :BNNode in curNodes{
-            
-            println("node in nodesController \(curNode.nodeLink.name)")
-            
-        }
-        */
-        
-        
-
-
-
-        
-    }
-    
-    
-    func reloadLabels() {
-        
-        self.enumerateChildNodesWithName("nodeName", usingBlock: { thisLine, stop in
-            thisLine.removeFromParent()
-        })
         
         self.enumerateChildNodesWithName("bnNode", usingBlock: { thisLine, stop in
             var idNode : PlexusBNNode = thisLine as! PlexusBNNode
-            
             let oldPoint : CGPoint = idNode.position
             let oldNode : BNNode = idNode.node
             thisLine.removeFromParent()
-            
-            //FIXME
             self.makeNode(oldNode, inPos: oldPoint)
-            
-            //recreate nodes - if the BNNode is currently in nodeController
-            /*
-            
-            let curNodes : [BNNode]  = self.nodesController.arrangedObjects as! [BNNode]
-            
-            for curNode :BNNode in curNodes{
-                
-                println("node in nodesController \(curNode.nodeLink.name)")
-                
-                self.enumerateChildNodesWithName("bnNode", usingBlock: { thisNode, stop in
-                    
-                    var idNode : PlexusBNNode = thisNode as! PlexusBNNode
-                    
-                    if(idNode.node == curNode){
-                        self.makeNode(oldNode, inPos: oldPoint)
-                        
-                    }
-                    
-                })
-                
-                
-            }
-            */
-            
-            
-        })
+            //update will catch undrawn nodes
         
+        })
+
+
+
         
     }
+    
+    
     
     
     override func update(currentTime: CFTimeInterval) {
@@ -580,6 +523,7 @@ class PlexusBNScene: SKScene {
         thisLine.removeFromParent()
         })
         
+
 
         
         //make sure all listed nodes are drawn
@@ -616,9 +560,11 @@ class PlexusBNScene: SKScene {
             }
             
             
+            
+            
+            
 
             //draw arrows
-            
             
             for curNode :BNNode in curNodes{
                 
@@ -630,11 +576,18 @@ class PlexusBNScene: SKScene {
                     
                     if(thisidNode.node == curNode){
                         idNode = thisidNode
+                        
 
                     }
                     
                 })
                 
+                
+                
+
+                
+                
+
                 
                 let theInfluenced : [BNNode] = curNode.influences.allObjects as! [BNNode]
                 
@@ -715,7 +668,7 @@ class PlexusBNScene: SKScene {
                     var idNode : PlexusBNNode = thisNode as! PlexusBNNode
                     
                     if(idNode.node == selNode){ //found, so make it glow
-                        idNode.glowWidth = 5
+                        idNode.glowWidth = 4
   
                     }
                     
@@ -827,8 +780,8 @@ class PlexusBNScene: SKScene {
     
     func makeNode(inNode : BNNode, inPos: CGPoint){
         
-        
         let myLabel = SKLabelNode(text: inNode.nodeLink.name)
+        myLabel.fontName = "HelveticaNeue-Bold"
         myLabel.fontSize = 18
         myLabel.zPosition = 1
         myLabel.name = "nodeName"
@@ -943,16 +896,7 @@ class PlexusBNScene: SKScene {
            // println("nodelete")
         }
         self.reloadData()
-        /*
-        if (justUpdate){
-            self.reloadLabels()
-        }
 
-        else {
-        
-            self.reloadData()
-        }
-        */
 
         
         
