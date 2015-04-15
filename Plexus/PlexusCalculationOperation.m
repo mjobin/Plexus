@@ -469,9 +469,9 @@
     size_t bnreadsizes[num_devices];
     size_t maxworksize = 0; //this will end up being the column size for the data
     
-    cl_mem * infnetbufs = malloc(sizeof(cl_int)*num_devices);
-    cl_mem * cptnetbufs = malloc(sizeof(cl_float)*num_devices);
-    cl_mem * freqbufs = malloc(sizeof(cl_float)*num_devices);
+    cl_mem * infnetbufs = malloc(sizeof(cl_mem)*num_devices);
+    cl_mem * cptnetbufs = malloc(sizeof(cl_mem)*num_devices);
+    cl_mem * freqbufs = malloc(sizeof(cl_mem)*num_devices);
     
     for(int dev = 0; dev < num_devices; dev++){
         
@@ -574,21 +574,14 @@
     int ct =0;
     while(ct < [computes intValue]){
         
-        cl_mem * bnstatesbufs = malloc(sizeof(cl_int)*num_devices);
-        cl_mem * bnresultsbufs = malloc(sizeof(cl_float)*num_devices);
-        cl_mem * offsetbufs = malloc(sizeof(cl_int)*num_devices);
-        cl_mem * outputbufs = malloc(sizeof(cl_int)*num_devices);
+        cl_mem * bnstatesbufs = malloc(sizeof(cl_mem)*num_devices);
+        cl_mem * bnresultsbufs = malloc(sizeof(cl_mem)*num_devices);
+        cl_mem * offsetbufs = malloc(sizeof(cl_mem)*num_devices);
+        cl_mem * outputbufs = malloc(sizeof(cl_mem)*num_devices);
         
         
         for(int dev = 0; dev < num_devices; dev++){
-            
-            int thiswork = (int)worksizes[dev];
-            int remWork = [computes intValue] - ct;
-            if(thiswork > remWork) thiswork = remWork;
-           // if (thiswork < 1) break;
-            
-            
-            
+
             
             cl_mem bnstatesbuf = clCreateBuffer(context, CL_MEM_READ_WRITE, bnstatesize*sizeof(cl_int), 0, &err);
             if (!bnstatesbuf || err != CL_SUCCESS) {
