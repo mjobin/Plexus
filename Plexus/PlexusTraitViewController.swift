@@ -43,7 +43,6 @@ class PlexusTraitViewController: NSViewController, NSTableViewDelegate, NSTableV
     
     
     func tableView(tableView: NSTableView, objectValueForTableColumn tableColumn: NSTableColumn?, row: Int) -> AnyObject? {
-        //println("obj for table column")
         return traitsController.arrangedObjects.objectAtIndex(row)
     }
     
@@ -51,14 +50,25 @@ class PlexusTraitViewController: NSViewController, NSTableViewDelegate, NSTableV
         writeRowsWithIndexes rowIndexes: NSIndexSet,
         toPasteboard pboard: NSPasteboard) -> Bool
     {
-        println("write rows")
+
         if ((aTableView == traitsTableView))
         {
-            var data:NSData = NSKeyedArchiver.archivedDataWithRootObject(rowIndexes)
-            var registeredTypes:[String] = [NSStringPboardType]
-            pboard.declareTypes(registeredTypes, owner: self)
-            pboard.setData(data, forType: NSStringPboardType)
+            
+            
+            let selectedRow = rowIndexes.firstIndex
+            let selectedObject: AnyObject = traitsController.arrangedObjects.objectAtIndex(selectedRow)
+            
+            let mutableArray : NSMutableArray = NSMutableArray()
+            mutableArray.addObject(selectedObject.objectID.URIRepresentation())
+            
+
+            let data : NSData = NSKeyedArchiver.archivedDataWithRootObject(mutableArray)
+
+            let kString : String = kUTTypeURL as String
+            pboard.setData(data, forType: kString)
             return true
+            
+
             
         }
         else
