@@ -166,7 +166,7 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
         operr = op.calc(self)
 
         if(operr == nil){
-          //  println("no prob")
+           // println("NO ERRORS.. RETRIEVEING POSTERIOR")
             var resultNodes : NSMutableArray = op.getResults(self)
             
             let blankArray = [NSNumber]()
@@ -205,7 +205,7 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
                     
                     
                     else{
-                        println("problem detected in reloadData. gNode is \(gNode)")
+                       // println("problem detected in reloadData. gNode is \(gNode)")
                     }
 
                     gi++
@@ -386,7 +386,7 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
                             //println(thisTrait)
                             var newTrait : Trait = Trait(entity: NSEntityDescription.entityForName("Trait", inManagedObjectContext: self.moc)!, insertIntoManagedObjectContext: self.moc)
                             newTrait.setValue("test", forKey: "name")
-                            newTrait.setValue(thisTrait, forKey: "value")
+                            newTrait.setValue(thisTrait, forKey: "traitValue")
                             newTrait.setValue(newEntry, forKey: "entry")
                             
                             newEntry.addTraitObject(newTrait)
