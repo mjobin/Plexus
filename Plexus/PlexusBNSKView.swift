@@ -43,6 +43,14 @@ class PlexusBNSKView: SKView, NSDraggingDestination {
     }
     
     override func prepareForDragOperation(sender: NSDraggingInfo) -> Bool {
+        
+        
+        let curModels : [Model] = modelTreeController.selectedObjects as! [Model]
+        let curModel : Model = curModels[0]
+        if (curModel.complete == true){
+            return false
+        }
+        
         return true
     }
     
