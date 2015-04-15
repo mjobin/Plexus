@@ -108,6 +108,9 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
         
         
 
+        
+        
+
         //instatntiate progress controller
         if self.progressViewController == nil {
             let storyboard = NSStoryboard(name:"Main", bundle:nil)
@@ -166,6 +169,8 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
           //  println("no prob")
             var resultNodes : NSMutableArray = op.getResults(self)
             
+            let blankArray = [NSNumber]()
+            let blankData = NSKeyedArchiver.archivedDataWithRootObject(blankArray)
             
             var fi = 0
             for fNode in resultNodes {
@@ -175,6 +180,13 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
                 var curtop = 0
                 
                 var inNode : BNNode = nodesForCalc[fi]  //FIXME is this the same node???
+                
+                //blank out previous postdata
+                //this shoudl never happen.. safer to blank it than mingle data
+                inNode.setValue(blankData, forKey: "postCount")
+                inNode.setValue(blankData, forKey: "postArray")
+
+
                 
                 var fline : [Double] = fNode as! [Double]
 
@@ -204,7 +216,10 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
                 let archivedPostArray = NSKeyedArchiver.archivedDataWithRootObject(fline)
                 inNode.setValue(archivedPostArray, forKey: "postArray")
                 
+                
+                
                 moc.save(errorPtr)
+
 
                 fi++
                 
