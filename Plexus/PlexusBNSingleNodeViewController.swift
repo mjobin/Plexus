@@ -39,6 +39,7 @@ class PlexusBNSingleNodeViewController: NSViewController, CPTScatterPlotDataSour
     override func viewDidLoad() {
         super.viewDidLoad()
   
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "mocDidChange:", name: NSManagedObjectContextObjectsDidChangeNotification, object: moc)
 
 
         
@@ -296,6 +297,15 @@ class PlexusBNSingleNodeViewController: NSViewController, CPTScatterPlotDataSour
         default:
             super.observeValueForKeyPath(keyPath, ofObject: object, change: change, context: context)
         }
+    }
+    
+    func mocDidChange(notification: NSNotification){
+        
+                println("SINGLE NODE MOC DID CHANGE")
+
+        self.reloadData()
+
+        
     }
 
     
