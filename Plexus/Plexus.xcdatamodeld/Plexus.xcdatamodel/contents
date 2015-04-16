@@ -4,8 +4,8 @@
         <attribute name="postArray" optional="YES" attributeType="Binary" syncable="YES"/>
         <attribute name="postCount" optional="YES" attributeType="Binary" valueTransformerName="PlexusBNNodePostArrayTransformer" syncable="YES"/>
         <attribute name="priorDistType" optional="YES" attributeType="Integer 32" minValueString="0" defaultValueString="0" syncable="YES"/>
-        <attribute name="priorV1" optional="YES" attributeType="Double" defaultValueString="0.0" syncable="YES"/>
-        <attribute name="priorV2" optional="YES" attributeType="Double" defaultValueString="0.0" syncable="YES"/>
+        <attribute name="priorV1" optional="YES" attributeType="Double" defaultValueString="0.5" syncable="YES"/>
+        <attribute name="priorV2" optional="YES" attributeType="Double" defaultValueString="0.5" syncable="YES"/>
         <relationship name="influencedBy" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="BNNode" inverseName="influences" inverseEntity="BNNode" syncable="YES"/>
         <relationship name="influences" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="BNNode" inverseName="influencedBy" inverseEntity="BNNode" syncable="YES"/>
         <relationship name="model" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Model" inverseName="bnnode" inverseEntity="Model" syncable="YES"/>
