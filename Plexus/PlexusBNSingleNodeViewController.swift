@@ -25,7 +25,9 @@ class PlexusBNSingleNodeViewController: NSViewController, CPTScatterPlotDataSour
     
     @IBOutlet var priorTypePopup : NSPopUpButton!
     @IBOutlet var priorV1Slider : NSSlider!
+    @IBOutlet var priorV1Field : NSTextField!
     @IBOutlet var priorV2Slider : NSSlider!
+    @IBOutlet var priorV2Field : NSTextField!
     
     @IBOutlet var scopeLabel : NSTextField!
     @IBOutlet var scopePopup : NSPopUpButton!
@@ -173,6 +175,8 @@ class PlexusBNSingleNodeViewController: NSViewController, CPTScatterPlotDataSour
                 priorTypePopup.hidden = true
                 priorV1Slider.hidden = true
                 priorV2Slider.hidden = true
+                priorV1Field.hidden = true
+                priorV2Field.hidden = true
                 
                 
                 scopeLabel.hidden = false
@@ -192,10 +196,14 @@ class PlexusBNSingleNodeViewController: NSViewController, CPTScatterPlotDataSour
                 switch priorDist{
                 case 0:
                     priorV2Slider.hidden = true
+                    priorV2Field.hidden = true
                 default:
                     priorV2Slider.hidden = false
+                    priorV2Field.hidden = false
                 }
                 priorV1Slider.hidden = false
+                priorV1Field.hidden = false
+                
                 
                 
                 scopeLabel.hidden = true
