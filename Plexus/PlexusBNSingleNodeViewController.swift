@@ -81,16 +81,13 @@ class PlexusBNSingleNodeViewController: NSViewController, CPTScatterPlotDataSour
         var xRange = plotSpace.xRange.mutableCopy() as! CPTMutablePlotRange
         var yRange = plotSpace.yRange.mutableCopy() as! CPTMutablePlotRange
         
-       // xRange.setLengthFloat(1.2)
-        //yRange.setLengthFloat(1.2)
+        xRange.length = 1.1
+        yRange.length = 1.1
 
-        
-       // println("xR length \(xRange.lengthDouble)")
 
         plotSpace.xRange = xRange
         plotSpace.yRange = yRange
         
-//        graph.defaultPlotSpace = plotSpace
 
         
         // Axes
@@ -118,10 +115,10 @@ class PlexusBNSingleNodeViewController: NSViewController, CPTScatterPlotDataSour
         var priorLineStyle = CPTMutableLineStyle()
         priorLineStyle.miterLimit = 1.0
         priorLineStyle.lineWidth = 2.0
-        priorLineStyle.lineColor = CPTColor.grayColor()
+        priorLineStyle.lineColor = CPTColor.lightGrayColor()
         priorPlot.dataLineStyle = priorLineStyle
         
-        priorPlot.interpolation = CPTScatterPlotInterpolation.Curved
+        priorPlot.interpolation = CPTScatterPlotInterpolation.Linear
         
         priorPlot.dataSource = self
         priorPlot.delegate = self
@@ -311,11 +308,11 @@ class PlexusBNSingleNodeViewController: NSViewController, CPTScatterPlotDataSour
                     }
                     
                 case 2: //gaussian
-                    
+                    println("guassian mean: \(V1) sigma: \(V2) x: \(nidx) gives : \(gaussian(V1, sigma: V2, x: nidx))")
                     return gaussian(V1, sigma: V2, x: nidx)
                     
                 case 3: //gamma
-                    // println("\(nidx) \(tgamma(nidx))")
+                    println("\(nidx) \(lgamma(nidx))")
                     
                     return tgamma(nidx)
                     
@@ -342,11 +339,22 @@ class PlexusBNSingleNodeViewController: NSViewController, CPTScatterPlotDataSour
     }
     
     
-    
-    func gaussian(mu: Double, sigma: Double, x: Double) -> Double {
+    /*
+    func oldgaussian(mu: Double, sigma: Double, x: Double) -> Double {
         var result :Double =  exp ( -pow (x - mu, 2) / (2 * pow( sigma, 2)))
+
         return result / (sigma * 2 * sqrt(M_PI))
     }
+    */
+    
+    func gaussian(mu: Double, sigma: Double, x: Double) -> Double {
+        let n : Double = sigma * 2.0 * sqrt(M_PI)
+        let p : Double = exp( -pow(x-mu, 2.0) / (2.0 * pow(sigma, 2.0)))
+        return p/n
+    }
+    
+    
+
     
     
     func collectData(sender:AnyObject) -> [String] {
@@ -502,7 +510,6 @@ class PlexusBNSingleNodeViewController: NSViewController, CPTScatterPlotDataSour
     
     func mocDidChange(notification: NSNotification){
         
-       // println("single node moc did change")
 
         self.reloadData()
 
