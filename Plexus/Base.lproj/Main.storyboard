@@ -714,14 +714,14 @@
                                         <action selector="calculate:" target="B8D-0N-5wS" id="VCg-wJ-cZX"/>
                                     </connections>
                                 </toolbarItem>
-                                <toolbarItem implicitItemIdentifier="E18303A5-037B-44FE-878B-72401FAAC926" label="Models" paletteLabel="Models" image="3BD7A311-F087-4ECE-BF02-5443AC5F80CB" id="VR9-AM-azT">
+                                <toolbarItem implicitItemIdentifier="E18303A5-037B-44FE-878B-72401FAAC926" label="Models" paletteLabel="Models" image="095486F9-7A64-4B62-B4D0-13E75368659A" id="VR9-AM-azT">
                                     <nil key="toolTip"/>
                                     <size key="minSize" width="13" height="13"/>
                                     <size key="maxSize" width="37" height="34"/>
                                     <button key="view" horizontalHuggingPriority="750" verticalHuggingPriority="750" id="vcL-Vh-Set">
                                         <rect key="frame" x="5" y="14" width="37" height="34"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="squareTextured" bezelStyle="texturedSquare" image="3BD7A311-F087-4ECE-BF02-5443AC5F80CB" imagePosition="only" alignment="left" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="s8L-6c-2d7">
+                                        <buttonCell key="cell" type="squareTextured" bezelStyle="texturedSquare" image="095486F9-7A64-4B62-B4D0-13E75368659A" imagePosition="only" alignment="left" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="s8L-6c-2d7">
                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
@@ -1906,6 +1906,34 @@ Gw
                                 <subviews>
                                     <customView translatesAutoresizingMaskIntoConstraints="NO" id="ajf-77-zZT" customClass="PlexusBNSKView" customModule="Plexus" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="0.0" width="450" height="300"/>
+                                        <subviews>
+                                            <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="AHQ-9A-57D">
+                                                <rect key="frame" x="0.0" y="0.0" width="47" height="32"/>
+                                                <buttonCell key="cell" type="push" bezelStyle="rounded" image="NSAddTemplate" imagePosition="overlaps" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="2li-dG-9XO">
+                                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                    <font key="font" metaFont="system"/>
+                                                </buttonCell>
+                                                <connections>
+                                                    <action selector="makeUnlinkedNode:" target="ajf-77-zZT" id="JA4-rD-yrl"/>
+                                                </connections>
+                                            </button>
+                                            <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Rud-7k-thl">
+                                                <rect key="frame" x="39" y="0.0" width="47" height="32"/>
+                                                <buttonCell key="cell" type="push" bezelStyle="rounded" image="NSRemoveTemplate" imagePosition="overlaps" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="cj7-Wc-3rZ">
+                                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                    <font key="font" metaFont="system"/>
+                                                </buttonCell>
+                                                <connections>
+                                                    <action selector="removeNode:" target="ajf-77-zZT" id="X6V-nP-fcZ"/>
+                                                </connections>
+                                            </button>
+                                        </subviews>
+                                        <constraints>
+                                            <constraint firstItem="Rud-7k-thl" firstAttribute="leading" secondItem="AHQ-9A-57D" secondAttribute="trailing" constant="4" id="Er7-4Y-tJh"/>
+                                            <constraint firstAttribute="bottom" secondItem="Rud-7k-thl" secondAttribute="bottom" constant="7" id="TB9-VU-zdt"/>
+                                            <constraint firstItem="AHQ-9A-57D" firstAttribute="leading" secondItem="ajf-77-zZT" secondAttribute="leading" constant="6" id="dZ7-Ob-Er8"/>
+                                            <constraint firstAttribute="bottom" secondItem="AHQ-9A-57D" secondAttribute="bottom" constant="7" id="hI8-S6-CRb"/>
+                                        </constraints>
                                     </customView>
                                 </subviews>
                                 <constraints>
@@ -2478,7 +2506,7 @@ Gw
         </scene>
     </scenes>
     <resources>
-        <image name="3BD7A311-F087-4ECE-BF02-5443AC5F80CB" width="1" height="1">
+        <image name="095486F9-7A64-4B62-B4D0-13E75368659A" width="1" height="1">
             <mutableData key="keyedArchiveRepresentation">
 YnBsaXN0MDDUAQIDBAUGPj9YJHZlcnNpb25YJG9iamVjdHNZJGFyY2hpdmVyVCR0b3ASAAGGoK4HCBMU
 GR4fIyQsLzI4O1UkbnVsbNUJCgsMDQ4PEBESVk5TU2l6ZVYkY2xhc3NcTlNJbWFnZUZsYWdzVk5TUmVw
