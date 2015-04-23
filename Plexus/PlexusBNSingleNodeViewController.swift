@@ -23,6 +23,15 @@ class PlexusBNSingleNodeViewController: NSViewController, CPTScatterPlotDataSour
     @IBOutlet var graphView : CPTGraphHostingView!
     @IBOutlet weak var visView: NSVisualEffectView!
     
+    @IBOutlet var priorTypePopup : NSPopUpButton!
+    @IBOutlet var priorV1Slider : NSSlider!
+    @IBOutlet var priorV2Slider : NSSlider!
+    
+    @IBOutlet var scopeLabel : NSTextField!
+    @IBOutlet var scopePopup : NSPopUpButton!
+    @IBOutlet var numericButton : NSButton!
+    @IBOutlet var dataLabel : NSTextField!
+    @IBOutlet var dataTypePopup : NSPopUpButton!
     @IBOutlet var dataPopup : NSPopUpButton!
     
     var priorDist = 0
@@ -159,10 +168,43 @@ class PlexusBNSingleNodeViewController: NSViewController, CPTScatterPlotDataSour
             V2 = Double(curNode.priorV2)
             
             if(curNode.influencedBy.count > 0) {
+                
+                
+                priorTypePopup.hidden = true
+                priorV1Slider.hidden = true
+                priorV2Slider.hidden = true
+                
+                
+                scopeLabel.hidden = false
+                scopePopup.hidden = false
+                numericButton.hidden = false
+                dataLabel.hidden = false
+                dataTypePopup.hidden = false
+                dataPopup.hidden = false
+                
                 graph.addPlot(priorPlot)
                 graph.removePlot(priorPlot)
             }
             else {
+                
+                
+                priorTypePopup.hidden = false
+                switch priorDist{
+                case 0:
+                    priorV2Slider.hidden = true
+                default:
+                    priorV2Slider.hidden = false
+                }
+                priorV1Slider.hidden = false
+                
+                
+                scopeLabel.hidden = true
+                scopePopup.hidden = true
+                numericButton.hidden = true
+                dataLabel.hidden = true
+                dataTypePopup.hidden = true
+                dataPopup.hidden = true
+                
                 graph.addPlot(priorPlot)
                 self.performSegueWithIdentifier("priorControls", sender: nil)
             }
@@ -302,6 +344,7 @@ class PlexusBNSingleNodeViewController: NSViewController, CPTScatterPlotDataSour
     func collectData(sender:AnyObject) -> [String] {
         println("\ncollectData")
         self.dataPopup.enabled = true
+        self.dataPopup.hidden = false
         var dataNames = [String]()
         var err: NSError?
         var dataOp = String()
@@ -333,6 +376,7 @@ class PlexusBNSingleNodeViewController: NSViewController, CPTScatterPlotDataSour
                 println("global \(curNode.nodeLink.name)")
                 dataNames.append(curNode.nodeLink.name)
                 self.dataPopup.enabled = false
+                self.dataPopup.hidden = true
                 
             
             case 1:// self
