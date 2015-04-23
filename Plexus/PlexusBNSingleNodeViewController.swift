@@ -67,6 +67,13 @@ class PlexusBNSingleNodeViewController: NSViewController, CPTScatterPlotDataSour
         graph = CPTXYGraph(frame:self.graphView.bounds)
         self.graphView.hostedGraph = graph
         
+        
+        var titleStyle = graph.titleTextStyle.mutableCopy() as! CPTMutableTextStyle
+        titleStyle.fontName = "HelveticaNeue-Bold"
+        titleStyle.fontSize = 18.0
+        titleStyle.color = CPTColor.whiteColor()
+        graph.titleTextStyle = titleStyle
+        
         graph.title = ""
 
         graph.paddingTop = 10.0
@@ -314,7 +321,7 @@ class PlexusBNSingleNodeViewController: NSViewController, CPTScatterPlotDataSour
                 case 3: //gamma
                     println("\(nidx) \(lgamma(nidx))")
                     
-                    return tgamma(nidx)
+                    return lgamma(nidx)
                     
                 default:
                     return 0
