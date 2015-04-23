@@ -21,4 +21,8 @@ class BNNode: Node {
     @NSManaged var influencedBy: NSSet
     @NSManaged var postCount: NSData?
     @NSManaged var postArray: NSData?
+    @NSManaged var dataScope: NSNumber
+    @NSManaged var dataOp: NSNumber
+    @NSManaged var dataName: String
+    @NSManaged var numericData: NSNumber
 }
