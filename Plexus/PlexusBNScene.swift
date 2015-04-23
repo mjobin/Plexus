@@ -59,6 +59,26 @@ class PlexusBNScene: SKScene {
         startNode = self // so initialized
         
         
+        //create bumper for lower left corner?
+        /*
+        var bumperPath = CGPathCreateWithRoundedRect(CGRectMake(0, 0, 100, 32), 4, 4, nil)
+        let shape = SKShapeNode(path: bumperPath)
+        shape.userInteractionEnabled = false
+        shape.position = CGPointZero
+        shape.physicsBody = SKPhysicsBody(rectangleOfSize: CGRectMake(0, 0, 100, 32).size)
+        shape.physicsBody?.mass = 1.0
+        shape.physicsBody?.restitution = 0.3
+        shape.name = "bumper"
+        shape.physicsBody?.affectedByGravity = false
+        shape.physicsBody?.dynamic = false
+        shape.physicsBody?.allowsRotation = false
+        shape.physicsBody?.categoryBitMask = ColliderType.Node.rawValue
+        shape.physicsBody?.collisionBitMask = ColliderType.Node.rawValue
+        shape.strokeColor = NSColor.blueColor()
+        shape.fillColor = NSColor.grayColor()
+        self.addChild(shape)
+        */
+        
         // Name label
         
         
@@ -136,35 +156,9 @@ class PlexusBNScene: SKScene {
         
         //for now, spawn a new node if you did not touch an exisitng node
         if(touchedNode.isEqualTo(self)) {
-            //  println("miss")
+              println("miss")
             
-            let curModels : [Model] = modelTreeController.selectedObjects as! [Model]
-            let curModel : Model = curModels[0]
-            //let curDataset : Dataset = curModel.dataset
-            
-            
-            
-            //create an NodeLink - independet node link for nodes not linked to any other form of data
-            
-            let newNodeLink : NodeLink = NodeLink(entity: NSEntityDescription.entityForName("NodeLink", inManagedObjectContext: self.moc)!, insertIntoManagedObjectContext: self.moc)
-            newNodeLink.setValue("New Node", forKey: "name")
-            
-            
-            let newNode : BNNode = BNNode(entity: NSEntityDescription.entityForName("BNNode", inManagedObjectContext: moc)!, insertIntoManagedObjectContext: moc)
-            newNode.setValue(newNodeLink, forKey: "nodeLink")
-            
-            
-
-            curModel.addBNNodeObject(newNode)
-            
-            newNode.setValue(curModel, forKey: "model")
-            
-            
-            
-            moc.save(errorPtr)
-            
-
-            self.makeNode(newNode, inPos: loc)
+           
             
             
             //create path
@@ -246,14 +240,7 @@ class PlexusBNScene: SKScene {
             
             //  self.addChild(sprite)
             
-            
-            
-            
 
-            
-
-
-            
             
             
         }
@@ -490,14 +477,27 @@ class PlexusBNScene: SKScene {
             thisLine.removeFromParent()
         })
         
+        //check if there are  any PlexusBNNodes without an exisitng BNNode, and delete them forst
+        
+        self.enumerateChildNodesWithName("bnNode", usingBlock: { thisLine, stop in
+            var idNode : PlexusBNNode = thisLine as! PlexusBNNode
+            println("in reloadData BNNode \(idNode.node)")
+            if(idNode.node == nil){
+                println("missing BNNode")
+                thisLine.removeFromParent()
+            }
 
+            
+        })
         
         self.enumerateChildNodesWithName("bnNode", usingBlock: { thisLine, stop in
             var idNode : PlexusBNNode = thisLine as! PlexusBNNode
             let oldPoint : CGPoint = idNode.position
             let oldNode : BNNode = idNode.node
             thisLine.removeFromParent()
-            self.makeNode(oldNode, inPos: oldPoint)
+
+                self.makeNode(oldNode, inPos: oldPoint)
+            
             //update will catch undrawn nodes
         
         })
@@ -551,7 +551,9 @@ class PlexusBNScene: SKScene {
                 })
                 
                 if(!matchNode){//no visible node exists, so make one
-
+                   // let rawx = CGFloat(arc4random())/CGFloat(UInt32.max) //random from 0 to 1
+                   // let rawy = CGFloat(arc4random())/CGFloat(UInt32.max)
+                    //let posPoint = CGPointMake(self.frame.width*rawx, self.frame.height*rawy)
                     self.makeNode(curNode, inPos: CGPointMake(self.frame.width*0.5,  self.frame.height*0.5) )
                     
                 }
@@ -778,6 +780,9 @@ class PlexusBNScene: SKScene {
         
     }
     
+    
+
+    
     func makeNode(inNode : BNNode, inPos: CGPoint){
         
         let myLabel = SKLabelNode(text: inNode.nodeLink.name)
@@ -861,7 +866,7 @@ class PlexusBNScene: SKScene {
         
         var justUpdate = true
         
-       // println("MOC DID CHANGE")
+       // println("bn scene MOC DID CHANGE")
         
         if let updatedObjects = notification.userInfo?[NSUpdatedObjectsKey] as? NSSet {
             for updatedObject in updatedObjects {
