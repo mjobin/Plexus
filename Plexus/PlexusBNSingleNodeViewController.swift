@@ -192,6 +192,8 @@ class PlexusBNSingleNodeViewController: NSViewController, CPTScatterPlotDataSour
                 
                 graph.addPlot(priorPlot)
                 graph.removePlot(priorPlot)
+                
+              //  println("in reloadData dataname is: \(curNode.dataName)")
             }
             else {
                 
@@ -251,6 +253,21 @@ class PlexusBNSingleNodeViewController: NSViewController, CPTScatterPlotDataSour
         }
         
         else { //no node, just move graph off view
+            
+            priorTypePopup.hidden = true
+            priorV1Slider.hidden = true
+            priorV2Slider.hidden = true
+            priorV1Field.hidden = true
+            priorV2Field.hidden = true
+            
+            scopeLabel.hidden = true
+            scopePopup.hidden = true
+            numericButton.hidden = true
+            dataLabel.hidden = true
+            dataTypePopup.hidden = true
+            dataPopup.hidden = true
+            
+            
             priorDist = 0
             V1 = -10000.0
             V2 = -10000.0
@@ -266,10 +283,12 @@ class PlexusBNSingleNodeViewController: NSViewController, CPTScatterPlotDataSour
         dataPopup.removeAllItems()
         
         let dataNames : [String] = self.collectData(self)
-       // println(dataNames)
+
         dataPopup.addItemsWithTitles(dataNames)
-        //[dataPopup addItemsWithTitles:[NSArray arrayWithArray:namesArray]];
-        
+
+        if(curNodes.count<1){
+            dataPopup.hidden = true
+        }
         
     }
     
@@ -346,13 +365,6 @@ class PlexusBNSingleNodeViewController: NSViewController, CPTScatterPlotDataSour
     }
     
     
-    /*
-    func oldgaussian(mu: Double, sigma: Double, x: Double) -> Double {
-        var result :Double =  exp ( -pow (x - mu, 2) / (2 * pow( sigma, 2)))
-
-        return result / (sigma * 2 * sqrt(M_PI))
-    }
-    */
     
     func gaussian(mu: Double, sigma: Double, x: Double) -> Double {
         let n : Double = sigma * 2.0 * sqrt(M_PI)
