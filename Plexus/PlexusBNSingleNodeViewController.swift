@@ -33,8 +33,8 @@ class PlexusBNSingleNodeViewController: NSViewController, CPTScatterPlotDataSour
     @IBOutlet var scopePopup : NSPopUpButton!
     @IBOutlet var numericButton : NSButton!
     @IBOutlet var dataLabel : NSTextField!
-    @IBOutlet var dataTypePopup : NSPopUpButton!
     @IBOutlet var dataPopup : NSPopUpButton!
+    @IBOutlet var dataSubPopup : NSPopUpButton!
     
     var priorDist = 0
     var V1 = 0.1
@@ -162,10 +162,11 @@ class PlexusBNSingleNodeViewController: NSViewController, CPTScatterPlotDataSour
     
     func reloadData() {
         //Get selected node
-         println("reloadData")
+        
         var curNodes : [BNNode] = nodesController.selectedObjects as! [BNNode]
         if(curNodes.count>0) {
             curNode = curNodes[0]
+            println("\n\n*********\nreloadData \(curNode.nodeLink.name)")
             
             graph.title = curNode.nodeLink.name
             
@@ -187,25 +188,52 @@ class PlexusBNSingleNodeViewController: NSViewController, CPTScatterPlotDataSour
                 scopePopup.hidden = false
                 numericButton.hidden = false
                 dataLabel.hidden = false
-                dataTypePopup.hidden = false
+
                 dataPopup.hidden = false
+                dataSubPopup.hidden = false
                 
                 graph.addPlot(priorPlot)
                 graph.removePlot(priorPlot)
                 
-              //  println("in reloadData dataname is: \(curNode.dataName)")
+                println("in reloadData datanames: \(curNode.dataName) \(curNode.dataSubName)")
             }
             else {
                 
                 
                 priorTypePopup.hidden = false
                 switch priorDist{
-                case 0:
+                case 0: //point/expert
                     priorV2Slider.hidden = true
                     priorV2Field.hidden = true
+                    priorV1Slider.minValue = 0.0
+                    priorV1Slider.maxValue = 1.0
+                    priorV2Slider.minValue = 0.0
+                    priorV2Slider.maxValue = 1.0
+                    
+                case 3: //beta
+                    
+                    priorV2Slider.hidden = false
+                    priorV2Field.hidden = false
+                    priorV1Slider.minValue = 0.0
+                    priorV1Slider.maxValue = 10.0
+                    priorV2Slider.minValue = 0.0
+                    priorV2Slider.maxValue = 10.0
+                    
+                case 4: //gamma
+                    
+                    priorV2Slider.hidden = false
+                    priorV2Field.hidden = false
+                    priorV1Slider.minValue = 0.0
+                    priorV1Slider.maxValue = 10.0
+                    priorV2Slider.minValue = 0.0
+                    priorV2Slider.maxValue = 10.0
                 default:
                     priorV2Slider.hidden = false
                     priorV2Field.hidden = false
+                    priorV1Slider.minValue = 0.0
+                    priorV1Slider.maxValue = 1.0
+                    priorV2Slider.minValue = 0.0
+                    priorV2Slider.maxValue = 1.0
                 }
                 priorV1Slider.hidden = false
                 priorV1Field.hidden = false
@@ -216,8 +244,9 @@ class PlexusBNSingleNodeViewController: NSViewController, CPTScatterPlotDataSour
                 scopePopup.hidden = true
                 numericButton.hidden = true
                 dataLabel.hidden = true
-                dataTypePopup.hidden = true
+
                 dataPopup.hidden = true
+                dataSubPopup.hidden = true
                 
                 graph.addPlot(priorPlot)
                 self.performSegueWithIdentifier("priorControls", sender: nil)
@@ -238,7 +267,7 @@ class PlexusBNSingleNodeViewController: NSViewController, CPTScatterPlotDataSour
                     postData.append(Double(thisPost)/Double(curtop))
                 }
                 
-               // println("postData: \(postData)")
+
                 
                 self.dataForChart = postData
             }
@@ -264,8 +293,9 @@ class PlexusBNSingleNodeViewController: NSViewController, CPTScatterPlotDataSour
             scopePopup.hidden = true
             numericButton.hidden = true
             dataLabel.hidden = true
-            dataTypePopup.hidden = true
+
             dataPopup.hidden = true
+            dataSubPopup.hidden = true
             
             
             priorDist = 0
@@ -278,24 +308,18 @@ class PlexusBNSingleNodeViewController: NSViewController, CPTScatterPlotDataSour
         
         graph.reloadData()
         
-        
-        
-        dataPopup.removeAllItems()
-        
-        let dataNames : [String] = self.collectData(self)
+ 
+        //collect data for the prior and CPT controls
+        self.collectData()
 
-        dataPopup.addItemsWithTitles(dataNames)
 
-        if(curNodes.count<1){
-            dataPopup.hidden = true
-        }
         
     }
     
     
     
     func numberOfRecordsForPlot(plot: CPTPlot!) -> UInt {
-       // println("self.dataForChart.count: \(UInt(self.dataForChart.count))");
+
         return UInt(self.dataForChart.count)
     
     }
@@ -334,13 +358,15 @@ class PlexusBNSingleNodeViewController: NSViewController, CPTScatterPlotDataSour
                     }
                     
                 case 2: //gaussian
-                    println("guassian mean: \(V1) sigma: \(V2) x: \(nidx) gives : \(gaussian(V1, sigma: V2, x: nidx))")
                     return gaussian(V1, sigma: V2, x: nidx)
+                   
+                case 3: //beta
+                    return beta(V1, b: V2, x: nidx)
+
+                case 4: //gamma
+
                     
-                case 3: //gamma
-                    println("\(nidx) \(lgamma(nidx))")
-                    
-                    return lgamma(nidx)
+                    return gamma(V1, b:V2, x:nidx)
                     
                 default:
                     return 0
@@ -352,15 +378,12 @@ class PlexusBNSingleNodeViewController: NSViewController, CPTScatterPlotDataSour
             }
                 
             else if(plot.identifier.isEqual("PostPlot")){
-                //let nidx : NSNumber = NSNumber(unsignedLong: idx)
-                //let nidx : Int = Int(idx)
+
                 return self.dataForChart[Int(idx)] as NSNumber
             }
         }
         
-        
-        // println("numberForPlot: \(self.dataForChart[idx] as NSNumber)")
-        //
+
         return 0
     }
     
@@ -372,46 +395,79 @@ class PlexusBNSingleNodeViewController: NSViewController, CPTScatterPlotDataSour
         return p/n
     }
     
+    func beta(a: Double, b: Double, x: Double) -> Double {
+        
+        let betanorm : Double = tgamma((a+b))/(tgamma(a)+tgamma(b))
+        
+        let secondhalf : Double = pow(x, (a-1))*pow((1-x),(b-1))
+        
+        return betanorm * secondhalf
+    }
     
+    func gamma(a: Double, b: Double, x: Double) -> Double {//gamma distribution, not funciotn
+        let numerator = pow(b,a) * pow(x, (a-1)) * pow(M_E,-(x*b))
+        return numerator/tgamma(a)
+    }
+    /*
 
+    func chkDataName(inNode:BNNode) {
+        println("in chkData name for node \(inNode.nodeLink.name)")
+        
+        switch(curNode.dataScope) {
+        case 1:// self
+            println("self \(curNode.nodeLink.name)")
+            
+            //from that object, select only the names of what is directly connected to it
+            //only works for entries
+            if(curNode.nodeLink.entity.name == "Entry"){
+                let curEntry = curNode.nodeLink as! Entry
+                switch(curNode.dataOp) {
+                case 0: //trait
+
+                    let theTraits = curEntry.trait
+                    for thisTrait in theTraits {
+                        dataNames.append(thisTrait.name)
+                    }
+                    
+                }
+            }
+            
+            
+        }
+        
+
+        
+        
+    }
+    */
     
-    
-    func collectData(sender:AnyObject) -> [String] {
+    func collectData() {
         println("\ncollectData")
+        self.dataPopup.removeAllItems()
+        self.dataSubPopup.removeAllItems()
         self.dataPopup.enabled = true
         self.dataPopup.hidden = false
+        self.dataSubPopup.hidden = false
         var dataNames = [String]()
+        var dataSubNames = [String]()
         var err: NSError?
-        var dataOp = String()
+        
         
         var curNodes : [BNNode] = nodesController.selectedObjects as! [BNNode]
         if(curNodes.count>0) {
             curNode = curNodes[0]
-            switch(curNode.dataOp) {
-            case 0:
-                dataOp = "Trait"
-            case 1:
-                dataOp = "Entry"
-            case 2:
-                dataOp = "Structure"
-            case 3:
-                dataOp = "Connection"
-            default:
-                dataOp = "Trait"
-                
-            }
             
-            let request = NSFetchRequest(entityName: dataOp)
+            let request = NSFetchRequest(entityName: "Trait")
             
 
             switch(curNode.dataScope) {
             case 0://global // ALL entities matching this one's name
                 
-                
                 println("global \(curNode.nodeLink.name)")
                 dataNames.append(curNode.nodeLink.name)
                 self.dataPopup.enabled = false
                 self.dataPopup.hidden = true
+                self.dataSubPopup.hidden = true
                 
             
             case 1:// self
@@ -421,30 +477,25 @@ class PlexusBNSingleNodeViewController: NSViewController, CPTScatterPlotDataSour
                 //only works for entries
                 if(curNode.nodeLink.entity.name == "Entry"){
                     let curEntry = curNode.nodeLink as! Entry
-                    switch(curNode.dataOp) {
-                        
-                    case 1: //entry
-                        dataNames.append(curEntry.name)
-                        self.dataPopup.enabled = false
-                    case 2://structure DISABLED
-                        dataNames = [String]()
-                       self.dataPopup.enabled = false
-                    case 3://conection DISABLED
-                        dataNames = [String]()
-                        self.dataPopup.enabled = false
-                    default://trait
-                        let theTraits = curEntry.trait
-                        for thisTrait in theTraits {
-                            dataNames.append(thisTrait.name)
-                        }
-                        
+                    let theTraits = curEntry.trait
+                    for thisTrait in theTraits {
+                        dataNames.append(thisTrait.name)
                     }
+                    
+                }
+                else if (curNode.nodeLink.entity.name == "Trait"){
+                    dataNames.append(curNode.nodeLink.name)
+                }
+                else {
+                    dataNames = [String]()
+                    self.dataPopup.enabled = false
                 }
                 
 
             case 2: //children
                 println("children \(curNode.nodeLink.name)")
                 println(curNode.nodeLink.entity.name)
+                
                 
                 if(curNode.nodeLink.entity.name == "Entry"){ //take this entry's children and look at it's children
                     
@@ -456,44 +507,26 @@ class PlexusBNSingleNodeViewController: NSViewController, CPTScatterPlotDataSour
                     request.propertiesToFetch = ["name"]
                     
                     if let fetch = moc.executeFetchRequest(request, error:&err) {
-                        println("in entry children fetch \(fetch)")
+                        println("in entry to trait children fetch \(fetch)")
                         for obj  in fetch {
                             println(obj.valueForKey("name"))
                             dataNames.append(obj.valueForKey("name") as! String)
                             
                         }
                     }
-                
+                    
                 }
-                else if (curNode.nodeLink.entity.name == "Trait"){ //take this trait's connected ENTRY's children and look at that ENTry's data
-                    let curTrait = curNode.nodeLink as! Trait
-                    let curEntry = curTrait.entry as Entry
-                    let predicate = NSPredicate(format: "entry.parent == %@", curEntry)
+                else if (curNode.nodeLink.entity.name == "Trait"){ //traits have no children, so change to global
+                    dataNames = [String]()
+                    self.dataPopup.enabled = false
                     
-                    request.resultType = .DictionaryResultType
-                    request.predicate = predicate
-                    request.returnsDistinctResults = true
-                    request.propertiesToFetch = ["name"]
-                    
-                    if let fetch = moc.executeFetchRequest(request, error:&err) {
-                        println("in trait children fetch \(fetch)")
-                        for obj  in fetch {
-                            println(obj.valueForKey("name"))
-                            dataNames.append(obj.valueForKey("name") as! String)
-                            
-                        }
-                    }
-
                 }
                 else {
-                    println("nope")
                     dataNames = [String]()
                     self.dataPopup.enabled = false
                 }
                 
-                //MUST set dataOp to Entry, as no other type is valid for this
-               // curNode.dataOp = 1
-               // dataOp = "Entry"
+                
 
                 
             default:
@@ -502,15 +535,105 @@ class PlexusBNSingleNodeViewController: NSViewController, CPTScatterPlotDataSour
                 
             }
             
+            self.dataPopup.addItemsWithTitles(dataNames)
+            self.dataPopup.selectItemWithTitle(curNode.dataName)
+            
+            
+            //now create pickable list of trait values
+            switch(curNode.dataScope) {
+                case 0://global list of all possible values of all traits with this name
+                
+                println("global")
+                
+                let predicate = NSPredicate(format: "name == %@", curNode.nodeLink.name)
+                
+                request.resultType = .DictionaryResultType
+                request.predicate = predicate
+                request.returnsDistinctResults = true
+                request.propertiesToFetch = ["traitValue"]
+                
+                if let fetch = moc.executeFetchRequest(request, error:&err) {
+                    println("Global sub fetch \(fetch)")
+                    for obj  in fetch {
+                        println(obj.valueForKey("traitValue"))
+                        dataSubNames.append(obj.valueForKey("traitValue") as! String)
+                        
+                    }
+                }
+                
+                
+            case 1: //self
+                println("self")
+                if(curNode.nodeLink.entity.name == "Entry"){
+                    
+                    let predicate = NSPredicate(format: "entry == %@ AND name == %@", curNode.nodeLink, curNode.dataName)
+                    request.predicate = predicate
+                    request.returnsDistinctResults = true
+                    request.propertiesToFetch = ["traitValue"]
+                    
+                    if let fetch = moc.executeFetchRequest(request, error:&err) {
+                        println("Self sub fetch \(fetch)")
+                        for obj  in fetch {
+                            println(obj.valueForKey("traitValue"))
+                            dataSubNames.append(obj.valueForKey("traitValue") as! String)
+                            
+                        }
+                    }
+                    
+                }
+                
+                else if (curNode.nodeLink.entity.name == "Trait"){ //you obviously want this trait's own value, then
+                    let curTrait = curNode.nodeLink as! Trait
+                    dataSubNames.append(curTrait.traitValue)
+                    
+                    
+                }
+             
+            case 2: //children
+                println("children")
+                if(curNode.nodeLink.entity.name == "Entry"){ //take this entry's children and look at it's children
+                    
+                    let predicate = NSPredicate(format: "entry.parent == %@ AND name == %@", curNode.nodeLink, curNode.dataName)
+                    request.predicate = predicate
+                    request.returnsDistinctResults = true
+                    request.propertiesToFetch = ["traitValue"]
+                    
+                    if let fetch = moc.executeFetchRequest(request, error:&err) {
+                        println("Children sub fetch \(fetch)")
+                        for obj  in fetch {
+                            println(obj.valueForKey("traitValue"))
+                            dataSubNames.append(obj.valueForKey("traitValue") as! String)
+                            
+                        }
+                    }
+                    
+                }
+                
+                else if (curNode.nodeLink.entity.name == "Trait"){ //traits cannot have children
+                    dataSubNames = [String]()
+                    self.dataSubPopup.enabled = false
+                }
+                
+            default:
+                println("out of bounds")
+                
+            }
+            
+            
+            self.dataSubPopup.addItemsWithTitles(dataSubNames)
+            self.dataSubPopup.selectItemWithTitle(curNode.dataSubName)
+            
         }
         
        
-
-        println("dataNames \(dataNames)")
         
 
+        if(curNodes.count<1){
+            self.dataPopup.hidden = true
+            self.dataSubPopup.hidden = true
+        }
         
-        return dataNames
+
     }
 
     
