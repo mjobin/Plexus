@@ -77,6 +77,12 @@ class PlexusBNSKView: SKView, NSDraggingDestination {
         let curModels : [Model] = modelTreeController.selectedObjects as! [Model]
         let curModel : Model = curModels[0]
         
+
+        
+
+
+
+        
         
         //create an NodeLink - independet node link for nodes not linked to any other form of data
         
@@ -90,6 +96,7 @@ class PlexusBNSKView: SKView, NSDraggingDestination {
         curModel.addBNNodeObject(newNode)
         
         newNode.setValue(curModel, forKey: "model")
+
         
         
         moc.save(errorPtr)
@@ -103,24 +110,38 @@ class PlexusBNSKView: SKView, NSDraggingDestination {
     @IBAction func removeNode(sender: AnyObject) {
         var errorPtr : NSErrorPointer = nil
         
-        let curNodes : [BNNode]  = nodesController.arrangedObjects as! [BNNode]
-        let curNode : BNNode = curNodes[0]
-
-        //println("in removeNode currently selected node is \(curNode)")
-
-      //  moc.deleteObject(curNode)
         
-      //  moc.save(errorPtr)
-        
-        //remove influencedBy
-        /*
-        let theInfluencedBy : [BNNode] = curNode.influencedBy.allObjects as! [BNNode]
-        
-        for thisInfluencedBy in theInfluencedBy {
+        var curNodes : [BNNode] = nodesController.selectedObjects as! [BNNode]
+        if(curNodes.count>0) {
+            var curNode : BNNode = curNodes[0]
             
-            if(thisInfluencedBy == self){
-                            }
-        }*/
+          //  println("in removeNode currently selected node is \(curNode.nodeLink.name)")
+            
+            //remove influencedBy
+            /*
+            let theInfluencedBy : [BNNode] = curNode.influencedBy.allObjects as! [BNNode]
+            
+            for thisInfluencedBy in theInfluencedBy {
+                println("influenced BY \(thisInfluencedBy.nodeLink.name)")
+                let infByinfs : [BNNode] = thisInfluencedBy.influences.allObjects as! [BNNode]
+                for thisInfByinfs in infByinfs {
+                    println("which influences \(thisInfByinfs.nodeLink.name)")
+                    if thisInfByinfs == curNode {
+                        println("itsa me")
+                    }
+                }
+            }
+            */
+             moc.deleteObject(curNode)
+        }
+
+
+
+      //
+        
+        moc.save(errorPtr)
+        
+
         
         
         //just remove it?
@@ -141,11 +162,14 @@ class PlexusBNSKView: SKView, NSDraggingDestination {
             
 
 
-            var curModels : [Model] = modelTreeController.selectedObjects as! [Model]
+            let curModels : [Model] = modelTreeController.selectedObjects as! [Model]
             var curModel : Model = curModels[0]
+
+            
             curModel.addBNNodeObject(newNode)
 
             newNode.setValue(curModel, forKey: "model")
+
             
             
             
@@ -155,5 +179,9 @@ class PlexusBNSKView: SKView, NSDraggingDestination {
         }
         
     }
+    
+    
+
+    
     
 }
