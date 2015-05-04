@@ -56,8 +56,8 @@ class PlexusBNViewController: NSViewController {
         
         self.skView!.presentScene(scene)
         
-        self.skView!.showsFPS = true
-        self.skView!.showsNodeCount = true
+       // self.skView!.showsFPS = true
+       // self.skView!.showsNodeCount = true
         
       //  self.performSegueWithIdentifier("NodeData", sender: self)
         
