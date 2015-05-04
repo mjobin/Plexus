@@ -161,12 +161,17 @@ class PlexusBNSingleNodeViewController: NSViewController, CPTScatterPlotDataSour
     }
     
     func reloadData() {
-        //Get selected node
         
+        
+        //save the moc here to make sure changes read properly
+        var errorPtr : NSErrorPointer = nil
+        moc.save(errorPtr)
+        
+        //Get selected node
         var curNodes : [BNNode] = nodesController.selectedObjects as! [BNNode]
         if(curNodes.count>0) {
             curNode = curNodes[0]
-            println("\n\n*********\nreloadData \(curNode.nodeLink.name)")
+          //  println("\n\n*********\nreloadData \(curNode.nodeLink.name)")
             
             graph.title = curNode.nodeLink.name
             
@@ -195,7 +200,11 @@ class PlexusBNSingleNodeViewController: NSViewController, CPTScatterPlotDataSour
                 graph.addPlot(priorPlot)
                 graph.removePlot(priorPlot)
                 
-                println("in reloadData datanames: \(curNode.dataName) \(curNode.dataSubName)")
+           //     println("in reloadData datanames: \(curNode.dataName) \(curNode.dataSubName)")
+                
+                //collect data for the CPT controls
+                self.collectData()
+                
             }
             else {
                 
@@ -249,7 +258,7 @@ class PlexusBNSingleNodeViewController: NSViewController, CPTScatterPlotDataSour
                 dataSubPopup.hidden = true
                 
                 graph.addPlot(priorPlot)
-                self.performSegueWithIdentifier("priorControls", sender: nil)
+               // self.performSegueWithIdentifier("priorControls", sender: nil)
             }
 
      
@@ -309,8 +318,7 @@ class PlexusBNSingleNodeViewController: NSViewController, CPTScatterPlotDataSour
         graph.reloadData()
         
  
-        //collect data for the prior and CPT controls
-        self.collectData()
+
 
 
         
@@ -408,74 +416,59 @@ class PlexusBNSingleNodeViewController: NSViewController, CPTScatterPlotDataSour
         let numerator = pow(b,a) * pow(x, (a-1)) * pow(M_E,-(x*b))
         return numerator/tgamma(a)
     }
-    /*
+    
 
-    func chkDataName(inNode:BNNode) {
-        println("in chkData name for node \(inNode.nodeLink.name)")
-        
-        switch(curNode.dataScope) {
-        case 1:// self
-            println("self \(curNode.nodeLink.name)")
-            
-            //from that object, select only the names of what is directly connected to it
-            //only works for entries
-            if(curNode.nodeLink.entity.name == "Entry"){
-                let curEntry = curNode.nodeLink as! Entry
-                switch(curNode.dataOp) {
-                case 0: //trait
 
-                    let theTraits = curEntry.trait
-                    for thisTrait in theTraits {
-                        dataNames.append(thisTrait.name)
-                    }
-                    
-                }
-            }
-            
-            
-        }
-        
 
-        
-        
-    }
-    */
+    
+
     
     func collectData() {
-        println("\ncollectData")
+      //  println("\n*******collectData")
         self.dataPopup.removeAllItems()
         self.dataSubPopup.removeAllItems()
         self.dataPopup.enabled = true
+        self.dataSubPopup.enabled = true
         self.dataPopup.hidden = false
         self.dataSubPopup.hidden = false
         var dataNames = [String]()
         var dataSubNames = [String]()
         var err: NSError?
         
+
+        var errorPtr : NSErrorPointer = nil
+
+        
+        
+        let curModels : [Model] = modelTreeController.selectedObjects as! [Model]
+        let curModel : Model = curModels[0]
+        let curDataset : Dataset = curModel.dataset
         
         var curNodes : [BNNode] = nodesController.selectedObjects as! [BNNode]
         if(curNodes.count>0) {
             curNode = curNodes[0]
             
             let request = NSFetchRequest(entityName: "Trait")
+            var predicate = NSPredicate()
             
 
             switch(curNode.dataScope) {
             case 0://global // ALL entities matching this one's name
                 
-                println("global \(curNode.nodeLink.name)")
+             //   println("global \(curNode.nodeLink.name)")
                 dataNames.append(curNode.nodeLink.name)
                 self.dataPopup.enabled = false
                 self.dataPopup.hidden = true
+                self.dataSubPopup.enabled = false
                 self.dataSubPopup.hidden = true
                 
             
             case 1:// self
-                println("self \(curNode.nodeLink.name)")
+            //    println("self \(curNode.nodeLink.name)")
                 
                 //from that object, select only the names of what is directly connected to it
-                //only works for entries
                 if(curNode.nodeLink.entity.name == "Entry"){
+                  //  println("entry")
                     let curEntry = curNode.nodeLink as! Entry
                     let theTraits = curEntry.trait
                     for thisTrait in theTraits {
@@ -483,23 +476,28 @@ class PlexusBNSingleNodeViewController: NSViewController, CPTScatterPlotDataSour
                     }
                     
                 }
-                else if (curNode.nodeLink.entity.name == "Trait"){
+                else if (curNode.nodeLink.entity.name == "Trait"){//if you select trait here, you can only mean this trait
                     dataNames.append(curNode.nodeLink.name)
+                    self.dataPopup.enabled = false
+                    self.dataPopup.hidden = true
+                    self.dataSubPopup.enabled = false
+                    self.dataSubPopup.hidden = true
                 }
                 else {
                     dataNames = [String]()
-                    self.dataPopup.enabled = false
                 }
                 
 
             case 2: //children
-                println("children \(curNode.nodeLink.name)")
-                println(curNode.nodeLink.entity.name)
-                
-                
+             //   println("children \(curNode.nodeLink.name)")
+
+
                 if(curNode.nodeLink.entity.name == "Entry"){ //take this entry's children and look at it's children
+
                     
-                    let predicate = NSPredicate(format: "entry.parent == %@", curNode.nodeLink as! Entry)
+                    //If it is connected to this entry, then it is autmatically in that entry's only possible dataset
+                    predicate = NSPredicate(format: "entry.parent == %@", curNode.nodeLink)
+
                     
                     request.resultType = .DictionaryResultType
                     request.predicate = predicate
@@ -507,45 +505,111 @@ class PlexusBNSingleNodeViewController: NSViewController, CPTScatterPlotDataSour
                     request.propertiesToFetch = ["name"]
                     
                     if let fetch = moc.executeFetchRequest(request, error:&err) {
-                        println("in entry to trait children fetch \(fetch)")
+                      //  println("in entry to trait children fetch \(fetch)")
                         for obj  in fetch {
-                            println(obj.valueForKey("name"))
+                            //println(obj.valueForKey("name"))
                             dataNames.append(obj.valueForKey("name") as! String)
                             
                         }
                     }
                     
                 }
-                else if (curNode.nodeLink.entity.name == "Trait"){ //traits have no children, so change to global
+                else if (curNode.nodeLink.entity.name == "Trait"){ //traits have no children
+                   curNode.dataScope = 0
                     dataNames = [String]()
-                    self.dataPopup.enabled = false
+                    return
+                    
+                    
                     
                 }
                 else {
                     dataNames = [String]()
-                    self.dataPopup.enabled = false
+                    
                 }
                 
                 
-
                 
             default:
                 
                 println("collectData out of bounds")
+                dataNames = [String]()
                 
             }
             
+          //  println("dataNames \(dataNames)")
+
             self.dataPopup.addItemsWithTitles(dataNames)
-            self.dataPopup.selectItemWithTitle(curNode.dataName)
+            
+
+            if(self.dataPopup.itemArray.count > 0){
+                self.dataPopup.selectItemWithTitle(curNode.dataName)
+            }
+
+            
+           // println("curNode.dataName \(curNode.dataName)")
+
             
             
-            //now create pickable list of trait values
-            switch(curNode.dataScope) {
+
+            
+
+            
+            
+            //if the currentdataName can be found in the list, it is selected and them subNames can be found, otherwise just return
+            if contains(dataNames, curNode.dataName){
+                predicate = NSPredicate()
+                
+                //now create pickable list of trait values
+                switch(curNode.dataScope) {
                 case 0://global list of all possible values of all traits with this name
-                
-                println("global")
-                
-                let predicate = NSPredicate(format: "name == %@", curNode.nodeLink.name)
+                    
+                   // println("dataSubNames global")
+                    
+                    if(curNode.nodeLink.entity.name == "Entry"){//Traits whose names match the name of this entry
+                      //  println("entry")
+                        predicate = NSPredicate(format: "entry.dataset == %@ AND name == %@", curDataset, curNode.nodeLink.name)
+                        
+                        
+                    }
+                    else if (curNode.nodeLink.entity.name == "Trait"){ //you obviously want this trait's own value, then
+                      //  println("trait")
+                        predicate = NSPredicate(format: "entry.dataset == %@ AND name == %@", curDataset, curNode.nodeLink.name)
+                    }
+                    
+                case 1: //self
+                  //  println("dataSubNames self")
+                    
+                    if(curNode.nodeLink.entity.name == "Entry"){
+                   //     println("entry")
+                        predicate = NSPredicate(format: "entry == %@ AND name == %@", curNode.nodeLink, curNode.dataName)
+                        
+                        
+                    }
+                        
+                    else if (curNode.nodeLink.entity.name == "Trait"){ //you obviously want this trait's own value, then
+                      //  println("trait")
+                        predicate = NSPredicate(format: "entry == %@", curNode.nodeLink)
+                        
+                        
+                        
+                    }
+                    
+                case 2: //children
+                 //   println("dataSubNames children")
+                    if(curNode.nodeLink.entity.name == "Entry"){ //take this entry's children and look at it's children
+                   //     println("entry")
+                        predicate = NSPredicate(format: "entry.parent == %@ AND name == %@", curNode.nodeLink, curNode.dataName)
+                        
+                    }
+                        
+                    else if (curNode.nodeLink.entity.name == "Trait"){ //traits cannot have children
+                     //   println("trait")
+                    }
+                    
+                default:
+                    println("out of bounds")
+                    
+                }
                 
                 request.resultType = .DictionaryResultType
                 request.predicate = predicate
@@ -553,82 +617,40 @@ class PlexusBNSingleNodeViewController: NSViewController, CPTScatterPlotDataSour
                 request.propertiesToFetch = ["traitValue"]
                 
                 if let fetch = moc.executeFetchRequest(request, error:&err) {
-                    println("Global sub fetch \(fetch)")
+                   // println("sub fetch \(fetch)")
                     for obj  in fetch {
-                        println(obj.valueForKey("traitValue"))
+                     //   println(obj.valueForKey("traitValue"))
                         dataSubNames.append(obj.valueForKey("traitValue") as! String)
                         
                     }
                 }
                 
                 
-            case 1: //self
-                println("self")
-                if(curNode.nodeLink.entity.name == "Entry"){
-                    
-                    let predicate = NSPredicate(format: "entry == %@ AND name == %@", curNode.nodeLink, curNode.dataName)
-                    request.predicate = predicate
-                    request.returnsDistinctResults = true
-                    request.propertiesToFetch = ["traitValue"]
-                    
-                    if let fetch = moc.executeFetchRequest(request, error:&err) {
-                        println("Self sub fetch \(fetch)")
-                        for obj  in fetch {
-                            println(obj.valueForKey("traitValue"))
-                            dataSubNames.append(obj.valueForKey("traitValue") as! String)
-                            
-                        }
-                    }
-                    
+                self.dataSubPopup.addItemsWithTitles(dataSubNames)
+                if(self.dataSubPopup.itemArray.count > 0){
+                    self.dataSubPopup.selectItemWithTitle(curNode.dataSubName)
                 }
                 
-                else if (curNode.nodeLink.entity.name == "Trait"){ //you obviously want this trait's own value, then
-                    let curTrait = curNode.nodeLink as! Trait
-                    dataSubNames.append(curTrait.traitValue)
-                    
-                    
-                }
-             
-            case 2: //children
-                println("children")
-                if(curNode.nodeLink.entity.name == "Entry"){ //take this entry's children and look at it's children
-                    
-                    let predicate = NSPredicate(format: "entry.parent == %@ AND name == %@", curNode.nodeLink, curNode.dataName)
-                    request.predicate = predicate
-                    request.returnsDistinctResults = true
-                    request.propertiesToFetch = ["traitValue"]
-                    
-                    if let fetch = moc.executeFetchRequest(request, error:&err) {
-                        println("Children sub fetch \(fetch)")
-                        for obj  in fetch {
-                            println(obj.valueForKey("traitValue"))
-                            dataSubNames.append(obj.valueForKey("traitValue") as! String)
-                            
-                        }
-                    }
-                    
-                }
                 
-                else if (curNode.nodeLink.entity.name == "Trait"){ //traits cannot have children
-                    dataSubNames = [String]()
-                    self.dataSubPopup.enabled = false
-                }
-                
-            default:
-                println("out of bounds")
-                
+
+
             }
             
+            //because we are sleetcing froma  live list, ok to select first option if exisitng is not found
             
-            self.dataSubPopup.addItemsWithTitles(dataSubNames)
-            self.dataSubPopup.selectItemWithTitle(curNode.dataSubName)
+            else {
+                dataSubNames = [String]()
+//                println("no contains")
+
+
+
+            }
+           
+  //          println("and after \(curNode.dataName) \(curNode.dataSubName)")
             
         }
-        
-       
-        
 
-        if(curNodes.count<1){
+        else {
             self.dataPopup.hidden = true
             self.dataSubPopup.hidden = true
         }
@@ -652,7 +674,7 @@ class PlexusBNSingleNodeViewController: NSViewController, CPTScatterPlotDataSour
     
     func mocDidChange(notification: NSNotification){
         
-
+      //  println("single node moc changed")
         self.reloadData()
 
         
