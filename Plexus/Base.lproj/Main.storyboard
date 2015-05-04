@@ -714,14 +714,14 @@
                                         <action selector="calculate:" target="B8D-0N-5wS" id="VCg-wJ-cZX"/>
                                     </connections>
                                 </toolbarItem>
-                                <toolbarItem implicitItemIdentifier="E18303A5-037B-44FE-878B-72401FAAC926" label="Models" paletteLabel="Models" image="095486F9-7A64-4B62-B4D0-13E75368659A" id="VR9-AM-azT">
+                                <toolbarItem implicitItemIdentifier="E18303A5-037B-44FE-878B-72401FAAC926" label="Models" paletteLabel="Models" image="F2AA441D-1718-4094-BC40-721E4F292751" id="VR9-AM-azT">
                                     <nil key="toolTip"/>
                                     <size key="minSize" width="13" height="13"/>
                                     <size key="maxSize" width="37" height="34"/>
                                     <button key="view" horizontalHuggingPriority="750" verticalHuggingPriority="750" id="vcL-Vh-Set">
                                         <rect key="frame" x="5" y="14" width="37" height="34"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="squareTextured" bezelStyle="texturedSquare" image="095486F9-7A64-4B62-B4D0-13E75368659A" imagePosition="only" alignment="left" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="s8L-6c-2d7">
+                                        <buttonCell key="cell" type="squareTextured" bezelStyle="texturedSquare" image="F2AA441D-1718-4094-BC40-721E4F292751" imagePosition="only" alignment="left" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="s8L-6c-2d7">
                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
@@ -772,6 +772,11 @@
                                         <action selector="exportCSV:" target="B8D-0N-5wS" id="ygp-aK-KsD"/>
                                     </connections>
                                 </toolbarItem>
+                                <toolbarItem implicitItemIdentifier="2BE36E0F-3B95-4244-B754-F1D6E204B653" label="rantest" paletteLabel="rantest" tag="-1" image="NSCaution" id="BgH-zS-orZ">
+                                    <connections>
+                                        <action selector="testRandom:" target="B8D-0N-5wS" id="5bT-F6-b3P"/>
+                                    </connections>
+                                </toolbarItem>
                             </allowedToolbarItems>
                             <defaultToolbarItems>
                                 <toolbarItem reference="6MP-iC-Y3U"/>
@@ -781,6 +786,7 @@
                                 <toolbarItem reference="EB6-A3-dHZ"/>
                                 <toolbarItem reference="tYP-cr-HVe"/>
                                 <toolbarItem reference="3e1-GX-aR9"/>
+                                <toolbarItem reference="BgH-zS-orZ"/>
                                 <toolbarItem reference="dgg-D5-0xQ"/>
                                 <toolbarItem reference="VR9-AM-azT"/>
                             </defaultToolbarItems>
@@ -1982,7 +1988,7 @@ Gw
                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                         </textFieldCell>
                                     </textField>
-                                    <popUpButton verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="3rc-sD-3wB">
+                                    <popUpButton verticalHuggingPriority="750" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="3rc-sD-3wB">
                                         <rect key="frame" x="58" y="17" width="100" height="26"/>
                                         <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" id="HbZ-Jz-qS2">
                                             <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
@@ -2010,29 +2016,6 @@ Gw
                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                         </textFieldCell>
                                     </textField>
-                                    <popUpButton verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="nup-0g-ldc">
-                                        <rect key="frame" x="209" y="19" width="100" height="26"/>
-                                        <constraints>
-                                            <constraint firstAttribute="width" constant="95" id="tA1-Bd-fBg"/>
-                                        </constraints>
-                                        <popUpButtonCell key="cell" type="push" title="Item 1" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="Q9a-Fk-6ih" id="NDx-En-wZ3">
-                                            <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
-                                            <font key="font" metaFont="menu"/>
-                                            <menu key="menu" id="xFE-o5-anX">
-                                                <items>
-                                                    <menuItem title="Item 1" state="on" id="Q9a-Fk-6ih"/>
-                                                    <menuItem title="Item 2" id="cV1-uJ-K0P"/>
-                                                    <menuItem title="Item 3" id="9SO-Pr-oey"/>
-                                                </items>
-                                            </menu>
-                                            <connections>
-                                                <binding destination="Ygn-oG-Ywz" name="content" keyPath="values.OperationTypes" id="CLp-Hj-gtg"/>
-                                            </connections>
-                                        </popUpButtonCell>
-                                        <connections>
-                                            <binding destination="fG4-pY-U5P" name="selectedIndex" keyPath="nodesController.selection.dataOp" id="Iqr-yB-cPP"/>
-                                        </connections>
-                                    </popUpButton>
                                     <button translatesAutoresizingMaskIntoConstraints="NO" id="lnh-Fs-nyR">
                                         <rect key="frame" x="46" y="2" width="74" height="18"/>
                                         <buttonCell key="cell" type="check" title="Numeric" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="ub2-Dk-eI8">
@@ -2043,8 +2026,8 @@ Gw
                                             <binding destination="fG4-pY-U5P" name="value" keyPath="nodesController.selection.numericData" id="Fey-2x-iTV"/>
                                         </connections>
                                     </button>
-                                    <popUpButton verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="1xr-wo-DJV">
-                                        <rect key="frame" x="209" y="-2" width="137" height="26"/>
+                                    <popUpButton verticalHuggingPriority="750" ambiguous="YES" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="1xr-wo-DJV">
+                                        <rect key="frame" x="207" y="22" width="137" height="26"/>
                                         <constraints>
                                             <constraint firstAttribute="width" constant="132" id="GrN-0X-XzE"/>
                                         </constraints>
@@ -2060,7 +2043,7 @@ Gw
                                             </menu>
                                         </popUpButtonCell>
                                         <connections>
-                                            <binding destination="fG4-pY-U5P" name="selectedIndex" keyPath="nodesController.selection.dataOp" id="Zdh-y9-jPe"/>
+                                            <binding destination="fG4-pY-U5P" name="selectedValue" keyPath="nodesController.selection.dataName" id="sd8-83-u4b"/>
                                         </connections>
                                     </popUpButton>
                                     <popUpButton verticalHuggingPriority="750" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="wUF-C6-gPC">
@@ -2083,13 +2066,6 @@ Gw
                                             <binding destination="fG4-pY-U5P" name="selectedIndex" keyPath="nodesController.selection.priorDistType" id="i2M-Vi-Cfi"/>
                                         </connections>
                                     </popUpButton>
-                                    <slider verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" ambiguous="YES" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="3SB-mj-9Uh">
-                                        <rect key="frame" x="152" y="24" width="280" height="21"/>
-                                        <sliderCell key="cell" state="on" alignment="left" maxValue="1" doubleValue="0.5" tickMarkPosition="above" sliderType="linear" id="Cwa-XM-dm7"/>
-                                        <connections>
-                                            <binding destination="fG4-pY-U5P" name="value" keyPath="nodesController.selection.priorV1" id="LEJ-Ch-hRG"/>
-                                        </connections>
-                                    </slider>
                                     <slider verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" ambiguous="YES" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ebU-8t-Zwk">
                                         <rect key="frame" x="152" y="4" width="280" height="21"/>
                                         <sliderCell key="cell" state="on" alignment="left" maxValue="1" doubleValue="0.5" tickMarkPosition="below" sliderType="linear" id="ptz-Ta-vOe"/>
@@ -2121,11 +2097,37 @@ Gw
                                             <binding destination="fG4-pY-U5P" name="value" keyPath="nodesController.selection.priorV2" id="ptS-eR-pib"/>
                                         </connections>
                                     </textField>
+                                    <slider verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" ambiguous="YES" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="3SB-mj-9Uh">
+                                        <rect key="frame" x="152" y="24" width="280" height="21"/>
+                                        <sliderCell key="cell" state="on" alignment="left" maxValue="1" doubleValue="0.5" tickMarkPosition="above" sliderType="linear" id="Cwa-XM-dm7"/>
+                                        <connections>
+                                            <binding destination="fG4-pY-U5P" name="value" keyPath="nodesController.selection.priorV1" id="LEJ-Ch-hRG"/>
+                                        </connections>
+                                    </slider>
+                                    <popUpButton verticalHuggingPriority="750" ambiguous="YES" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="VwV-nR-tQz">
+                                        <rect key="frame" x="207" y="0.0" width="137" height="26"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="132" id="f3u-Og-BFn"/>
+                                        </constraints>
+                                        <popUpButtonCell key="cell" type="push" title="Item 1" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="rB8-cw-FIc" id="lNU-7h-Tje">
+                                            <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                                            <font key="font" metaFont="menu"/>
+                                            <menu key="menu" id="z3r-87-aN2">
+                                                <items>
+                                                    <menuItem title="Item 1" state="on" id="rB8-cw-FIc"/>
+                                                    <menuItem title="Item 2" id="4Nu-Wa-X5y"/>
+                                                    <menuItem title="Item 3" id="EKp-RP-eJQ"/>
+                                                </items>
+                                            </menu>
+                                        </popUpButtonCell>
+                                        <connections>
+                                            <binding destination="fG4-pY-U5P" name="selectedValue" keyPath="nodesController.selection.dataSubName" id="AL1-n2-udG"/>
+                                        </connections>
+                                    </popUpButton>
                                 </subviews>
                                 <constraints>
                                     <constraint firstItem="DFm-37-9fc" firstAttribute="top" secondItem="dRy-xB-0PC" secondAttribute="top" id="06T-pZ-9lH"/>
                                     <constraint firstAttribute="bottom" secondItem="ebU-8t-Zwk" secondAttribute="bottom" constant="6" id="0vL-D7-16A"/>
-                                    <constraint firstItem="nup-0g-ldc" firstAttribute="leading" secondItem="3rc-sD-3wB" secondAttribute="trailing" constant="56" id="2BP-O7-IXo"/>
                                     <constraint firstItem="lnh-Fs-nyR" firstAttribute="top" secondItem="3rc-sD-3wB" secondAttribute="bottom" constant="2" id="48h-FV-vrb"/>
                                     <constraint firstItem="w7h-GQ-JA7" firstAttribute="top" secondItem="UQL-Tf-6Ub" secondAttribute="bottom" constant="3" id="7qt-wG-ARq"/>
                                     <constraint firstItem="DFm-37-9fc" firstAttribute="leading" secondItem="dRy-xB-0PC" secondAttribute="leading" id="CGg-jl-mw4"/>
@@ -2136,9 +2138,7 @@ Gw
                                     <constraint firstItem="7Vi-XC-Ynr" firstAttribute="top" secondItem="DFm-37-9fc" secondAttribute="bottom" constant="25" id="TD9-RN-ewS"/>
                                     <constraint firstAttribute="bottom" secondItem="3rc-sD-3wB" secondAttribute="bottom" constant="20" symbolic="YES" id="Vyp-hL-eYW"/>
                                     <constraint firstItem="UQL-Tf-6Ub" firstAttribute="leading" secondItem="wUF-C6-gPC" secondAttribute="trailing" constant="8" id="Yxj-lu-e0z"/>
-                                    <constraint firstItem="lnh-Fs-nyR" firstAttribute="centerY" secondItem="1xr-wo-DJV" secondAttribute="centerY" id="bML-t1-rfp"/>
                                     <constraint firstItem="3rc-sD-3wB" firstAttribute="leading" secondItem="7Vm-9Y-y9d" secondAttribute="trailing" constant="8" symbolic="YES" id="dsd-S5-vIv"/>
-                                    <constraint firstItem="7Vm-9Y-y9d" firstAttribute="bottom" secondItem="nup-0g-ldc" secondAttribute="bottom" id="evP-LN-Ix7"/>
                                     <constraint firstAttribute="trailing" secondItem="ebU-8t-Zwk" secondAttribute="trailing" constant="20" id="iRQ-rP-wWi"/>
                                     <constraint firstAttribute="bottom" secondItem="DFm-37-9fc" secondAttribute="bottom" constant="48" id="k2R-1V-1fL"/>
                                     <constraint firstItem="lnh-Fs-nyR" firstAttribute="leading" secondItem="dRy-xB-0PC" secondAttribute="leading" constant="48" id="kFd-me-8gD"/>
@@ -2150,8 +2150,8 @@ Gw
                                     <constraint firstItem="ebU-8t-Zwk" firstAttribute="top" secondItem="3SB-mj-9Uh" secondAttribute="bottom" constant="3" id="wyD-Qz-sJ5"/>
                                     <constraint firstItem="7Vi-XC-Ynr" firstAttribute="leading" secondItem="lnh-Fs-nyR" secondAttribute="trailing" constant="50" id="xK0-z9-5Ss"/>
                                     <constraint firstItem="1xr-wo-DJV" firstAttribute="leading" secondItem="7Vi-XC-Ynr" secondAttribute="trailing" constant="10" id="xZd-Yw-MxW"/>
-                                    <constraint firstItem="1xr-wo-DJV" firstAttribute="leading" secondItem="nup-0g-ldc" secondAttribute="leading" id="yI2-9I-8gc"/>
                                     <constraint firstAttribute="trailing" secondItem="3SB-mj-9Uh" secondAttribute="trailing" constant="20" id="zDO-1b-EP3"/>
+                                    <constraint firstItem="VwV-nR-tQz" firstAttribute="leading" secondItem="7Vi-XC-Ynr" secondAttribute="trailing" constant="10" id="zPE-pt-kQj"/>
                                 </constraints>
                             </customView>
                         </subviews>
@@ -2165,7 +2165,7 @@ Gw
                     <connections>
                         <outlet property="dataLabel" destination="7Vi-XC-Ynr" id="QUh-G7-DFC"/>
                         <outlet property="dataPopup" destination="1xr-wo-DJV" id="qrE-xI-XUk"/>
-                        <outlet property="dataTypePopup" destination="nup-0g-ldc" id="DtB-9d-lPK"/>
+                        <outlet property="dataSubPopup" destination="VwV-nR-tQz" id="z08-hY-9P5"/>
                         <outlet property="graphView" destination="DFm-37-9fc" id="oPU-ds-3IO"/>
                         <outlet property="numericButton" destination="lnh-Fs-nyR" id="1XG-6H-oHD"/>
                         <outlet property="priorTypePopup" destination="wUF-C6-gPC" id="avh-uk-n5m"/>
@@ -2506,7 +2506,7 @@ Gw
         </scene>
     </scenes>
     <resources>
-        <image name="095486F9-7A64-4B62-B4D0-13E75368659A" width="1" height="1">
+        <image name="F2AA441D-1718-4094-BC40-721E4F292751" width="1" height="1">
             <mutableData key="keyedArchiveRepresentation">
 YnBsaXN0MDDUAQIDBAUGPj9YJHZlcnNpb25YJG9iamVjdHNZJGFyY2hpdmVyVCR0b3ASAAGGoK4HCBMU
 GR4fIyQsLzI4O1UkbnVsbNUJCgsMDQ4PEBESVk5TU2l6ZVYkY2xhc3NcTlNJbWFnZUZsYWdzVk5TUmVw
@@ -2560,6 +2560,7 @@ AAAAAAAAAAAAAAAAAAozA
         <image name="NSActionTemplate" width="14" height="14"/>
         <image name="NSAddTemplate" width="11" height="11"/>
         <image name="NSAdvanced" width="32" height="32"/>
+        <image name="NSCaution" width="32" height="32"/>
         <image name="NSInfo" width="32" height="32"/>
         <image name="NSLockLockedTemplate" width="10" height="14"/>
         <image name="NSLockUnlockedTemplate" width="10" height="14"/>
