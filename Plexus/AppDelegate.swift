@@ -22,9 +22,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         
         //Register defaults
         let defaults = NSUserDefaults.standardUserDefaults()
-        let pTypes: [String] = ["Point", "Uniform", "Gaussian", "Gamma"]
+        let pTypes: [String] = ["Point", "Uniform", "Gaussian", "Beta", "Gamma"]
         let dTypes: [String] = ["Global", "Self", "Children"]
-        let oTypes: [String] = ["Trait", "Entry", "Structure", "Connection"]
+        let oTypes: [String] = ["Trait", "Entry"]
         let defaultValues = ["PriorTypes": pTypes, "DataScopeTypes": dTypes, "OperationTypes": oTypes]
         defaults.registerDefaults(defaultValues)
         
