@@ -24,48 +24,109 @@ extension BNNode {
         influencedBy.addObject(value)
     }
     
+    
     func freqForCPT(sender:AnyObject) -> cl_float{
         //FIXME
         
+
+        var lidum : CLong = 1
         //
-        if(self.influencedBy.count < 1){//no parents, use prior
-        
-            switch (priorDistType) {
-            case 0://prior/expert
-                return cl_float(priorV1)
-                
-            default:
-                return -999 //uh oh
-            }
+        if(self.influencedBy.count < 1){//no parents, use prior to get a deviate
+            var chk = 0
+            var pVal : cl_float = -999
             
-        }
+            while pVal < 0 || pVal > 1 {
         
-        else {// has parents
-            
-                        
-            if let typestr = self.nodeLink.entity.name {
-                switch(typestr){
-                case "Entry":
-                    println("Entry")
-                    return 1
+                switch (priorDistType) {
+                case 0://prior/expert
+                    pVal = cl_float(priorV1)
+                   // return cl_float(priorV1)
                     
-                case "Trait":
-                    println("Trait")
-                    return 1
+                case 1://uniform
+                    let r = Double(arc4random())/Double(UInt32.max)
+                    let u = cl_float((r*(priorV2.doubleValue - priorV1.doubleValue)) + priorV1.doubleValue)
+                    println("uniform \(u)")
+                    pVal = cl_float((r*(priorV2.doubleValue - priorV1.doubleValue)) + priorV1.doubleValue)
+                    //return cl_float((r*(priorV2.doubleValue - priorV1.doubleValue)) + priorV1.doubleValue)
+                    
+                case 2: //gaussian
+
+                    var gd = cl_float(gasdev(&lidum))
+                    var gdv = cl_float(priorV2) * gd + cl_float(priorV1)
+                    println("gaussdev \(gd) \(gdv)")
+                    pVal = gdv
+                    //return gdv
+                case 3: //beta
+                    var bd = cl_float(beta_dev(priorV1.doubleValue, priorV2.doubleValue))
+                    println("betadev \(bd)")
+                    pVal = bd
+                    //return bd
+                case 4: //gamma
+                    var gd = cl_float(gamma_dev(priorV1.doubleValue)/priorV2.doubleValue)
+                    println("gammadev \(gd)")
+                    pVal = gd
+    //                return gd
+                    
                     
                 default:
-                    println("Error, unknown type")
+                    return -999 //uh oh
+                }
+
+            
+                chk++
+                if(chk > 1000){
                     return -999
                 }
             }
-            else {//for no nodelink
-                return cl_float(priorV1)
+            
+            return pVal
+        }
+        
+        else {// has parents
+            let request = NSFetchRequest(entityName: "Trait")
+
+            
+            
+            //check for numeric
+            if(self.numericData == true){
+                let digits = NSCharacterSet.decimalDigitCharacterSet()
+                /*
+                for thisValue in dataNames {
+                    println("thisValue \(thisValue)")
+                    for thisChar in thisValue.unicodeScalars{
+                        println("thisChar \(thisChar)")
+                    }
+                }
+                */
+                return 1
             }
+            
+            else { // non numeric data, frequency of listed type
+                switch(self.dataScope) {
+                case 0://global
+
+                    
+                    
+                    return 1
+                case 1: //se;f
+                    return 1
+                case 2: //children
+                    return 1
+                    
+                    
+                default:
+                    return -999 //uh oh
+                }
+                
+                
+            }
+
+            
+
             
             
            
         }
-
     }
     
     func CPT(sender:AnyObject, infBy:[BNNode], ftft:[NSNumber] , depth:Int) -> cl_float{
@@ -82,7 +143,8 @@ extension BNNode {
             for thisInfluencedBy in theInfluencedBy {
                 //skip any acciedntal self influences
                 if(thisInfluencedBy != self){
-                   // println("CPT: is influenced by: \(thisInfluencedBy.name)")
+          
+                    // println("CPT: is influenced by: \(thisInfluencedBy.name)")
                     cpt *= thisInfluencedBy.CPT(self, infBy: infBy, ftft: ftft, depth: (depth+1))
                 }
             }

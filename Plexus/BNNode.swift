@@ -22,7 +22,7 @@ class BNNode: Node {
     @NSManaged var postCount: NSData?
     @NSManaged var postArray: NSData?
     @NSManaged var dataScope: NSNumber
-    @NSManaged var dataOp: NSNumber
     @NSManaged var dataName: String
+    @NSManaged var dataSubName: String
     @NSManaged var numericData: NSNumber
 }
