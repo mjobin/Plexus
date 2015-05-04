@@ -148,7 +148,7 @@
             NSLog(@"Device local memory %llu megabytes.", lMemSize);
         }
         
-        
+        /*
         size_t max_work_item_dims;
         err = clGetDeviceInfo(device_ids[i], CL_DEVICE_MAX_WORK_ITEM_DIMENSIONS, sizeof(max_work_item_dims), &max_work_item_dims, &returned_size);
         
@@ -158,7 +158,7 @@
             NSLog(@"Max Work Items in Dim %lu: %lu\n",(long unsigned)(i+1),(long unsigned)max_work_item_sizes[i]);
         }
         
-        
+        */
         
         
         cl_queues[i] = clCreateCommandQueue(context, device_ids[i], 0, &err);
@@ -249,7 +249,7 @@
         //------------- influenced by
         
         NSMutableOrderedSet * theInfluencedBy = [fNode recursiveInfBy:self infBy:[[NSMutableOrderedSet alloc] init] depth:0];
-        //NSMutableOrderedSet * laceInfluencedBy = [fNode laceInfluencedBy:self: [[NSMutableOrderedSet alloc]init] :0];
+
         
         
         thisCPT =0;
@@ -334,8 +334,7 @@
             
             cptnet[(cptoffset+i)] = [fNode CPT:self infBy:theInfluencedBy.array ftft:[NSArray arrayWithArray:ftft] depth:0];
             
-            //cptnet[(cptoffset+i)] = [fNode CPT:self : laceInfluencedBy :[NSArray arrayWithArray:ftft]: 0];
-            // NSLog(@"The ftft string: %@ Going into CPT: %f", ftft, [fNode CPT:self : influencedBy :[NSArray arrayWithArray:ftft]: 0]);
+
             
         }
         
@@ -581,6 +580,22 @@
         
         
         for(int dev = 0; dev < num_devices; dev++){
+            
+        //    NSLog(@"******");
+            
+            
+            
+            size_t thisWork = worksizes[dev];
+            
+          //  NSLog(@"worksize for this dev %lu", thisWork);
+            
+            size_t workRemaining = [computes intValue] - ct;
+            
+           // NSLog(@"remaining work %lu", workRemaining);
+            
+            if (thisWork > workRemaining) thisWork = workRemaining;
+            
+           // NSLog(@"worksize should now be %lu", thisWork);
 
             
             cl_mem bnstatesbuf = clCreateBuffer(context, CL_MEM_READ_WRITE, bnstatesize*sizeof(cl_int), 0, &err);
@@ -598,26 +613,26 @@
             clEnqueueWriteBuffer(cl_queues[dev], bnresultsbuf, CL_TRUE, 0, bnstatesize*sizeof(cl_float), (void*)bnresultsarrays[dev], 0, 0, 0);
             bnresultsbufs[dev] = bnresultsbuf;
             
-            for(i=0;i<worksizes[dev];i++){
+            for(i=0;i<thisWork;i++){
                 offsetarrays[dev][i] = arc4random();
                 //NSLog(@"offset %i", offsetarrays[dev][i]);
             }
             
             
             //create the buffer for RNG seeds
-            cl_mem offsetbuf = clCreateBuffer(context, CL_MEM_READ_WRITE, worksizes[dev]*sizeof(cl_int), 0, &err);
+            cl_mem offsetbuf = clCreateBuffer(context, CL_MEM_READ_WRITE, thisWork*sizeof(cl_int), 0, &err);
             if (!offsetbuf || err != CL_SUCCESS) {
                 NSLog(@"BN calc: Failed to create initial rng offsets buffer!");
             }
-            clEnqueueWriteBuffer(cl_queues[dev], offsetbuf, CL_TRUE, 0, worksizes[dev]*sizeof(cl_int), (void*)offsetarrays[dev], 0, 0, 0);
+            clEnqueueWriteBuffer(cl_queues[dev], offsetbuf, CL_TRUE, 0, thisWork*sizeof(cl_int), (void*)offsetarrays[dev], 0, 0, 0);
             offsetbufs[dev] = offsetbuf;//add to array so can free it afterward
             
             
             
             
             //TEST - output buffer just to read the offset
-            // cl_int output[worksizes[dev]];
-            cl_mem outputbuf = clCreateBuffer(context, CL_MEM_READ_WRITE, worksizes[dev]*sizeof(cl_int), 0, &err);
+            // cl_int output[thisWork];
+            cl_mem outputbuf = clCreateBuffer(context, CL_MEM_READ_WRITE, thisWork*sizeof(cl_int), 0, &err);
             if (!outputbuf || err != CL_SUCCESS) {
                 NSLog(@"BN calc: Failed to create output buffer!");
             }
@@ -696,7 +711,7 @@
                                          bncalc_Kernel,           // a valid kernel object
                                          1,                       // the data dimensions                   [4]
                                          NULL,                    // reserved; must be NULL
-                                         &worksizes[dev],                  // work sizes for each dimension         [5]
+                                         &thisWork,                  // work sizes for each dimension         [5]
                                          NULL,                   // work-group sizes for each dimension   [6]
                                          0,                       // num entires in event wait list        [7]
                                          NULL,                    // event wait list                       [8]
@@ -710,7 +725,7 @@
             
             //FIXME change to non blocking
             
-            clEnqueueReadBuffer(cl_queues[dev], outputbuf, CL_FALSE, 0, worksizes[dev]*sizeof(cl_int), (void*)offsetcheckarrays[dev], 0, 0, 0);
+            clEnqueueReadBuffer(cl_queues[dev], outputbuf, CL_FALSE, 0, thisWork*sizeof(cl_int), (void*)offsetcheckarrays[dev], 0, 0, 0);
             
             clEnqueueReadBuffer(cl_queues[dev], bnstatesbuf, CL_FALSE, 0, bnstatesize*sizeof(cl_int), (void*)bnstatesarrays[dev], 0, 0, 0);
             
@@ -719,17 +734,28 @@
             
             //add completed
             
-            ct += worksizes[dev];
+            ct += thisWork;
+            
+            
+            
+        //    NSLog(@"work added is now %i out of %i ", ct, [computes intValue]);
+            
+        //    NSLog(@"******");
+            
+            
+
+            
             
             //end device loop
             if(ct >= [computes intValue]) break; //in case we do not need all the devices
         }
         
-        
+       //  NSLog(@"ENDED CT loop");
+        /*
         for(int dev = 0; dev < num_devices; dev++){
             clFinish(cl_queues[dev]);
         }
-        
+        */
         
         //send update message to clProgressIndicator
         
@@ -739,9 +765,9 @@
             //now check output
             
             /*
-            NSLog(@"work size check %zu", worksizes[dev]);
+            NSLog(@"work size check %zu", thisWork);
             
-            for(int i=0;i<worksizes[dev];i++){
+            for(int i=0;i<thisWork;i++){
                 
                 NSLog(@"run %i: gave offset rng %i ran up to %i", i, offsetarrays[dev][i], offsetcheckarrays[dev][i]);
             }
@@ -789,8 +815,11 @@
     }
     
     
+    for(int dev = 0; dev < num_devices; dev++){
+        clFinish(cl_queues[dev]);
+    }
     
-    
+      NSLog(@"ENDED cl_finish loop");
     
     
     
