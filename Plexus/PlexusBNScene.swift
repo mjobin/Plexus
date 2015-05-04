@@ -280,12 +280,14 @@ class PlexusBNScene: SKScene {
 
                 nodesController.setSelectedObjects(idArray)
                 /*
-                var newSels : [BNNode] = nodesController.selectedObjects as [BNNode]
-                for newSel : BNNode in newSels {
-                    println (newSel.name)
-                }
-               */
+                println("mouseDown: nodescontrolelr slected objects:")
                 
+                var newSels : [BNNode] = nodesController.selectedObjects as! [BNNode]
+                for newSel : BNNode in newSels {
+                    println (newSel.nodeLink.name)
+                }
+
+                */
                 
                 if(theEvent.clickCount > 1){ //double-clicks open single node view
                     NSNotificationCenter.defaultCenter().postNotificationName("edu.scu.Plexus.toggleSingleNode", object: self)
@@ -482,11 +484,14 @@ class PlexusBNScene: SKScene {
             thisLine.removeFromParent()
         })
         
+
+        
         //check if there are  any PlexusBNNodes without an exisitng BNNode, and delete them forst
+        
         /*
         self.enumerateChildNodesWithName("bnNode", usingBlock: { thisLine, stop in
             var idNode : PlexusBNNode = thisLine as! PlexusBNNode
-           // println("in reloadData BNNode \(idNode.node)")
+            println("in reloadData BNNode \(idNode.node)")
             if(idNode.node == nil){
                 println("missing BNNode")
                 thisLine.removeFromParent()
@@ -494,7 +499,7 @@ class PlexusBNScene: SKScene {
 
             
         })
-        */
+*/
         
         self.enumerateChildNodesWithName("bnNode", usingBlock: { thisLine, stop in
             var idNode : PlexusBNNode = thisLine as! PlexusBNNode
@@ -513,6 +518,16 @@ class PlexusBNScene: SKScene {
         
     }
    
+    
+    func fullReloadData(){
+        self.enumerateChildNodesWithName("nodeName", usingBlock: { thisLine, stop in
+            thisLine.removeFromParent()
+        })
+        
+        self.enumerateChildNodesWithName("bnNode", usingBlock: { thisLine, stop in
+            thisLine.removeFromParent()
+        })
+    }
     
     
     
@@ -872,10 +887,12 @@ class PlexusBNScene: SKScene {
         var justUpdate = true
         
        // println("bn scene MOC DID CHANGE")
-        
+        /*
+        NB: don't chamnge the gollowing unless you know what will happen when you delete a node
         if let updatedObjects = notification.userInfo?[NSUpdatedObjectsKey] as? NSSet {
             for updatedObject in updatedObjects {
               //  println("UPDATE \(updatedObject)")
+                self.reloadData()
             }
         }
         
@@ -883,6 +900,7 @@ class PlexusBNScene: SKScene {
             justUpdate = false
             for refreshedObject in refreshedObjects {
               //  println("REFRESHED \(refreshedObject)")
+                self.reloadData()
             }
         }
         
@@ -892,20 +910,23 @@ class PlexusBNScene: SKScene {
             justUpdate = false
             for insertedObject in insertedObjects {
               //  println("inserted \(insertedObject)")
+                self.reloadData()
             }
         }
-        
+        */
         
         if let deletedObjects = notification.userInfo?[NSDeletedObjectsKey] as? NSSet {
             justUpdate = false
             for deletedObject in deletedObjects {
               //  println("deleted \(deletedObject)")
+                self.fullReloadData()
             }
         }
         else {
-           // println("nodelete")
+
+            self.reloadData()
         }
-        self.reloadData()
+        
 
 
         
