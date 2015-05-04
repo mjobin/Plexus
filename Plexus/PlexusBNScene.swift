@@ -51,7 +51,9 @@ class PlexusBNScene: SKScene {
         
         self.physicsWorld.gravity = CGVectorMake(0, 0)
         
-        var inset : CGRect = CGRectMake(self.frame.width*0.05, self.frame.height*0.05, self.frame.width*0.9, self.frame.height*0.9)
+        //var inset : CGRect = CGRectMake(self.frame.width*0.05, self.frame.height*0.05, self.frame.width*0.9, self.frame.height*0.9)
+        var inset : CGRect = CGRectMake(25, 25, self.frame.width-50, self.frame.height-50)
+
         //var borderBody = SKPhysicsBody(edgeLoopFromRect: inset)
         var borderBody = SKPhysicsBody(edgeLoopFromRect: self.frame)
         self.physicsBody = borderBody
@@ -273,7 +275,7 @@ class PlexusBNScene: SKScene {
                 idNode.glowWidth = 5
                 let idArray : [BNNode] = [idNode.node]
 
-                //println (idArray)
+               // println (idArray)
                 
 
                 nodesController.setSelectedObjects(idArray)
@@ -472,16 +474,19 @@ class PlexusBNScene: SKScene {
     
     func reloadData() { //this just removes the nodes so that update can restopre them
 
+        //save the moc here to make sure changes read properly
+        var errorPtr : NSErrorPointer = nil
+        moc.save(errorPtr)
         
         self.enumerateChildNodesWithName("nodeName", usingBlock: { thisLine, stop in
             thisLine.removeFromParent()
         })
         
         //check if there are  any PlexusBNNodes without an exisitng BNNode, and delete them forst
-        
+        /*
         self.enumerateChildNodesWithName("bnNode", usingBlock: { thisLine, stop in
             var idNode : PlexusBNNode = thisLine as! PlexusBNNode
-            println("in reloadData BNNode \(idNode.node)")
+           // println("in reloadData BNNode \(idNode.node)")
             if(idNode.node == nil){
                 println("missing BNNode")
                 thisLine.removeFromParent()
@@ -489,6 +494,7 @@ class PlexusBNScene: SKScene {
 
             
         })
+        */
         
         self.enumerateChildNodesWithName("bnNode", usingBlock: { thisLine, stop in
             var idNode : PlexusBNNode = thisLine as! PlexusBNNode
@@ -496,7 +502,7 @@ class PlexusBNScene: SKScene {
             let oldNode : BNNode = idNode.node
             thisLine.removeFromParent()
 
-                self.makeNode(oldNode, inPos: oldPoint)
+            self.makeNode(oldNode, inPos: oldPoint)
             
             //update will catch undrawn nodes
         
@@ -506,15 +512,14 @@ class PlexusBNScene: SKScene {
 
         
     }
-    
+   
     
     
     
     override func update(currentTime: CFTimeInterval) {
         
-
-        
-        var inset : CGRect = CGRectMake(self.frame.width*0.05, self.frame.height*0.05, self.frame.width*0.9, self.frame.height*0.9)
+        //var inset : CGRect = CGRectMake(self.frame.width*0.05, self.frame.height*0.05, self.frame.width*0.9, self.frame.height*0.9)
+        var inset : CGRect = CGRectMake(25, 25, self.frame.width-50, self.frame.height-50)
         var borderBody = SKPhysicsBody(edgeLoopFromRect: inset)
         self.physicsBody = borderBody
         
