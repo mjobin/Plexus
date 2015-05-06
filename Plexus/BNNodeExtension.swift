@@ -14,6 +14,8 @@ import OpenCL
 
 extension BNNode {
     
+
+    
     func addInfluencesObject(value:BNNode) {
         var influences = self.mutableSetValueForKey("influences");
         influences.addObject(value)
@@ -26,7 +28,13 @@ extension BNNode {
     
     
     func freqForCPT(sender:AnyObject) -> cl_float{
+        
+        //Get MOC from App delegate
+        let appDelegate : AppDelegate = NSApplication.sharedApplication().delegate as! AppDelegate
+       var  moc = appDelegate.managedObjectContext
+        
         //FIXME
+        var err: NSError?
         
 
         var lidum : CLong = 1
@@ -84,6 +92,12 @@ extension BNNode {
         
         else {// has parents
             let request = NSFetchRequest(entityName: "Trait")
+            var predicate = NSPredicate()
+            
+
+            let curModel : Model = self.model
+            let curDataset : Dataset = curModel.dataset
+            
 
             
             
@@ -102,15 +116,238 @@ extension BNNode {
             }
             
             else { // non numeric data, frequency of listed type
+                
+     
+                
                 switch(self.dataScope) {
                 case 0://global
+                    
+                    //if it's an entry, then the proportion of those trait entries in all the traits
+                    
+                    if(self.nodeLink.entity.name == "Entry"){
+                        predicate = NSPredicate(format: "entry.dataset == %@ AND name == %@", curDataset, self.nodeLink.name)
+                        request.resultType = .DictionaryResultType
+                        request.predicate = predicate
+                        request.returnsDistinctResults = false
+                        request.propertiesToFetch = ["traitValue"]
+                        
+                        if let fetch = moc!.executeFetchRequest(request, error:&err) {
+                            println("global entry fetch \(fetch)")
+                            /*
+                            for obj  in fetch {
+                            println(obj.valueForKey("traitValue"))
+                            
+                            
+                            }
+                            */
+                            let trequest = NSFetchRequest(entityName: "Trait")
+                            var tpredicate = NSPredicate(format: "entry.dataset == %@", curDataset)
+                            
+                            trequest.resultType = .DictionaryResultType
+                            trequest.predicate = tpredicate
+                            trequest.returnsDistinctResults = false
+                            trequest.propertiesToFetch = ["traitValue"]
+                            
+                            if let tfetch = moc!.executeFetchRequest(trequest, error:&err) {
+                                let tresult = (cl_float(tfetch.count)/cl_float(fetch.count))
+                                println(" global entry with parent \(tresult)")
+                                return tresult
+                            }
+                            else {
+                                return 0.0
+                            }
+                            
+                            
+                    }
+                        else {
+                            return -999
+                        }
+                    
+
+
+                    }
+                    
+                        //if its a trait, the the proportion of those trait values in all the traits?
+                        
+                        
+                    else if (self.nodeLink.entity.name == "Trait"){
+                        //so this trait's value
+                        let thisTrait = self.nodeLink as! Trait
+                        
+                        predicate = NSPredicate(format: "entry.dataset == %@ AND name == %@", curDataset, thisTrait.name)
+                        request.resultType = .DictionaryResultType
+                        request.predicate = predicate
+                        request.returnsDistinctResults = false
+                        request.propertiesToFetch = ["traitValue"]
+                        
+                        if let fetch = moc!.executeFetchRequest(request, error:&err) {
+                         //   println("global trait fetch coiunt \(fetch.count)")
+                            
+                            
+                            for obj  in fetch {
+                               // println(obj.valueForKey("traitValue"))
+
+                            }
+
+                            
+                            let trequest = NSFetchRequest(entityName: "Trait")
+                            let tpredicate = NSPredicate(format: "entry.dataset == %@ AND name == %@ AND traitValue == %@", curDataset, thisTrait.name, thisTrait.traitValue)
+                            
+                            trequest.resultType = .DictionaryResultType
+                            trequest.predicate = tpredicate
+                            trequest.returnsDistinctResults = false
+                            trequest.propertiesToFetch = ["traitValue"]
+                            
+                            if let tfetch = moc!.executeFetchRequest(trequest, error:&err) {
+                                //println("global trait tfetch count \(tfetch.count)")
+                                for obj  in tfetch {
+                                  //  println(obj.valueForKey("traitValue"))
+                                    
+                                }
+                                
+                                let tresult = (cl_float(tfetch.count)/cl_float(fetch.count))
+                                println(" global entry with parent \(tresult)")
+                                return tresult
+                            }
+                            else {
+                                return 0.0
+                            }
+
+                            
+                            
+                        }
+                        
+                        else {
+                            return -999
+                        }
+
+
+                        
+                        
+                    }
+                    
+                    else {
+                        return -999
+                    }
+                    
+
+
+                case 1: //se;f
+                    
+                    if(self.nodeLink.entity.name == "Entry"){
+                        let thisEntry = self.nodeLink as! Entry
+                        
+                        predicate = NSPredicate(format: "entry == %@ AND name == %@", thisEntry, self.dataName)
+                        request.resultType = .DictionaryResultType
+                        request.predicate = predicate
+                        request.returnsDistinctResults = false
+                        request.propertiesToFetch = ["traitValue"]
+                        
+                        if let fetch = moc!.executeFetchRequest(request, error:&err) {
+                               println("self entry fetch coiunt \(fetch.count)")
+                            
+                            
+                            for obj  in fetch {
+                                 println(obj.valueForKey("traitValue"))
+                                
+                            }
+                            
+                            let trequest = NSFetchRequest(entityName: "Trait")
+                            let tpredicate = NSPredicate(format: "entry == %@ AND name == %@ AND traitValue == %@", thisEntry, self.dataName, self.dataSubName)
+                            
+                            trequest.resultType = .DictionaryResultType
+                            trequest.predicate = tpredicate
+                            trequest.returnsDistinctResults = false
+                            trequest.propertiesToFetch = ["traitValue"]
+                            
+                            if let tfetch = moc!.executeFetchRequest(trequest, error:&err) {
+                                println("self entry tfetch count \(tfetch.count)")
+                                for obj  in tfetch {
+                                      println(obj.valueForKey("traitValue"))
+                                    
+                                }
+                                
+                                let tresult = (cl_float(tfetch.count)/cl_float(fetch.count))
+                                println("self entry with parent \(tresult)")
+                                return tresult
+                                
+                            }
+                            else {
+                                return -999
+                            }
+                            
+                            
+                        }
+                        else {
+                            return -999
+                        }
+                        
+                        
+
+                    }
+                    else if (self.nodeLink.entity.name == "Trait"){//if you select trait here, you can only mean this trait, and so freq of it's value in itself must be 1
+                        
+
+                        return 1
+                    }
+                    else {
+                        return -999
+                    }
+
 
                     
-                    
-                    return 1
-                case 1: //se;f
-                    return 1
                 case 2: //children
+                    if(self.nodeLink.entity.name == "Entry"){
+                        let thisEntry = self.nodeLink as! Entry
+                        
+                        predicate = NSPredicate(format: "entry.parent == %@ AND name == %@", thisEntry, self.dataName)
+                        request.resultType = .DictionaryResultType
+                        request.predicate = predicate
+                        request.returnsDistinctResults = false
+                        request.propertiesToFetch = ["traitValue"]
+                        
+                        if let fetch = moc!.executeFetchRequest(request, error:&err) {
+                            println("children entry fetch coiunt \(fetch.count)")
+                            
+                            
+                            for obj  in fetch {
+                                println(obj.valueForKey("traitValue"))
+                                
+                            }
+                            
+                            let trequest = NSFetchRequest(entityName: "Trait")
+                            let tpredicate = NSPredicate(format: "entry.parent == %@ AND name == %@ AND traitValue == %@", thisEntry, self.dataName, self.dataSubName)
+                            
+                            trequest.resultType = .DictionaryResultType
+                            trequest.predicate = tpredicate
+                            trequest.returnsDistinctResults = false
+                            trequest.propertiesToFetch = ["traitValue"]
+                            
+                            if let tfetch = moc!.executeFetchRequest(trequest, error:&err) {
+                                println("children entry tfetch count \(tfetch.count)")
+                                for obj  in tfetch {
+                                    println(obj.valueForKey("traitValue"))
+                                    
+                                }
+                                
+                                let tresult = (cl_float(tfetch.count)/cl_float(fetch.count))
+                                println("self entry with parent \(tresult)")
+                                return tresult
+                                
+                            }
+                            else {
+                                return -999
+                            }
+                            
+                            
+                        }
+                        else {
+                            return -999
+                        }
+                        
+                        
+                    }
+                    
                     return 1
                     
                     
@@ -121,10 +358,7 @@ extension BNNode {
                 
             }
 
-            
 
-            
-            
            
         }
     }
