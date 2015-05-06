@@ -12,12 +12,14 @@ import Cocoa
 class AppDelegate: NSObject, NSApplicationDelegate {
 
     let plexusIconTransformer = PlexusIconTransformer()
-
-
+    let plexusRunMinTransformer = PlexusRunMinTransformer()
+    let plexusRunMaxTransformer = PlexusRunMinTransformer()
 
     func applicationDidFinishLaunching(aNotification: NSNotification) {
         // Insert code here to initialize your application
         NSValueTransformer.setValueTransformer(plexusIconTransformer, forName: "PlexusIconTransformer")
+        NSValueTransformer.setValueTransformer(plexusRunMinTransformer, forName: "PlexusRunMinTransformer")
+        NSValueTransformer.setValueTransformer(plexusRunMaxTransformer, forName: "PlexusRunMaxTransformer")
         
         
         //Register defaults
