@@ -791,7 +791,7 @@
             
             int nodecount = 0;
             for(i=0;i<bnreadsizes[dev];i++){
-                NSLog(@"%i: %@ goes into node %i" ,i, [NSNumber numberWithFloat:bnresultsarrays[dev][i]], nodecount);
+               // NSLog(@"%i: %@ goes into node %i" ,i, [NSNumber numberWithFloat:bnresultsarrays[dev][i]], nodecount);
                 
                 if(firsttime){
                     NSMutableArray *newPA = [[NSMutableArray alloc] initWithObjects:[NSNumber numberWithFloat:bnresultsarrays[dev][i]], nil];
@@ -829,7 +829,7 @@
         clFinish(cl_queues[dev]);
     }
     
-      NSLog(@"ENDED cl_finish loop");
+     // NSLog(@"ENDED cl_finish loop");
     
     
     
