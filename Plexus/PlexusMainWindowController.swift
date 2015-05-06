@@ -101,6 +101,63 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
     
 
     
+    @IBAction func testRandom(x:NSToolbarItem){
+        
+        let nodes : [BNNode] = mainSplitViewController.modelTabViewController?.bnSplitViewController?.nodesController.arrangedObjects as! [BNNode]
+        
+        
+        for fNode in nodes {
+            if(fNode.influencedBy.count > 0){
+                fNode.calcWParentCPT(self)
+            }
+        }
+        
+        for fNode in nodes {
+            let blankArray = [NSNumber]()
+            let blankData = NSKeyedArchiver.archivedDataWithRootObject(blankArray)
+            
+            var postCount = [Int](count: 101, repeatedValue: 0)
+            
+ 
+            fNode.setValue(blankData, forKey: "postCount")
+            fNode.setValue(blankData, forKey: "postArray")
+            
+            
+            var testranarray = [Double]()
+            for i in 1 ... 10000 {
+                testranarray.append(Double(fNode.freqForCPT(self)))
+            }
+            
+            var gi = 0
+            for gNode : Double in testranarray {
+                
+                println(gNode)
+                
+                
+                if(gNode == gNode && gNode >= 0.0 && gNode <= 1.0) {//fails if nan
+                    
+                    let whut = (Int)(floor(gNode/0.01))
+                    
+                    postCount[whut]++
+                    
+                }
+                    
+                    
+                else{
+                    // println("problem detected in reloadData. gNode is \(gNode)")
+                }
+                
+                gi++
+            }
+            
+            let archivedPostCount = NSKeyedArchiver.archivedDataWithRootObject(postCount)
+            fNode.setValue(archivedPostCount, forKey: "postCount")
+            let archivedPostArray = NSKeyedArchiver.archivedDataWithRootObject(testranarray)
+            fNode.setValue(archivedPostArray, forKey: "postArray")
+        }
+    }
+    
+    
     @IBAction func  calculate(x:NSToolbarItem){
         var errorPtr : NSErrorPointer = nil
         
@@ -157,97 +214,98 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
         }
 */
         
-
-        var op = PlexusCalculationOperation(nodes: nodesForCalc, withRuns: curModel.runsper, withBurnin: curModel.burnins, withComputes: curModel.runstot)
-
+//dispatch_async(queue) {
+            var op = PlexusCalculationOperation(nodes: nodesForCalc, withRuns: curModel.runsper, withBurnin: curModel.burnins, withComputes: curModel.runstot)
         
-        var operr: NSError?
-        
-        operr = op.calc(self)
-
-        if(operr == nil){
-           // println("NO ERRORS.. RETRIEVEING POSTERIOR")
-            var resultNodes : NSMutableArray = op.getResults(self)
             
-            let blankArray = [NSNumber]()
-            let blankData = NSKeyedArchiver.archivedDataWithRootObject(blankArray)
+            var operr: NSError?
             
-            var fi = 0
-            for fNode in resultNodes {
-                
-                var postCount = [Int](count: 101, repeatedValue: 0)
-                
-                var curtop = 0
-                
-                var inNode : BNNode = nodesForCalc[fi]  //FIXME is this the same node???
-                
-                //blank out previous postdata
-                //this shoudl never happen.. safer to blank it than mingle data
-                inNode.setValue(blankData, forKey: "postCount")
-                inNode.setValue(blankData, forKey: "postArray")
+            operr = op.calc(self)
+    
 
-
+            if(operr == nil){
+               // println("NO ERRORS.. RETRIEVEING POSTERIOR")
+                var resultNodes : NSMutableArray = op.getResults(self)
                 
-                var fline : [Double] = fNode as! [Double]
-
+                let blankArray = [NSNumber]()
+                let blankData = NSKeyedArchiver.archivedDataWithRootObject(blankArray)
                 
-                var gi = 0
-                for gNode : Double in fline {
+                var fi = 0
+                for fNode in resultNodes {
                     
-                   
-                    if(gNode == gNode && gNode >= 0.0 && gNode <= 1.0) {//fails if nan
+                    var postCount = [Int](count: 101, repeatedValue: 0)
+                    
+                    var curtop = 0
+                    
+                    var inNode : BNNode = nodesForCalc[fi]  //FIXME is this the same node???
+                    
+                    //blank out previous postdata
+                    //this shoudl never happen.. safer to blank it than mingle data
+                    inNode.setValue(blankData, forKey: "postCount")
+                    inNode.setValue(blankData, forKey: "postArray")
+
+
+                    
+                    var fline : [Double] = fNode as! [Double]
+
+                   // println("fline \(fline)")
+                    var gi = 0
+                    for gNode : Double in fline {
+                       // println(gNode)
+                       
+                        if(gNode == gNode && gNode >= 0.0 && gNode <= 1.0) {//fails if nan
+                            
+                            let whut = (Int)(floor(gNode/0.01))
+
+                            postCount[whut]++
+
+                        }
                         
-                        let whut = (Int)(floor(gNode/0.01))
+                        
+                        else{
+                           // println("problem detected in reloadData. gNode is \(gNode)")
+                        }
 
-                        postCount[whut]++
-
+                        gi++
                     }
                     
+                    let archivedPostCount = NSKeyedArchiver.archivedDataWithRootObject(postCount)
+                    inNode.setValue(archivedPostCount, forKey: "postCount")
+                    let archivedPostArray = NSKeyedArchiver.archivedDataWithRootObject(fline)
+                    inNode.setValue(archivedPostArray, forKey: "postArray")
                     
-                    else{
-                       // println("problem detected in reloadData. gNode is \(gNode)")
-                    }
+                    
+                    
+                   // self.moc.save(errorPtr)
 
-                    gi++
+
+                    fi++
+                    
                 }
-                
-                let archivedPostCount = NSKeyedArchiver.archivedDataWithRootObject(postCount)
-                inNode.setValue(archivedPostCount, forKey: "postCount")
-                let archivedPostArray = NSKeyedArchiver.archivedDataWithRootObject(fline)
-                inNode.setValue(archivedPostArray, forKey: "postArray")
-                
-                
-                
-                moc.save(errorPtr)
 
 
-                fi++
-                
             }
 
 
-        }
+           //FIXME remove when ready curModel.setValue(true, forKey: "complete")
+            self.moc.save(errorPtr)
+            
+            self.contentViewController?.dismissViewController(self.progressViewController!)
+            
+            
+            var notification:NSUserNotification = NSUserNotification()
+            notification.title = "Plexus"
+            notification.subtitle = "Yur stuff are done"
+            notification.informativeText = "\(curModel.runstot.integerValue) runs completed."
+            
+            notification.soundName = NSUserNotificationDefaultSoundName
+            
+            notification.deliveryDate = NSDate(timeIntervalSinceNow: 5)
+            var notificationcenter:NSUserNotificationCenter = NSUserNotificationCenter.defaultUserNotificationCenter()
 
-
-        curModel.setValue(true, forKey: "complete")
-        moc.save(errorPtr)
+            notificationcenter.scheduleNotification(notification)
         
-        self.contentViewController?.dismissViewController(self.progressViewController!)
-        
-        
-        var notification:NSUserNotification = NSUserNotification()
-        notification.title = "Plexus"
-        notification.subtitle = "Yur stuff are done"
-        notification.informativeText = "\(curModel.runstot.integerValue) runs completed."
-        
-        notification.soundName = NSUserNotificationDefaultSoundName
-        
-        notification.deliveryDate = NSDate(timeIntervalSinceNow: 5)
-        var notificationcenter:NSUserNotificationCenter = NSUserNotificationCenter.defaultUserNotificationCenter()
-
-        notificationcenter.scheduleNotification(notification)
-        
-        
+    
         
     }
     
