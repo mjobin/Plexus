@@ -265,7 +265,7 @@ class PlexusBNSingleNodeViewController: NSViewController, CPTScatterPlotDataSour
             if curNode.postCount != nil {
 
                 let postCount = NSKeyedUnarchiver.unarchiveObjectWithData(curNode.valueForKey("postCount") as! NSData) as! [Int]
-                println("postCount \(postCount)")
+               // println("postCount \(postCount)")
                 var postData = [NSNumber]()
                 var curtop = 0
                 for thisPost in postCount {
