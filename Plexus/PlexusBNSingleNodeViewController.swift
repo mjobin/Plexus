@@ -258,17 +258,18 @@ class PlexusBNSingleNodeViewController: NSViewController, CPTScatterPlotDataSour
                 dataSubPopup.hidden = true
                 
                 graph.addPlot(priorPlot)
-               // self.performSegueWithIdentifier("priorControls", sender: nil)
+
             }
 
      
             if curNode.postCount != nil {
 
                 let postCount = NSKeyedUnarchiver.unarchiveObjectWithData(curNode.valueForKey("postCount") as! NSData) as! [Int]
+                println("postCount \(postCount)")
                 var postData = [NSNumber]()
                 var curtop = 0
                 for thisPost in postCount {
-                    if (curtop < thisPost) {
+                     if (curtop < thisPost) {
                         curtop = thisPost
                     }
                 }
