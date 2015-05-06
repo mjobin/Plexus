@@ -474,8 +474,9 @@ class PlexusBNScene: SKScene {
     
     
     
-    func reloadData() { //this just removes the nodes so that update can restopre them
+    func reloadDataWPos() { //this just removes the nodes so that update can restopre them
 
+        println("bnscene reload")
         //save the moc here to make sure changes read properly
         var errorPtr : NSErrorPointer = nil
         moc.save(errorPtr)
@@ -519,7 +520,8 @@ class PlexusBNScene: SKScene {
     }
    
     
-    func fullReloadData(){
+    func reloadData(){
+        println("bnscene FULL reload")
         self.enumerateChildNodesWithName("nodeName", usingBlock: { thisLine, stop in
             thisLine.removeFromParent()
         })
@@ -886,9 +888,9 @@ class PlexusBNScene: SKScene {
         
         var justUpdate = true
         
-       // println("bn scene MOC DID CHANGE")
+        println("bn scene MOC DID CHANGE \(notification.userInfo)")
         /*
-        NB: don't chamnge the gollowing unless you know what will happen when you delete a node
+        NB: don't chamnge the following unless you know what will happen when you delete a node
         if let updatedObjects = notification.userInfo?[NSUpdatedObjectsKey] as? NSSet {
             for updatedObject in updatedObjects {
               //  println("UPDATE \(updatedObject)")
@@ -919,12 +921,12 @@ class PlexusBNScene: SKScene {
             justUpdate = false
             for deletedObject in deletedObjects {
               //  println("deleted \(deletedObject)")
-                self.fullReloadData()
+                self.reloadData()
             }
         }
         else {
 
-            self.reloadData()
+            self.reloadDataWPos()
         }
         
 
