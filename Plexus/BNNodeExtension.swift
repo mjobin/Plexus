@@ -416,7 +416,7 @@ extension BNNode {
                         request.propertiesToFetch = ["traitValue"]
                         
                         if let fetch = moc!.executeFetchRequest(request, error:&err) {
-                            println("global entry fetch \(fetch)")
+                           // println("global entry fetch \(fetch)")
                             /*
                             for obj  in fetch {
                             println(obj.valueForKey("traitValue"))
@@ -528,7 +528,7 @@ extension BNNode {
                         request.propertiesToFetch = ["traitValue"]
                         
                         if let fetch = moc!.executeFetchRequest(request, error:&err) {
-                            println("self entry fetch coiunt \(fetch.count)")
+                           // println("self entry fetch coiunt \(fetch.count)")
                             
                             
                             for obj  in fetch {
@@ -547,7 +547,7 @@ extension BNNode {
                             if let tfetch = moc!.executeFetchRequest(trequest, error:&err) {
                                // println("self entry tfetch count \(tfetch.count)")
                                 for obj  in tfetch {
-                                    println(obj.valueForKey("traitValue"))
+                                  //  println(obj.valueForKey("traitValue"))
                                     
                                 }
                                 
@@ -591,11 +591,11 @@ extension BNNode {
                         request.propertiesToFetch = ["traitValue"]
                         
                         if let fetch = moc!.executeFetchRequest(request, error:&err) {
-                            println("children entry fetch coiunt \(fetch.count)")
+                           // println("children entry fetch coiunt \(fetch.count)")
                             
                             
                             for obj  in fetch {
-                                println(obj.valueForKey("traitValue"))
+                             //   println(obj.valueForKey("traitValue"))
                                 
                             }
                             
@@ -608,14 +608,14 @@ extension BNNode {
                             trequest.propertiesToFetch = ["traitValue"]
                             
                             if let tfetch = moc!.executeFetchRequest(trequest, error:&err) {
-                                println("children entry tfetch count \(tfetch.count)")
+                            //    println("children entry tfetch count \(tfetch.count)")
                                 for obj  in tfetch {
-                                    println(obj.valueForKey("traitValue"))
+                              //      println(obj.valueForKey("traitValue"))
                                     
                                 }
                                 
                                 let tresult = (cl_float(tfetch.count)/cl_float(fetch.count))
-                                println("self entry with parent \(tresult)")
+                             //   println("self entry with parent \(tresult)")
                                 self.cptFreq = tresult
                                 
                             }
