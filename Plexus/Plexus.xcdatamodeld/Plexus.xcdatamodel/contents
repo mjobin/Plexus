@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="7549" systemVersion="14D136" minimumToolsVersion="Automatic" macOSVersion="Automatic" iOSVersion="Automatic">
     <entity name="BNNode" representedClassName="Plexus.BNNode" syncable="YES">
+        <attribute name="cptFreq" optional="YES" attributeType="Double" minValueString="0" maxValueString="1" defaultValueString="0.0" syncable="YES"/>
         <attribute name="dataName" optional="YES" attributeType="String" defaultValueString="NoData" syncable="YES"/>
         <attribute name="dataScope" optional="YES" attributeType="Integer 32" minValueString="0" defaultValueString="0" syncable="YES"/>
         <attribute name="dataSubName" optional="YES" attributeType="String" defaultValueString="NoData" syncable="YES"/>
@@ -65,7 +66,7 @@
         <relationship name="entry" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Entry" inverseName="trait" inverseEntity="Entry" syncable="YES"/>
     </entity>
     <elements>
-        <element name="BNNode" positionX="54" positionY="18" width="128" height="240"/>
+        <element name="BNNode" positionX="54" positionY="18" width="128" height="255"/>
         <element name="ConnectionNode" positionX="-29" positionY="207" width="128" height="58"/>
         <element name="Dataset" positionX="63" positionY="-157" width="128" height="133"/>
         <element name="Entry" positionX="-468" positionY="-36" width="128" height="180"/>

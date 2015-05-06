@@ -25,4 +25,5 @@ class BNNode: Node {
     @NSManaged var dataName: String
     @NSManaged var dataSubName: String
     @NSManaged var numericData: NSNumber
+    @NSManaged var cptFreq: NSNumber
 }
