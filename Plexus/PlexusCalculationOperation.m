@@ -237,11 +237,21 @@
     cl_float* nodeFreqs = (cl_float *)malloc(sizeof(cl_float)*INSize); //one for the type of distn, and two for its parameters
     int freqOffset =0;
     
+    //make sure all the parented nodes have their CPT freq set 
+    for (BNNode * fNode in initialNodes) {
+         NSMutableOrderedSet * theInfluencedBy = [fNode recursiveInfBy:self infBy:[[NSMutableOrderedSet alloc] init] depth:0];
+        if (theInfluencedBy.count > 0){
+            [fNode calcWParentCPT:self];
+        }
+    }
+    
     //Construct influences, CPT, fequencies
     //NSLog(@"construct influences");
     for (BNNode * fNode in initialNodes) {
         // NSLog(@"***************Node: %@", [[fNode nodeLink] name]);
         
+        
+   
         
         //add freq
         nodeFreqs[freqOffset] = [fNode freqForCPT:self];
@@ -781,7 +791,7 @@
             
             int nodecount = 0;
             for(i=0;i<bnreadsizes[dev];i++){
-               // NSLog(@"%i: %@ goes into node %i" ,i, [NSNumber numberWithFloat:bnresultsarrays[dev][i]], nodecount);
+                NSLog(@"%i: %@ goes into node %i" ,i, [NSNumber numberWithFloat:bnresultsarrays[dev][i]], nodecount);
                 
                 if(firsttime){
                     NSMutableArray *newPA = [[NSMutableArray alloc] initWithObjects:[NSNumber numberWithFloat:bnresultsarrays[dev][i]], nil];
