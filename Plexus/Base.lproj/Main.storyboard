@@ -714,14 +714,14 @@
                                         <action selector="calculate:" target="B8D-0N-5wS" id="VCg-wJ-cZX"/>
                                     </connections>
                                 </toolbarItem>
-                                <toolbarItem implicitItemIdentifier="E18303A5-037B-44FE-878B-72401FAAC926" label="Models" paletteLabel="Models" image="2F710515-26F0-4EE7-825E-B907F8588A87" id="VR9-AM-azT">
+                                <toolbarItem implicitItemIdentifier="E18303A5-037B-44FE-878B-72401FAAC926" label="Models" paletteLabel="Models" image="7CB0ABB4-A3F9-48E5-B410-7E5059B47666" id="VR9-AM-azT">
                                     <nil key="toolTip"/>
                                     <size key="minSize" width="13" height="13"/>
                                     <size key="maxSize" width="37" height="34"/>
                                     <button key="view" horizontalHuggingPriority="750" verticalHuggingPriority="750" id="vcL-Vh-Set">
                                         <rect key="frame" x="5" y="14" width="37" height="34"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="squareTextured" bezelStyle="texturedSquare" image="2F710515-26F0-4EE7-825E-B907F8588A87" imagePosition="only" alignment="left" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="s8L-6c-2d7">
+                                        <buttonCell key="cell" type="squareTextured" bezelStyle="texturedSquare" image="7CB0ABB4-A3F9-48E5-B410-7E5059B47666" imagePosition="only" alignment="left" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="s8L-6c-2d7">
                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
@@ -803,6 +803,8 @@
                         <binding destination="B8D-0N-5wS" name="managedObjectContext" keyPath="moc" id="TZQ-5N-m5g"/>
                     </connections>
                 </arrayController>
+                <userDefaultsController id="ipd-k1-xwS"/>
+                <userDefaultsController id="lwF-Ts-Ob5"/>
             </objects>
             <point key="canvasLocation" x="-251" y="207"/>
         </scene>
@@ -1089,7 +1091,7 @@
                                     </binding>
                                 </connections>
                             </button>
-                            <scrollView autohidesScrollers="YES" horizontalLineScroll="19" horizontalPageScroll="10" verticalLineScroll="19" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ISo-rp-jtp">
+                            <scrollView horizontalCompressionResistancePriority="250" autohidesScrollers="YES" horizontalLineScroll="19" horizontalPageScroll="10" verticalLineScroll="19" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ISo-rp-jtp">
                                 <rect key="frame" x="0.0" y="20" width="257" height="280"/>
                                 <clipView key="contentView" id="swc-hW-sQe">
                                     <rect key="frame" x="1" y="0.0" width="238" height="134"/>
@@ -1607,17 +1609,17 @@ Gw
                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                                 <connections>
-                                    <binding destination="twQ-tO-BoE" name="maxValue" keyPath="selection.runsper" id="Oii-NH-w9j">
-                                        <dictionary key="options">
-                                            <string key="NSValueTransformerName">PlexusRunMaxTransformer</string>
-                                        </dictionary>
-                                    </binding>
+                                    <binding destination="twQ-tO-BoE" name="value" keyPath="selection.burnins" previousBinding="Oii-NH-w9j" id="ttZ-3f-ZzE"/>
                                     <binding destination="twQ-tO-BoE" name="enabled" keyPath="selection.complete" id="rtV-dw-np6">
                                         <dictionary key="options">
                                             <string key="NSValueTransformerName">NSNegateBoolean</string>
                                         </dictionary>
                                     </binding>
-                                    <binding destination="twQ-tO-BoE" name="value" keyPath="selection.burnins" previousBinding="Oii-NH-w9j" id="ttZ-3f-ZzE"/>
+                                    <binding destination="twQ-tO-BoE" name="maxValue" keyPath="selection.runsper" id="Oii-NH-w9j">
+                                        <dictionary key="options">
+                                            <string key="NSValueTransformerName">PlexusRunMaxTransformer</string>
+                                        </dictionary>
+                                    </binding>
                                 </connections>
                             </textField>
                             <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="jRI-9G-sO3">
@@ -1651,11 +1653,6 @@ Gw
                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                                 <connections>
-                                    <binding destination="twQ-tO-BoE" name="maxValue" keyPath="selection.runstot" id="16O-EC-Iw2">
-                                        <dictionary key="options">
-                                            <string key="NSValueTransformerName">PlexusRunMaxTransformer</string>
-                                        </dictionary>
-                                    </binding>
                                     <binding destination="twQ-tO-BoE" name="minValue" keyPath="selection.burnins" previousBinding="16O-EC-Iw2" id="SVL-zv-kq5">
                                         <dictionary key="options">
                                             <string key="NSValueTransformerName">PlexusRunMinTransformer</string>
@@ -1667,6 +1664,11 @@ Gw
                                         </dictionary>
                                     </binding>
                                     <binding destination="twQ-tO-BoE" name="value" keyPath="selection.runsper" previousBinding="SVL-zv-kq5" id="YQp-R3-uvG"/>
+                                    <binding destination="twQ-tO-BoE" name="maxValue" keyPath="selection.runstot" id="16O-EC-Iw2">
+                                        <dictionary key="options">
+                                            <string key="NSValueTransformerName">PlexusRunMaxTransformer</string>
+                                        </dictionary>
+                                    </binding>
                                 </connections>
                             </textField>
                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="f2a-Cx-zrF">
@@ -1791,7 +1793,7 @@ Gw
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
                             <slider verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Bz7-6L-hWJ">
-                                <rect key="frame" x="18" y="141" width="151" height="25"/>
+                                <rect key="frame" x="18" y="141" width="151" height="26"/>
                                 <sliderCell key="cell" state="on" alignment="left" maxValue="2" doubleValue="1" tickMarkPosition="above" numberOfTickMarks="3" allowsTickMarkValuesOnly="YES" sliderType="linear" id="zey-HF-gxJ"/>
                                 <connections>
                                     <binding destination="0Oe-99-9Ib" name="value" keyPath="values.calcSpeed" id="FKD-Lo-G7b"/>
@@ -1822,7 +1824,7 @@ Gw
                                 </textFieldCell>
                             </textField>
                             <slider verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="H4K-La-5rc">
-                                <rect key="frame" x="11" y="43" width="158" height="25"/>
+                                <rect key="frame" x="11" y="43" width="158" height="26"/>
                                 <sliderCell key="cell" state="on" alignment="left" maxValue="2" doubleValue="1" tickMarkPosition="above" numberOfTickMarks="3" allowsTickMarkValuesOnly="YES" sliderType="linear" id="07M-Y5-99b"/>
                                 <connections>
                                     <binding destination="0Oe-99-9Ib" name="value" keyPath="values.hardwareDevice" id="3xb-eG-pxz"/>
@@ -2087,7 +2089,7 @@ Gw
                                         </connections>
                                     </popUpButton>
                                     <slider verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" ambiguous="YES" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ebU-8t-Zwk">
-                                        <rect key="frame" x="152" y="4" width="280" height="20"/>
+                                        <rect key="frame" x="152" y="4" width="280" height="21"/>
                                         <sliderCell key="cell" state="on" alignment="left" maxValue="1" doubleValue="0.5" tickMarkPosition="below" sliderType="linear" id="ptz-Ta-vOe"/>
                                         <connections>
                                             <binding destination="fG4-pY-U5P" name="value" keyPath="nodesController.selection.priorV2" id="V60-VL-YFT"/>
@@ -2118,7 +2120,7 @@ Gw
                                         </connections>
                                     </textField>
                                     <slider verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" ambiguous="YES" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="3SB-mj-9Uh">
-                                        <rect key="frame" x="152" y="24" width="280" height="20"/>
+                                        <rect key="frame" x="152" y="24" width="280" height="21"/>
                                         <sliderCell key="cell" state="on" alignment="left" maxValue="1" doubleValue="0.5" tickMarkPosition="above" sliderType="linear" id="Cwa-XM-dm7"/>
                                         <connections>
                                             <binding destination="fG4-pY-U5P" name="value" keyPath="nodesController.selection.priorV1" id="LEJ-Ch-hRG"/>
@@ -2527,7 +2529,7 @@ Gw
         </scene>
     </scenes>
     <resources>
-        <image name="2F710515-26F0-4EE7-825E-B907F8588A87" width="1" height="1">
+        <image name="7CB0ABB4-A3F9-48E5-B410-7E5059B47666" width="1" height="1">
             <mutableData key="keyedArchiveRepresentation">
 YnBsaXN0MDDUAQIDBAUGPj9YJHZlcnNpb25YJG9iamVjdHNZJGFyY2hpdmVyVCR0b3ASAAGGoK4HCBMU
 GR4fIyQsLzI4O1UkbnVsbNUJCgsMDQ4PEBESVk5TU2l6ZVYkY2xhc3NcTlNJbWFnZUZsYWdzVk5TUmVw
