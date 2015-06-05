@@ -79,11 +79,6 @@ class PlexusBNSKView: SKView, NSDraggingDestination {
         
 
         
-
-
-
-        
-        
         //create an NodeLink - independet node link for nodes not linked to any other form of data
         
         let newNodeLink : NodeLink = NodeLink(entity: NSEntityDescription.entityForName("NodeLink", inManagedObjectContext: self.moc)!, insertIntoManagedObjectContext: self.moc)
@@ -115,36 +110,11 @@ class PlexusBNSKView: SKView, NSDraggingDestination {
         if(curNodes.count>0) {
             var curNode : BNNode = curNodes[0]
             
-          //  println("in removeNode currently selected node is \(curNode.nodeLink.name)")
-            
-            //remove influencedBy
-            /*
-            let theInfluencedBy : [BNNode] = curNode.influencedBy.allObjects as! [BNNode]
-            
-            for thisInfluencedBy in theInfluencedBy {
-                println("influenced BY \(thisInfluencedBy.nodeLink.name)")
-                let infByinfs : [BNNode] = thisInfluencedBy.influences.allObjects as! [BNNode]
-                for thisInfByinfs in infByinfs {
-                    println("which influences \(thisInfByinfs.nodeLink.name)")
-                    if thisInfByinfs == curNode {
-                        println("itsa me")
-                    }
-                }
-            }
-            */
              moc.deleteObject(curNode)
         }
 
-
-
-      //
         
         moc.save(errorPtr)
-        
-
-        
-        
-        //just remove it?
         
         
     }
