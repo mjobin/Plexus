@@ -415,10 +415,36 @@
     */
     
     
-    //Load the kernel
-    NSData *bnData = [NSData dataWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"bn_kernel" ofType:@"cl"]];
+
     
     NSMutableData *sourceData = [[NSMutableData alloc] init];
+    
+
+    /*
+    //Load headers for TinyMT
+    
+    NSData *hdrData = [NSData dataWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"tinymt32def" ofType:@"h"]];
+    
+    [sourceData appendData:hdrData];
+    
+    hdrData = [NSData dataWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"tinymt" ofType:@"clh"]];
+    
+    [sourceData appendData:hdrData];
+    
+    hdrData = [NSData dataWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"tinymt32_jump" ofType:@"clh"]];
+    
+    [sourceData appendData:hdrData];
+    
+    hdrData = [NSData dataWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"tinymt32_jump_table" ofType:@"clh"]];
+    
+    [sourceData appendData:hdrData];
+    */
+
+
+    
+    
+    //Load the kernel
+    NSData *bnData = [NSData dataWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"bn_kernel" ofType:@"cl"]];
     
     //[sourceData appendData:rngData];
     [sourceData appendData:bnData];
@@ -427,7 +453,8 @@
     size_t length = [sourceData length];
     
     
-    //NSLog(@"SOURCE:/n%s",source);
+  //  NSLog(@"SOURCE:/n%s",source);
+    
     
     cl_program bncalc_program = clCreateProgramWithSource(context, 1, &source, &length, &err);
     if (!bncalc_program || err != CL_SUCCESS) {
@@ -438,8 +465,9 @@
     
     
     //Build executable
-    err = clBuildProgram(bncalc_program, num_devices, device_ids, NULL, NULL, NULL);
-    
+
+ //   err = clBuildProgram(bncalc_program, num_devices, device_ids, NULL, NULL, NULL);
+       err = clBuildProgram(bncalc_program, num_devices, device_ids, "-I .", NULL, NULL);
     if (err != CL_SUCCESS)
     {
         NSLog(@"BN Calc: Fail to build executable.");
@@ -773,20 +801,22 @@
         for(int dev = 0; dev < num_devices; dev++) {
             
             //now check output
-            
             /*
+            
             NSLog(@"work size check %zu", thisWork);
             
             for(int i=0;i<thisWork;i++){
                 
                 NSLog(@"run %i: gave offset rng %i ran up to %i", i, offsetarrays[dev][i], offsetcheckarrays[dev][i]);
             }
-            
+            */
+            /*
             for(int i=0;i<bnreadsizes[dev];i++){
-                NSLog(@"state %i : result %f", bnstatesarrays[dev][i], bnresultsarrays[dev][i]);
+                NSLog(@"state %i : result %f ran up to %i", bnstatesarrays[dev][i], bnresultsarrays[dev][i], offsetcheckarrays[dev][i]);
                 
             }
-             */
+            */
+             
             
             
             int nodecount = 0;
