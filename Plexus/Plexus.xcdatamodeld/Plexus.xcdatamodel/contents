@@ -26,6 +26,7 @@
         <attribute name="name" optional="YES" attributeType="String" defaultValueString="Unnamed Dataset" syncable="YES"/>
         <relationship name="entry" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="Entry" inverseName="dataset" inverseEntity="Entry" syncable="YES"/>
         <relationship name="model" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="Model" inverseName="dataset" inverseEntity="Model" syncable="YES"/>
+        <relationship name="structure" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="Structure" inverseName="dataset" inverseEntity="Structure" syncable="YES"/>
     </entity>
     <entity name="Entry" representedClassName="Plexus.Entry" parentEntity="NodeLink" syncable="YES">
         <attribute name="icon" optional="YES" attributeType="String" defaultValueString="PlexusEntry" allowsExternalBinaryDataStorage="YES" syncable="YES"/>
@@ -36,6 +37,7 @@
         <relationship name="dataset" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Dataset" inverseName="entry" inverseEntity="Dataset" syncable="YES"/>
         <relationship name="image" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="Image" inverseName="entry" inverseEntity="Image" syncable="YES"/>
         <relationship name="parent" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Entry" inverseName="children" inverseEntity="Entry" syncable="YES"/>
+        <relationship name="structure" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Structure" inverseName="entry" inverseEntity="Structure" syncable="YES"/>
         <relationship name="trait" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="Trait" inverseName="entry" inverseEntity="Trait" syncable="YES"/>
     </entity>
     <entity name="Image" representedClassName="Plexus.Image" syncable="YES">
@@ -61,6 +63,11 @@
         <attribute name="name" optional="YES" attributeType="String" defaultValueString="new" syncable="YES"/>
         <relationship name="bnNode" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="BNNode" inverseName="nodeLink" inverseEntity="BNNode" syncable="YES"/>
     </entity>
+    <entity name="Site" parentEntity="Entry" syncable="YES"/>
+    <entity name="Structure" representedClassName="Plexus.Structure" parentEntity="NodeLink" syncable="YES">
+        <relationship name="dataset" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Dataset" inverseName="structure" inverseEntity="Dataset" syncable="YES"/>
+        <relationship name="entry" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Entry" inverseName="structure" inverseEntity="Entry" syncable="YES"/>
+    </entity>
     <entity name="Trait" representedClassName="Plexus.Trait" parentEntity="NodeLink" syncable="YES">
         <attribute name="traitValue" optional="YES" attributeType="String" defaultValueString="Unknown Value" syncable="YES"/>
         <relationship name="entry" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Entry" inverseName="trait" inverseEntity="Entry" syncable="YES"/>
@@ -68,11 +75,13 @@
     <elements>
         <element name="BNNode" positionX="54" positionY="18" width="128" height="255"/>
         <element name="ConnectionNode" positionX="-29" positionY="207" width="128" height="58"/>
-        <element name="Dataset" positionX="63" positionY="-157" width="128" height="133"/>
-        <element name="Entry" positionX="-468" positionY="-36" width="128" height="180"/>
+        <element name="Dataset" positionX="63" positionY="-157" width="128" height="150"/>
+        <element name="Entry" positionX="-468" positionY="-36" width="128" height="195"/>
         <element name="Image" positionX="-108" positionY="324" width="128" height="90"/>
         <element name="Model" positionX="349" positionY="-9" width="128" height="225"/>
         <element name="NodeLink" positionX="-297" positionY="-126" width="128" height="73"/>
+        <element name="Structure" positionX="-261" positionY="-9" width="128" height="75"/>
         <element name="Trait" positionX="-279" positionY="317" width="128" height="75"/>
+        <element name="Site" positionX="-261" positionY="-9" width="128" height="45"/>
     </elements>
 </model>
