@@ -17,5 +17,6 @@ class Dataset: NSManagedObject {
     @NSManaged var dateModified: NSDate
     @NSManaged var entry: NSSet
     @NSManaged var model: NSSet
+    @NSManaged var structure: NSSet
 
 }
