@@ -99,6 +99,13 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
         
     }
     
+    @IBAction func  toggleStructures(x:NSToolbarItem){
+        //println("Toggle models Tapped: \(x)")
+        
+        mainSplitViewController.toggleStructures(x)
+        
+    }
+    
 
     
     @IBAction func testRandom(x:NSToolbarItem){
