@@ -20,4 +20,9 @@ extension Entry {
         items.addObject(value)
     }
     
+    func addStructureObject(value:Structure) {
+        var items = self.mutableSetValueForKey("structure");
+        items.addObject(value)
+    }
+    
 }
