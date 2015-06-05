@@ -888,7 +888,7 @@ class PlexusBNScene: SKScene {
         
         var justUpdate = true
         
-       // println("bn scene MOC DID CHANGE \(notification.userInfo)")
+      //  println("bn scene MOC DID CHANGE \(notification.userInfo)")
         /*
         NB: don't chamnge the following unless you know what will happen when you delete a node
         if let updatedObjects = notification.userInfo?[NSUpdatedObjectsKey] as? NSSet {
@@ -920,9 +920,10 @@ class PlexusBNScene: SKScene {
         if let deletedObjects = notification.userInfo?[NSDeletedObjectsKey] as? NSSet {
             justUpdate = false
             for deletedObject in deletedObjects {
-              //  println("deleted \(deletedObject)")
-                self.reloadData()
+             //   println("deleted \(deletedObject)")
+                
             }
+            self.reloadData()
         }
         else {
 
