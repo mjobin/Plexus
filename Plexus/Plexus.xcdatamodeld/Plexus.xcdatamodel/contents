@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="7549" systemVersion="14D136" minimumToolsVersion="Automatic" macOSVersion="Automatic" iOSVersion="Automatic">
+<model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="7701" systemVersion="14D136" minimumToolsVersion="Automatic" macOSVersion="Automatic" iOSVersion="Automatic">
     <entity name="BNNode" representedClassName="Plexus.BNNode" syncable="YES">
         <attribute name="cptFreq" optional="YES" attributeType="Double" minValueString="0" maxValueString="1" defaultValueString="0.0" syncable="YES"/>
         <attribute name="dataName" optional="YES" attributeType="String" defaultValueString="NoData" syncable="YES"/>
@@ -16,9 +16,6 @@
         <relationship name="model" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Model" inverseName="bnnode" inverseEntity="Model" syncable="YES"/>
         <relationship name="nodeLink" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="NodeLink" inverseName="bnNode" inverseEntity="NodeLink" syncable="YES"/>
     </entity>
-    <entity name="ConnectionNode" syncable="YES">
-        <relationship name="entry" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Entry" inverseName="connectionNode" inverseEntity="Entry" syncable="YES"/>
-    </entity>
     <entity name="Dataset" representedClassName="Plexus.Dataset" syncable="YES">
         <attribute name="dateCreated" optional="YES" attributeType="Date" syncable="YES"/>
         <attribute name="dateModified" optional="YES" attributeType="Date" syncable="YES"/>
@@ -32,8 +29,8 @@
         <attribute name="icon" optional="YES" attributeType="String" defaultValueString="PlexusEntry" allowsExternalBinaryDataStorage="YES" syncable="YES"/>
         <attribute name="latitude" optional="YES" attributeType="Double" defaultValueString="0.0" syncable="YES"/>
         <attribute name="longitude" optional="YES" attributeType="Double" defaultValueString="0.0" syncable="YES"/>
+        <attribute name="notes" optional="YES" attributeType="String" syncable="YES"/>
         <relationship name="children" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="Entry" inverseName="parent" inverseEntity="Entry" syncable="YES"/>
-        <relationship name="connectionNode" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="ConnectionNode" inverseName="entry" inverseEntity="ConnectionNode" syncable="YES"/>
         <relationship name="dataset" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Dataset" inverseName="entry" inverseEntity="Dataset" syncable="YES"/>
         <relationship name="image" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="Image" inverseName="entry" inverseEntity="Image" syncable="YES"/>
         <relationship name="parent" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Entry" inverseName="children" inverseEntity="Entry" syncable="YES"/>
@@ -74,14 +71,13 @@
     </entity>
     <elements>
         <element name="BNNode" positionX="54" positionY="18" width="128" height="255"/>
-        <element name="ConnectionNode" positionX="-29" positionY="207" width="128" height="58"/>
         <element name="Dataset" positionX="63" positionY="-157" width="128" height="150"/>
         <element name="Entry" positionX="-468" positionY="-36" width="128" height="195"/>
         <element name="Image" positionX="-108" positionY="324" width="128" height="90"/>
         <element name="Model" positionX="349" positionY="-9" width="128" height="225"/>
         <element name="NodeLink" positionX="-297" positionY="-126" width="128" height="73"/>
+        <element name="Site" positionX="-261" positionY="-9" width="128" height="45"/>
         <element name="Structure" positionX="-261" positionY="-9" width="128" height="75"/>
         <element name="Trait" positionX="-279" positionY="317" width="128" height="75"/>
-        <element name="Site" positionX="-261" positionY="-9" width="128" height="45"/>
     </elements>
 </model>
