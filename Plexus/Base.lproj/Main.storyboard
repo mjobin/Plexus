@@ -713,14 +713,14 @@
                                         <action selector="calculate:" target="B8D-0N-5wS" id="VCg-wJ-cZX"/>
                                     </connections>
                                 </toolbarItem>
-                                <toolbarItem implicitItemIdentifier="E18303A5-037B-44FE-878B-72401FAAC926" label="Models" paletteLabel="Models" image="2D7DB2F1-4D31-4D49-9484-92277E025CDD" id="VR9-AM-azT">
+                                <toolbarItem implicitItemIdentifier="E18303A5-037B-44FE-878B-72401FAAC926" label="Models" paletteLabel="Models" image="992465F5-60D1-4774-87EE-9E437690DF7F" id="VR9-AM-azT">
                                     <nil key="toolTip"/>
                                     <size key="minSize" width="13" height="13"/>
                                     <size key="maxSize" width="37" height="34"/>
                                     <button key="view" horizontalHuggingPriority="750" verticalHuggingPriority="750" id="vcL-Vh-Set">
                                         <rect key="frame" x="5" y="14" width="37" height="34"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="squareTextured" bezelStyle="texturedSquare" image="2D7DB2F1-4D31-4D49-9484-92277E025CDD" imagePosition="only" alignment="left" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="s8L-6c-2d7">
+                                        <buttonCell key="cell" type="squareTextured" bezelStyle="texturedSquare" image="992465F5-60D1-4774-87EE-9E437690DF7F" imagePosition="only" alignment="left" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="s8L-6c-2d7">
                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
@@ -868,7 +868,7 @@
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" columnSelection="YES" multipleSelection="NO" autosaveColumns="NO" rowSizeStyle="automatic" headerView="WwI-Mp-fTs" viewBased="YES" id="JJM-xd-Doa">
-                                            <rect key="frame" x="0.0" y="0.0" width="43" height="0.0"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="226" height="0.0"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <size key="intercellSpacing" width="3" height="2"/>
                                             <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -1256,7 +1256,7 @@
                 <tabViewController selectedTabViewItemIndex="0" id="8tL-eR-LSA" customClass="PlexusEntryTabViewController" customModule="Plexus" customModuleProvider="target" sceneMemberID="viewController">
                     <tabViewItems>
                         <tabViewItem label="Traits" identifier="" id="SBa-pX-IRF"/>
-                        <tabViewItem label="Connections" id="ekf-NO-U0i"/>
+                        <tabViewItem label="Notes" id="ekf-NO-U0i"/>
                         <tabViewItem label="Images" id="lWn-Tj-Y3Z"/>
                         <tabViewItem label="Map" id="9zi-Yb-Xhg"/>
                     </tabViewItems>
@@ -1469,17 +1469,53 @@
             </objects>
             <point key="canvasLocation" x="241.5" y="1970"/>
         </scene>
-        <!--Connections-->
+        <!--Notes-->
         <scene sceneID="Ojl-cW-2f5">
             <objects>
-                <viewController title="Connections" id="VHm-NV-mJM" customClass="PlexusConnectionsViewController" customModule="Plexus" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController title="Notes" id="VHm-NV-mJM" customClass="PlexusNotesViewController" customModule="Plexus" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" id="F4B-D3-QA6" customClass="SKView">
                         <rect key="frame" x="0.0" y="0.0" width="216" height="290"/>
                         <autoresizingMask key="autoresizingMask"/>
+                        <subviews>
+                            <scrollView horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rTI-ai-iQk">
+                                <rect key="frame" x="0.0" y="0.0" width="216" height="290"/>
+                                <clipView key="contentView" id="nL6-LX-wKS">
+                                    <rect key="frame" x="1" y="1" width="223" height="133"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                    <subviews>
+                                        <textView importsGraphics="NO" richText="NO" findStyle="panel" continuousSpellChecking="YES" allowsUndo="YES" usesRuler="YES" usesFontPanel="YES" verticallyResizable="YES" allowsNonContiguousLayout="YES" quoteSubstitution="YES" dashSubstitution="YES" spellingCorrection="YES" smartInsertDelete="YES" id="kal-F7-gEa">
+                                            <rect key="frame" x="0.0" y="0.0" width="223" height="133"/>
+                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                            <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                            <size key="minSize" width="214" height="288"/>
+                                            <size key="maxSize" width="463" height="10000000"/>
+                                            <color key="insertionPointColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                            <size key="minSize" width="214" height="288"/>
+                                            <size key="maxSize" width="463" height="10000000"/>
+                                            <connections>
+                                                <binding destination="VHm-NV-mJM" name="value" keyPath="entryTreeController.selection.notes" id="eum-uy-Wxv"/>
+                                            </connections>
+                                        </textView>
+                                    </subviews>
+                                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                </clipView>
+                                <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" doubleValue="1" horizontal="YES" id="aRb-1k-jRD">
+                                    <rect key="frame" x="-100" y="-100" width="87" height="18"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                </scroller>
+                                <scroller key="verticalScroller" verticalHuggingPriority="750" doubleValue="1" horizontal="NO" id="Imm-6m-yxB">
+                                    <rect key="frame" x="224" y="1" width="15" height="133"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                </scroller>
+                            </scrollView>
+                        </subviews>
+                        <constraints>
+                            <constraint firstItem="rTI-ai-iQk" firstAttribute="top" secondItem="F4B-D3-QA6" secondAttribute="top" id="Cmo-Bs-Mm8"/>
+                            <constraint firstAttribute="trailing" secondItem="rTI-ai-iQk" secondAttribute="trailing" id="n1W-hc-dZk"/>
+                            <constraint firstItem="rTI-ai-iQk" firstAttribute="leading" secondItem="F4B-D3-QA6" secondAttribute="leading" id="r74-D2-RIm"/>
+                            <constraint firstAttribute="bottom" secondItem="rTI-ai-iQk" secondAttribute="bottom" id="sqs-yh-3yk"/>
+                        </constraints>
                     </view>
-                    <connections>
-                        <outlet property="skView" destination="F4B-D3-QA6" id="qWV-jY-gvG"/>
-                    </connections>
                 </viewController>
                 <customObject id="arN-xX-TfV" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
@@ -2760,7 +2796,7 @@ Gw
         </scene>
     </scenes>
     <resources>
-        <image name="2D7DB2F1-4D31-4D49-9484-92277E025CDD" width="1" height="1">
+        <image name="992465F5-60D1-4774-87EE-9E437690DF7F" width="1" height="1">
             <mutableData key="keyedArchiveRepresentation">
 YnBsaXN0MDDUAQIDBAUGPj9YJHZlcnNpb25YJG9iamVjdHNZJGFyY2hpdmVyVCR0b3ASAAGGoK4HCBMU
 GR4fIyQsLzI4O1UkbnVsbNUJCgsMDQ4PEBESVk5TU2l6ZVYkY2xhc3NcTlNJbWFnZUZsYWdzVk5TUmVw
