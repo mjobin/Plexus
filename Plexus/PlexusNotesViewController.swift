@@ -14,6 +14,8 @@ class PlexusNotesViewController: NSViewController {
     
     dynamic var entryTreeController : NSTreeController!
     
+    @IBOutlet var textView: NSTextView!
+    
     required init?(coder aDecoder: NSCoder)
     {
         
@@ -27,7 +29,42 @@ class PlexusNotesViewController: NSViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do view setup here.
     }
+    /*
+    @IBAction func addImages(sender: AnyObject){
+        
+        
+        var errorPtr : NSErrorPointer = nil
+        
+        let op:NSOpenPanel = NSOpenPanel()
+        op.allowsMultipleSelection = false
+        op.canChooseDirectories = false
+        op.canChooseFiles = true
+
+        op.runModal()
+        
+        var inFile = op.URL
+        
+        op.orderOut(self)
+        op.close()
+        
+        
+        if (inFile != nil){ // operate on iput file
+            
+            let newImage : NSImage = NSImage(contentsOfURL: inFile!)!
+            let newTAC = NSTextAttachmentCell(imageCell: newImage)
+            var newTA = NSTextAttachment()
+            newTA.attachmentCell = newTAC
+            textView.textStorage?.appendAttributedString(NSAttributedString(attachment: newTA))
+            
+           
+            
+            
+            moc.save(errorPtr)
+            
+        }
+    }
+    */
+
     
 }
