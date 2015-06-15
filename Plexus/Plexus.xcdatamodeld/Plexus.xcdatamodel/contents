@@ -32,15 +32,9 @@
         <attribute name="notes" optional="YES" attributeType="Binary" syncable="YES"/>
         <relationship name="children" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="Entry" inverseName="parent" inverseEntity="Entry" syncable="YES"/>
         <relationship name="dataset" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Dataset" inverseName="entry" inverseEntity="Dataset" syncable="YES"/>
-        <relationship name="image" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="Image" inverseName="entry" inverseEntity="Image" syncable="YES"/>
         <relationship name="parent" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Entry" inverseName="children" inverseEntity="Entry" syncable="YES"/>
         <relationship name="structure" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Structure" inverseName="entry" inverseEntity="Structure" syncable="YES"/>
         <relationship name="trait" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="Trait" inverseName="entry" inverseEntity="Trait" syncable="YES"/>
-    </entity>
-    <entity name="Image" representedClassName="Plexus.Image" syncable="YES">
-        <attribute name="imageName" optional="YES" attributeType="String" defaultValueString="Unnamed Image" syncable="YES"/>
-        <attribute name="imageRepresentation" optional="YES" attributeType="Binary" syncable="YES"/>
-        <relationship name="entry" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Entry" inverseName="image" inverseEntity="Entry" syncable="YES"/>
     </entity>
     <entity name="Model" representedClassName="Plexus.Model" syncable="YES">
         <attribute name="burnins" optional="YES" attributeType="Integer 32" minValueString="0" defaultValueString="100" syncable="YES"/>
@@ -72,8 +66,7 @@
     <elements>
         <element name="BNNode" positionX="54" positionY="18" width="128" height="255"/>
         <element name="Dataset" positionX="63" positionY="-157" width="128" height="150"/>
-        <element name="Entry" positionX="-468" positionY="-36" width="128" height="195"/>
-        <element name="Image" positionX="-108" positionY="324" width="128" height="90"/>
+        <element name="Entry" positionX="-468" positionY="-36" width="128" height="180"/>
         <element name="Model" positionX="349" positionY="-9" width="128" height="225"/>
         <element name="NodeLink" positionX="-297" positionY="-126" width="128" height="73"/>
         <element name="Site" positionX="-261" positionY="-9" width="128" height="45"/>
