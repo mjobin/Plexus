@@ -37,8 +37,7 @@ class PlexusBNSKView: SKView, NSDraggingDestination {
     }
     
     override func draggingEntered(sender: NSDraggingInfo) -> NSDragOperation {
-        
-        return NSDragOperation.Copy
+               return NSDragOperation.Copy
         
     }
     
@@ -55,6 +54,8 @@ class PlexusBNSKView: SKView, NSDraggingDestination {
     }
     
     override func performDragOperation(sender: NSDraggingInfo) -> Bool {
+        
+              
         let pboard : NSPasteboard = sender.draggingPasteboard()
         let types : NSArray = pboard.types!
         
@@ -72,35 +73,7 @@ class PlexusBNSKView: SKView, NSDraggingDestination {
         return false
     }
     
-    @IBAction func makeUnlinkedNode(sender: AnyObject) {
-        var errorPtr : NSErrorPointer = nil
-        let curModels : [Model] = modelTreeController.selectedObjects as! [Model]
-        let curModel : Model = curModels[0]
-        
 
-        
-        //create an NodeLink - independet node link for nodes not linked to any other form of data
-        
-        let newNodeLink : NodeLink = NodeLink(entity: NSEntityDescription.entityForName("NodeLink", inManagedObjectContext: self.moc)!, insertIntoManagedObjectContext: self.moc)
-        newNodeLink.setValue("Parent Node", forKey: "name")
-        
-        
-        let newNode : BNNode = BNNode(entity: NSEntityDescription.entityForName("BNNode", inManagedObjectContext: moc)!, insertIntoManagedObjectContext: moc)
-        newNode.setValue(newNodeLink, forKey: "nodeLink")
-        
-        curModel.addBNNodeObject(newNode)
-        
-        newNode.setValue(curModel, forKey: "model")
-
-        
-        
-        moc.save(errorPtr)
-        
-        //and let update catch it
-        
-
-
-    }
     
     @IBAction func removeNode(sender: AnyObject) {
         var errorPtr : NSErrorPointer = nil
@@ -119,6 +92,7 @@ class PlexusBNSKView: SKView, NSDraggingDestination {
         
     }
     
+
     
     func addNode(mourl: NSURL){
         var errorPtr : NSErrorPointer = nil
