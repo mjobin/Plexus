@@ -27,9 +27,9 @@
     </entity>
     <entity name="Entry" representedClassName="Plexus.Entry" parentEntity="NodeLink" syncable="YES">
         <attribute name="icon" optional="YES" attributeType="String" defaultValueString="PlexusEntry" allowsExternalBinaryDataStorage="YES" syncable="YES"/>
-        <attribute name="latitude" optional="YES" attributeType="Double" defaultValueString="0.0" syncable="YES"/>
-        <attribute name="longitude" optional="YES" attributeType="Double" defaultValueString="0.0" syncable="YES"/>
-        <attribute name="notes" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="latitude" optional="YES" attributeType="Double" minValueString="-90" maxValueString="90" defaultValueString="0.0" syncable="YES"/>
+        <attribute name="longitude" optional="YES" attributeType="Double" minValueString="-180" maxValueString="180" defaultValueString="0.0" syncable="YES"/>
+        <attribute name="notes" optional="YES" attributeType="Binary" syncable="YES"/>
         <relationship name="children" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="Entry" inverseName="parent" inverseEntity="Entry" syncable="YES"/>
         <relationship name="dataset" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Dataset" inverseName="entry" inverseEntity="Dataset" syncable="YES"/>
         <relationship name="image" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="Image" inverseName="entry" inverseEntity="Image" syncable="YES"/>
