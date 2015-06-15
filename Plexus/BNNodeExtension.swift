@@ -407,8 +407,9 @@ extension BNNode {
                 case 0://global
                     
                     //if it's an entry, then the proportion of those trait entries in all the traits
+                    // for a structure, the values of all the traits that atch the structure's name ...pretty weird, but why not include it
                     
-                    if(self.nodeLink.entity.name == "Entry"){
+                    if(self.nodeLink.entity.name == "Entry" || self.nodeLink.entity.name == "Structure"){
                         predicate = NSPredicate(format: "entry.dataset == %@ AND name == %@", curDataset, self.nodeLink.name)
                         request.resultType = .DictionaryResultType
                         request.predicate = predicate
@@ -510,6 +511,9 @@ extension BNNode {
                         
                     }
                         
+                        
+
+                        
                     else {
                         self.cptFreq = -999
                     }
@@ -573,6 +577,58 @@ extension BNNode {
                         
                         
                         self.cptFreq = 1
+                    }
+                        
+                    else if (self.nodeLink.entity.name == "Structure"){ //The traits whose entries are part of this structure
+                        
+                        let thisStructure = self.nodeLink as! Structure
+                        
+                        
+                        predicate = NSPredicate(format: "entry.sructure == %@ AND name == %@", thisStructure, self.dataName)
+                        request.resultType = .DictionaryResultType
+                        request.predicate = predicate
+                        request.returnsDistinctResults = false
+                        request.propertiesToFetch = ["traitValue"]
+                        
+                        if let fetch = moc!.executeFetchRequest(request, error:&err) {
+                            // println("self structure fetch coiunt \(fetch.count)")
+                            
+                            
+                            for obj  in fetch {
+                                //   println(obj.valueForKey("traitValue"))
+                                
+                            }
+                            
+                            let trequest = NSFetchRequest(entityName: "Trait")
+                            let tpredicate = NSPredicate(format: "entry.structure == %@ AND name == %@ AND traitValue == %@", thisStructure, self.dataName, self.dataSubName)
+                            
+                            trequest.resultType = .DictionaryResultType
+                            trequest.predicate = tpredicate
+                            trequest.returnsDistinctResults = false
+                            trequest.propertiesToFetch = ["traitValue"]
+                            
+                            if let tfetch = moc!.executeFetchRequest(trequest, error:&err) {
+                                // println("self entry tfetch count \(tfetch.count)")
+                                for obj  in tfetch {
+                                    //  println(obj.valueForKey("traitValue"))
+                                    
+                                }
+                                
+                                let tresult = (cl_float(tfetch.count)/cl_float(fetch.count))
+                                // println("self entry with parent \(tresult)")
+                                self.cptFreq = tresult
+                                
+                            }
+                            else {
+                                self.cptFreq = -999
+                            }
+                            
+                            
+                        }
+                        else {
+                            self.cptFreq = -999
+                        }
+                        
                     }
                     else {
                         self.cptFreq = -999
