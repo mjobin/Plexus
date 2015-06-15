@@ -33,6 +33,7 @@ class PlexusBNScene: SKScene {
 
     
     
+    
     override func didMoveToView(view: SKView) {
         
             
@@ -142,6 +143,13 @@ class PlexusBNScene: SKScene {
  
         
     }
+    
+    override func didChangeSize(oldSize: CGSize) {
+        
+        
+        self.redrawNodes()
+    }
+
     
     override func mouseDown(theEvent: NSEvent) {
         var errorPtr : NSErrorPointer = nil
@@ -557,7 +565,7 @@ class PlexusBNScene: SKScene {
             for curNode :BNNode in curNodes{
                 
                 
-                
+
                 
                 var matchNode = false
                 
@@ -705,6 +713,9 @@ class PlexusBNScene: SKScene {
 
 
         
+
+        
+
 /*
       
         var selNodes : [BNNode] = nodesController.selectedObjects as [BNNode]
@@ -764,40 +775,41 @@ class PlexusBNScene: SKScene {
         })
         
 
-  
+        //FIXME needed here?
+       // self.redrawNodes()
         
         
     }
     
     func redrawNodes() {
 
-       self.enumerateChildNodesWithName("bnNode", usingBlock: { thisNode, stop in
+        self.enumerateChildNodesWithName("bnNode", usingBlock: { thisNode, stop in
             var idNode : PlexusBNNode = thisNode as! PlexusBNNode
-
-            if(idNode.position.x < self.frame.width*0.05){
-                idNode.position.x = self.frame.width*0.1
+            
+            if(idNode.position.x < 25){
+                idNode.position.x = 25
                 //println("too left")
                 
             }
-            if(idNode.position.y < self.frame.height*0.05){
-                idNode.position.y = self.frame.height*0.1
+            if(idNode.position.y < 25){
+                idNode.position.y = 25
                // println("too low")
                 
             }
             
-            if((idNode.position.x + idNode.frame.width) > self.frame.width*0.95){
-                idNode.position.x = (self.frame.width*0.9 - idNode.frame.width)
-               // println("too right")
+            if((idNode.position.x + idNode.frame.width) > self.frame.width-25){
+                idNode.position.x = (self.frame.width-25 - idNode.frame.width)
+                // println("too right")
                 
             }
-            if((idNode.position.y + idNode.frame.height) > self.frame.height*0.95){
-                idNode.position.y = (self.frame.height*0.9 - idNode.frame.height)
-              // println("too high")
+            if((idNode.position.y + idNode.frame.height) > self.frame.height-25){
+                idNode.position.y = (self.frame.height-25 - idNode.frame.height)
+             //   println("too high and y position now \(idNode.position.y) where height is \(self.frame.height)")
             }
-        
-
             
-            })
+            
+            
+        })
         
         
     }
@@ -888,7 +900,7 @@ class PlexusBNScene: SKScene {
         
         var justUpdate = true
         
-      //  println("bn scene MOC DID CHANGE \(notification.userInfo)")
+       // println("bn scene MOC DID CHANGE")
         /*
         NB: don't chamnge the following unless you know what will happen when you delete a node
         if let updatedObjects = notification.userInfo?[NSUpdatedObjectsKey] as? NSSet {
@@ -920,7 +932,7 @@ class PlexusBNScene: SKScene {
         if let deletedObjects = notification.userInfo?[NSDeletedObjectsKey] as? NSSet {
             justUpdate = false
             for deletedObject in deletedObjects {
-             //   println("deleted \(deletedObject)")
+                println("deleted \(deletedObject)")
                 
             }
             self.reloadData()
