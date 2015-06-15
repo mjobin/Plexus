@@ -110,7 +110,7 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
     
     @IBAction func testRandom(x:NSToolbarItem){
         
-        let nodes : [BNNode] = mainSplitViewController.modelTabViewController?.bnSplitViewController?.nodesController.arrangedObjects as! [BNNode]
+        let nodes : [BNNode] = mainSplitViewController.modelDetailViewController?.nodesController.arrangedObjects as! [BNNode]
         
         
         for fNode in nodes {
@@ -163,6 +163,7 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
             fNode.setValue(archivedPostArray, forKey: "postArray")
         }
     }
+
     
     
     @IBAction func  calculate(x:NSToolbarItem){
@@ -196,7 +197,7 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
         
 
         //collect data
-        var nodesForCalc : [BNNode] = mainSplitViewController.modelTabViewController?.bnSplitViewController?.nodesController.arrangedObjects as! [BNNode]
+        var nodesForCalc : [BNNode] = mainSplitViewController.modelDetailViewController?.nodesController.arrangedObjects as! [BNNode]
       
         let curModels : [Model] = mainSplitViewController.modelTreeController?.selectedObjects as! [Model]
         let curModel : Model = curModels[0]
@@ -315,6 +316,7 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
     
         
     }
+
     
     @IBAction func exportCSV(x:NSToolbarItem){
         var errorPtr : NSErrorPointer = nil

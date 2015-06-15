@@ -18,8 +18,8 @@ class PlexusMainSplitViewController: NSSplitViewController {
     
     var entryViewController : PlexusEntryViewController? = nil
     var modelViewController : PlexusModelViewController? = nil
-    var entryTabViewController : PlexusEntryTabViewController? = nil
-    var modelTabViewController :  PlexusModelTabViewController? = nil
+    var entryDetailViewController : PlexusEntryDetailViewController? = nil
+    var modelDetailViewController :  PlexusModelDetailViewController? = nil
     
     dynamic var datasetController : NSArrayController!
     dynamic var entryTreeController : NSTreeController!
@@ -36,8 +36,8 @@ class PlexusMainSplitViewController: NSSplitViewController {
 
         structureViewController = childViewControllers[0] as? PlexusStructureViewController
         entryViewController = childViewControllers[1] as? PlexusEntryViewController
-        entryTabViewController = childViewControllers[2] as? PlexusEntryTabViewController
-        modelTabViewController = childViewControllers[3] as? PlexusModelTabViewController
+        entryDetailViewController = childViewControllers[2] as? PlexusEntryDetailViewController
+        modelDetailViewController = childViewControllers[3] as? PlexusModelDetailViewController
         modelViewController = childViewControllers[4] as? PlexusModelViewController
         
         
@@ -54,10 +54,10 @@ class PlexusMainSplitViewController: NSSplitViewController {
         modelViewController!.datasetController = self.datasetController
         
         entryTreeController = entryViewController?.entryTreeController
-        entryTabViewController!.entryTreeController = self.entryTreeController
+        entryDetailViewController!.entryTreeController = self.entryTreeController
         
         modelTreeController = modelViewController?.modelTreeController
-        modelTabViewController!.modelTreeController = self.modelTreeController
+        modelDetailViewController!.modelTreeController = self.modelTreeController
         
 
     }
