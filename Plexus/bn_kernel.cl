@@ -41,7 +41,7 @@ __kernel void BNGibbs(__constant int* offsets, int bnsize, int maxCPTsize, __con
     
     //Seed variable for random number generator
     int x = offsets[gid]*get_global_size(0);
-    printf("%i\n", x);
+
 
     
     //TinyMT seed and test
@@ -55,8 +55,8 @@ __kernel void BNGibbs(__constant int* offsets, int bnsize, int maxCPTsize, __con
     int g, h, i, k = 0;
 
 
-    int binsum = 0;
-    float binx =0;
+    int binsum = 0; //Binary sum of the states of all the nodes that influence the current node
+    float binx = 0;
     
     int infoffset = 0;
     int cptoffset = 0;
@@ -76,14 +76,13 @@ __kernel void BNGibbs(__constant int* offsets, int bnsize, int maxCPTsize, __con
     for(i=0; i<(bnsize);i++){
         bnstates[i+boffset] = pointroll(&tinymt, nodeFreqs[i]); //randomly set an initial state for each variable
         shufflenodes[i] = i; //initialize the nodes array in sequential order
-     //   printf("initial state %i is %i\n", i, bnstates[i+boffset]);
-     //   printf("shufflenodes %i is %i\n", i, shufflenodes[i]);
     }
     
     
-    /*
+    
     //Fisher-Yates shuffle
     //Randomly sort the node array
+    /*
     int j, tmp = 0;
     for (i = bnsize - 1; i > 0; i--) {
         j = randomx(&tinymt, i + 1);
@@ -93,8 +92,8 @@ __kernel void BNGibbs(__constant int* offsets, int bnsize, int maxCPTsize, __con
 
     }
     
-    */
-    /*
+    
+    
     printf("--------------------------\n");
     printf("Shuffled node for work id %i\n", gid);
     for(i=0; i<(bnsize);i++){
@@ -115,91 +114,75 @@ __kernel void BNGibbs(__constant int* offsets, int bnsize, int maxCPTsize, __con
           // int sn = shufflenodes[h]; //FIXME this will be used instead of h
           // printf("becomes shuffled node %i \n", sn);
 
-            //save what the state was to check later
-            laststate = bnstates[h+boffset];
+            
+            laststate = bnstates[h+boffset]; //Save what the state of the current node was, to check for approach to stationary distribution
         
-            //clear the state of the current variable
-            //First set it to true, so that we are asking "what is chance if true..."
-            bnstates[h+boffset] = 1;
 
-            infoffset = (maxCPTsize*2) * h;
+            bnstates[h+boffset] = 1;  //Set the state of the current variable to true. Thus we are asking for this node "what is the chance, given its influences, that this node is true?"
+
+            infoffset = (maxCPTsize*2) * h; //Location in input array
             cptoffset = sparseCPTsize * h;
 
 
-         //   printf("infoffset %i\n", infoffset);
+  
             
-            //Go through influenced BY, and you'll want the CPT of the INFLUENCED - the current one
-            //int binsum = bininfluence(infoffset, maxCPTsize, infnet, &bn_states);
+            //Iterate through the nodes that influence this node to create the binary sum of the influences
 
             binsum = 0;
             binx =0;
-
             for (i=infoffset; i<(infoffset+maxCPTsize); i++){
                 if(infnet[i] < 0) break;
                 binsum += bnstates[(infnet[i]+boffset)] * pow(2.0f, binx);
-
                 binx++;
             }
 
-         //   printf("recived binsum %i ", binsum);
-            
-            
-            if(cptnet[(cptoffset+binsum)] < 0) {
-                //its an independent node and you just want its nodefreq
 
-                //bnstates[h+boffset] = pointroll(&randstate, nodeFreqs[h]);
+            
+
+            if(cptnet[(cptoffset+binsum)] < 0) { //If a -1 was passed to the cptnet, there is no CPT for this node because it is a parent node
+                //The state of the result comes from the frequency derived from the prior distribution
+                //   i.e. in a uniform distribution of 0-1, this particular run might have been given a 0.546, and that is what is used here
                 bnstates[h+boffset] = pointroll(&tinymt, nodeFreqs[h]);
-             //   printf(" which is the chance %f ", nodeFreqs[h]);
-
                 }
-            else {
-                
-             //   printf(" which is thee chance %f ", cptnet[(cptoffset+binsum)]*nodeFreqs[h]);
-                
+            else { //There is a CPT for this node, so the chance for the node to be true comes from the probablities of its influencdes
                 bnstates[h+boffset] = pointroll(&tinymt, (cptnet[(cptoffset+binsum)]*nodeFreqs[h]));  //is this right? times nodefreqs
-                
             }
+
+
+            infoffset +=maxCPTsize; //Advance the influence offset by the size of a CPT, to
+
+
+
+            if(bnstates[h+boffset] == laststate) runstationary++; //If the state is not changing, take note, and check to exit early
             
-         //   printf(" and the roll is %i\n", bnstates[h+boffset]);
-
-            infoffset +=maxCPTsize;
-          //  printf("infoffset now %i\n\n", infoffset);
-
-
-            if(bnstates[h+boffset] == laststate) runstationary++;
-            
-        //end h loop
+        //End nodes loop using h as a count variable
         }
 
-        //Allow for burn-in, only sample every 100th afterward
-        //FIXME RESTORE FOR REALif(g>burnins && g%100==0){
-            if(g>=burnins){
-            
-           // printf("in bnresults loop\n");
-            
-            for(k=0; k<bnsize; k++){
-                bnresults[k+boffset] += bnstates[k+boffset];
-            }
+        
+        //Begin to record results after burnins value exceeded
+        if(g>=burnins){
+                for(k=0; k<bnsize; k++){
+                    bnresults[k+boffset] += bnstates[k+boffset];
+                }
             sampletot++;
         }
             
-        //how far did it get? -- FIXME remove this once you know this is behaving well
-        results[gid] = g;
 
-        //Check to see if stationary
-        if(runstationary >= burnins || runstationary >= (runs/10)) break;
-    
-        //end g loop
-    }
-    
-    //divide through by number of recordings made
-    for(int l=0; l<bnsize; l++){
-        bnresults[l+boffset] /= sampletot;
-      //  printf("work id is %i, node %i, buffer loc %i, sampletot %i, results %f\n", gid, l, (l+boffset) , sampletot, bnresults[l+boffset]);
+
         
+        if(runstationary >= burnins || runstationary >= (runs/10)) break; //Check to see if stationary distribution reached. Breaks if exceeds burnins or one tenth of total assigned runs.
+    
+       //END loop of runs with count variable g
     }
-    //This is an average drawn from the posterior distn
+    
+    //Test of number of runs reached -- FIXME remove this once you know this is behaving well
+    results[gid] = g;
+    
+    for(int l=0; l<bnsize; l++){
+        bnresults[l+boffset] /= sampletot; //To obtain posterior point, divide the compiled results through by number of samples taken
+ 
+    }
+    
 
-
-//end kernel
+//END kernel
 }
