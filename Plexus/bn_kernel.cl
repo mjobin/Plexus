@@ -56,26 +56,23 @@ __kernel void BNGibbs(__constant int* offsets, int bnsize, int maxCPTsize, __con
 
 
     int binsum = 0; //Binary sum of the states of all the nodes that influence the current node
-    float binx = 0;
+    float binx = 0; //Float coutn variable, needed because will be using 2.0^binx
     
-    int infoffset = 0;
-    int cptoffset = 0;
+    int infoffset = 0; //Offset variale for influences array
+    int cptoffset = 0; //Offset variale for CPT array
     
     
-    int sampletot = 0;
-    int laststate = -1;
-    int runstationary = 0; //number of times in a row the chosen state is the same as before...used to see if we are converging on a stationary distn
-
-    //Set initial states FIXME... priors?
-
+    int sampletot = 0; //Number of sampled results
+    int laststate = -1; //Previous state of a node, used to check for a stationary distribution
+    int runstationary = 0; //Number of times in a row the chosen state is the same as before. Used to see if we are converging on a stationary distritbution.
 
     
     int shufflenodes[bnsize];
 
     
     for(i=0; i<(bnsize);i++){
-        bnstates[i+boffset] = pointroll(&tinymt, nodeFreqs[i]); //randomly set an initial state for each variable
-        shufflenodes[i] = i; //initialize the nodes array in sequential order
+        bnstates[i+boffset] = pointroll(&tinymt, nodeFreqs[i]); //Randomly set an initial state for each variable
+        shufflenodes[i] = i; //Initialize the nodes array in sequential order
     }
     
     
@@ -106,7 +103,7 @@ __kernel void BNGibbs(__constant int* offsets, int bnsize, int maxCPTsize, __con
     for(g=0; g<runs; g++){
 
 
-        //CYCLE through each of the nodes one at a time
+        //Cycle through each of the nodes
         for(h=0; h<bnsize; h++){
             
             //printf("Node %i ", h);
@@ -121,13 +118,10 @@ __kernel void BNGibbs(__constant int* offsets, int bnsize, int maxCPTsize, __con
             bnstates[h+boffset] = 1;  //Set the state of the current variable to true. Thus we are asking for this node "what is the chance, given its influences, that this node is true?"
 
             infoffset = (maxCPTsize*2) * h; //Location in input array
-            cptoffset = sparseCPTsize * h;
+            cptoffset = sparseCPTsize * h; //Location in CPT array
 
-
-  
             
             //Iterate through the nodes that influence this node to create the binary sum of the influences
-
             binsum = 0;
             binx =0;
             for (i=infoffset; i<(infoffset+maxCPTsize); i++){
@@ -135,8 +129,6 @@ __kernel void BNGibbs(__constant int* offsets, int bnsize, int maxCPTsize, __con
                 binsum += bnstates[(infnet[i]+boffset)] * pow(2.0f, binx);
                 binx++;
             }
-
-
             
 
             if(cptnet[(cptoffset+binsum)] < 0) { //If a -1 was passed to the cptnet, there is no CPT for this node because it is a parent node
@@ -149,8 +141,7 @@ __kernel void BNGibbs(__constant int* offsets, int bnsize, int maxCPTsize, __con
             }
 
 
-            infoffset +=maxCPTsize; //Advance the influence offset by the size of a CPT, to
-
+            infoffset +=maxCPTsize; //Advance the influence offset by the size of a CPT
 
 
             if(bnstates[h+boffset] == laststate) runstationary++; //If the state is not changing, take note, and check to exit early
