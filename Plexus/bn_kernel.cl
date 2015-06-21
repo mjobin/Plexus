@@ -27,7 +27,7 @@ int pointroll(tinymt32j_t *r, float threshold)
 
 
 //Monte Carlo Gibbs Sampler
-__kernel void BNGibbs(__constant int* offsets, int bnsize, int maxCPTsize, __constant float* nodeFreqs, __constant int* infnet, __constant float* cptnet, __global int* bnstates, __global float *bnresults, __global int* results, int runs, int burnins)
+__kernel void BNGibbs(__constant int* offsets, int bnsize, int maxCPTsize, __constant float* nodeFreqs, __constant int* infnet, __constant float* cptnet, __global int* bnstates, __global float *bnresults, __local int* shufflenodes, int runs, int burnins)
 {
     int gid = get_global_id(0); //A global identifier for this work-item. Used to access its part of the offset, bnstates and results
 
@@ -66,59 +66,46 @@ __kernel void BNGibbs(__constant int* offsets, int bnsize, int maxCPTsize, __con
     int laststate = -1; //Previous state of a node, used to check for a stationary distribution
     int runstationary = 0; //Number of times in a row the chosen state is the same as before. Used to see if we are converging on a stationary distritbution.
 
-    
-    int shufflenodes[bnsize];
+    int shuffleoffset = gid * bnsize;
 
+  //  printf("gid %i and shuffle array start is %i\n", gid, shuffleoffset);
+    
     
     for(i=0; i<(bnsize);i++){
         bnstates[i+boffset] = pointroll(&tinymt, nodeFreqs[i]); //Randomly set an initial state for each variable
-        shufflenodes[i] = i; //Initialize the nodes array in sequential order
+        shufflenodes[i+shuffleoffset] = i; //Initialize the nodes array in sequential order
     }
     
-    
-    
-    //Fisher-Yates shuffle
-    //Randomly sort the node array
-    /*
-    int j, tmp = 0;
-    for (i = bnsize - 1; i > 0; i--) {
-        j = randomx(&tinymt, i + 1);
-        tmp = shufflenodes[j];
-        shufflenodes[j] = shufflenodes[i];
-        shufflenodes[i] = tmp;
-
-    }
-    
-    
-    
-    printf("--------------------------\n");
-    printf("Shuffled node for work id %i\n", gid);
-    for(i=0; i<(bnsize);i++){
-        printf("%i, ", shufflenodes[i]);
-    }
-    printf("\n\n");
-    */
     
 
+    
+    //Main run loop
     for(g=0; g<runs; g++){
 
+        //Fisher-Yates shuffle: randomly sort the node array
+        int j, tmp = 0;
+        for (i = bnsize - 1; i > 0; i--) {
+            j = randomx(&tinymt, i + 1);
+            tmp = shufflenodes[j+shuffleoffset];
+            shufflenodes[j+shuffleoffset] = shufflenodes[i+shuffleoffset];
+            shufflenodes[i+shuffleoffset] = tmp;
+        }
 
         //Cycle through each of the nodes
-        for(h=0; h<bnsize; h++){
+        for(h=0; h<bnsize; h++){ //The count var h will only be used to count through the zrray for size
             
-            //printf("Node %i ", h);
             
-          // int sn = shufflenodes[h]; //FIXME this will be used instead of h
-          // printf("becomes shuffled node %i \n", sn);
+           int sn = shufflenodes[h+shuffleoffset]; //The var sn will mark the location of the data for the present shuffled node
+          // printf("gid %i run %i seed %i node %i becomes shuffled node %i \n", gid, g, x, h, sn);
 
             
-            laststate = bnstates[h+boffset]; //Save what the state of the current node was, to check for approach to stationary distribution
+            laststate = bnstates[sn+boffset]; //Save what the state of the current node was, to check for approach to stationary distribution
         
 
-            bnstates[h+boffset] = 1;  //Set the state of the current variable to true. Thus we are asking for this node "what is the chance, given its influences, that this node is true?"
+            bnstates[sn+boffset] = 1;  //Set the state of the current variable to true. Thus we are asking for this node "what is the chance, given its influences, that this node is true?"
 
-            infoffset = (maxCPTsize*2) * h; //Location in input array
-            cptoffset = sparseCPTsize * h; //Location in CPT array
+            infoffset = (maxCPTsize*2) * sn; //Location in input array
+            cptoffset = sparseCPTsize * sn; //Location in CPT array
 
             
             //Iterate through the nodes that influence this node to create the binary sum of the influences
@@ -134,17 +121,17 @@ __kernel void BNGibbs(__constant int* offsets, int bnsize, int maxCPTsize, __con
             if(cptnet[(cptoffset+binsum)] < 0) { //If a -1 was passed to the cptnet, there is no CPT for this node because it is a parent node
                 //The state of the result comes from the frequency derived from the prior distribution
                 //   i.e. in a uniform distribution of 0-1, this particular run might have been given a 0.546, and that is what is used here
-                bnstates[h+boffset] = pointroll(&tinymt, nodeFreqs[h]);
+                bnstates[sn+boffset] = pointroll(&tinymt, nodeFreqs[sn]);
                 }
             else { //There is a CPT for this node, so the chance for the node to be true comes from the probablities of its influencdes
-                bnstates[h+boffset] = pointroll(&tinymt, (cptnet[(cptoffset+binsum)]*nodeFreqs[h]));  //is this right? times nodefreqs
+                bnstates[sn+boffset] = pointroll(&tinymt, (cptnet[(cptoffset+binsum)]*nodeFreqs[sn]));  //is this right? times nodefreqs
             }
 
 
             infoffset +=maxCPTsize; //Advance the influence offset by the size of a CPT
 
 
-            if(bnstates[h+boffset] == laststate) runstationary++; //If the state is not changing, take note, and check to exit early
+            if(bnstates[sn+boffset] == laststate) runstationary++; //If the state is not changing, take note, and check to exit early
             
         //End nodes loop using h as a count variable
         }
@@ -159,19 +146,14 @@ __kernel void BNGibbs(__constant int* offsets, int bnsize, int maxCPTsize, __con
         }
             
 
-
-        
-        if(runstationary >= burnins || runstationary >= (runs/10)) break; //Check to see if stationary distribution reached. Breaks if exceeds burnins or one tenth of total assigned runs.
+        //FIXME this is sometimes retiurn results > 1
+      //  if(runstationary >= burnins || runstationary >= (runs/10)) break; //Check to see if stationary distribution reached. Breaks if exceeds burnins or one tenth of total assigned runs.
     
        //END loop of runs with count variable g
     }
     
-    //Test of number of runs reached -- FIXME remove this once you know this is behaving well
-    results[gid] = g;
-    
     for(int l=0; l<bnsize; l++){
         bnresults[l+boffset] /= sampletot; //To obtain posterior point, divide the compiled results through by number of samples taken
- 
     }
     
 
