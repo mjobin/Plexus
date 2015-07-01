@@ -62,6 +62,9 @@ class PlexusBNScene: SKScene {
         startNode = self // so initialized
         
         
+        
+        
+        
         //create bumper for lower left corner?
         /*
         var bumperPath = CGPathCreateWithRoundedRect(CGRectMake(0, 0, 100, 32), 4, 4, nil)
@@ -550,11 +553,13 @@ class PlexusBNScene: SKScene {
         
         
         self.enumerateChildNodesWithName("nodeLine", usingBlock: { thisLine, stop in
-        thisLine.removeFromParent()
+            thisLine.removeFromParent()
         })
         
 
-
+        self.enumerateChildNodesWithName("noNodesName", usingBlock: { thisLine, stop in
+            thisLine.removeFromParent()
+        })
         
         //make sure all listed nodes are drawn
         
@@ -677,14 +682,11 @@ class PlexusBNScene: SKScene {
             
             
             
-    
-            
-
 
             
             //glow selected
             
-            
+
             
             self.enumerateChildNodesWithName("bnNode", usingBlock: { thisNode, stop in
                 var noglowNode : SKShapeNode = thisNode as! SKShapeNode
@@ -773,11 +775,42 @@ class PlexusBNScene: SKScene {
             thisKid.physicsBody?.applyImpulse(self.vectorFromRadians(angle))
             
         })
-        
+  
+        //Post message in nodes area if no nodes yet
+        /*
+        if(nodesController != nil ){
+            
+            let curNodes : [BNNode]  = nodesController.arrangedObjects as! [BNNode]
+            if(curNodes.count < 1) {
+                let nnl1 = SKLabelNode(text: "Drag from Structures,")
+                let nnl2 = SKLabelNode(text: "Entries or Traits to")
+                let nnl3 = SKLabelNode(text: "create a node.")
+                nnl1.fontSize = 18
+                nnl1.fontName = "SanFrancisco"
+                nnl1.name = "noNodesName"
+                nnl1.zPosition = 1
+                
+                nnl2.fontSize = 18
+                nnl2.fontName = "SanFrancisco"
+                nnl2.name = "noNodesName"
+                nnl2.zPosition = 1
+                
+                nnl3.fontSize = 18
+                nnl3.fontName = "SanFrancisco"
+                nnl3.name = "noNodesName"
+                nnl3.zPosition = 1
+                
+                nnl1.position = CGPointMake(self.frame.width*0.5, self.frame.height*0.5+30)
+                nnl2.position = CGPointMake(self.frame.width*0.5, self.frame.height*0.5)
+                nnl3.position = CGPointMake(self.frame.width*0.5, self.frame.height*0.5-30)
+                
+                self.addChild(nnl1)
+                self.addChild(nnl2)
+                self.addChild(nnl3)
+            }
+        }
+        */
 
-        //FIXME needed here?
-       // self.redrawNodes()
-        
         
     }
     
@@ -819,8 +852,10 @@ class PlexusBNScene: SKScene {
     
     func makeNode(inNode : BNNode, inPos: CGPoint){
         
+        
         let myLabel = SKLabelNode(text: inNode.nodeLink.name)
-        myLabel.fontName = "HelveticaNeue-Bold"
+        myLabel.fontName = "SanFrancisco"
+        //myLabel.fontName = "HelveticaNeue-Bold"
         myLabel.fontSize = 18
         myLabel.zPosition = 1
         myLabel.name = "nodeName"
