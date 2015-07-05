@@ -96,7 +96,8 @@ class PlexusModelDetailViewController: NSViewController, CPTScatterPlotDataSourc
         
         
         var titleStyle = graph.titleTextStyle!.mutableCopy() as! CPTMutableTextStyle
-        titleStyle.fontName = "HelveticaNeue-Bold"
+       // titleStyle.fontName = "HelveticaNeue-Bold"
+        titleStyle.fontName = "SanFrancisco"
         titleStyle.fontSize = 18.0
         titleStyle.color = CPTColor.whiteColor()
         graph.titleTextStyle = titleStyle
@@ -209,8 +210,8 @@ class PlexusModelDetailViewController: NSViewController, CPTScatterPlotDataSourc
         
         
         //save the moc here to make sure changes read properly
-        var errorPtr : NSErrorPointer = nil
-        moc.save(errorPtr)
+       // var errorPtr : NSErrorPointer = nil
+       // moc.save(errorPtr)
         
         //Get selected node
         var curNodes : [BNNode] = nodesController.selectedObjects as! [BNNode]
@@ -218,7 +219,7 @@ class PlexusModelDetailViewController: NSViewController, CPTScatterPlotDataSourc
             curNode = curNodes[0]
              // println("\n\n*********\nreloadData \(curNode.nodeLink.name)")
             
-            graph.title = curNode.nodeLink.name
+           // graph.title = curNode.nodeLink.name
             
             priorDist = Int(curNode.priorDistType)
             V1 = Double(curNode.priorV1)
@@ -232,7 +233,7 @@ class PlexusModelDetailViewController: NSViewController, CPTScatterPlotDataSourc
                 graph.removePlot(priorPlot)
                 
                 //collect data for the CPT controls
-       self.collectData()
+                self.collectData()
             }
             else {
                 priorControlsView.hidden = false
@@ -774,23 +775,22 @@ class PlexusModelDetailViewController: NSViewController, CPTScatterPlotDataSourc
     
     
     override func observeValueForKeyPath(keyPath: String, ofObject object: AnyObject, change: [NSObject : AnyObject], context: UnsafeMutablePointer<Void>) {
-        
+      //  println("observed \(object) \(change) \(context)")
         switch (keyPath) {
-        case("selectionIndexPath"): //modelTreeController
-            scene.reloadData()
-            
-        case("selectionIndex"): //nodesController
-            self.reloadData()
-            
-            
-        default:
-            super.observeValueForKeyPath(keyPath, ofObject: object, change: change, context: context)
+            case("selectionIndexPath"): //modelTreeController
+                scene.reloadData()
+                
+            case("selectionIndex"): //nodesController
+                self.reloadData()
+                
+            default:
+                super.observeValueForKeyPath(keyPath, ofObject: object, change: change, context: context)
         }
     }
     
     func mocDidChange(notification: NSNotification){
         
-        //  println("single node moc changed")
+          //println("model detail moc changed")
         self.reloadData()
         
         
