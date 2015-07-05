@@ -53,7 +53,7 @@ extension BNNode {
                 case 1://uniform
                     let r = Double(arc4random())/Double(UInt32.max)
                     let u = cl_float((r*(priorV2.doubleValue - priorV1.doubleValue)) + priorV1.doubleValue)
-                    println("uniform \(u)")
+                   // println("uniform \(u)")
                     pVal = cl_float((r*(priorV2.doubleValue - priorV1.doubleValue)) + priorV1.doubleValue)
                     //return cl_float((r*(priorV2.doubleValue - priorV1.doubleValue)) + priorV1.doubleValue)
                     
@@ -61,17 +61,17 @@ extension BNNode {
 
                     var gd = cl_float(gasdev(&lidum))
                     var gdv = cl_float(priorV2) * gd + cl_float(priorV1)
-                    println("gaussdev \(gd) \(gdv)")
+                  //  println("gaussdev \(gd) \(gdv)")
                     pVal = gdv
                     //return gdv
                 case 3: //beta
                     var bd = cl_float(beta_dev(priorV1.doubleValue, priorV2.doubleValue))
-                    println("betadev \(bd)")
+                  //  println("betadev \(bd)")
                     pVal = bd
                     //return bd
                 case 4: //gamma
                     var gd = cl_float(gamma_dev(priorV1.doubleValue)/priorV2.doubleValue)
-                    println("gammadev \(gd)")
+                  //  println("gammadev \(gd)")
                     pVal = gd
     //                return gd
                     
