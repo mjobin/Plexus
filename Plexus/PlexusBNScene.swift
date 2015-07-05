@@ -858,9 +858,11 @@ class PlexusBNScene: SKScene {
     func makeNode(inNode : BNNode, inPos: CGPoint){
         
         
+        var labelString = inNode.nodeLink.name
+        //truncate
+        
         let myLabel = SKLabelNode(text: inNode.nodeLink.name)
         myLabel.fontName = "SanFrancisco"
-        //myLabel.fontName = "HelveticaNeue-Bold"
         myLabel.fontSize = 18
         myLabel.zPosition = 1
         myLabel.name = "nodeName"
@@ -868,10 +870,11 @@ class PlexusBNScene: SKScene {
        // myLabel.userInteractionEnabled = true
         
         
+        let nodeWidth = (myLabel.frame.size.width)+10
+        let nodeHeight = (myLabel.frame.size.height)+10
 
-
-        let nodeWidth = (myLabel.frame.size.width)*1.5
-        let nodeHeight = (myLabel.frame.size.height)*1.3
+      //  let nodeWidth = (myLabel.frame.size.width)*1.5
+       // let nodeHeight = (myLabel.frame.size.height)*1.3
         
         
         
