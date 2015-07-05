@@ -503,15 +503,14 @@ class PlexusBNScene: SKScene {
         /*
         self.enumerateChildNodesWithName("bnNode", usingBlock: { thisLine, stop in
             var idNode : PlexusBNNode = thisLine as! PlexusBNNode
-            println("in reloadData BNNode \(idNode.node)")
             if(idNode.node == nil){
                 println("missing BNNode")
                 thisLine.removeFromParent()
             }
-
             
         })
-*/
+        */
+
         
         self.enumerateChildNodesWithName("bnNode", usingBlock: { thisLine, stop in
             var idNode : PlexusBNNode = thisLine as! PlexusBNNode
@@ -532,7 +531,7 @@ class PlexusBNScene: SKScene {
    
     
     func reloadData(){
-       //println("bnscene FULL reload")
+      // println("bnscene FULL reload")
         self.enumerateChildNodesWithName("nodeName", usingBlock: { thisLine, stop in
             thisLine.removeFromParent()
         })
@@ -566,11 +565,17 @@ class PlexusBNScene: SKScene {
         if(nodesController != nil ){
         
             let curNodes : [BNNode]  = nodesController.arrangedObjects as! [BNNode]
+            
+            /*
+            for curNode :BNNode in curNodes{ //check to see if any nodes are connected to deleted nodeLinks, and if so delete the node
+                println(curNode.nodeLink)
+
+            }
+            */
+
+            
 
             for curNode :BNNode in curNodes{
-                
-                
-
                 
                 var matchNode = false
                 
@@ -931,7 +936,7 @@ class PlexusBNScene: SKScene {
     
 
     func mocDidChange(notification: NSNotification){
-       // println(notification.userInfo)
+     //   println(notification.userInfo)
         
         var justUpdate = true
         
@@ -967,7 +972,7 @@ class PlexusBNScene: SKScene {
         if let deletedObjects = notification.userInfo?[NSDeletedObjectsKey] as? NSSet {
             justUpdate = false
             for deletedObject in deletedObjects {
-                println("deleted \(deletedObject)")
+              //  println("deleted \(deletedObject)")
                 
             }
             self.reloadData()
@@ -975,6 +980,7 @@ class PlexusBNScene: SKScene {
         else {
 
             self.reloadDataWPos()
+            
         }
         
 
