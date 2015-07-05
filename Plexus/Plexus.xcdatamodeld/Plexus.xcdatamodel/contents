@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="7701" systemVersion="14D136" minimumToolsVersion="Automatic" macOSVersion="Automatic" iOSVersion="Automatic">
+<model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="7701" systemVersion="14E46" minimumToolsVersion="Automatic" macOSVersion="Automatic" iOSVersion="Automatic">
     <entity name="BNNode" representedClassName="Plexus.BNNode" syncable="YES">
         <attribute name="cptFreq" optional="YES" attributeType="Double" minValueString="0" maxValueString="1" defaultValueString="0.0" syncable="YES"/>
         <attribute name="dataName" optional="YES" attributeType="String" defaultValueString="NoData" syncable="YES"/>
@@ -26,7 +26,6 @@
         <relationship name="structure" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="Structure" inverseName="dataset" inverseEntity="Structure" syncable="YES"/>
     </entity>
     <entity name="Entry" representedClassName="Plexus.Entry" parentEntity="NodeLink" syncable="YES">
-        <attribute name="icon" optional="YES" attributeType="String" defaultValueString="PlexusEntry" allowsExternalBinaryDataStorage="YES" syncable="YES"/>
         <attribute name="latitude" optional="YES" attributeType="Double" minValueString="-90" maxValueString="90" defaultValueString="0.0" syncable="YES"/>
         <attribute name="longitude" optional="YES" attributeType="Double" minValueString="-180" maxValueString="180" defaultValueString="0.0" syncable="YES"/>
         <attribute name="notes" optional="YES" attributeType="Binary" syncable="YES"/>
@@ -52,9 +51,9 @@
     </entity>
     <entity name="NodeLink" representedClassName="Plexus.NodeLink" syncable="YES">
         <attribute name="name" optional="YES" attributeType="String" defaultValueString="new" syncable="YES"/>
-        <relationship name="bnNode" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="BNNode" inverseName="nodeLink" inverseEntity="BNNode" syncable="YES"/>
+        <attribute name="type" optional="YES" attributeType="String" defaultValueString="Default" syncable="YES"/>
+        <relationship name="bnNode" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="BNNode" inverseName="nodeLink" inverseEntity="BNNode" syncable="YES"/>
     </entity>
-    <entity name="Site" parentEntity="Entry" syncable="YES"/>
     <entity name="Structure" representedClassName="Plexus.Structure" parentEntity="NodeLink" syncable="YES">
         <relationship name="dataset" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Dataset" inverseName="structure" inverseEntity="Dataset" syncable="YES"/>
         <relationship name="entry" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Entry" inverseName="structure" inverseEntity="Entry" syncable="YES"/>
@@ -66,10 +65,9 @@
     <elements>
         <element name="BNNode" positionX="54" positionY="18" width="128" height="255"/>
         <element name="Dataset" positionX="63" positionY="-157" width="128" height="150"/>
-        <element name="Entry" positionX="-468" positionY="-36" width="128" height="180"/>
+        <element name="Entry" positionX="-468" positionY="-36" width="128" height="165"/>
         <element name="Model" positionX="349" positionY="-9" width="128" height="225"/>
-        <element name="NodeLink" positionX="-297" positionY="-126" width="128" height="73"/>
-        <element name="Site" positionX="-261" positionY="-9" width="128" height="45"/>
+        <element name="NodeLink" positionX="-297" positionY="-126" width="128" height="90"/>
         <element name="Structure" positionX="-261" positionY="-9" width="128" height="75"/>
         <element name="Trait" positionX="-279" positionY="317" width="128" height="75"/>
     </elements>
