@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="7706" systemVersion="14D136" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" initialViewController="B8D-0N-5wS">
+<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="7706" systemVersion="14E46" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" initialViewController="B8D-0N-5wS">
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="7706"/>
         <plugIn identifier="com.apple.MapKitIBPlugin" version="7706"/>
@@ -712,14 +712,14 @@
                                         <action selector="calculate:" target="B8D-0N-5wS" id="VCg-wJ-cZX"/>
                                     </connections>
                                 </toolbarItem>
-                                <toolbarItem implicitItemIdentifier="E18303A5-037B-44FE-878B-72401FAAC926" label="Models" paletteLabel="Models" image="586B7D07-E928-45D7-97A1-21244397504C" id="VR9-AM-azT">
+                                <toolbarItem implicitItemIdentifier="E18303A5-037B-44FE-878B-72401FAAC926" label="Models" paletteLabel="Models" image="D7572B9D-EBB1-473F-AF60-D2DB2D46BC70" id="VR9-AM-azT">
                                     <nil key="toolTip"/>
                                     <size key="minSize" width="13" height="13"/>
                                     <size key="maxSize" width="37" height="34"/>
                                     <button key="view" horizontalHuggingPriority="750" verticalHuggingPriority="750" id="vcL-Vh-Set">
                                         <rect key="frame" x="5" y="14" width="37" height="34"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="squareTextured" bezelStyle="texturedSquare" image="586B7D07-E928-45D7-97A1-21244397504C" imagePosition="only" alignment="left" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="s8L-6c-2d7">
+                                        <buttonCell key="cell" type="squareTextured" bezelStyle="texturedSquare" image="D7572B9D-EBB1-473F-AF60-D2DB2D46BC70" imagePosition="only" alignment="left" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="s8L-6c-2d7">
                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
@@ -862,15 +862,15 @@
                             </button>
                             <scrollView autohidesScrollers="YES" horizontalLineScroll="19" horizontalPageScroll="10" verticalLineScroll="19" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="OD5-db-HjZ">
                                 <rect key="frame" x="0.0" y="174" width="141" height="135"/>
-                                <clipView key="contentView" id="CWg-qL-MpP">
+                                <clipView key="contentView" drawsBackground="NO" id="CWg-qL-MpP">
                                     <rect key="frame" x="1" y="17" width="226" height="117"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
-                                        <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" columnSelection="YES" multipleSelection="NO" autosaveColumns="NO" rowSizeStyle="automatic" headerView="WwI-Mp-fTs" viewBased="YES" id="JJM-xd-Doa">
+                                        <tableView appearanceType="vibrantLight" verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" selectionHighlightStyle="sourceList" columnSelection="YES" multipleSelection="NO" autosaveColumns="NO" rowSizeStyle="automatic" headerView="WwI-Mp-fTs" viewBased="YES" id="JJM-xd-Doa">
                                             <rect key="frame" x="0.0" y="0.0" width="139" height="0.0"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <size key="intercellSpacing" width="3" height="2"/>
-                                            <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                            <color key="backgroundColor" name="_sourceListBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             <color key="gridColor" name="gridColor" catalog="System" colorSpace="catalog"/>
                                             <tableColumns>
                                                 <tableColumn width="136" minWidth="40" maxWidth="1000" id="Qzh-p8-Cbd">
@@ -886,31 +886,36 @@
                                                     </textFieldCell>
                                                     <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
                                                     <prototypeCellViews>
-                                                        <tableCellView id="rWF-2t-QOo">
-                                                            <rect key="frame" x="1" y="1" width="136" height="17"/>
+                                                        <tableCellView id="heo-TK-em7">
+                                                            <rect key="frame" x="1" y="20" width="136" height="17"/>
                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                             <subviews>
-                                                                <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PaH-Vr-sxZ">
-                                                                    <rect key="frame" x="0.0" y="0.0" width="100" height="17"/>
-                                                                    <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" title="Table View Cell" id="dTJ-WO-5wi">
+                                                                <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="IIj-xB-uvq">
+                                                                    <rect key="frame" x="3" y="0.0" width="17" height="17"/>
+                                                                    <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="NSActionTemplate" id="3nd-3X-fo9"/>
+                                                                    <connections>
+                                                                        <binding destination="heo-TK-em7" name="value" keyPath="objectValue.type" id="xNy-I4-9Dr">
+                                                                            <dictionary key="options">
+                                                                                <string key="NSValueTransformerName">PlexusIconTransformer</string>
+                                                                            </dictionary>
+                                                                        </binding>
+                                                                    </connections>
+                                                                </imageView>
+                                                                <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" allowsExpansionToolTips="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Mdy-iO-Y4R">
+                                                                    <rect key="frame" x="25" y="0.0" width="105" height="17"/>
+                                                                    <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" title="Table View Cell" id="5i6-Vw-AIC">
                                                                         <font key="font" metaFont="system"/>
                                                                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                                                                        <connections>
-                                                                            <binding destination="rWF-2t-QOo" name="value" keyPath="objectValue.name" id="26M-6Z-2ga"/>
-                                                                        </connections>
                                                                     </textFieldCell>
                                                                     <connections>
-                                                                        <binding destination="rWF-2t-QOo" name="value" keyPath="objectValue.name" id="t5v-Tf-Hwo">
-                                                                            <dictionary key="options">
-                                                                                <bool key="NSConditionallySetsEditable" value="YES"/>
-                                                                            </dictionary>
-                                                                        </binding>
+                                                                        <binding destination="heo-TK-em7" name="value" keyPath="objectValue.name" id="WnW-QM-b3h"/>
                                                                     </connections>
                                                                 </textField>
                                                             </subviews>
                                                             <connections>
-                                                                <outlet property="textField" destination="PaH-Vr-sxZ" id="T7m-iE-1mZ"/>
+                                                                <outlet property="imageView" destination="IIj-xB-uvq" id="ynv-Cp-uGo"/>
+                                                                <outlet property="textField" destination="Mdy-iO-Y4R" id="29G-hK-hW9"/>
                                                             </connections>
                                                         </tableCellView>
                                                     </prototypeCellViews>
@@ -925,7 +930,7 @@
                                             </connections>
                                         </tableView>
                                     </subviews>
-                                    <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                    <nil key="backgroundColor"/>
                                 </clipView>
                                 <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="YES" id="Nz3-Qp-fxX">
                                     <rect key="frame" x="1" y="1" width="0.0" height="16"/>
@@ -1055,7 +1060,11 @@
                 <customObject id="pwJ-NV-r03" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
                 <arrayController mode="entity" entityName="Structure" automaticallyPreparesContent="YES" id="JaA-8G-k0M" userLabel="Structures Controller">
                     <connections>
-                        <binding destination="Zey-zP-jgA" name="contentSet" keyPath="datasetController.selection.structure" id="gm8-Uw-7xq"/>
+                        <binding destination="Zey-zP-jgA" name="contentSet" keyPath="datasetController.selection.structure" id="Dhl-iP-7yB">
+                            <dictionary key="options">
+                                <bool key="NSDeletesObjectsOnRemove" value="YES"/>
+                            </dictionary>
+                        </binding>
                         <binding destination="Zey-zP-jgA" name="managedObjectContext" keyPath="moc" id="aHp-Dc-86L"/>
                     </connections>
                 </arrayController>
@@ -1110,7 +1119,7 @@
                                                                     <rect key="frame" x="3" y="3" width="17" height="17"/>
                                                                     <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="NSActionTemplate" id="ycI-Rh-Cd7"/>
                                                                     <connections>
-                                                                        <binding destination="YuK-em-H6O" name="value" keyPath="objectValue.icon" id="b5z-6F-Qig">
+                                                                        <binding destination="YuK-em-H6O" name="value" keyPath="objectValue.type" id="Uvk-gC-zzk">
                                                                             <dictionary key="options">
                                                                                 <string key="NSValueTransformerName">PlexusIconTransformer</string>
                                                                             </dictionary>
@@ -1246,7 +1255,11 @@
                 <customObject id="uS5-BA-2G8" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
                 <treeController mode="entity" entityName="Entry" fetchPredicateFormat="" automaticallyPreparesContent="YES" childrenKeyPath="children" id="XEu-Mn-vSE" userLabel="Entry Tree Controller">
                     <connections>
-                        <binding destination="QF4-CV-Jth" name="contentSet" keyPath="datasetController.selection.entry" id="Ark-Q6-jU9"/>
+                        <binding destination="QF4-CV-Jth" name="contentSet" keyPath="datasetController.selection.entry" id="GL2-Mv-RQH">
+                            <dictionary key="options">
+                                <bool key="NSDeletesObjectsOnRemove" value="YES"/>
+                            </dictionary>
+                        </binding>
                         <binding destination="QF4-CV-Jth" name="managedObjectContext" keyPath="moc" id="73Z-IR-AUP"/>
                     </connections>
                 </treeController>
@@ -1310,15 +1323,15 @@
                                                 </button>
                                                 <scrollView horizontalCompressionResistancePriority="250" autohidesScrollers="YES" horizontalLineScroll="19" horizontalPageScroll="10" verticalLineScroll="19" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="7lT-CU-s06">
                                                     <rect key="frame" x="0.0" y="20" width="196" height="240"/>
-                                                    <clipView key="contentView" id="BE3-ps-ExK">
+                                                    <clipView key="contentView" drawsBackground="NO" id="BE3-ps-ExK">
                                                         <rect key="frame" x="1" y="0.0" width="238" height="134"/>
                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                         <subviews>
-                                                            <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" columnSelection="YES" multipleSelection="NO" autosaveColumns="NO" rowSizeStyle="automatic" headerView="aje-tO-ct0" viewBased="YES" id="D6o-uZ-TGZ">
+                                                            <tableView appearanceType="vibrantLight" verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" selectionHighlightStyle="sourceList" columnSelection="YES" multipleSelection="NO" autosaveColumns="NO" rowSizeStyle="automatic" headerView="aje-tO-ct0" viewBased="YES" id="D6o-uZ-TGZ">
                                                                 <rect key="frame" x="0.0" y="0.0" width="194" height="0.0"/>
                                                                 <autoresizingMask key="autoresizingMask"/>
                                                                 <size key="intercellSpacing" width="3" height="2"/>
-                                                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                                                <color key="backgroundColor" name="_sourceListBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                                 <color key="gridColor" name="gridColor" catalog="System" colorSpace="catalog"/>
                                                                 <tableColumns>
                                                                     <tableColumn width="116" minWidth="40" maxWidth="1000" id="4BX-7v-RBu">
@@ -1334,28 +1347,36 @@
                                                                         </textFieldCell>
                                                                         <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
                                                                         <prototypeCellViews>
-                                                                            <tableCellView id="nl9-iG-auI">
-                                                                                <rect key="frame" x="1" y="1" width="116" height="17"/>
+                                                                            <tableCellView id="9fl-dC-bbd">
+                                                                                <rect key="frame" x="1" y="20" width="116" height="17"/>
                                                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                                 <subviews>
-                                                                                    <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Cuh-8a-PkT">
-                                                                                        <rect key="frame" x="0.0" y="0.0" width="100" height="17"/>
-                                                                                        <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" title="Table View Cell" id="8EQ-pu-drE">
+                                                                                    <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="SoY-RJ-HbA">
+                                                                                        <rect key="frame" x="3" y="0.0" width="17" height="17"/>
+                                                                                        <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="NSActionTemplate" id="x9a-yP-WXT"/>
+                                                                                        <connections>
+                                                                                            <binding destination="9fl-dC-bbd" name="value" keyPath="objectValue.type" id="Bfg-3H-fTG">
+                                                                                                <dictionary key="options">
+                                                                                                    <string key="NSValueTransformerName">PlexusIconTransformer</string>
+                                                                                                </dictionary>
+                                                                                            </binding>
+                                                                                        </connections>
+                                                                                    </imageView>
+                                                                                    <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" allowsExpansionToolTips="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PNN-PD-9ml">
+                                                                                        <rect key="frame" x="25" y="0.0" width="105" height="17"/>
+                                                                                        <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" title="Table View Cell" id="9uY-Rz-nx7">
                                                                                             <font key="font" metaFont="system"/>
                                                                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                                                                         </textFieldCell>
                                                                                         <connections>
-                                                                                            <binding destination="nl9-iG-auI" name="value" keyPath="objectValue.name" id="p17-Ff-RCv">
-                                                                                                <dictionary key="options">
-                                                                                                    <bool key="NSConditionallySetsEditable" value="YES"/>
-                                                                                                </dictionary>
-                                                                                            </binding>
+                                                                                            <binding destination="9fl-dC-bbd" name="value" keyPath="objectValue.name" id="lYW-VP-tfB"/>
                                                                                         </connections>
                                                                                     </textField>
                                                                                 </subviews>
                                                                                 <connections>
-                                                                                    <outlet property="textField" destination="Cuh-8a-PkT" id="RS0-vJ-HqU"/>
+                                                                                    <outlet property="imageView" destination="SoY-RJ-HbA" id="Bd5-0f-YJY"/>
+                                                                                    <outlet property="textField" destination="PNN-PD-9ml" id="aNW-Z4-Q1A"/>
                                                                                 </connections>
                                                                             </tableCellView>
                                                                         </prototypeCellViews>
@@ -1412,7 +1433,7 @@
                                                                 </connections>
                                                             </tableView>
                                                         </subviews>
-                                                        <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                        <nil key="backgroundColor"/>
                                                     </clipView>
                                                     <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="YES" id="Efc-Va-mBE">
                                                         <rect key="frame" x="1" y="119" width="223" height="15"/>
@@ -1585,7 +1606,11 @@
                 <customObject id="XoJ-u2-FuH" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
                 <arrayController mode="entity" entityName="Trait" automaticallyPreparesContent="YES" id="SZe-r5-tN1" userLabel="Traits Controller">
                     <connections>
-                        <binding destination="ySa-67-dhM" name="contentSet" keyPath="entryTreeController.selection.trait" id="N5K-HU-L4A"/>
+                        <binding destination="ySa-67-dhM" name="contentSet" keyPath="entryTreeController.selection.trait" id="PiK-q5-Kam">
+                            <dictionary key="options">
+                                <bool key="NSDeletesObjectsOnRemove" value="YES"/>
+                            </dictionary>
+                        </binding>
                         <binding destination="ySa-67-dhM" name="managedObjectContext" keyPath="moc" id="Sdp-Jc-tKY"/>
                     </connections>
                 </arrayController>
@@ -1609,7 +1634,7 @@
                                             <rect key="frame" x="10" y="33" width="580" height="353"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <subviews>
-                                                <splitView dividerStyle="thin" translatesAutoresizingMaskIntoConstraints="NO" id="Ghb-Ne-Lzr">
+                                                <splitView misplaced="YES" dividerStyle="thin" translatesAutoresizingMaskIntoConstraints="NO" id="Ghb-Ne-Lzr">
                                                     <rect key="frame" x="0.0" y="0.0" width="580" height="354"/>
                                                     <subviews>
                                                         <customView id="aYu-JO-eKa">
@@ -1888,7 +1913,7 @@
                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                         <subviews>
                                                             <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" columnSelection="YES" multipleSelection="NO" autosaveColumns="NO" headerView="0VI-8G-ipr" id="v1T-4m-gFz">
-                                                                <rect key="frame" x="0.0" y="0.0" width="303.5" height="19"/>
+                                                                <rect key="frame" x="0.0" y="0.0" width="578" height="19"/>
                                                                 <autoresizingMask key="autoresizingMask"/>
                                                                 <size key="intercellSpacing" width="3" height="2"/>
                                                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -1955,7 +1980,7 @@
                                                                             <binding destination="Jh7-dX-xVp" name="value" keyPath="arrangedObjects.priorV1" id="9mi-MY-vmz"/>
                                                                         </connections>
                                                                     </tableColumn>
-                                                                    <tableColumn width="333" minWidth="10" maxWidth="3.4028234663852886e+38" id="Xp1-1O-Gvy">
+                                                                    <tableColumn width="334.5" minWidth="10" maxWidth="3.4028234663852886e+38" id="Xp1-1O-Gvy">
                                                                         <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="left" title="V2">
                                                                             <font key="font" metaFont="smallSystem"/>
                                                                             <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
@@ -1983,7 +2008,7 @@
                                                         </subviews>
                                                         <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                     </clipView>
-                                                    <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="YES" id="U5o-Yg-gLo">
+                                                    <scroller key="horizontalScroller" verticalHuggingPriority="750" horizontal="YES" id="U5o-Yg-gLo">
                                                         <rect key="frame" x="1" y="283" width="448" height="16"/>
                                                         <autoresizingMask key="autoresizingMask"/>
                                                     </scroller>
@@ -2710,7 +2735,7 @@ Gw
         </scene>
     </scenes>
     <resources>
-        <image name="586B7D07-E928-45D7-97A1-21244397504C" width="1" height="1">
+        <image name="D7572B9D-EBB1-473F-AF60-D2DB2D46BC70" width="1" height="1">
             <mutableData key="keyedArchiveRepresentation">
 YnBsaXN0MDDUAQIDBAUGPj9YJHZlcnNpb25YJG9iamVjdHNZJGFyY2hpdmVyVCR0b3ASAAGGoK4HCBMU
 GR4fIyQsLzI4O1UkbnVsbNUJCgsMDQ4PEBESVk5TU2l6ZVYkY2xhc3NcTlNJbWFnZUZsYWdzVk5TUmVw
