@@ -69,7 +69,6 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
     override func windowDidLoad() {
         super.windowDidLoad()
 
-
         
         mainSplitViewController = contentViewController as! PlexusMainSplitViewController
         //mainSplitViewController.mainWindowController = self
@@ -80,7 +79,7 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
         
      //   println(datasetController!.selectionIndexes)
         
-       // datasetController!.setSelectionIndex(0)
+      //  datasetController!.setSelectionIndex(1)
 
         
     
@@ -232,7 +231,6 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
     
 
             if(operr == nil){
-               // println("NO ERRORS.. RETRIEVEING POSTERIOR")
                 var resultNodes : NSMutableArray = op.getResults(self)
                 
                 let blankArray = [NSNumber]()
@@ -256,10 +254,10 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
                     
                     var fline : [Double] = fNode as! [Double]
 
-                   // println("fline \(fline)")
+                  //  println("fline \(fline)")
                     var gi = 0
                     for gNode : Double in fline {
-                       // println(gNode)
+                    //    println(gNode)
                        
                         if(gNode == gNode && gNode >= 0.0 && gNode <= 1.0) {//fails if nan
                             
@@ -290,9 +288,35 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
                     fi++
                     
                 }
+                
+                var notification:NSUserNotification = NSUserNotification()
+                notification.title = "Plexus"
+                //notification.subtitle = "Yur stuff are done"
+                notification.informativeText = "\(curModel.runstot.integerValue) runs completed."
+                
+                notification.soundName = NSUserNotificationDefaultSoundName
+                
+                notification.deliveryDate = NSDate(timeIntervalSinceNow: 5)
+                var notificationcenter:NSUserNotificationCenter = NSUserNotificationCenter.defaultUserNotificationCenter()
+                
+                notificationcenter.scheduleNotification(notification)
 
 
             }
+            else{
+                
+                let calcAlert : NSAlert = NSAlert()
+                calcAlert.alertStyle = NSAlertStyle.WarningAlertStyle
+                calcAlert.messageText = operr?.localizedFailureReason
+                calcAlert.informativeText = operr?.localizedRecoverySuggestion
+                calcAlert.addButtonWithTitle("OK")
+                
+                let res = calcAlert.runModal()
+
+                
+                
+
+        }
 
 
            //FIXME remove when ready curModel.setValue(true, forKey: "complete")
@@ -301,20 +325,10 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
             self.contentViewController?.dismissViewController(self.progressViewController!)
             
             
-            var notification:NSUserNotification = NSUserNotification()
-            notification.title = "Plexus"
-            notification.subtitle = "Yur stuff are done"
-            notification.informativeText = "\(curModel.runstot.integerValue) runs completed."
-            
-            notification.soundName = NSUserNotificationDefaultSoundName
-            
-            notification.deliveryDate = NSDate(timeIntervalSinceNow: 5)
-            var notificationcenter:NSUserNotificationCenter = NSUserNotificationCenter.defaultUserNotificationCenter()
 
-            notificationcenter.scheduleNotification(notification)
         
     
-        
+        println("End calcuilate fxn")
     }
 
     
@@ -368,10 +382,19 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
         op.canChooseDirectories = false
         op.canChooseFiles = true
         op.allowedFileTypes = ["csv"]
+        
+        //accessory view
+        let av:NSButton = NSButton(frame: NSMakeRect(0.0, 0.0, 324.0, 22.0))
+        av.setButtonType(NSButtonType.SwitchButton)
+        av.title = "Add to Current Dataset"
 
+        op.accessoryView = av
+        
         
         op.beginSheetModalForWindow(window!, completionHandler: {(result:Int) -> Void in
             if (result == NSFileHandlingPanelOKButton) {
+                
+                println("button state \(av.state)")
                 
 
                // println(op.URL)
@@ -381,6 +404,8 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
                 op.close()
                 
                 var i = 1
+                
+                var firstLine = true
                 
                 if (inFile != nil){ // operate on iput file
                     
@@ -400,17 +425,21 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
                     self.progressViewController.delegate = self
                   
                     
-                    
-                    
-                    
                     self.contentViewController?.presentViewControllerAsSheet(self.progressViewController!)
                     
                     
                     self.progressViewController?.changeLabel(String("Importing..."))
                     
-                    var newDataset : Dataset = Dataset(entity: NSEntityDescription.entityForName("Dataset", inManagedObjectContext: self.moc)!, insertIntoManagedObjectContext: self.moc)
+                    var inDataset : Dataset!
+                    if(av.state == 0){//new dataset
+                        inDataset = Dataset(entity: NSEntityDescription.entityForName("Dataset", inManagedObjectContext: self.moc)!, insertIntoManagedObjectContext: self.moc)
+                        inDataset.setValue(inFile!.lastPathComponent, forKey: "name")
+                    }
+                    else {// the
+                        let curDatasets : [Dataset] = self.datasetController.selectedObjects as! [Dataset]
+                        inDataset = curDatasets[0]
+                    }
                     
-                    newDataset.setValue(inFile!.lastPathComponent, forKey: "name")
 
 
 
@@ -418,15 +447,14 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
                     self.moc.save(errorPtr)
                     
 
-                    let datasetID = newDataset.objectID
-
+                    let datasetID = inDataset.objectID
 
                     
                     //give it an initial model
                     var newModel : Model = Model(entity: NSEntityDescription.entityForName("Model", inManagedObjectContext: self.moc)!, insertIntoManagedObjectContext: self.moc)
                     newModel.setValue("First Model", forKey: "name")
-                    newModel.setValue(newDataset, forKey: "dataset")
-                    newDataset.addModelObject(newModel)
+                    newModel.setValue(inDataset, forKey: "dataset")
+                    inDataset.addModelObject(newModel)
                     
                     
                     let fileContents : String = NSString(contentsOfFile: inFile!.path!, encoding: NSUTF8StringEncoding, error: nil)! as String
@@ -436,34 +464,92 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
                     var lineCount = Double(fileLines.count)
                     
                     var batchCount : Int = 0
+                    var columnCount = 0
+                    var nameColumn = -1
+                    var structureColumn = -1
+                    var headers = [String]()
                     
                     for thisLine : String in fileLines {
-                        var newEntry : Entry = Entry(entity: NSEntityDescription.entityForName("Entry", inManagedObjectContext: self.moc)!, insertIntoManagedObjectContext: self.moc)
-                        // newEntry.setValue("test", forKey: "name")
-                        newEntry.setValue(String(i), forKey: "name")
-                        newEntry.setValue("PlexusEntry", forKey: "icon")
-                        //newEntry.setValue(NSImage(named: "PlexusTest.png"), forKey: "icon")
-                        newEntry.setValue(newDataset, forKey: "dataset")
-                        newDataset.addEntryObject(newEntry)
-                        //  println(thisLine)
-                        //  println("\n********************************************\n")
                         
+                        
+                        
+                        if firstLine {  //this is the header line
+                            var theHeader : [String] = thisLine.componentsSeparatedByString(",")
+                            for thisHeader in theHeader {
+                             //   println(thisHeader)
+                                if thisHeader == "Name" {
+                                    nameColumn = columnCount
+                                }
+                                if thisHeader == "Structure" {
+                                    structureColumn = columnCount
+                                }
+                                headers.append(thisHeader)
+                                columnCount++
+                            }
+                            
+                        }
+                        
+                        var newEntry : Entry = Entry(entity: NSEntityDescription.entityForName("Entry", inManagedObjectContext: self.moc)!, insertIntoManagedObjectContext: self.moc)
                         var theTraits : [String] = thisLine.componentsSeparatedByString(",")
+
+                        if nameColumn >= 0{
+                            newEntry.setValue(theTraits[nameColumn], forKey: "name")
+                        }
+                        else {
+                            newEntry.setValue(String(i), forKey: "name")
+                        }
+                        /*
+                        if structureColumn >=0 {
+                            let strerror = nil
+                            let request = NSFetchRequest(entityName: "Structure")
+                            let predicate = NSPredicate(format: "dataset == %@ AND name == %@", inDataset, theTraits[structureColumn])
+                            let strCount = moc.countForFetchRequest(request, error: strerror)
+                            if(strCount == NSNotFound){ //does not exist, create
+                                var newStructure : Structure = Structure(entity: NSEntityDescription.entityForName("Structure", inManagedObjectContext: self.moc)!, insertIntoManagedObjectContext: self.moc)
+                                
+                                newEntry.setValue(inDataset, forKey: "dataset")
+
+                            }
+                            else { //exists
+                                
+                            }
+    
+                            
+                        }
+*/
+                        
+                        newEntry.setValue("Entry", forKey: "type")
+                        newEntry.setValue(inDataset, forKey: "dataset")
+                        inDataset.addEntryObject(newEntry)
+
+                        
+
+                        columnCount = 0
                         for thisTrait in theTraits {
-                            //println(thisTrait)
+                            
+                            if columnCount == structureColumn {
+                               //FIXME check if the streucvture exists, if not make it here
+                                
+
+                                
+                               // if let fetch = moc!.executeFetchRequest(request, error:&err)
+                            }
+
                             var newTrait : Trait = Trait(entity: NSEntityDescription.entityForName("Trait", inManagedObjectContext: self.moc)!, insertIntoManagedObjectContext: self.moc)
-                            newTrait.setValue("test", forKey: "name")
+                            newTrait.setValue(headers[columnCount], forKey: "name")
                             newTrait.setValue(thisTrait, forKey: "traitValue")
                             newTrait.setValue(newEntry, forKey: "entry")
                             
                             newEntry.addTraitObject(newTrait)
+                            
+                            columnCount++
                             
                         }
                         
 
                         self.progressViewController.moveBar(1/lineCount*100)
    
-
+                        firstLine = false
                         i++
                         batchCount++
                         if(batchCount > 100){
@@ -472,13 +558,11 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
                             self.moc.reset()
 
                             
-                            newDataset = self.moc.objectWithID(datasetID) as! Dataset
+                            inDataset = self.moc.objectWithID(datasetID) as! Dataset
 
-
-
-                            
                             
                         }
+                        
                     }
                     
                     
@@ -497,10 +581,10 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
                     
                     self.datasetController.addObjects(datasets)
 
-                    newDataset = self.moc.objectWithID(datasetID) as! Dataset
+                    inDataset = self.moc.objectWithID(datasetID) as! Dataset
 
                     
-                    let nDarray : [Dataset] = [newDataset]
+                    let nDarray : [Dataset] = [inDataset]
 
                     
                     self.datasetController.setSelectedObjects(nDarray)
