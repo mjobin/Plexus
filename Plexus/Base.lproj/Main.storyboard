@@ -675,12 +675,12 @@
                                     <popUpButton key="view" verticalHuggingPriority="750" id="mEM-Bi-u2x">
                                         <rect key="frame" x="0.0" y="0.0" width="100" height="28"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <popUpButtonCell key="cell" type="roundTextured" title="Item 1" bezelStyle="texturedRounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" selectedItem="6TA-4S-I1f" id="Yn7-I7-sJ0">
+                                        <popUpButtonCell key="cell" type="roundTextured" bezelStyle="texturedRounded" alignment="left" lineBreakMode="truncatingTail" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Yn7-I7-sJ0">
                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                             <font key="font" metaFont="menu"/>
                                             <menu key="menu" id="5hv-2L-Gpd">
                                                 <items>
-                                                    <menuItem title="Item 1" state="on" id="6TA-4S-I1f"/>
+                                                    <menuItem title="Item 1" id="6TA-4S-I1f"/>
                                                     <menuItem title="Item 2" id="PMF-xz-ksy"/>
                                                     <menuItem title="Item 3" id="P25-4i-WAg"/>
                                                 </items>
@@ -712,14 +712,14 @@
                                         <action selector="calculate:" target="B8D-0N-5wS" id="VCg-wJ-cZX"/>
                                     </connections>
                                 </toolbarItem>
-                                <toolbarItem implicitItemIdentifier="E18303A5-037B-44FE-878B-72401FAAC926" label="Models" paletteLabel="Models" image="D7572B9D-EBB1-473F-AF60-D2DB2D46BC70" id="VR9-AM-azT">
+                                <toolbarItem implicitItemIdentifier="E18303A5-037B-44FE-878B-72401FAAC926" label="Models" paletteLabel="Models" image="14F97AB7-16C0-4082-9BEE-901B88CFC29E" id="VR9-AM-azT">
                                     <nil key="toolTip"/>
                                     <size key="minSize" width="13" height="13"/>
                                     <size key="maxSize" width="37" height="34"/>
                                     <button key="view" horizontalHuggingPriority="750" verticalHuggingPriority="750" id="vcL-Vh-Set">
                                         <rect key="frame" x="5" y="14" width="37" height="34"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="squareTextured" bezelStyle="texturedSquare" image="D7572B9D-EBB1-473F-AF60-D2DB2D46BC70" imagePosition="only" alignment="left" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="s8L-6c-2d7">
+                                        <buttonCell key="cell" type="squareTextured" bezelStyle="texturedSquare" image="14F97AB7-16C0-4082-9BEE-901B88CFC29E" imagePosition="only" alignment="left" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="s8L-6c-2d7">
                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
@@ -807,8 +807,7 @@
                         <binding destination="B8D-0N-5wS" name="managedObjectContext" keyPath="moc" id="TZQ-5N-m5g"/>
                     </connections>
                 </arrayController>
-                <userDefaultsController id="ipd-k1-xwS"/>
-                <userDefaultsController id="lwF-Ts-Ob5"/>
+                <userDefaultsController representsSharedInstance="YES" id="Zg6-9p-g9G"/>
             </objects>
             <point key="canvasLocation" x="-251" y="207"/>
         </scene>
@@ -886,7 +885,7 @@
                                                     </textFieldCell>
                                                     <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
                                                     <prototypeCellViews>
-                                                        <tableCellView id="heo-TK-em7">
+                                                        <tableCellView id="heo-TK-em7" userLabel="Structure Cell">
                                                             <rect key="frame" x="1" y="20" width="136" height="17"/>
                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                             <subviews>
@@ -909,7 +908,11 @@
                                                                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                                                     </textFieldCell>
                                                                     <connections>
-                                                                        <binding destination="heo-TK-em7" name="value" keyPath="objectValue.name" id="WnW-QM-b3h"/>
+                                                                        <binding destination="heo-TK-em7" name="value" keyPath="objectValue.name" id="lsn-CU-RIn">
+                                                                            <dictionary key="options">
+                                                                                <bool key="NSConditionallySetsEditable" value="YES"/>
+                                                                            </dictionary>
+                                                                        </binding>
                                                                     </connections>
                                                                 </textField>
                                                             </subviews>
@@ -981,7 +984,7 @@
                                                     </textFieldCell>
                                                     <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
                                                     <prototypeCellViews>
-                                                        <tableCellView id="uae-E7-vVF">
+                                                        <tableCellView id="uae-E7-vVF" userLabel="Structure Entry Cell">
                                                             <rect key="frame" x="1" y="1" width="136" height="17"/>
                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                             <subviews>
@@ -1370,7 +1373,11 @@
                                                                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                                                                         </textFieldCell>
                                                                                         <connections>
-                                                                                            <binding destination="9fl-dC-bbd" name="value" keyPath="objectValue.name" id="lYW-VP-tfB"/>
+                                                                                            <binding destination="9fl-dC-bbd" name="value" keyPath="objectValue.name" id="DTF-jP-JGP">
+                                                                                                <dictionary key="options">
+                                                                                                    <bool key="NSConditionallySetsEditable" value="YES"/>
+                                                                                                </dictionary>
+                                                                                            </binding>
                                                                                         </connections>
                                                                                     </textField>
                                                                                 </subviews>
@@ -1381,7 +1388,11 @@
                                                                             </tableCellView>
                                                                         </prototypeCellViews>
                                                                         <connections>
-                                                                            <binding destination="SZe-r5-tN1" name="value" keyPath="arrangedObjects" id="V7V-d7-WUI"/>
+                                                                            <binding destination="SZe-r5-tN1" name="value" keyPath="arrangedObjects" id="7Db-jV-A0C">
+                                                                                <dictionary key="options">
+                                                                                    <bool key="NSConditionallySetsEditable" value="NO"/>
+                                                                                </dictionary>
+                                                                            </binding>
                                                                         </connections>
                                                                     </tableColumn>
                                                                     <tableColumn width="72" minWidth="40" maxWidth="1000" id="il8-wr-Nxw">
@@ -1677,14 +1688,14 @@
                                                                         <customView translatesAutoresizingMaskIntoConstraints="NO" id="DcL-Va-ids" userLabel="Prior Controls View">
                                                                             <rect key="frame" x="0.0" y="0.0" width="580" height="50"/>
                                                                             <subviews>
-                                                                                <slider verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="IdR-pA-0Ym" userLabel="V1 Horizontal Slider">
-                                                                                    <rect key="frame" x="169" y="26" width="393" height="21"/>
+                                                                                <slider verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" ambiguous="YES" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="IdR-pA-0Ym" userLabel="V1 Horizontal Slider">
+                                                                                    <rect key="frame" x="169" y="26" width="393" height="22"/>
                                                                                     <sliderCell key="cell" state="on" alignment="left" maxValue="1" doubleValue="0.5" tickMarkPosition="above" sliderType="linear" id="cI5-4U-Gla"/>
                                                                                     <connections>
                                                                                         <binding destination="VWs-jl-vPz" name="value" keyPath="nodesController.selection.priorV1" id="e8t-FQ-yle"/>
                                                                                     </connections>
                                                                                 </slider>
-                                                                                <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="2ht-n7-JVP" userLabel="V1 Text Field">
+                                                                                <textField verticalHuggingPriority="750" ambiguous="YES" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="2ht-n7-JVP" userLabel="V1 Text Field">
                                                                                     <rect key="frame" x="123" y="28" width="40" height="17"/>
                                                                                     <constraints>
                                                                                         <constraint firstAttribute="width" constant="40" id="Uxf-ha-hZ7"/>
@@ -1699,7 +1710,7 @@
                                                                                         <binding destination="VWs-jl-vPz" name="value" keyPath="nodesController.selection.priorV1" id="Nw3-0s-Bm8"/>
                                                                                     </connections>
                                                                                 </textField>
-                                                                                <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="y3V-hm-xBM" userLabel="V2 Text Field">
+                                                                                <textField verticalHuggingPriority="750" ambiguous="YES" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="y3V-hm-xBM" userLabel="V2 Text Field">
                                                                                     <rect key="frame" x="123" y="5" width="40" height="17"/>
                                                                                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" drawsBackground="YES" id="285-Yh-vyq">
                                                                                         <numberFormatter key="formatter" formatterBehavior="custom10_4" numberStyle="decimal" minimumIntegerDigits="1" maximumIntegerDigits="2000000000" maximumFractionDigits="3" id="VJT-OY-EKE"/>
@@ -1711,8 +1722,8 @@
                                                                                         <binding destination="VWs-jl-vPz" name="value" keyPath="nodesController.selection.priorV2" id="zSv-gm-Sjf"/>
                                                                                     </connections>
                                                                                 </textField>
-                                                                                <slider verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="JhO-E2-KfJ" userLabel="V2 Horizontal Slider">
-                                                                                    <rect key="frame" x="169" y="3" width="393" height="21"/>
+                                                                                <slider verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="JhO-E2-KfJ" userLabel="V2 Horizontal Slider">
+                                                                                    <rect key="frame" x="169" y="3" width="393" height="20"/>
                                                                                     <sliderCell key="cell" state="on" alignment="left" maxValue="1" doubleValue="0.5" tickMarkPosition="below" sliderType="linear" id="NNY-Qr-bmt"/>
                                                                                     <connections>
                                                                                         <binding destination="VWs-jl-vPz" name="value" keyPath="nodesController.selection.priorV2" id="7OI-ss-5Nn"/>
@@ -2008,7 +2019,7 @@
                                                         </subviews>
                                                         <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                     </clipView>
-                                                    <scroller key="horizontalScroller" verticalHuggingPriority="750" horizontal="YES" id="U5o-Yg-gLo">
+                                                    <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="YES" id="U5o-Yg-gLo">
                                                         <rect key="frame" x="1" y="283" width="448" height="16"/>
                                                         <autoresizingMask key="autoresizingMask"/>
                                                     </scroller>
@@ -2612,7 +2623,7 @@ Gw
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
                             <slider verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Bz7-6L-hWJ">
-                                <rect key="frame" x="18" y="298" width="151" height="26"/>
+                                <rect key="frame" x="18" y="298" width="151" height="25"/>
                                 <sliderCell key="cell" state="on" alignment="left" maxValue="2" doubleValue="1" tickMarkPosition="above" numberOfTickMarks="3" allowsTickMarkValuesOnly="YES" sliderType="linear" id="zey-HF-gxJ"/>
                                 <connections>
                                     <binding destination="0Oe-99-9Ib" name="value" keyPath="values.calcSpeed" id="FKD-Lo-G7b"/>
@@ -2643,7 +2654,7 @@ Gw
                                 </textFieldCell>
                             </textField>
                             <slider verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="H4K-La-5rc">
-                                <rect key="frame" x="11" y="200" width="158" height="26"/>
+                                <rect key="frame" x="11" y="200" width="158" height="25"/>
                                 <sliderCell key="cell" state="on" alignment="left" maxValue="2" doubleValue="1" tickMarkPosition="above" numberOfTickMarks="3" allowsTickMarkValuesOnly="YES" sliderType="linear" id="07M-Y5-99b"/>
                                 <connections>
                                     <binding destination="0Oe-99-9Ib" name="value" keyPath="values.hardwareDevice" id="3xb-eG-pxz"/>
@@ -2735,7 +2746,7 @@ Gw
         </scene>
     </scenes>
     <resources>
-        <image name="D7572B9D-EBB1-473F-AF60-D2DB2D46BC70" width="1" height="1">
+        <image name="14F97AB7-16C0-4082-9BEE-901B88CFC29E" width="1" height="1">
             <mutableData key="keyedArchiveRepresentation">
 YnBsaXN0MDDUAQIDBAUGPj9YJHZlcnNpb25YJG9iamVjdHNZJGFyY2hpdmVyVCR0b3ASAAGGoK4HCBMU
 GR4fIyQsLzI4O1UkbnVsbNUJCgsMDQ4PEBESVk5TU2l6ZVYkY2xhc3NcTlNJbWFnZUZsYWdzVk5TUmVw
