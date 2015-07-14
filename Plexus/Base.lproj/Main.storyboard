@@ -702,7 +702,7 @@
                                         <action selector="toggleModels:" target="B8D-0N-5wS" id="Rxh-Cs-kdO"/>
                                     </connections>
                                 </toolbarItem>
-                                <toolbarItem implicitItemIdentifier="C52ABAEC-EEFB-40B9-A69C-517CBEDA0171" label="Manage Datasets" paletteLabel="Manage Datasets" tag="-1" image="NSInfo" id="tYP-cr-HVe">
+                                <toolbarItem implicitItemIdentifier="C52ABAEC-EEFB-40B9-A69C-517CBEDA0171" label="Manage Datasets" paletteLabel="Manage Datasets" tag="-1" image="NSListViewTemplate" id="tYP-cr-HVe">
                                     <connections>
                                         <segue destination="xgZ-xw-JYg" kind="popover" identifier="DatasetPopover" popoverAnchorView="tYP-cr-HVe" popoverBehavior="t" preferredEdge="maxY" id="CDx-BG-ApR"/>
                                     </connections>
@@ -712,14 +712,14 @@
                                         <action selector="calculate:" target="B8D-0N-5wS" id="VCg-wJ-cZX"/>
                                     </connections>
                                 </toolbarItem>
-                                <toolbarItem implicitItemIdentifier="E18303A5-037B-44FE-878B-72401FAAC926" label="Models" paletteLabel="Models" image="1E86D4A6-D9E0-4C84-ADF6-836114119AE2" id="VR9-AM-azT">
+                                <toolbarItem implicitItemIdentifier="E18303A5-037B-44FE-878B-72401FAAC926" label="Models" paletteLabel="Models" image="12E1A2F4-21D4-4AC6-A5F2-77D08BA9999B" id="VR9-AM-azT">
                                     <nil key="toolTip"/>
                                     <size key="minSize" width="13" height="13"/>
                                     <size key="maxSize" width="37" height="34"/>
                                     <button key="view" horizontalHuggingPriority="750" verticalHuggingPriority="750" id="vcL-Vh-Set">
                                         <rect key="frame" x="5" y="14" width="37" height="34"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="squareTextured" bezelStyle="texturedSquare" image="1E86D4A6-D9E0-4C84-ADF6-836114119AE2" imagePosition="only" alignment="left" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="s8L-6c-2d7">
+                                        <buttonCell key="cell" type="squareTextured" bezelStyle="texturedSquare" image="12E1A2F4-21D4-4AC6-A5F2-77D08BA9999B" imagePosition="only" alignment="left" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="s8L-6c-2d7">
                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
@@ -787,8 +787,8 @@
                                 <toolbarItem reference="5Wb-NU-rvm"/>
                                 <toolbarItem reference="3e1-GX-aR9"/>
                                 <toolbarItem reference="KjS-aq-GvX"/>
-                                <toolbarItem reference="EB6-A3-dHZ"/>
                                 <toolbarItem reference="tYP-cr-HVe"/>
+                                <toolbarItem reference="EB6-A3-dHZ"/>
                                 <toolbarItem reference="3e1-GX-aR9"/>
                                 <toolbarItem reference="BgH-zS-orZ"/>
                                 <toolbarItem reference="dgg-D5-0xQ"/>
@@ -1696,7 +1696,7 @@
                                                                             <rect key="frame" x="0.0" y="0.0" width="580" height="50"/>
                                                                             <subviews>
                                                                                 <slider verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" ambiguous="YES" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="IdR-pA-0Ym" userLabel="V1 Horizontal Slider">
-                                                                                    <rect key="frame" x="169" y="26" width="393" height="22"/>
+                                                                                    <rect key="frame" x="169" y="26" width="393" height="20"/>
                                                                                     <sliderCell key="cell" state="on" alignment="left" maxValue="1" doubleValue="0.5" tickMarkPosition="above" sliderType="linear" id="cI5-4U-Gla"/>
                                                                                     <connections>
                                                                                         <binding destination="VWs-jl-vPz" name="value" keyPath="nodesController.selection.priorV1" id="e8t-FQ-yle"/>
@@ -1729,8 +1729,8 @@
                                                                                         <binding destination="VWs-jl-vPz" name="value" keyPath="nodesController.selection.priorV2" id="zSv-gm-Sjf"/>
                                                                                     </connections>
                                                                                 </textField>
-                                                                                <slider verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="JhO-E2-KfJ" userLabel="V2 Horizontal Slider">
-                                                                                    <rect key="frame" x="169" y="3" width="393" height="20"/>
+                                                                                <slider verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" ambiguous="YES" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="JhO-E2-KfJ" userLabel="V2 Horizontal Slider">
+                                                                                    <rect key="frame" x="169" y="3" width="393" height="22"/>
                                                                                     <sliderCell key="cell" state="on" alignment="left" maxValue="1" doubleValue="0.5" tickMarkPosition="below" sliderType="linear" id="NNY-Qr-bmt"/>
                                                                                     <connections>
                                                                                         <binding destination="VWs-jl-vPz" name="value" keyPath="nodesController.selection.priorV2" id="7OI-ss-5Nn"/>
@@ -2082,8 +2082,8 @@
                 <customObject id="3wU-44-Ema" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
                 <arrayController mode="entity" entityName="BNNode" automaticallyPreparesContent="YES" id="Jh7-dX-xVp" userLabel="Nodes Controller">
                     <connections>
+                        <binding destination="VWs-jl-vPz" name="contentSet" keyPath="modelTreeController.selection.bnnode" id="QZ3-Tk-uHC"/>
                         <binding destination="VWs-jl-vPz" name="managedObjectContext" keyPath="moc" id="nUA-5k-ZbI"/>
-                        <binding destination="VWs-jl-vPz" name="contentSet" keyPath="modelTreeController.selection.bnnode" id="0BU-c5-Ykv"/>
                     </connections>
                 </arrayController>
                 <userDefaultsController id="Z9C-rm-re7"/>
@@ -2106,7 +2106,7 @@
                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                                 <connections>
-                                    <binding destination="8gl-39-OjB" name="value" keyPath="selection.name" id="0k9-LD-bTp"/>
+                                    <binding destination="xgZ-xw-JYg" name="value" keyPath="datasetController.selection.name" id="DHC-F6-KkM"/>
                                 </connections>
                             </textField>
                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="yI8-fo-ziT">
@@ -2126,7 +2126,7 @@
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                                 <connections>
-                                    <binding destination="8gl-39-OjB" name="value" keyPath="selection.dateCreated" id="5gn-5d-uks"/>
+                                    <binding destination="xgZ-xw-JYg" name="value" keyPath="datasetController.selection.dateCreated" id="Bcf-IC-xBK"/>
                                 </connections>
                             </textField>
                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="RrV-XD-yde">
@@ -2145,9 +2145,6 @@
                                     <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
-                                <connections>
-                                    <binding destination="8gl-39-OjB" name="value" keyPath="selection.dateModified" id="kRm-cO-4RL"/>
-                                </connections>
                             </textField>
                             <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="vdk-fw-x0e">
                                 <rect key="frame" x="14" y="26" width="68" height="32"/>
@@ -2156,7 +2153,7 @@
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
                                 <connections>
-                                    <action selector="insert:" target="8gl-39-OjB" id="V0n-e5-3Ey"/>
+                                    <action selector="newDataset:" target="xgZ-xw-JYg" id="61h-AB-dLg"/>
                                 </connections>
                             </button>
                             <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Bcf-FD-JTY">
@@ -2165,6 +2162,9 @@
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
+                                <connections>
+                                    <action selector="copyDataset:" target="xgZ-xw-JYg" id="VkU-2P-CEJ"/>
+                                </connections>
                             </button>
                             <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="KpW-dR-veD">
                                 <rect key="frame" x="155" y="26" width="80" height="32"/>
@@ -2173,19 +2173,13 @@
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
                                 <connections>
-                                    <action selector="remove:" target="8gl-39-OjB" id="S7U-2n-HCN"/>
+                                    <action selector="removeDataset:" target="xgZ-xw-JYg" id="iwN-Me-iJu"/>
                                 </connections>
                             </button>
                         </subviews>
                     </view>
                 </viewController>
                 <customObject id="qBl-fQ-gKG" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
-                <arrayController mode="entity" entityName="Dataset" automaticallyPreparesContent="YES" id="8gl-39-OjB" userLabel="Dataset Controller">
-                    <connections>
-                        <binding destination="xgZ-xw-JYg" name="selectionIndexes" keyPath="datasetController.selectionIndexes" id="DwV-Ua-jeb"/>
-                        <binding destination="xgZ-xw-JYg" name="managedObjectContext" keyPath="moc" id="uM3-7P-oyg"/>
-                    </connections>
-                </arrayController>
             </objects>
             <point key="canvasLocation" x="817" y="110"/>
         </scene>
@@ -2392,7 +2386,7 @@ Gw
                                     <font key="font" metaFont="system" size="16"/>
                                 </buttonCell>
                                 <connections>
-                                    <action selector="addChild:" target="twQ-tO-BoE" id="xvE-iL-pEd"/>
+                                    <action selector="childModel:" target="m5e-8Z-RLG" id="bIa-H5-Fdo"/>
                                     <binding destination="m5e-8Z-RLG" name="enabled" keyPath="datasetController.selection.locked" id="tI1-ZA-iyH">
                                         <dictionary key="options">
                                             <string key="NSValueTransformerName">NSNegateBoolean</string>
@@ -2602,7 +2596,7 @@ Gw
                     </connections>
                 </viewController>
                 <customObject id="NXB-81-NNu" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
-                <treeController mode="entity" entityName="Model" automaticallyPreparesContent="YES" childrenKeyPath="children" id="twQ-tO-BoE" userLabel="Model Tree Controller">
+                <treeController mode="entity" entityName="Model" fetchPredicateFormat="parent == nil" automaticallyPreparesContent="YES" childrenKeyPath="children" id="twQ-tO-BoE" userLabel="Model Tree Controller">
                     <connections>
                         <binding destination="m5e-8Z-RLG" name="contentSet" keyPath="datasetController.selection.model" id="DIA-TX-KJK"/>
                         <binding destination="m5e-8Z-RLG" name="managedObjectContext" keyPath="moc" id="MwW-iz-MHE"/>
@@ -2743,7 +2737,7 @@ Gw
         </scene>
     </scenes>
     <resources>
-        <image name="1E86D4A6-D9E0-4C84-ADF6-836114119AE2" width="1" height="1">
+        <image name="12E1A2F4-21D4-4AC6-A5F2-77D08BA9999B" width="1" height="1">
             <mutableData key="keyedArchiveRepresentation">
 YnBsaXN0MDDUAQIDBAUGPj9YJHZlcnNpb25YJG9iamVjdHNZJGFyY2hpdmVyVCR0b3ASAAGGoK4HCBMU
 GR4fIyQsLzI4O1UkbnVsbNUJCgsMDQ4PEBESVk5TU2l6ZVYkY2xhc3NcTlNJbWFnZUZsYWdzVk5TUmVw
@@ -2798,7 +2792,7 @@ AAAAAAAAAAAAAAAAAAozA
         <image name="NSAddTemplate" width="11" height="11"/>
         <image name="NSAdvanced" width="32" height="32"/>
         <image name="NSCaution" width="32" height="32"/>
-        <image name="NSInfo" width="32" height="32"/>
+        <image name="NSListViewTemplate" width="14" height="10"/>
         <image name="NSLockLockedTemplate" width="10" height="14"/>
         <image name="NSLockUnlockedTemplate" width="10" height="14"/>
         <image name="NSRemoveTemplate" width="11" height="11"/>
