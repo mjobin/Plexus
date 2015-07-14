@@ -11,7 +11,7 @@ import CoreData
 import OpenCL
 
 
-class PlexusMainWindowController: NSWindowController, ProgressViewControllerDelegate {
+class PlexusMainWindowController: NSWindowController, ProgressViewControllerDelegate, NSWindowDelegate {
     
     
 
@@ -71,7 +71,7 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
 
         
         mainSplitViewController = contentViewController as! PlexusMainSplitViewController
-        //mainSplitViewController.mainWindowController = self
+
         mainSplitViewController.datasetController = self.datasetController
        // println(self.datasetController)
         //println(mainSplitViewController.datasetController)
@@ -99,7 +99,7 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
     }
     
     @IBAction func  toggleStructures(x:NSToolbarItem){
-        //println("Toggle models Tapped: \(x)")
+
         
         mainSplitViewController.toggleStructures(x)
         
@@ -333,7 +333,7 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
 
     
     @IBAction func exportCSV(x:NSToolbarItem){
-        var errorPtr : NSErrorPointer = nil
+        var err : NSErrorPointer = nil
         
         let sv:NSSavePanel = NSSavePanel()
         sv.allowedFileTypes = ["csv"]
@@ -345,18 +345,88 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
                 
                 sv.close()
                 
+                var outText = "Name,"
+                
+                //Exporting current daatset only
+                let curDatasets : [Dataset] = self.datasetController.selectedObjects as! [Dataset]
+                let curDataset : Dataset = curDatasets[0]
+                //get list of all traits in this dataset
+                let trequest = NSFetchRequest(entityName: "Trait")
+                var tpredicate = NSPredicate(format: "entry.dataset == %@", curDataset)
+                trequest.resultType = .DictionaryResultType
+                trequest.predicate = tpredicate
+                trequest.returnsDistinctResults = true
+                trequest.propertiesToFetch = ["name"]
+                
+                
+                
+                if let headerTraits  = self.moc!.executeFetchRequest(trequest, error:err)  {
+                    //test and print for now
+                    for headerTrait in headerTraits {
+                       // println(headerTrait.name)
+                        
+                       outText += headerTrait.valueForKey("name") as! String
+                       // outText += headerTrait
+                        outText += ","
+
+                    }
+                    outText += "\n"
+                    let entries : [Entry] = curDataset.entry.allObjects as! [Entry]
+                    for entry : Entry in entries {
+                        outText += entry.name
+                        outText += ","
+                        
+                        let traits = entry.trait
+                        
+                        for headerTrait in headerTraits {
+                            
+                            
+                            /*
+                            let ttrequest = NSFetchRequest(entityName: "Trait")
+                            var ttpredicate = NSPredicate(format: "entry == %@ AND name == %@", entry, headerTrait.name)
+                            
+                            if let ttTraits : [Trait] = self.moc!.executeFetchRequest(ttrequest, error:err) as? [Trait]{
+                                outText += ttTraits[0].traitValue //should only ever get one anyway
+                                
+                            }
+                            */
+                            
+                            outText += ","
+                            
+                        }
+                        
+
+                        outText += "\n"
+                    }
+                    
+                    
+                    
+                    
+                    outText.writeToURL(sv.URL!, atomically: true, encoding: NSUTF8StringEncoding, error: nil)
+                }
+                else {
+                    return
+                }
+                
                 //Fetch all Datasets
+                /*
                 
                 let datafetch = NSFetchRequest(entityName: "Dataset")
-                let datasets : [Dataset] = self.moc.executeFetchRequest(datafetch, error: errorPtr) as! [Dataset]
+                let datasets : [Dataset] = self.moc.executeFetchRequest(datafetch, error: err) as! [Dataset]
+            
                 
                 for dataset : Dataset in datasets {
                     let entries : [Entry] = dataset.entry.allObjects as! [Entry]
                     for entry : Entry in entries {
                         entry.name.writeToURL(sv.URL!, atomically: false, encoding: NSUTF8StringEncoding, error: nil)
+                        let traits : [Trait] = entry.trait.allObjects as! [Trait]
+                        for trait :Trait in traits{
+                            
+                        }
                     }
                     
                 }
+                */
                 
                 
 
@@ -394,7 +464,7 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
         op.beginSheetModalForWindow(window!, completionHandler: {(result:Int) -> Void in
             if (result == NSFileHandlingPanelOKButton) {
                 
-                println("button state \(av.state)")
+               // println("button state \(av.state)")
                 
 
                // println(op.URL)
