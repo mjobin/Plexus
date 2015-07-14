@@ -47,6 +47,7 @@ class PlexusModelDetailViewController: NSViewController, CPTScatterPlotDataSourc
     var V1 = 0.1
     var V2 = 0.5
     var dataForChart = [NSNumber]()
+    var priorDataForChart = [NSNumber]()
     
     var curNode : BNNode!
     var graph : CPTXYGraph!
@@ -209,18 +210,12 @@ class PlexusModelDetailViewController: NSViewController, CPTScatterPlotDataSourc
     func reloadData() {
         
         
-        //save the moc here to make sure changes read properly
-       // var errorPtr : NSErrorPointer = nil
-       // moc.save(errorPtr)
         
         //Get selected node
         var curNodes : [BNNode] = nodesController.selectedObjects as! [BNNode]
         if(curNodes.count>0) {
             curNode = curNodes[0]
-             // println("\n\n*********\nreloadData \(curNode.nodeLink.name)")
-            
-           // graph.title = curNode.nodeLink.name
-            
+
             priorDist = Int(curNode.priorDistType)
             V1 = Double(curNode.priorV1)
             V2 = Double(curNode.priorV2)
@@ -242,6 +237,8 @@ class PlexusModelDetailViewController: NSViewController, CPTScatterPlotDataSourc
                 
                 switch priorDist{
                 case 0: //point/expert
+                    priorV1Slider.hidden = false
+                    priorV1Field.hidden = false
                     priorV2Slider.hidden = true
                     priorV2Field.hidden = true
                     priorV1Slider.minValue = 0.0
@@ -250,7 +247,8 @@ class PlexusModelDetailViewController: NSViewController, CPTScatterPlotDataSourc
                     priorV2Slider.maxValue = 1.0
                     
                 case 3: //beta
-                    
+                    priorV1Slider.hidden = false
+                    priorV1Field.hidden = false
                     priorV2Slider.hidden = false
                     priorV2Field.hidden = false
                     priorV1Slider.minValue = 0.0
@@ -259,14 +257,29 @@ class PlexusModelDetailViewController: NSViewController, CPTScatterPlotDataSourc
                     priorV2Slider.maxValue = 10.0
                     
                 case 4: //gamma
-                    
+                    priorV1Slider.hidden = false
+                    priorV1Field.hidden = false
                     priorV2Slider.hidden = false
                     priorV2Field.hidden = false
                     priorV1Slider.minValue = 0.0
                     priorV1Slider.maxValue = 10.0
                     priorV2Slider.minValue = 0.0
                     priorV2Slider.maxValue = 10.0
+                    
+                    
+                case 5: //priorpost
+                    priorV1Slider.hidden = true
+                    priorV1Field.hidden = true
+                    priorV2Slider.hidden = true
+                    priorV2Field.hidden = true
+                    priorV1Slider.minValue = 0.0
+                    priorV1Slider.maxValue = 1.0
+                    priorV2Slider.minValue = 0.0
+                    priorV2Slider.maxValue = 1.0
+                    
                 default:
+                    priorV1Slider.hidden = false
+                    priorV1Field.hidden = false
                     priorV2Slider.hidden = false
                     priorV2Field.hidden = false
                     priorV1Slider.minValue = 0.0
@@ -388,7 +401,27 @@ class PlexusModelDetailViewController: NSViewController, CPTScatterPlotDataSourc
                 self.dataForChart = [Double](count: 100, repeatedValue: 0.0)
             }
             
+            if curNode.priorCount != nil {
+                let priorCount = NSKeyedUnarchiver.unarchiveObjectWithData(curNode.valueForKey("priorCount") as! NSData) as! [Int]
+              //   println("priorCount \(priorCount)")
+                var priorData = [NSNumber]()
+                var curtop = 0
+                for thisPost in priorCount {
+                    if (curtop < thisPost) {
+                        curtop = thisPost
+                    }
+                }
+                for thisPrior : Int in priorCount {
+                    priorData.append(Double(thisPrior)/Double(curtop))
+                }
+                
             
+                self.priorDataForChart = priorData
+            }
+            else {
+                
+                self.priorDataForChart = [Double](count: 100, repeatedValue: 0.0)
+            }
             
             
         }
@@ -433,6 +466,17 @@ class PlexusModelDetailViewController: NSViewController, CPTScatterPlotDataSourc
     
     
     func numberOfRecordsForPlot(plot: CPTPlot) -> UInt {
+        
+        if(plot.identifier!.isEqual("PriorPlot")){
+            switch priorDist {
+
+            case 5: //priorPost
+                return UInt(self.priorDataForChart.count)
+                
+            default:
+                return UInt(self.dataForChart.count)
+            }
+        }
         
         return UInt(self.dataForChart.count)
         
@@ -481,6 +525,10 @@ class PlexusModelDetailViewController: NSViewController, CPTScatterPlotDataSourc
                     
                     
                     return gamma(V1, b:V2, x:nidx)
+                    
+                case 5: //priorPost
+                   // println(self.priorDataForChart[Int(idx)] as NSNumber)
+                    return self.priorDataForChart[Int(idx)] as NSNumber
                     
                 default:
                     return 0
