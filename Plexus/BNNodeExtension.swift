@@ -74,6 +74,11 @@ extension BNNode {
                   //  println("gammadev \(gd)")
                     pVal = gd
     //                return gd
+                case 5: //sample from the prioarray
+                    let priorArray = NSKeyedUnarchiver.unarchiveObjectWithData(self.valueForKey("priorArray") as! NSData) as! [cl_float]
+                    let randomIndex = Int(arc4random_uniform(UInt32(priorArray.count)))
+                    //println("sample from piorarray \(priorArray[randomIndex])")
+                    pVal = priorArray[randomIndex]
                     
                     
                 default:
