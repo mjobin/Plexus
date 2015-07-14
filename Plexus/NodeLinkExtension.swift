@@ -11,6 +11,11 @@ import CoreServices
 
 extension NodeLink {
 
+    func addBNNodeObject(value:BNNode) {
+        var items = self.mutableSetValueForKey("bnNode");
+        items.addObject(value)
+    }
+    
     func writableTypesForPasteboard(pasteboard: NSPasteboard!) -> [AnyObject] {
         let kString : String = kUTTypeURL as String
         var registeredTypes:[String] = [kString]
