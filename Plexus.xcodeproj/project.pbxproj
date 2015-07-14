@@ -428,8 +428,8 @@
 			children = (
 				C9B839361B22041000EEEFAB /* CorePlot.framework */,
 				C9B839381B22041000EEEFAB /* UnitTests.xctest */,
-				C943F0C51B22158100BE587B /* CorePlot_iOS.framework */,
-				C943F0C71B22158100BE587B /* CorePlot_iOSTests.xctest */,
+				C943F0C51B22158100BE587B /* CorePlot.framework */,
+				C943F0C71B22158100BE587B /* UnitTests iOS.xctest */,
 				C943F0C91B22158100BE587B /* libCorePlot-CocoaTouch.a */,
 				C943F0CB1B22158100BE587B /* CorePlot-CocoaTouchTests.xctest */,
 			);
@@ -527,17 +527,17 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
-		C943F0C51B22158100BE587B /* CorePlot_iOS.framework */ = {
+		C943F0C51B22158100BE587B /* CorePlot.framework */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.framework;
-			path = CorePlot_iOS.framework;
+			path = CorePlot.framework;
 			remoteRef = C943F0C41B22158100BE587B /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		C943F0C71B22158100BE587B /* CorePlot_iOSTests.xctest */ = {
+		C943F0C71B22158100BE587B /* UnitTests iOS.xctest */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.cfbundle;
-			path = CorePlot_iOSTests.xctest;
+			path = "UnitTests iOS.xctest";
 			remoteRef = C943F0C61B22158100BE587B /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
