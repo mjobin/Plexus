@@ -10,6 +10,11 @@ import Foundation
 import CoreData
 
 extension Model {
+    
+    func addChildObject(value:Model) {
+        var items = self.mutableSetValueForKey("children");
+        items.addObject(value)
+    }
 
     func addBNNodeObject(value:BNNode) {
         var items = self.mutableSetValueForKey("bnnode");
