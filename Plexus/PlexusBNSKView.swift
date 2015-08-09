@@ -103,6 +103,7 @@ class PlexusBNSKView: SKView, NSDraggingDestination {
             
             var newNode : BNNode = BNNode(entity: NSEntityDescription.entityForName("BNNode", inManagedObjectContext: moc)!, insertIntoManagedObjectContext: moc)
             newNode.setValue(mo, forKey: "nodeLink")
+          // mo.addBNNodeObject(newNode)
             
 
 
