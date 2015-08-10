@@ -17,6 +17,7 @@ class PlexusIconTransformer: NSValueTransformer {
     
     override func transformedValue(value: AnyObject!) -> (AnyObject!) {
         
+      //  println("pit value \(value)")
         
         if(value == nil) {
             return NSImage(named: "PlexusTest")
@@ -25,12 +26,26 @@ class PlexusIconTransformer: NSValueTransformer {
         
         switch value as! NSString {
             
+
+            
             case "Site":
-                return NSImage(named: "PlexusTest")
+                return NSImage(named: "NSUser")
+            
+            case "Person":
+                return NSImage(named: "NSUser")
+            
+            case "Entry":
+                    return NSImage(named: "PlexusTest")
+                
+            case "Structure":
+                return NSImage(named: "PlexusImportCSV")
+                
+            case "Trait":
+                return NSImage(named: "PlexusAddChild")
 
-
-        default:
-            return NSImage(named: "PlexusEntry")         }
+            default:
+                return NSImage(named: "PlexusEntry")
+        }
         
 
     }
