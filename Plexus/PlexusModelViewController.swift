@@ -37,6 +37,9 @@ class PlexusModelViewController: NSViewController {
     
         let curModels : [Model] = modelTreeController.selectedObjects as! [Model]
         let curModel : Model = curModels[0]
+
+
+    
     
     if let curPath : NSIndexPath = modelTreeController.selectionIndexPath {
         let newPath : NSIndexPath = curPath.indexPathByAddingIndex(curModel.children.count)
@@ -46,7 +49,7 @@ class PlexusModelViewController: NSViewController {
         var newModel : Model = Model(entity: NSEntityDescription.entityForName("Model", inManagedObjectContext: self.moc)!, insertIntoManagedObjectContext: self.moc)
         curModel.addChildObject(newModel)
         newModel.setValue(curModel, forKey: "parent")
-        modelTreeController.insertObject(newModel, atArrangedObjectIndexPath: newPath)
+        //modelTreeController.insertObject(newModel, atArrangedObjectIndexPath: newPath)
         let copyName : String = curModel.name + " copy"
         newModel.setValue(copyName, forKey: "name")
 
@@ -95,6 +98,7 @@ class PlexusModelViewController: NSViewController {
         
         
     }
+
 
     
         self.moc.save(errorPtr)
