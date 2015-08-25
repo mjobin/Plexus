@@ -12,17 +12,17 @@ import CoreData
 
 extension Dataset {
     func addEntryObject(value:Entry) {
-        var items = self.mutableSetValueForKey("entry");
+        let items = self.mutableSetValueForKey("entry");
         items.addObject(value)
     }
     
     func addModelObject(value:Model) {
-        var items = self.mutableSetValueForKey("model");
+        let items = self.mutableSetValueForKey("model");
         items.addObject(value)
     }
     
     func addStructureObject(value:Structure) {
-        var items = self.mutableSetValueForKey("structure");
+        let items = self.mutableSetValueForKey("structure");
         items.addObject(value)
     }
 }

@@ -12,13 +12,13 @@ import CoreServices
 extension NodeLink {
 
     func addBNNodeObject(value:BNNode) {
-        var items = self.mutableSetValueForKey("bnNode");
+        let items = self.mutableSetValueForKey("bnNode");
         items.addObject(value)
     }
     
     func writableTypesForPasteboard(pasteboard: NSPasteboard!) -> [AnyObject] {
         let kString : String = kUTTypeURL as String
-        var registeredTypes:[String] = [kString]
+        let registeredTypes:[String] = [kString]
         return registeredTypes
     }
 
@@ -26,7 +26,7 @@ extension NodeLink {
     func pasteboardPropertyListForType(type: String!) -> AnyObject! {
         let kString : String = kUTTypeURL as String
         if(type == kString){
-            var moURI : NSURL = self.objectID.URIRepresentation()
+            let moURI : NSURL = self.objectID.URIRepresentation()
             return moURI.pasteboardPropertyListForType(kString)
         }
         return nil

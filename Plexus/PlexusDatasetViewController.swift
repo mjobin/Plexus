@@ -31,7 +31,7 @@ class PlexusDatasetViewController: NSViewController {
     }
     
 @IBAction func newDataset (sender: AnyObject){
-            var newDataset : Dataset = Dataset(entity: NSEntityDescription.entityForName("Dataset", inManagedObjectContext: self.moc)!, insertIntoManagedObjectContext: self.moc)
+            let newDataset : Dataset = Dataset(entity: NSEntityDescription.entityForName("Dataset", inManagedObjectContext: self.moc)!, insertIntoManagedObjectContext: self.moc)
     
     
     newDataset.setValue("new", forKey: "name")
@@ -45,16 +45,20 @@ class PlexusDatasetViewController: NSViewController {
     
 @IBAction func removeDataset (sender: AnyObject) {
     
-    var errorPtr : NSErrorPointer = nil
+    let errorPtr : NSErrorPointer = nil
     
 
     if(datasetController.arrangedObjects.count > 1){
         var delDatasets = datasetController.selectedObjects as! [Dataset]
-        var delDataset: Dataset = delDatasets[0]
+        let delDataset: Dataset = delDatasets[0]
     
         datasetController.removeObject(delDataset)
         
-            self.moc.save(errorPtr)
+        do {
+            try self.moc.save()
+        } catch let error as NSError {
+            errorPtr.memory = error
+        }
     }
 }
         
@@ -62,7 +66,7 @@ class PlexusDatasetViewController: NSViewController {
     
 @IBAction func copyDataset (sender: AnyObject){
     
-    var errorPtr : NSErrorPointer = nil
+    let errorPtr : NSErrorPointer = nil
 
     
         
@@ -71,7 +75,7 @@ class PlexusDatasetViewController: NSViewController {
 
     
     
-        var newDataset : Dataset = Dataset(entity: NSEntityDescription.entityForName("Dataset", inManagedObjectContext: self.moc)!, insertIntoManagedObjectContext: self.moc)
+        let newDataset : Dataset = Dataset(entity: NSEntityDescription.entityForName("Dataset", inManagedObjectContext: self.moc)!, insertIntoManagedObjectContext: self.moc)
     
     let copyName : String = oldDataset.name + " copy"
     
@@ -84,7 +88,7 @@ class PlexusDatasetViewController: NSViewController {
                 
                 let noParent : NSSet = NSSet()
                 
-                println(oldEntry.name)
+                print(oldEntry.name)
                 
                 recurEntry(oldDataset, newDataset: newDataset, inEntry: oldEntry, parent: noParent)
             }
@@ -92,7 +96,11 @@ class PlexusDatasetViewController: NSViewController {
         }
     
     datasetController.addObject(newDataset)
-    self.moc.save(errorPtr)
+    do {
+        try self.moc.save()
+    } catch let error as NSError {
+        errorPtr.memory = error
+    }
   
         
     }
@@ -103,7 +111,7 @@ class PlexusDatasetViewController: NSViewController {
         
         
         
-        var newEntry : Entry = Entry(entity: NSEntityDescription.entityForName("Entry", inManagedObjectContext: self.moc)!, insertIntoManagedObjectContext: self.moc)
+        let newEntry : Entry = Entry(entity: NSEntityDescription.entityForName("Entry", inManagedObjectContext: self.moc)!, insertIntoManagedObjectContext: self.moc)
         
         
 
@@ -112,7 +120,7 @@ class PlexusDatasetViewController: NSViewController {
         newEntry.setValue(newDataset, forKey: "dataset")
         newDataset.addEntryObject(newEntry)
         
-        println(newEntry.name)
+        print(newEntry.name)
         
         //Set parents and children
 
@@ -121,7 +129,7 @@ class PlexusDatasetViewController: NSViewController {
             let theParents : [Entry]  = parent.allObjects as! [Entry]
             let theParent : Entry = theParents[0] as Entry
             newEntry.setValue(theParent, forKey: "parent")
-            println("parent \(theParent.name)")
+            print("parent \(theParent.name)")
             theParent.addChildObject(newEntry)
 
         }
@@ -132,14 +140,14 @@ class PlexusDatasetViewController: NSViewController {
         
         let oldTraits  = inEntry.trait.allObjects as! [Trait]
         for oldTrait : Trait in oldTraits {
-            var newTrait : Trait = Trait(entity: NSEntityDescription.entityForName("Trait", inManagedObjectContext: self.moc)!, insertIntoManagedObjectContext: self.moc)
+            let newTrait : Trait = Trait(entity: NSEntityDescription.entityForName("Trait", inManagedObjectContext: self.moc)!, insertIntoManagedObjectContext: self.moc)
             newTrait.setValue(oldTrait.name, forKey: "name")
             newTrait.setValue(oldTrait.traitValue, forKey: "traitValue")
             newTrait.setValue(newEntry, forKey: "entry")
             newEntry.addTraitObject(newTrait)
         }
         
-        var newParent  = NSMutableSet()
+        let newParent  = NSMutableSet()
         newParent.addObject(newEntry)
         
         if(inEntry.children.count > 0){

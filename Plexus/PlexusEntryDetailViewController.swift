@@ -39,7 +39,7 @@ class PlexusEntryDetailViewController: NSViewController, NSTableViewDelegate, NS
         super.viewDidLoad()
         
         let kString : String = kUTTypeURL as String
-        var registeredTypes:[String] = [kString]
+        let registeredTypes:[String] = [kString]
         traitsTableView.registerForDraggedTypes(registeredTypes)
         traitsTableView.setDraggingSourceOperationMask(NSDragOperation.Every, forLocal: true)
         traitsTableView.setDraggingSourceOperationMask(NSDragOperation.Every, forLocal: false)
@@ -58,7 +58,11 @@ class PlexusEntryDetailViewController: NSViewController, NSTableViewDelegate, NS
     
     //TableView Delegate fxns
     func tableView(tableView: NSTableView, objectValueForTableColumn tableColumn: NSTableColumn?, row: Int) -> AnyObject? {
-        return traitsController.arrangedObjects.objectAtIndex(row)
+        let traitsArray : NSArray = traitsController.arrangedObjects as! NSArray
+        return traitsArray.objectAtIndex(row)
+ 
+       // return traitsController.arrangedObjects.objectAtIndex(row) FIXME beta compiler was complaing so i used the above clumsiness. replace?
+
     }
     
     func tableView(aTableView: NSTableView,
@@ -71,7 +75,11 @@ class PlexusEntryDetailViewController: NSViewController, NSTableViewDelegate, NS
             
             
             let selectedRow = rowIndexes.firstIndex
-            let selectedObject: AnyObject = traitsController.arrangedObjects.objectAtIndex(selectedRow)
+            
+            let traitsArray : NSArray = traitsController.arrangedObjects as! NSArray
+            let selectedObject : AnyObject = traitsArray.objectAtIndex(selectedRow)
+            // let selectedObject: AnyObject = traitsController.arrangedObjects.objectAtIndex(selectedRow) FIXME beta compiler was complaing so i used the above clumsiness. replace?
+
             
             let mutableArray : NSMutableArray = NSMutableArray()
             mutableArray.addObject(selectedObject.objectID.URIRepresentation())
@@ -107,12 +115,12 @@ class PlexusEntryDetailViewController: NSViewController, NSTableViewDelegate, NS
             let mapEntry : Entry =  mapEntries[0]
             
             
-            var location = CLLocationCoordinate2D(
+            let location = CLLocationCoordinate2D(
                 latitude: mapEntry.latitude,
                 longitude: mapEntry.longitude
             )
-            var span = MKCoordinateSpanMake(1, 1)
-            var region = MKCoordinateRegion(center: location, span: span)
+            let span = MKCoordinateSpanMake(1, 1)
+            let region = MKCoordinateRegion(center: location, span: span)
             mapView.setRegion(region, animated: true)
             
             mapView.addAnnotation(MKPlacemark(coordinate: location, addressDictionary:nil))

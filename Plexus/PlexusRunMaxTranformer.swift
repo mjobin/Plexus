@@ -24,7 +24,7 @@ class PlexusRunMaxTransformer: NSValueTransformer {
         
         
         
-        var outVal : NSNumber = value as! NSNumber
+        let outVal : NSNumber = value as! NSNumber
         
         if(outVal.integerValue < 1) {
             return 1

@@ -11,17 +11,17 @@ import CoreData
 
 extension Entry {
     func addChildObject(value:Entry) {
-        var items = self.mutableSetValueForKey("children");
+        let items = self.mutableSetValueForKey("children");
         items.addObject(value)
     }
     
     func addTraitObject(value:Trait) {
-        var items = self.mutableSetValueForKey("trait");
+        let items = self.mutableSetValueForKey("trait");
         items.addObject(value)
     }
     
     func addStructureObject(value:Structure) {
-        var items = self.mutableSetValueForKey("structure");
+        let items = self.mutableSetValueForKey("structure");
         items.addObject(value)
     }
     

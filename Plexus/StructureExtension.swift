@@ -12,7 +12,7 @@ import CoreData
 
 extension Structure {
     func addEntryObject(value:Entry) {
-        var items = self.mutableSetValueForKey("entry");
+        let items = self.mutableSetValueForKey("entry");
         items.addObject(value)
     }
     

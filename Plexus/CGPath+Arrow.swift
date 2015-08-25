@@ -14,7 +14,7 @@ extension CGPath {
     class func getAxisAlignedArrowPoints(inout points: Array<CGPoint>, forLength: CGFloat, tailWidth: CGFloat, headWidth: CGFloat, headLength: CGFloat ) {
         
         let tailLength = forLength - headLength
-        println(tailLength)
+        print(tailLength)
         points.append(CGPointMake(0, tailWidth/2))
         points.append(CGPointMake(tailLength, tailWidth/2))
         points.append(CGPointMake(tailLength, headWidth/2))
@@ -86,7 +86,7 @@ extension CGPath {
         
         var transform: CGAffineTransform = self.transformForStartPoint(startPoint, endPoint: endPoint, length:  CGFloat(length))
         
-        var cgPath: CGMutablePathRef = CGPathCreateMutable()
+        let cgPath: CGMutablePathRef = CGPathCreateMutable()
         //CGPathAddLines(cgPath, &transform, points, 7)
         CGPathAddLines(cgPath, &transform, points, 16)
         CGPathCloseSubpath(cgPath)

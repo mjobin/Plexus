@@ -17,12 +17,12 @@ extension BNNode {
 
     
     func addInfluencesObject(value:BNNode) {
-        var influences = self.mutableSetValueForKey("influences");
+        let influences = self.mutableSetValueForKey("influences");
         influences.addObject(value)
     }
     
     func addInfluencedByObject(value:BNNode) {
-        var influencedBy = self.mutableSetValueForKey("influencedBy");
+        let influencedBy = self.mutableSetValueForKey("influencedBy");
         influencedBy.addObject(value)
     }
     
@@ -30,11 +30,9 @@ extension BNNode {
     func freqForCPT(sender:AnyObject) -> cl_float{
         
         //Get MOC from App delegate
-        let appDelegate : AppDelegate = NSApplication.sharedApplication().delegate as! AppDelegate
-       var  moc = appDelegate.managedObjectContext
-        
-        //FIXME
-        var err: NSError?
+        //let appDelegate : AppDelegate = NSApplication.sharedApplication().delegate as! AppDelegate
+      // var  moc = appDelegate.managedObjectContext
+
         
 
         var lidum : CLong = 1
@@ -52,25 +50,25 @@ extension BNNode {
                     
                 case 1://uniform
                     let r = Double(arc4random())/Double(UInt32.max)
-                    let u = cl_float((r*(priorV2.doubleValue - priorV1.doubleValue)) + priorV1.doubleValue)
+
                    // println("uniform \(u)")
                     pVal = cl_float((r*(priorV2.doubleValue - priorV1.doubleValue)) + priorV1.doubleValue)
                     //return cl_float((r*(priorV2.doubleValue - priorV1.doubleValue)) + priorV1.doubleValue)
                     
                 case 2: //gaussian
 
-                    var gd = cl_float(gasdev(&lidum))
-                    var gdv = cl_float(priorV2) * gd + cl_float(priorV1)
+                    let gd = cl_float(gasdev(&lidum))
+                    let gdv = cl_float(priorV2) * gd + cl_float(priorV1)
                   //  println("gaussdev \(gd) \(gdv)")
                     pVal = gdv
                     //return gdv
                 case 3: //beta
-                    var bd = cl_float(beta_dev(priorV1.doubleValue, priorV2.doubleValue))
+                    let bd = cl_float(beta_dev(priorV1.doubleValue, priorV2.doubleValue))
                   //  println("betadev \(bd)")
                     pVal = bd
                     //return bd
                 case 4: //gamma
-                    var gd = cl_float(gamma_dev(priorV1.doubleValue)/priorV2.doubleValue)
+                    let gd = cl_float(gamma_dev(priorV1.doubleValue)/priorV2.doubleValue)
                   //  println("gammadev \(gd)")
                     pVal = gd
     //                return gd
@@ -373,11 +371,12 @@ extension BNNode {
     }
     
     func calcWParentCPT(sender:AnyObject) {
+        let errorPtr : NSErrorPointer = nil
         
         //Get MOC from App delegate
         let appDelegate : AppDelegate = NSApplication.sharedApplication().delegate as! AppDelegate
-        var  moc = appDelegate.managedObjectContext
-                var err: NSError?
+        let  moc = appDelegate.managedObjectContext
+
     
         
             let request = NSFetchRequest(entityName: "Trait")
@@ -392,7 +391,7 @@ extension BNNode {
             
             //check for numeric
             if(self.numericData == true){
-                let digits = NSCharacterSet.decimalDigitCharacterSet()
+               // let digits = NSCharacterSet.decimalDigitCharacterSet()
                 /*
                 for thisValue in dataNames {
                 println("thisValue \(thisValue)")
@@ -421,7 +420,8 @@ extension BNNode {
                         request.returnsDistinctResults = false
                         request.propertiesToFetch = ["traitValue"]
                         
-                        if let fetch = moc!.executeFetchRequest(request, error:&err) {
+                        do {
+                            let fetch = try moc.executeFetchRequest(request)
                            // println("global entry fetch \(fetch)")
                             /*
                             for obj  in fetch {
@@ -431,25 +431,26 @@ extension BNNode {
                             }
                             */
                             let trequest = NSFetchRequest(entityName: "Trait")
-                            var tpredicate = NSPredicate(format: "entry.dataset == %@", curDataset)
+                            let tpredicate = NSPredicate(format: "entry.dataset == %@", curDataset)
                             
                             trequest.resultType = .DictionaryResultType
                             trequest.predicate = tpredicate
                             trequest.returnsDistinctResults = false
                             trequest.propertiesToFetch = ["traitValue"]
                             
-                            if let tfetch = moc!.executeFetchRequest(trequest, error:&err) {
+                            do {
+                                let tfetch = try moc.executeFetchRequest(trequest)
                                 let tresult = (cl_float(tfetch.count)/cl_float(fetch.count))
                                // println(" global entry with parent \(tresult)")
                                 self.cptFreq = tresult
-                            }
-                            else {
+                            } catch let error as NSError {
+                                errorPtr.memory = error
                                 self.cptFreq = 0.0
                             }
                             
                             
-                        }
-                        else {
+                        } catch let error as NSError {
+                            errorPtr.memory = error
                             self.cptFreq = -999
                         }
                         
@@ -470,15 +471,10 @@ extension BNNode {
                         request.returnsDistinctResults = false
                         request.propertiesToFetch = ["traitValue"]
                         
-                        if let fetch = moc!.executeFetchRequest(request, error:&err) {
-                            //   println("global trait fetch coiunt \(fetch.count)")
-                            
-                            
-                            for obj  in fetch {
-                                // println(obj.valueForKey("traitValue"))
-                                
-                            }
-                            
+                        do {
+                            let fetch = try moc.executeFetchRequest(request)
+
+
                             
                             let trequest = NSFetchRequest(entityName: "Trait")
                             let tpredicate = NSPredicate(format: "entry.dataset == %@ AND name == %@ AND traitValue == %@", curDataset, thisTrait.name, thisTrait.traitValue)
@@ -488,26 +484,21 @@ extension BNNode {
                             trequest.returnsDistinctResults = false
                             trequest.propertiesToFetch = ["traitValue"]
                             
-                            if let tfetch = moc!.executeFetchRequest(trequest, error:&err) {
-                                //println("global trait tfetch count \(tfetch.count)")
-                                for obj  in tfetch {
-                                    //  println(obj.valueForKey("traitValue"))
-                                    
-                                }
-                                
+                            do {
+                                let tfetch = try moc.executeFetchRequest(trequest)
+
                                 let tresult = (cl_float(tfetch.count)/cl_float(fetch.count))
-                               // println(" global entry with parent \(tresult)")
+
                                 self.cptFreq = tresult
-                            }
-                            else {
+                            } catch let error as NSError {
+                                errorPtr.memory = error
                                 self.cptFreq = 0.0
                             }
                             
                             
                             
-                        }
-                            
-                        else {
+                        } catch let error as NSError {
+                            errorPtr.memory = error
                             self.cptFreq = -999
                         }
                         
@@ -536,14 +527,9 @@ extension BNNode {
                         request.returnsDistinctResults = false
                         request.propertiesToFetch = ["traitValue"]
                         
-                        if let fetch = moc!.executeFetchRequest(request, error:&err) {
-                           // println("self entry fetch coiunt \(fetch.count)")
-                            
-                            
-                            for obj  in fetch {
-                             //   println(obj.valueForKey("traitValue"))
-                                
-                            }
+                        do {
+                            let fetch = try moc.executeFetchRequest(request)
+
                             
                             let trequest = NSFetchRequest(entityName: "Trait")
                             let tpredicate = NSPredicate(format: "entry == %@ AND name == %@ AND traitValue == %@", thisEntry, self.dataName, self.dataSubName)
@@ -553,25 +539,22 @@ extension BNNode {
                             trequest.returnsDistinctResults = false
                             trequest.propertiesToFetch = ["traitValue"]
                             
-                            if let tfetch = moc!.executeFetchRequest(trequest, error:&err) {
-                               // println("self entry tfetch count \(tfetch.count)")
-                                for obj  in tfetch {
-                                  //  println(obj.valueForKey("traitValue"))
-                                    
-                                }
+                            do {
+                                let tfetch = try moc.executeFetchRequest(trequest)
+
                                 
                                 let tresult = (cl_float(tfetch.count)/cl_float(fetch.count))
                                // println("self entry with parent \(tresult)")
                                 self.cptFreq = tresult
                                 
-                            }
-                            else {
+                            } catch let error as NSError {
+                                errorPtr.memory = error
                                 self.cptFreq = -999
                             }
                             
                             
-                        }
-                        else {
+                        } catch let error as NSError {
+                            errorPtr.memory = error
                             self.cptFreq = -999
                         }
                         
@@ -595,14 +578,9 @@ extension BNNode {
                         request.returnsDistinctResults = false
                         request.propertiesToFetch = ["traitValue"]
                         
-                        if let fetch = moc!.executeFetchRequest(request, error:&err) {
-                            // println("self structure fetch coiunt \(fetch.count)")
-                            
-                            
-                            for obj  in fetch {
-                                //   println(obj.valueForKey("traitValue"))
-                                
-                            }
+                        do {
+                            let fetch = try moc.executeFetchRequest(request)
+
                             
                             let trequest = NSFetchRequest(entityName: "Trait")
                             let tpredicate = NSPredicate(format: "entry.structure == %@ AND name == %@ AND traitValue == %@", thisStructure, self.dataName, self.dataSubName)
@@ -612,25 +590,22 @@ extension BNNode {
                             trequest.returnsDistinctResults = false
                             trequest.propertiesToFetch = ["traitValue"]
                             
-                            if let tfetch = moc!.executeFetchRequest(trequest, error:&err) {
-                                // println("self entry tfetch count \(tfetch.count)")
-                                for obj  in tfetch {
-                                    //  println(obj.valueForKey("traitValue"))
-                                    
-                                }
+                            do {
+                                let tfetch = try moc.executeFetchRequest(trequest)
+
                                 
                                 let tresult = (cl_float(tfetch.count)/cl_float(fetch.count))
                                 // println("self entry with parent \(tresult)")
                                 self.cptFreq = tresult
                                 
-                            }
-                            else {
+                            } catch let error as NSError {
+                                errorPtr.memory = error
                                 self.cptFreq = -999
                             }
                             
                             
-                        }
-                        else {
+                        } catch let error as NSError {
+                            errorPtr.memory = error
                             self.cptFreq = -999
                         }
                         
@@ -651,14 +626,11 @@ extension BNNode {
                         request.returnsDistinctResults = false
                         request.propertiesToFetch = ["traitValue"]
                         
-                        if let fetch = moc!.executeFetchRequest(request, error:&err) {
+                        do {
+                            let fetch = try moc.executeFetchRequest(request)
                            // println("children entry fetch coiunt \(fetch.count)")
                             
                             
-                            for obj  in fetch {
-                             //   println(obj.valueForKey("traitValue"))
-                                
-                            }
                             
                             let trequest = NSFetchRequest(entityName: "Trait")
                             let tpredicate = NSPredicate(format: "entry.parent == %@ AND name == %@ AND traitValue == %@", thisEntry, self.dataName, self.dataSubName)
@@ -668,25 +640,22 @@ extension BNNode {
                             trequest.returnsDistinctResults = false
                             trequest.propertiesToFetch = ["traitValue"]
                             
-                            if let tfetch = moc!.executeFetchRequest(trequest, error:&err) {
-                            //    println("children entry tfetch count \(tfetch.count)")
-                                for obj  in tfetch {
-                              //      println(obj.valueForKey("traitValue"))
-                                    
-                                }
+                            do {
+                                let tfetch = try moc.executeFetchRequest(trequest)
+
                                 
                                 let tresult = (cl_float(tfetch.count)/cl_float(fetch.count))
                              //   println("self entry with parent \(tresult)")
                                 self.cptFreq = tresult
                                 
-                            }
-                            else {
+                            } catch let error as NSError {
+                                errorPtr.memory = error
                                 self.cptFreq = -999
                             }
                             
                             
-                        }
-                        else {
+                        } catch let error as NSError {
+                            errorPtr.memory = error
                             self.cptFreq = -999
                         }
                         
@@ -731,9 +700,9 @@ extension BNNode {
         }
         else { //have reached a tip
             if(depth>0){
-                var pos = find(infBy, self)
+                let pos = infBy.indexOf(self)
                 if (pos == nil) {
-                    println("Error: could not find influence in CPT fxn")
+                    print("Error: could not find influence in CPT fxn")
                     return cl_float.NaN
                 }
                 

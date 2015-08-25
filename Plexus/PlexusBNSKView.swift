@@ -10,7 +10,7 @@ import Cocoa
 import SpriteKit
 import CoreServices
 
-class PlexusBNSKView: SKView, NSDraggingDestination {
+class PlexusBNSKView: SKView {
     
     var moc : NSManagedObjectContext!
     dynamic var modelTreeController : NSTreeController!
@@ -21,7 +21,7 @@ class PlexusBNSKView: SKView, NSDraggingDestination {
         
         super.init(coder: aDecoder)
         let kString : String = kUTTypeURL as String
-        var registeredTypes:[String] = [kString]
+        let registeredTypes:[String] = [kString]
         self.registerForDraggedTypes(registeredTypes)
         
         let appDelegate : AppDelegate = NSApplication.sharedApplication().delegate as! AppDelegate
@@ -57,7 +57,7 @@ class PlexusBNSKView: SKView, NSDraggingDestination {
         
               
         let pboard : NSPasteboard = sender.draggingPasteboard()
-        let types : NSArray = pboard.types!
+       // let types : NSArray = pboard.types!
         
         
         let kString : String = kUTTypeURL as String
@@ -76,18 +76,22 @@ class PlexusBNSKView: SKView, NSDraggingDestination {
 
     
     @IBAction func removeNode(sender: AnyObject) {
-        var errorPtr : NSErrorPointer = nil
+        let errorPtr : NSErrorPointer = nil
         
         
         var curNodes : [BNNode] = nodesController.selectedObjects as! [BNNode]
         if(curNodes.count>0) {
-            var curNode : BNNode = curNodes[0]
+            let curNode : BNNode = curNodes[0]
             
              moc.deleteObject(curNode)
         }
 
         
-        moc.save(errorPtr)
+        do {
+            try moc.save()
+        } catch let error as NSError {
+            errorPtr.memory = error
+        }
         
         
     }
@@ -95,20 +99,20 @@ class PlexusBNSKView: SKView, NSDraggingDestination {
 
     
     func addNode(mourl: NSURL){
-        var errorPtr : NSErrorPointer = nil
+        let errorPtr : NSErrorPointer = nil
         if let id : NSManagedObjectID? = moc.persistentStoreCoordinator?.managedObjectIDForURIRepresentation(mourl){
             
-            var mo : NodeLink = moc.objectWithID(id!) as! NodeLink
+            let mo : NodeLink = moc.objectWithID(id!) as! NodeLink
             
             
-            var newNode : BNNode = BNNode(entity: NSEntityDescription.entityForName("BNNode", inManagedObjectContext: moc)!, insertIntoManagedObjectContext: moc)
+            let newNode : BNNode = BNNode(entity: NSEntityDescription.entityForName("BNNode", inManagedObjectContext: moc)!, insertIntoManagedObjectContext: moc)
             newNode.setValue(mo, forKey: "nodeLink")
           // mo.addBNNodeObject(newNode)
             
 
 
             let curModels : [Model] = modelTreeController.selectedObjects as! [Model]
-            var curModel : Model = curModels[0]
+            let curModel : Model = curModels[0]
 
             
             curModel.addBNNodeObject(newNode)
@@ -118,7 +122,11 @@ class PlexusBNSKView: SKView, NSDraggingDestination {
             
             
             
-            moc.save(errorPtr)
+            do {
+                try moc.save()
+            } catch let error as NSError {
+                errorPtr.memory = error
+            }
 
             
         }

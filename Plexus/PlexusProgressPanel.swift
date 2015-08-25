@@ -66,7 +66,7 @@ class PlexusProgressPanel: NSViewController {
     }
     
     func changeCurWork(inc: Int) {
-        println("inc \(inc)")
+        print("inc \(inc)")
         ////  self.progressIndicator.doubleValue = progress.fractionCompleted
         self.curWork.integerValue = inc
         self.view.needsDisplay = true

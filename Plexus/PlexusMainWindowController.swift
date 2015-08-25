@@ -27,6 +27,8 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
 
     
     override func windowWillLoad() {
+        
+        let errorPtr : NSErrorPointer = nil
 
         //Get MOC from App delegate
         let appDelegate : AppDelegate = NSApplication.sharedApplication().delegate as! AppDelegate
@@ -37,26 +39,35 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
         
         //create a dataset if there are none
         let request = NSFetchRequest(entityName: "Dataset")
-        var anyError: NSError?
-        let fetchedDatasets = moc.executeFetchRequest(request, error:&anyError)
+        let fetchedDatasets: [AnyObject]?
+        do {
+            fetchedDatasets = try moc.executeFetchRequest(request)
+        } catch let error as NSError {
+            errorPtr.memory = error
+            fetchedDatasets = nil
+        }
         
         if fetchedDatasets == nil {
-            println("error")
+            print("error")
 
         }
         
         let initDatasets = fetchedDatasets as! [NSManagedObject]
         if(initDatasets.count == 0){
-            println("no datasets")
+            print("no datasets")
             //so make an initial one
-            let newDataset = NSEntityDescription.insertNewObjectForEntityForName("Dataset", inManagedObjectContext: moc) as! NSManagedObject
+            let newDataset = NSEntityDescription.insertNewObjectForEntityForName("Dataset", inManagedObjectContext: moc) 
 
-            var newModel = NSEntityDescription.insertNewObjectForEntityForName("Model", inManagedObjectContext: moc) as! NSManagedObject
+            let newModel = NSEntityDescription.insertNewObjectForEntityForName("Model", inManagedObjectContext: moc) 
             newModel.setValue("newmodel", forKey: "name")
             newModel.setValue(newDataset, forKey: "dataset")
             newModel.setValue(NSDate(), forKey: "dateCreated")
             newModel.setValue(NSDate(), forKey: "dateModded")
-            moc.save(&anyError)
+            do {
+                try moc.save()
+            } catch let error as NSError {
+                errorPtr.memory = error
+            }
 
         }
 
@@ -87,7 +98,7 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
     }
     
     @IBAction func  copyDataset(x:NSToolbarItem){
-        println("copy dataset Tapped: \(x)")
+        print("copy dataset Tapped: \(x)")
         
     }
     
@@ -130,14 +141,14 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
             
             
             var testranarray = [Double]()
-            for i in 1 ... 10000 {
+            for _ in 1 ... 10000 {
                 testranarray.append(Double(fNode.freqForCPT(self)))
             }
             
             var gi = 0
             for gNode : Double in testranarray {
                 
-                println(gNode)
+                print(gNode)
                 
                 
                 if(gNode == gNode && gNode >= 0.0 && gNode <= 1.0) {//fails if nan
@@ -166,9 +177,9 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
     
     
     @IBAction func  calculate(x:NSToolbarItem){
-        var errorPtr : NSErrorPointer = nil
+        let errorPtr : NSErrorPointer = nil
         
-        var i : Int = 0
+       // var i : Int = 0
         
         
 
@@ -179,7 +190,7 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
         if self.progressViewController == nil {
             let storyboard = NSStoryboard(name:"Main", bundle:nil)
 
-            self.progressViewController = storyboard!.instantiateControllerWithIdentifier("ProgressViewController") as? PlexusProgressPanel
+            self.progressViewController = storyboard.instantiateControllerWithIdentifier("ProgressViewController") as? PlexusProgressPanel
             
         }
         self.progressViewController?.delegate = self
@@ -222,7 +233,7 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
 */
         
 //dispatch_async(queue) {
-            var op = PlexusCalculationOperation(nodes: nodesForCalc, withRuns: curModel.runsper, withBurnin: curModel.burnins, withComputes: curModel.runstot)
+            let op = PlexusCalculationOperation(nodes: nodesForCalc, withRuns: curModel.runsper, withBurnin: curModel.burnins, withComputes: curModel.runstot)
         
             
             var operr: NSError?
@@ -231,7 +242,7 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
     
 
             if(operr == nil){
-                var resultNodes : NSMutableArray = op.getResults(self)
+                let resultNodes : NSMutableArray = op.getResults(self)
                 
                 let blankArray = [NSNumber]()
                 let blankData = NSKeyedArchiver.archivedDataWithRootObject(blankArray)
@@ -241,9 +252,9 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
                     
                     var postCount = [Int](count: 101, repeatedValue: 0)
                     
-                    var curtop = 0
+
                     
-                    var inNode : BNNode = nodesForCalc[fi]  //FIXME is this the same node???
+                    let inNode : BNNode = nodesForCalc[fi]  //FIXME is this the same node???
                     
                     //blank out previous postdata
                     //this shoudl never happen.. safer to blank it than mingle data
@@ -252,7 +263,7 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
 
 
                     
-                    var fline : [Double] = fNode as! [Double]
+                    let fline : [Double] = fNode as! [Double]
 
                   //  println("fline \(fline)")
                     var gi = 0
@@ -289,7 +300,7 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
                     
                 }
                 
-                var notification:NSUserNotification = NSUserNotification()
+                let notification:NSUserNotification = NSUserNotification()
                 notification.title = "Plexus"
                 //notification.subtitle = "Yur stuff are done"
                 notification.informativeText = "\(curModel.runstot.integerValue) runs completed."
@@ -297,7 +308,7 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
                 notification.soundName = NSUserNotificationDefaultSoundName
                 
                 notification.deliveryDate = NSDate(timeIntervalSinceNow: 5)
-                var notificationcenter:NSUserNotificationCenter = NSUserNotificationCenter.defaultUserNotificationCenter()
+                let notificationcenter:NSUserNotificationCenter = NSUserNotificationCenter.defaultUserNotificationCenter()
                 
                 notificationcenter.scheduleNotification(notification)
 
@@ -307,11 +318,11 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
                 
                 let calcAlert : NSAlert = NSAlert()
                 calcAlert.alertStyle = NSAlertStyle.WarningAlertStyle
-                calcAlert.messageText = operr?.localizedFailureReason
-                calcAlert.informativeText = operr?.localizedRecoverySuggestion
+                calcAlert.messageText = (operr?.localizedFailureReason)!
+                calcAlert.informativeText = (operr?.localizedRecoverySuggestion)!
                 calcAlert.addButtonWithTitle("OK")
                 
-                let res = calcAlert.runModal()
+              //  let res = calcAlert.runModal()
 
                 
                 
@@ -319,8 +330,12 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
         }
 
 
-           //FIXME remove when ready curModel.setValue(true, forKey: "complete")
-            self.moc.save(errorPtr)
+            do {
+                //FIXME remove when ready curModel.setValue(true, forKey: "complete")
+                try self.moc.save()
+            } catch let error as NSError {
+                errorPtr.memory = error
+            }
             
             self.contentViewController?.dismissViewController(self.progressViewController!)
             
@@ -328,20 +343,20 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
 
         
     
-        println("End calcuilate fxn")
+        print("End calcuilate fxn")
     }
 
     
     @IBAction func exportCSV(x:NSToolbarItem){
-        var err : NSErrorPointer = nil
+        let err : NSErrorPointer = nil
         
         let sv:NSSavePanel = NSSavePanel()
         sv.allowedFileTypes = ["csv"]
         
         sv.beginSheetModalForWindow(window!, completionHandler: {(result:Int) -> Void in
             if (result == NSFileHandlingPanelOKButton) {
-                var outFile  = sv.URL
-                 println(outFile)
+                let outFile  = sv.URL
+                 print(outFile)
                 
                 sv.close()
                 
@@ -352,7 +367,7 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
                 let curDataset : Dataset = curDatasets[0]
                 //get list of all traits in this dataset
                 let trequest = NSFetchRequest(entityName: "Trait")
-                var tpredicate = NSPredicate(format: "entry.dataset == %@", curDataset)
+                let tpredicate = NSPredicate(format: "entry.dataset == %@", curDataset)
                 trequest.resultType = .DictionaryResultType
                 trequest.predicate = tpredicate
                 trequest.returnsDistinctResults = true
@@ -360,7 +375,8 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
                 
                 
                 
-                if let headerTraits  = self.moc!.executeFetchRequest(trequest, error:err)  {
+                do {
+                    let headerTraits  = try self.moc!.executeFetchRequest(trequest)
                     //test and print for now
                     for headerTrait in headerTraits {
                        // println(headerTrait.name)
@@ -376,9 +392,9 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
                         outText += entry.name
                         outText += ","
                         
-                        let traits = entry.trait
+                        //let traits = entry.trait
                         
-                        for headerTrait in headerTraits {
+                        for _ in headerTraits {
                             
                             
                             /*
@@ -402,10 +418,15 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
                     
                     
                     
-                    outText.writeToURL(sv.URL!, atomically: true, encoding: NSUTF8StringEncoding, error: nil)
-                }
-                else {
+                    do {
+                        try outText.writeToURL(sv.URL!, atomically: true, encoding: NSUTF8StringEncoding)
+                    } catch _ {
+                    }
+                } catch let error as NSError {
+                    err.memory = error
                     return
+                } catch {
+                    fatalError()
                 }
                 
                 //Fetch all Datasets
@@ -445,7 +466,7 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
        // moc.undoManager = nil
 
         
-        var errorPtr : NSErrorPointer = nil
+        let errorPtr : NSErrorPointer = nil
         
         let op:NSOpenPanel = NSOpenPanel()
         op.allowsMultipleSelection = false
@@ -468,7 +489,7 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
                 
 
                // println(op.URL)
-                var inFile  = op.URL
+                let inFile  = op.URL
                // println(inFile)
                 
                 op.close()
@@ -490,7 +511,7 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
                     //instatntiate progress controller
                     if self.progressViewController == nil {
                         let storyboard = NSStoryboard(name:"Main", bundle:nil)
-                        self.progressViewController = storyboard!.instantiateControllerWithIdentifier("ProgressViewController") as? PlexusProgressPanel
+                        self.progressViewController = storyboard.instantiateControllerWithIdentifier("ProgressViewController") as? PlexusProgressPanel
                     }
                     self.progressViewController.delegate = self
                   
@@ -514,24 +535,30 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
 
 
                     
-                    self.moc.save(errorPtr)
+                    do {
+                        try self.moc.save()
+                    } catch let error as NSError {
+                        errorPtr.memory = error
+                    } catch {
+                        fatalError()
+                    }
                     
 
                     let datasetID = inDataset.objectID
 
                     
                     //give it an initial model
-                    var newModel : Model = Model(entity: NSEntityDescription.entityForName("Model", inManagedObjectContext: self.moc)!, insertIntoManagedObjectContext: self.moc)
+                    let newModel : Model = Model(entity: NSEntityDescription.entityForName("Model", inManagedObjectContext: self.moc)!, insertIntoManagedObjectContext: self.moc)
                     newModel.setValue("First Model", forKey: "name")
                     newModel.setValue(inDataset, forKey: "dataset")
                     inDataset.addModelObject(newModel)
                     
                     
-                    let fileContents : String = NSString(contentsOfFile: inFile!.path!, encoding: NSUTF8StringEncoding, error: nil)! as String
+                    let fileContents : String = (try! NSString(contentsOfFile: inFile!.path!, encoding: NSUTF8StringEncoding)) as String
                     // print(fileContents)
-                    var fileLines : [String] = fileContents.componentsSeparatedByString("\n")
+                    let fileLines : [String] = fileContents.componentsSeparatedByString("\n")
                     
-                    var lineCount = Double(fileLines.count)
+                    let lineCount = Double(fileLines.count)
                     
                     var batchCount : Int = 0
                     var columnCount = 0
@@ -544,7 +571,7 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
                         
                         
                         if firstLine {  //this is the header line
-                            var theHeader : [String] = thisLine.componentsSeparatedByString(",")
+                            let theHeader : [String] = thisLine.componentsSeparatedByString(",")
                             for thisHeader in theHeader {
                              //   println(thisHeader)
                                 if thisHeader == "Name" {
@@ -559,7 +586,7 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
                             
                         }
                         
-                        var newEntry : Entry = Entry(entity: NSEntityDescription.entityForName("Entry", inManagedObjectContext: self.moc)!, insertIntoManagedObjectContext: self.moc)
+                        let newEntry : Entry = Entry(entity: NSEntityDescription.entityForName("Entry", inManagedObjectContext: self.moc)!, insertIntoManagedObjectContext: self.moc)
                         var theTraits : [String] = thisLine.componentsSeparatedByString(",")
 
                         if nameColumn >= 0{
@@ -605,7 +632,7 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
                                // if let fetch = moc!.executeFetchRequest(request, error:&err)
                             }
 
-                            var newTrait : Trait = Trait(entity: NSEntityDescription.entityForName("Trait", inManagedObjectContext: self.moc)!, insertIntoManagedObjectContext: self.moc)
+                            let newTrait : Trait = Trait(entity: NSEntityDescription.entityForName("Trait", inManagedObjectContext: self.moc)!, insertIntoManagedObjectContext: self.moc)
                             newTrait.setValue(headers[columnCount], forKey: "name")
                             newTrait.setValue(thisTrait, forKey: "traitValue")
                             newTrait.setValue(newEntry, forKey: "entry")
@@ -623,7 +650,13 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
                         i++
                         batchCount++
                         if(batchCount > 100){
-                            self.moc.save(errorPtr)
+                            do {
+                                try self.moc.save()
+                            } catch let error as NSError {
+                                errorPtr.memory = error
+                            } catch {
+                                fatalError()
+                            }
                             batchCount = 0
                             self.moc.reset()
 
@@ -637,7 +670,13 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
                     
                     
                     
-                    self.moc.save(errorPtr)
+                    do {
+                        try self.moc.save()
+                    } catch let error as NSError {
+                        errorPtr.memory = error
+                    } catch {
+                        fatalError()
+                    }
                     self.moc.reset()
                     
                   //  self.moc.undoManager = undoM
@@ -646,7 +685,7 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
 
 
                     let datafetch = NSFetchRequest(entityName: "Dataset")
-                    let datasets : [Dataset] = self.moc.executeFetchRequest(datafetch, error: errorPtr) as! [Dataset]
+                    let datasets : [Dataset] = try! self.moc.executeFetchRequest(datafetch) as! [Dataset]
                     
                     
                     self.datasetController.addObjects(datasets)
@@ -692,7 +731,7 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
     }
     
     func progressViewControllerDidCancel(progressViewController: PlexusProgressPanel) {
-        println("Cancelled progress")
+        print("Cancelled progress")
         self.contentViewController?.dismissViewController(self.progressViewController!)
     }
     

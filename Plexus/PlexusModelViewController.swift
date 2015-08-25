@@ -30,7 +30,7 @@ class PlexusModelViewController: NSViewController {
     }
     
    @IBAction func childModel(sender : AnyObject){
-        var errorPtr : NSErrorPointer = nil
+        let errorPtr : NSErrorPointer = nil
     
         let curDatasets : [Dataset] = datasetController.selectedObjects as! [Dataset]
         let curDataset : Dataset = curDatasets[0]
@@ -41,12 +41,12 @@ class PlexusModelViewController: NSViewController {
 
     
     
-    if let curPath : NSIndexPath = modelTreeController.selectionIndexPath {
-        let newPath : NSIndexPath = curPath.indexPathByAddingIndex(curModel.children.count)
+    if let _ : NSIndexPath = modelTreeController.selectionIndexPath {
+       // let newPath : NSIndexPath = curPath.indexPathByAddingIndex(curModel.children.count)
         
 
 
-        var newModel : Model = Model(entity: NSEntityDescription.entityForName("Model", inManagedObjectContext: self.moc)!, insertIntoManagedObjectContext: self.moc)
+        let newModel : Model = Model(entity: NSEntityDescription.entityForName("Model", inManagedObjectContext: self.moc)!, insertIntoManagedObjectContext: self.moc)
         curModel.addChildObject(newModel)
         newModel.setValue(curModel, forKey: "parent")
         //modelTreeController.insertObject(newModel, atArrangedObjectIndexPath: newPath)
@@ -56,7 +56,7 @@ class PlexusModelViewController: NSViewController {
         
         let curNodes  = curModel.bnnode.allObjects as! [BNNode]
         for curNode : BNNode in curNodes {
-            var newNode : BNNode = BNNode(entity: NSEntityDescription.entityForName("BNNode", inManagedObjectContext: self.moc)!, insertIntoManagedObjectContext: self.moc)
+            let newNode : BNNode = BNNode(entity: NSEntityDescription.entityForName("BNNode", inManagedObjectContext: self.moc)!, insertIntoManagedObjectContext: self.moc)
 
 
             newNode.setValue(curNode.nodeLink, forKey: "nodeLink")
@@ -101,7 +101,11 @@ class PlexusModelViewController: NSViewController {
 
 
     
-        self.moc.save(errorPtr)
+    do {
+        try self.moc.save()
+    } catch let error as NSError {
+        errorPtr.memory = error
+    }
 
     
     }

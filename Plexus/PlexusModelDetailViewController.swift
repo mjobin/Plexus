@@ -96,7 +96,7 @@ class PlexusModelDetailViewController: NSViewController, CPTScatterPlotDataSourc
         self.graphView.hostedGraph = graph
         
         
-        var titleStyle = graph.titleTextStyle!.mutableCopy() as! CPTMutableTextStyle
+        let titleStyle = graph.titleTextStyle!.mutableCopy() as! CPTMutableTextStyle
        // titleStyle.fontName = "HelveticaNeue-Bold"
         titleStyle.fontName = "SanFrancisco"
         titleStyle.fontSize = 18.0
@@ -110,12 +110,12 @@ class PlexusModelDetailViewController: NSViewController, CPTScatterPlotDataSourc
         graph.paddingLeft = 10.0
         graph.paddingRight = 10.0
         
-        var plotSpace : CPTXYPlotSpace = graph.defaultPlotSpace as! CPTXYPlotSpace
+        let plotSpace : CPTXYPlotSpace = graph.defaultPlotSpace as! CPTXYPlotSpace
         plotSpace.allowsUserInteraction = false
         
         
-        var xRange = plotSpace.xRange.mutableCopy() as! CPTMutablePlotRange
-        var yRange = plotSpace.yRange.mutableCopy() as! CPTMutablePlotRange
+        let xRange = plotSpace.xRange.mutableCopy() as! CPTMutablePlotRange
+        let yRange = plotSpace.yRange.mutableCopy() as! CPTMutablePlotRange
         
         xRange.length = 1.1
         yRange.length = 1.1
@@ -129,7 +129,7 @@ class PlexusModelDetailViewController: NSViewController, CPTScatterPlotDataSourc
         // Axes
         
         // var axisSet = CPTXYAxisSet(frame:self.graphView.bounds)
-        var axisSet = graph.axisSet as! CPTXYAxisSet
+        let axisSet = graph.axisSet as! CPTXYAxisSet
         axisSet.xAxis!.axisConstraints = CPTConstraints.constraintWithUpperOffset(1.0)
         axisSet.yAxis!.axisConstraints = CPTConstraints.constraintWithUpperOffset(1.0)
         axisSet.yAxis!.axisConstraints = CPTConstraints.constraintWithLowerOffset(0.0)
@@ -148,7 +148,7 @@ class PlexusModelDetailViewController: NSViewController, CPTScatterPlotDataSourc
         
         priorPlot = CPTScatterPlot(frame:graph.bounds)
         priorPlot.identifier = "PriorPlot"
-        var priorLineStyle = CPTMutableLineStyle()
+        let priorLineStyle = CPTMutableLineStyle()
         priorLineStyle.miterLimit = 1.0
         priorLineStyle.lineWidth = 2.0
         priorLineStyle.lineColor = CPTColor.lightGrayColor()
@@ -164,9 +164,9 @@ class PlexusModelDetailViewController: NSViewController, CPTScatterPlotDataSourc
         
         
         
-        var postPlot = CPTScatterPlot(frame:graph.bounds)
+        let postPlot = CPTScatterPlot(frame:graph.bounds)
         postPlot.identifier = "PostPlot"
-        var postLineStyle = CPTMutableLineStyle()
+        let postLineStyle = CPTMutableLineStyle()
         postLineStyle.miterLimit = 1.0
         postLineStyle.lineWidth = 2.0
         postLineStyle.lineColor = CPTColor.blueColor()
@@ -189,7 +189,7 @@ class PlexusModelDetailViewController: NSViewController, CPTScatterPlotDataSourc
         scene.modelTreeController = self.modelTreeController
         scene.nodesController = self.nodesController
         
-        let options = NSKeyValueObservingOptions.New | NSKeyValueObservingOptions.Old
+        let options: NSKeyValueObservingOptions = [NSKeyValueObservingOptions.New, NSKeyValueObservingOptions.Old]
         modelTreeController.addObserver(self, forKeyPath: "selectionIndexPath", options: options, context: nil)
         
 
@@ -484,7 +484,7 @@ class PlexusModelDetailViewController: NSViewController, CPTScatterPlotDataSourc
     
     
     func numberForPlot(plot: CPTPlot, field fieldEnum: UInt, recordIndex idx: UInt) -> AnyObject? {
-        var numrec = Double(numberOfRecordsForPlot(plot))
+        let numrec = Double(numberOfRecordsForPlot(plot))
         
         if(fieldEnum == 0){//x
             return (Double(idx)/numrec)
@@ -557,7 +557,8 @@ class PlexusModelDetailViewController: NSViewController, CPTScatterPlotDataSourc
     
     
     func collectData() {
-         // println("\n*******collectData")
+        let errorPtr : NSErrorPointer = nil
+        
         self.dataPopup.removeAllItems()
         self.dataSubPopup.removeAllItems()
         self.dataPopup.enabled = true
@@ -566,10 +567,10 @@ class PlexusModelDetailViewController: NSViewController, CPTScatterPlotDataSourc
         self.dataSubPopup.hidden = false
         var dataNames = [String]()
         var dataSubNames = [String]()
-        var err: NSError?
+
         
         
-        var errorPtr : NSErrorPointer = nil
+        
         
         
         
@@ -649,13 +650,16 @@ class PlexusModelDetailViewController: NSViewController, CPTScatterPlotDataSourc
                     request.returnsDistinctResults = true
                     request.propertiesToFetch = ["name"]
                     
-                    if let fetch = moc.executeFetchRequest(request, error:&err) {
+                    do {
+                        let fetch = try moc.executeFetchRequest(request)
                         //  println("in entry to trait children fetch \(fetch)")
                         for obj  in fetch {
                             //println(obj.valueForKey("name"))
                             dataNames.append(obj.valueForKey("name") as! String)
                             
                         }
+                    } catch let error as NSError {
+                        errorPtr.memory = error
                     }
                     
                 }
@@ -676,7 +680,7 @@ class PlexusModelDetailViewController: NSViewController, CPTScatterPlotDataSourc
                 
             default:
                 
-                println("collectData out of bounds")
+                print("collectData out of bounds")
                 dataNames = [String]()
                 
             }
@@ -696,7 +700,7 @@ class PlexusModelDetailViewController: NSViewController, CPTScatterPlotDataSourc
             
 
             //if the currentdataName can be found in the list, it is selected and them subNames can be found, otherwise just return
-            if contains(dataNames, curNode.dataName){
+            if dataNames.contains(curNode.dataName){
                 predicate = NSPredicate()
                 
                 //now create pickable list of trait values
@@ -747,7 +751,7 @@ class PlexusModelDetailViewController: NSViewController, CPTScatterPlotDataSourc
                     }
                     
                 default:
-                    println("out of bounds")
+                    print("out of bounds")
                     
                 }
                 
@@ -756,13 +760,16 @@ class PlexusModelDetailViewController: NSViewController, CPTScatterPlotDataSourc
                 request.returnsDistinctResults = true
                 request.propertiesToFetch = ["traitValue"]
                 
-                if let fetch = moc.executeFetchRequest(request, error:&err) {
+                do {
+                    let fetch = try moc.executeFetchRequest(request)
                     // println("sub fetch \(fetch)")
                     for obj  in fetch {
                         //   println(obj.valueForKey("traitValue"))
                         dataSubNames.append(obj.valueForKey("traitValue") as! String)
                         
                     }
+                } catch let error as NSError {
+                    errorPtr.memory = error
                 }
                 
                 
@@ -821,10 +828,12 @@ class PlexusModelDetailViewController: NSViewController, CPTScatterPlotDataSourc
     }
     //******
     
+
     
-    override func observeValueForKeyPath(keyPath: String, ofObject object: AnyObject, change: [NSObject : AnyObject], context: UnsafeMutablePointer<Void>) {
+    override func observeValueForKeyPath(keyPath: String?, ofObject object: AnyObject?, change: [String : AnyObject]?, context: UnsafeMutablePointer<Void>) {
       //  println("observed \(object) \(change) \(context)")
-        switch (keyPath) {
+        let keyPathStr : String = keyPath! //FIXME this was added becaiuse in swift 2.0 the fxn was changed so that keyPath was a String?
+        switch (keyPathStr) {
             case("selectionIndexPath"): //modelTreeController
                 scene.reloadData()
                 

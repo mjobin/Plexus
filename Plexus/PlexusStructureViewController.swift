@@ -33,7 +33,7 @@ class PlexusStructureViewController: NSViewController, NSTableViewDelegate, NSTa
     override func viewDidLoad() {
         super.viewDidLoad()
         let kString : String = kUTTypeURL as String
-        var registeredTypes:[String] = [kString]
+        let registeredTypes:[String] = [kString]
         structureTableView.registerForDraggedTypes(registeredTypes)
         structureTableView.setDraggingSourceOperationMask(NSDragOperation.Every, forLocal: true)
         structureTableView.setDraggingSourceOperationMask(NSDragOperation.Every, forLocal: false)
@@ -50,10 +50,15 @@ class PlexusStructureViewController: NSViewController, NSTableViewDelegate, NSTa
        // println("object value from \(tableView)")
         
         if(tableView == structureEntriesTableView){
-            return structureEntriesController.arrangedObjects.objectAtIndex(row)
+            let secArray : NSArray = structureEntriesController.arrangedObjects as! NSArray
+            return secArray.objectAtIndex(row)
+            //return structureEntriesController.arrangedObjects.objectAtIndex(row)  FIXME beta compiler was complaing so i used the above clumsiness. replace?
         }
         else if(tableView == structureTableView){
-            return structureController.arrangedObjects.objectAtIndex(row)
+            let secArray : NSArray = structureController.arrangedObjects as! NSArray
+            return secArray.objectAtIndex(row)
+            
+           // return structureController.arrangedObjects.objectAtIndex(row) FIXME beta compiler was complaing so i used the above clumsiness. replace?
         }
         
         return nil
@@ -70,7 +75,10 @@ class PlexusStructureViewController: NSViewController, NSTableViewDelegate, NSTa
             
             
             let selectedRow = rowIndexes.firstIndex
-            let selectedObject: AnyObject = structureController.arrangedObjects.objectAtIndex(selectedRow)
+            let secArray : NSArray = structureController.arrangedObjects as! NSArray
+            let selectedObject: AnyObject = secArray.objectAtIndex(selectedRow)
+            //            let selectedObject: AnyObject = structureController.arrangedObjects.objectAtIndex(selectedRow) FIXME beta compiler was complaing so i used the above clumsiness. replace?
+
             
             let mutableArray : NSMutableArray = NSMutableArray()
             mutableArray.addObject(selectedObject.objectID.URIRepresentation())
@@ -111,7 +119,7 @@ class PlexusStructureViewController: NSViewController, NSTableViewDelegate, NSTa
         
         if(tableView == structureEntriesTableView){
             let pboard : NSPasteboard = info.draggingPasteboard()
-            let types : NSArray = pboard.types!
+
             
             
             let kString : String = kUTTypeURL as String

@@ -39,7 +39,7 @@ class PlexusEntryViewController: NSViewController, NSOutlineViewDelegate, NSOutl
         
     
         let kString : String = kUTTypeURL as String
-        var registeredTypes:[String] = [kString]
+        let registeredTypes:[String] = [kString]
         entryOutlineView.registerForDraggedTypes(registeredTypes)
         entryOutlineView.setDraggingSourceOperationMask(NSDragOperation.Every, forLocal: true)
         entryOutlineView.setDraggingSourceOperationMask(NSDragOperation.Every, forLocal: false)
@@ -49,24 +49,24 @@ class PlexusEntryViewController: NSViewController, NSOutlineViewDelegate, NSOutl
     
     
     @IBAction func addEntry(sender : AnyObject){
-        println("add entry")
+        print("add entry")
         
     }
     
     @IBAction func removeEntry(sender : AnyObject){
-        println("remove entry")
+        print("remove entry")
         
     }
     
     @IBAction func addChildEntry(sender : AnyObject){
-        println("add child entry")
+        print("add child entry")
         
     }
 
     //nsoutlineview delegate methods
     func outlineView(outlineView: NSOutlineView, viewForTableColumn tableColumn: NSTableColumn?, item: AnyObject) -> NSView? {
        // println("outlineview viewfortabelciom")
-        var thisView : NSTableCellView = outlineView.makeViewWithIdentifier("Entry Cell", owner: self) as! NSTableCellView
+        let thisView : NSTableCellView = outlineView.makeViewWithIdentifier("Entry Cell", owner: self) as! NSTableCellView
         
         
 
