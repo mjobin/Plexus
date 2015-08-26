@@ -558,7 +558,7 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
                     // print(fileContents)
                     let fileLines : [String] = fileContents.componentsSeparatedByString("\n")
                     
-                    let lineCount = Double(fileLines.count)
+                    self.progressViewController.changeMaxWork(fileLines.count)
                     
                     var batchCount : Int = 0
                     var columnCount = 0
@@ -644,7 +644,7 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
                         }
                         
 
-                        self.progressViewController.moveBar(1/lineCount*100)
+
    
                         firstLine = false
                         i++
