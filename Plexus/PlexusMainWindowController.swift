@@ -19,9 +19,22 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
     var moc : NSManagedObjectContext!
     var mainSplitViewController = PlexusMainSplitViewController()
     var progressViewController : PlexusProgressPanel!
+    @IBOutlet var mainToolbar : NSToolbar!
     @IBOutlet var datasetController : NSArrayController!
+    @IBOutlet var testprog : NSProgressIndicator!
     //var pProgress: NSProgress?
     var queue: dispatch_queue_t = dispatch_queue_create("My Queue", DISPATCH_QUEUE_SERIAL)
+    var group : dispatch_group_t = dispatch_group_create()
+    
+    var progSheet : NSWindow!
+    var progInd : NSProgressIndicator!
+    var workLabel : NSTextField!
+    var curLabel : NSTextField!
+    var ofLabel : NSTextField!
+    var maxLabel : NSTextField!
+    var cancelButton : NSButton!
+    
+    var breakloop = false
     
 
 
@@ -175,15 +188,176 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
     }
 
     
+    func progSetup(sender: AnyObject) -> NSWindow {
+        var retWin : NSWindow!
+        
+        //sheet programamticaly
+        let sheetRect = NSRect(x: 0, y: 0, width: 400, height: 114)
+        retWin = NSWindow(contentRect: sheetRect, styleMask: NSTitledWindowMask, backing: NSBackingStoreType.Buffered, `defer`: true)
+        let contentView = NSView(frame: sheetRect)
+        self.progInd = NSProgressIndicator(frame: NSRect(x: 143, y: 72, width: 239, height: 20))
+        
+        self.workLabel = NSTextField(frame: NSRect(x: 10, y: 72, width: 64, height: 20))
+        workLabel.editable = false
+        workLabel.drawsBackground = false
+        workLabel.selectable = false
+        workLabel.bezeled = false
+        workLabel.stringValue = "Working..."
+        
+        self.cancelButton = NSButton(frame: NSRect(x: 304, y: 12, width: 84, height: 32))
+        cancelButton.bezelStyle = NSBezelStyle.RoundedBezelStyle
+        cancelButton.title = "Cancel"
+        cancelButton.target = self
+        cancelButton.action = "cancelProg:"
+        
+        self.maxLabel = NSTextField(frame: NSRect(x: 60, y: 10, width: 64, height: 20))
+        maxLabel.editable = false
+        maxLabel.drawsBackground = false
+        maxLabel.selectable = false
+        maxLabel.bezeled = false
+        maxLabel.stringValue = String(0)
+        
+        self.ofLabel = NSTextField(frame: NSRect(x: 40, y: 10, width: 64, height: 20))
+        ofLabel.editable = false
+        ofLabel.drawsBackground = false
+        ofLabel.selectable = false
+        ofLabel.bezeled = false
+        ofLabel.stringValue = "of"
+        
+        self.curLabel = NSTextField(frame: NSRect(x: 10, y: 10, width: 64, height: 20))
+        curLabel.editable = false
+        curLabel.drawsBackground = false
+        curLabel.selectable = false
+        curLabel.bezeled = false
+        curLabel.stringValue = String(0)
+        
+        contentView.addSubview(workLabel)
+        contentView.addSubview(curLabel)
+        contentView.addSubview(ofLabel)
+        contentView.addSubview(maxLabel)
+        contentView.addSubview(progInd)
+        contentView.addSubview(cancelButton)
+        
+        retWin.contentView = contentView
+        
+        
+        return retWin
+    }
+    
+    @IBAction func  progtest(x:NSToolbarItem){
+
+        let testmax = 100
+        let priority = DISPATCH_QUEUE_PRIORITY_DEFAULT
+        
+        
+        /*
+        //sheet programamticaly
+        let sheetRect = NSRect(x: 0, y: 0, width: 400, height: 114)
+        progSheet = NSWindow(contentRect: sheetRect, styleMask: NSTitledWindowMask, backing: NSBackingStoreType.Buffered, `defer`: true)
+        let contentView = NSView(frame: sheetRect)
+        let progInd = NSProgressIndicator(frame: NSRect(x: 143, y: 72, width: 239, height: 20))
+        
+        let workLabel = NSTextField(frame: NSRect(x: 10, y: 72, width: 64, height: 20))
+        workLabel.editable = false
+        workLabel.drawsBackground = false
+        workLabel.selectable = false
+        workLabel.bezeled = false
+        workLabel.stringValue = "Working..."
+        
+        let cancelButton = NSButton(frame: NSRect(x: 304, y: 12, width: 84, height: 32))
+        cancelButton.bezelStyle = NSBezelStyle.RoundedBezelStyle
+        cancelButton.title = "Cancel"
+        cancelButton.target = self
+        cancelButton.action = "cancelProg:"
+        
+        let maxLabel = NSTextField(frame: NSRect(x: 60, y: 10, width: 64, height: 20))
+        maxLabel.editable = false
+        maxLabel.drawsBackground = false
+        maxLabel.selectable = false
+        maxLabel.bezeled = false
+        maxLabel.stringValue = String(testmax)
+        
+        let ofLabel = NSTextField(frame: NSRect(x: 40, y: 10, width: 64, height: 20))
+        ofLabel.editable = false
+        ofLabel.drawsBackground = false
+        ofLabel.selectable = false
+        ofLabel.bezeled = false
+        ofLabel.stringValue = "of"
+        
+        let curLabel = NSTextField(frame: NSRect(x: 10, y: 10, width: 64, height: 20))
+        curLabel.editable = false
+        curLabel.drawsBackground = false
+        curLabel.selectable = false
+        curLabel.bezeled = false
+        curLabel.stringValue = String(0)
+        
+        
+        contentView.addSubview(curLabel)
+        contentView.addSubview(ofLabel)
+        contentView.addSubview(maxLabel)
+        contentView.addSubview(progInd)
+        contentView.addSubview(cancelButton)
+        
+        progSheet.contentView = contentView
+        */
+        
+        progSheet = self.progSetup(self)
+        self.maxLabel.stringValue = String(testmax)
+        
+        self.window!.beginSheet(progSheet, completionHandler: nil)
+        
+     //   NSApp.beginSheet(progSheet, modalForWindow: self.window!, modalDelegate: nil, didEndSelector: nil, contextInfo: nil)
+        
+        progSheet.makeKeyAndOrderFront(self)
+        
+        progInd.indeterminate = false
+        progInd.doubleValue = 0
+
+        progInd.startAnimation(self)
+        
+        progInd.maxValue =  Double(testmax)
+        dispatch_async(dispatch_get_global_queue(priority, 0)) {
+            for i in 0 ... testmax {
+                if(self.breakloop){
+                    self.breakloop = false
+                    break
+                }
+
+                dispatch_async(dispatch_get_main_queue()) {
+                    
+                    self.progInd.incrementBy(1)
+                }
+                self.curLabel.stringValue = String(i)
+                NSThread.sleepForTimeInterval(0.1)
+            }
+            
+            
+            dispatch_async(dispatch_get_main_queue()) {
+                self.progInd.indeterminate = true
+                self.window!.endSheet(self.progSheet)
+                self.progSheet.orderOut(self)
+            }
+            
+        }
+        
+
+        
+    }
+    
+    func cancelProg(sender: AnyObject){
+
+        self.breakloop = true
+    }
     
     @IBAction func  calculate(x:NSToolbarItem){
         let errorPtr : NSErrorPointer = nil
+
         
        // var i : Int = 0
         
         
-
         
+
         
 
         //instatntiate progress controller
@@ -459,7 +633,7 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
     }
     
     @IBAction func importCSV(x:NSToolbarItem){
-       // println("Tapped: \(x)")
+
         
         
        // let undoM : NSUndoManager = moc.undoManager!
@@ -494,6 +668,8 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
                 
                 op.close()
                 
+                
+                
                 var i = 1
                 
                 var firstLine = true
@@ -509,17 +685,8 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
 
                     
                     //instatntiate progress controller
-                    if self.progressViewController == nil {
-                        let storyboard = NSStoryboard(name:"Main", bundle:nil)
-                        self.progressViewController = storyboard.instantiateControllerWithIdentifier("ProgressViewController") as? PlexusProgressPanel
-                    }
-                    self.progressViewController.delegate = self
-                  
-                    
-                    self.contentViewController?.presentViewControllerAsSheet(self.progressViewController!)
-                    
-                    
-                    self.progressViewController?.changeLabel(String("Importing..."))
+
+
                     
                     var inDataset : Dataset!
                     if(av.state == 0){//new dataset
@@ -558,7 +725,8 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
                     // print(fileContents)
                     let fileLines : [String] = fileContents.componentsSeparatedByString("\n")
                     
-                    self.progressViewController.changeMaxWork(fileLines.count)
+                    
+
                     
                     var batchCount : Int = 0
                     var columnCount = 0
@@ -566,142 +734,159 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
                     var structureColumn = -1
                     var headers = [String]()
                     
-                    for thisLine : String in fileLines {
+                    
                         
-                        
-                        
-                        if firstLine {  //this is the header line
-                            let theHeader : [String] = thisLine.componentsSeparatedByString(",")
-                            for thisHeader in theHeader {
-                             //   println(thisHeader)
-                                if thisHeader == "Name" {
-                                    nameColumn = columnCount
+                        for thisLine : String in fileLines {
+                            
+                            if(self.breakloop){
+                                self.breakloop = false
+                                break
+                            }
+                            
+                            
+                            
+                            if firstLine {  //this is the header line
+                                let theHeader : [String] = thisLine.componentsSeparatedByString(",")
+                                for thisHeader in theHeader {
+                                 //   println(thisHeader)
+                                    if thisHeader == "Name" {
+                                        nameColumn = columnCount
+                                    }
+                                    if thisHeader == "Structure" {
+                                        structureColumn = columnCount
+                                    }
+                                    headers.append(thisHeader)
+                                    columnCount++
                                 }
-                                if thisHeader == "Structure" {
-                                    structureColumn = columnCount
+                                
+                            }
+                            
+                            let newEntry : Entry = Entry(entity: NSEntityDescription.entityForName("Entry", inManagedObjectContext: self.moc)!, insertIntoManagedObjectContext: self.moc)
+                            var theTraits : [String] = thisLine.componentsSeparatedByString(",")
+
+                            if nameColumn >= 0{
+                                newEntry.setValue(theTraits[nameColumn], forKey: "name")
+                            }
+                            else {
+                                newEntry.setValue(String(i), forKey: "name")
+                            }
+                            /*
+                            if structureColumn >=0 {
+                                let strerror = nil
+                                let request = NSFetchRequest(entityName: "Structure")
+                                let predicate = NSPredicate(format: "dataset == %@ AND name == %@", inDataset, theTraits[structureColumn])
+                                let strCount = moc.countForFetchRequest(request, error: strerror)
+                                if(strCount == NSNotFound){ //does not exist, create
+                                    var newStructure : Structure = Structure(entity: NSEntityDescription.entityForName("Structure", inManagedObjectContext: self.moc)!, insertIntoManagedObjectContext: self.moc)
+                                    
+                                    newEntry.setValue(inDataset, forKey: "dataset")
+
                                 }
-                                headers.append(thisHeader)
+                                else { //exists
+                                    
+                                }
+        
+                                
+                            }
+    */
+                            
+                            newEntry.setValue("Entry", forKey: "type")
+                            newEntry.setValue(inDataset, forKey: "dataset")
+                            inDataset.addEntryObject(newEntry)
+
+                            
+
+                            columnCount = 0
+                            for thisTrait in theTraits {
+                                
+                                if columnCount == structureColumn {
+                                   //FIXME check if the streucvture exists, if not make it here
+                                    
+
+                                    
+                                   // if let fetch = moc!.executeFetchRequest(request, error:&err)
+                                }
+
+                                let newTrait : Trait = Trait(entity: NSEntityDescription.entityForName("Trait", inManagedObjectContext: self.moc)!, insertIntoManagedObjectContext: self.moc)
+                                newTrait.setValue(headers[columnCount], forKey: "name")
+                                newTrait.setValue(thisTrait, forKey: "traitValue")
+                                newTrait.setValue(newEntry, forKey: "entry")
+                                
+                                newEntry.addTraitObject(newTrait)
+                                
                                 columnCount++
-                            }
-                            
-                        }
-                        
-                        let newEntry : Entry = Entry(entity: NSEntityDescription.entityForName("Entry", inManagedObjectContext: self.moc)!, insertIntoManagedObjectContext: self.moc)
-                        var theTraits : [String] = thisLine.componentsSeparatedByString(",")
-
-                        if nameColumn >= 0{
-                            newEntry.setValue(theTraits[nameColumn], forKey: "name")
-                        }
-                        else {
-                            newEntry.setValue(String(i), forKey: "name")
-                        }
-                        /*
-                        if structureColumn >=0 {
-                            let strerror = nil
-                            let request = NSFetchRequest(entityName: "Structure")
-                            let predicate = NSPredicate(format: "dataset == %@ AND name == %@", inDataset, theTraits[structureColumn])
-                            let strCount = moc.countForFetchRequest(request, error: strerror)
-                            if(strCount == NSNotFound){ //does not exist, create
-                                var newStructure : Structure = Structure(entity: NSEntityDescription.entityForName("Structure", inManagedObjectContext: self.moc)!, insertIntoManagedObjectContext: self.moc)
-                                
-                                newEntry.setValue(inDataset, forKey: "dataset")
-
-                            }
-                            else { //exists
                                 
                             }
-    
                             
-                        }
-*/
-                        
-                        newEntry.setValue("Entry", forKey: "type")
-                        newEntry.setValue(inDataset, forKey: "dataset")
-                        inDataset.addEntryObject(newEntry)
 
-                        
 
-                        columnCount = 0
-                        for thisTrait in theTraits {
+       
+                            firstLine = false
+                            i++
+
                             
-                            if columnCount == structureColumn {
-                               //FIXME check if the streucvture exists, if not make it here
-                                
+                                batchCount++
+                            
+                            if(batchCount > 100){
+                                do {
+                                    try self.moc.save()
+                                } catch let error as NSError {
+                                    errorPtr.memory = error
+                                } catch {
+                                    fatalError()
+                                }
+                                batchCount = 0
+                                self.moc.reset()
 
                                 
-                               // if let fetch = moc!.executeFetchRequest(request, error:&err)
+                                inDataset = self.moc.objectWithID(datasetID) as! Dataset
+
+                                
                             }
 
-                            let newTrait : Trait = Trait(entity: NSEntityDescription.entityForName("Trait", inManagedObjectContext: self.moc)!, insertIntoManagedObjectContext: self.moc)
-                            newTrait.setValue(headers[columnCount], forKey: "name")
-                            newTrait.setValue(thisTrait, forKey: "traitValue")
-                            newTrait.setValue(newEntry, forKey: "entry")
-                            
-                            newEntry.addTraitObject(newTrait)
-                            
-                            columnCount++
-                            
-                        }
-                        
-
-
-   
-                        firstLine = false
-                        i++
-                        batchCount++
-                        if(batchCount > 100){
-                            do {
-                                try self.moc.save()
-                            } catch let error as NSError {
-                                errorPtr.memory = error
-                            } catch {
-                                fatalError()
-                            }
-                            batchCount = 0
-                            self.moc.reset()
-
-                            
-                            inDataset = self.moc.objectWithID(datasetID) as! Dataset
 
                             
                         }
                         
-                    }
-                    
-                    
-                    
-                    do {
-                        try self.moc.save()
-                    } catch let error as NSError {
-                        errorPtr.memory = error
-                    } catch {
-                        fatalError()
-                    }
-                    self.moc.reset()
-                    
-                  //  self.moc.undoManager = undoM
-                    
-                  //clear controller
 
-
-                    let datafetch = NSFetchRequest(entityName: "Dataset")
-                    let datasets : [Dataset] = try! self.moc.executeFetchRequest(datafetch) as! [Dataset]
+                        
+                        
                     
-                    
-                    self.datasetController.addObjects(datasets)
-
-                    inDataset = self.moc.objectWithID(datasetID) as! Dataset
 
                     
-                    let nDarray : [Dataset] = [inDataset]
+                    
+                        do {
+                            try self.moc.save()
+                        } catch let error as NSError {
+                            errorPtr.memory = error
+                        } catch {
+                            fatalError()
+                        }
+                        self.moc.reset()
+
+                        
+                      //  self.moc.undoManager = undoM
+                        
+                      //clear controller
+
+
+                        let datafetch = NSFetchRequest(entityName: "Dataset")
+                        let datasets : [Dataset] = try! self.moc.executeFetchRequest(datafetch) as! [Dataset]
+                        
+                        
+                        self.datasetController.addObjects(datasets)
+
+                        inDataset = self.moc.objectWithID(datasetID) as! Dataset
+
+                        
+                        let nDarray : [Dataset] = [inDataset]
+
+                        
+                        self.datasetController.setSelectedObjects(nDarray)
+
+
 
                     
-                    self.datasetController.setSelectedObjects(nDarray)
-
-
-                    
-
-                    self.contentViewController?.dismissViewController(self.progressViewController!)
                     
                     
                 }
