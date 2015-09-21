@@ -11,20 +11,17 @@ import CoreData
 import OpenCL
 
 
-class PlexusMainWindowController: NSWindowController, ProgressViewControllerDelegate, NSWindowDelegate {
+class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
     
     
 
   
     var moc : NSManagedObjectContext!
     var mainSplitViewController = PlexusMainSplitViewController()
-    var progressViewController : PlexusProgressPanel!
     @IBOutlet var mainToolbar : NSToolbar!
     @IBOutlet var datasetController : NSArrayController!
     @IBOutlet var testprog : NSProgressIndicator!
-    //var pProgress: NSProgress?
     var queue: dispatch_queue_t = dispatch_queue_create("My Queue", DISPATCH_QUEUE_SERIAL)
-    var group : dispatch_group_t = dispatch_group_create()
     
     var progSheet : NSWindow!
     var progInd : NSProgressIndicator!
@@ -41,7 +38,7 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
     
     override func windowWillLoad() {
         
-        let errorPtr : NSErrorPointer = nil
+        //let errorPtr : NSErrorPointer = nil
 
         //Get MOC from App delegate
         let appDelegate : AppDelegate = NSApplication.sharedApplication().delegate as! AppDelegate
@@ -56,7 +53,7 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
         do {
             fetchedDatasets = try moc.executeFetchRequest(request)
         } catch let error as NSError {
-            errorPtr.memory = error
+            print(error)
             fetchedDatasets = nil
         }
         
@@ -79,7 +76,7 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
             do {
                 try moc.save()
             } catch let error as NSError {
-                errorPtr.memory = error
+                print(error)
             }
 
         }
@@ -306,8 +303,6 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
         
         self.window!.beginSheet(progSheet, completionHandler: nil)
         
-     //   NSApp.beginSheet(progSheet, modalForWindow: self.window!, modalDelegate: nil, didEndSelector: nil, contextInfo: nil)
-        
         progSheet.makeKeyAndOrderFront(self)
         
         progInd.indeterminate = false
@@ -350,34 +345,17 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
     }
     
     @IBAction func  calculate(x:NSToolbarItem){
-        let errorPtr : NSErrorPointer = nil
-
-        
-       // var i : Int = 0
         
         
         
-
-        
-
-        //instatntiate progress controller
-        if self.progressViewController == nil {
-            let storyboard = NSStoryboard(name:"Main", bundle:nil)
-
-            self.progressViewController = storyboard.instantiateControllerWithIdentifier("ProgressViewController") as? PlexusProgressPanel
-            
-        }
-        self.progressViewController?.delegate = self
+        progSheet = self.progSetup(self)
+        self.window!.beginSheet(progSheet, completionHandler: nil)
+        progSheet.makeKeyAndOrderFront(self)
+        progInd.indeterminate = true
+        progInd.startAnimation(self)
         
 
-        
-        self.contentViewController?.presentViewControllerAsSheet(self.progressViewController!)
-        //swap it in?
-        
-        self.progressViewController?.changeLabel(String("Calculating..."))
-        
 
-        
         
 
         //collect data
@@ -387,24 +365,7 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
         let curModel : Model = curModels[0]
         
         
-     //   pProgress = NSProgress(totalUnitCount: curModel.runstot.integerValue)
-        
-        
-        //self.progressViewController.changeMaxWork(curModel.runstot.integerValue)
-        /*
-        for i in 0...100 {
-           // self.progressViewController?.changeCurWork(i)
-           // sleep(1)
-            
-            dispatch_sync(queue) {
-                
-              //  self.progressIndicator.doubleValue = progress.fractionCompleted
-                self.progressViewController.changeCurWork(i)
-                usleep(320000)
-            }
-            
-        }
-*/
+    
         
 //dispatch_async(queue) {
             let op = PlexusCalculationOperation(nodes: nodesForCalc, withRuns: curModel.runsper, withBurnin: curModel.burnins, withComputes: curModel.runstot)
@@ -508,14 +469,13 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
                 //FIXME remove when ready curModel.setValue(true, forKey: "complete")
                 try self.moc.save()
             } catch let error as NSError {
-                errorPtr.memory = error
+                print(error)
             }
-            
-            self.contentViewController?.dismissViewController(self.progressViewController!)
-            
-            
-
         
+
+        self.progInd.indeterminate = true
+        self.window!.endSheet(self.progSheet)
+        self.progSheet.orderOut(self)
     
         print("End calcuilate fxn")
     }
@@ -636,12 +596,6 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
 
         
         
-       // let undoM : NSUndoManager = moc.undoManager!
-       // moc.undoManager = nil
-
-        
-        let errorPtr : NSErrorPointer = nil
-        
         let op:NSOpenPanel = NSOpenPanel()
         op.allowsMultipleSelection = false
         op.canChooseDirectories = false
@@ -658,13 +612,8 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
         
         op.beginSheetModalForWindow(window!, completionHandler: {(result:Int) -> Void in
             if (result == NSFileHandlingPanelOKButton) {
-                
-               // println("button state \(av.state)")
-                
 
-               // println(op.URL)
                 let inFile  = op.URL
-               // println(inFile)
                 
                 op.close()
                 
@@ -676,15 +625,17 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
                 
                 if (inFile != nil){ // operate on iput file
                     
-                    //Create a MOC
-                  //  let appDelegate : AppDelegate = NSApplication.sharedApplication().delegate as AppDelegate
-                  //  var inPSC: NSPersistentStoreCoordinator = appDelegate.persistentStoreCoordinator!
-                  //  var inMOC = NSManagedObjectContext()
-                  //  inMOC.persistentStoreCoordinator = inPSC
-                  //  inMOC.undoManager = nil
+
 
                     
                     //instatntiate progress controller
+                    
+                    self.progSheet = self.progSetup(self)
+                    self.window!.beginSheet(self.progSheet, completionHandler: nil)
+                    self.progSheet.makeKeyAndOrderFront(self)
+                    self.progInd.indeterminate = true
+                    self.workLabel.stringValue = "Importing..."
+                    self.progInd.startAnimation(self)
 
 
                     
@@ -705,7 +656,7 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
                     do {
                         try self.moc.save()
                     } catch let error as NSError {
-                        errorPtr.memory = error
+                        print(error)
                     } catch {
                         fatalError()
                     }
@@ -726,7 +677,13 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
                     let fileLines : [String] = fileContents.componentsSeparatedByString("\n")
                     
                     
-
+                    self.progInd.indeterminate = false
+                    self.progInd.maxValue =  Double(fileLines.count)
+                    self.progInd.doubleValue = 0
+                    
+                    self.maxLabel.stringValue = String(fileLines.count)
+                    self.curLabel.stringValue = String(0)
+                    
                     
                     var batchCount : Int = 0
                     var columnCount = 0
@@ -831,7 +788,7 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
                                 do {
                                     try self.moc.save()
                                 } catch let error as NSError {
-                                    errorPtr.memory = error
+                                    print(error)
                                 } catch {
                                     fatalError()
                                 }
@@ -858,7 +815,7 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
                         do {
                             try self.moc.save()
                         } catch let error as NSError {
-                            errorPtr.memory = error
+                            print(error)
                         } catch {
                             fatalError()
                         }
@@ -886,7 +843,9 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
 
 
 
-                    
+                    self.progInd.indeterminate = true
+                    self.window!.endSheet(self.progSheet)
+                    self.progSheet.orderOut(self)
                     
                     
                 }
@@ -915,10 +874,7 @@ class PlexusMainWindowController: NSWindowController, ProgressViewControllerDele
         }
     }
     
-    func progressViewControllerDidCancel(progressViewController: PlexusProgressPanel) {
-        print("Cancelled progress")
-        self.contentViewController?.dismissViewController(self.progressViewController!)
-    }
+
     
 
 
