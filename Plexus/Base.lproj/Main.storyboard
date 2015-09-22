@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="8187.4" systemVersion="15A263e" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" initialViewController="B8D-0N-5wS">
+<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="8191" systemVersion="15B17c" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" initialViewController="B8D-0N-5wS">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="8187.4"/>
-        <plugIn identifier="com.apple.MapKitIBPlugin" version="8187.4"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="8191"/>
+        <plugIn identifier="com.apple.MapKitIBPlugin" version="8191"/>
     </dependencies>
     <scenes>
         <!--Application-->
@@ -673,7 +673,7 @@
                                     <size key="minSize" width="100" height="28"/>
                                     <size key="maxSize" width="200" height="28"/>
                                     <popUpButton key="view" verticalHuggingPriority="750" id="mEM-Bi-u2x">
-                                        <rect key="frame" x="0.0" y="0.0" width="100" height="28"/>
+                                        <rect key="frame" x="0.0" y="14" width="100" height="28"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                         <animations/>
                                         <popUpButtonCell key="cell" type="roundTextured" bezelStyle="texturedRounded" alignment="left" lineBreakMode="truncatingTail" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Yn7-I7-sJ0">
@@ -713,7 +713,7 @@
                                         <action selector="calculate:" target="B8D-0N-5wS" id="VCg-wJ-cZX"/>
                                     </connections>
                                 </toolbarItem>
-                                <toolbarItem implicitItemIdentifier="E18303A5-037B-44FE-878B-72401FAAC926" label="Models" paletteLabel="Models" image="483701ED-9D3F-472C-B32C-7F6ED629597D" id="VR9-AM-azT">
+                                <toolbarItem implicitItemIdentifier="E18303A5-037B-44FE-878B-72401FAAC926" label="Models" paletteLabel="Models" image="CD4174B6-7750-443F-935A-33635187DAF0" id="VR9-AM-azT">
                                     <nil key="toolTip"/>
                                     <size key="minSize" width="13" height="13"/>
                                     <size key="maxSize" width="37" height="34"/>
@@ -721,7 +721,7 @@
                                         <rect key="frame" x="5" y="14" width="37" height="34"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                         <animations/>
-                                        <buttonCell key="cell" type="squareTextured" bezelStyle="texturedSquare" image="483701ED-9D3F-472C-B32C-7F6ED629597D" imagePosition="only" alignment="left" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="s8L-6c-2d7">
+                                        <buttonCell key="cell" type="squareTextured" bezelStyle="texturedSquare" image="CD4174B6-7750-443F-935A-33635187DAF0" imagePosition="only" alignment="left" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="s8L-6c-2d7">
                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
@@ -753,7 +753,7 @@
                                     <size key="minSize" width="48" height="48"/>
                                     <size key="maxSize" width="48" height="48"/>
                                     <button key="view" id="RoU-4I-Ucg">
-                                        <rect key="frame" x="0.0" y="0.0" width="48" height="48"/>
+                                        <rect key="frame" x="0.0" y="14" width="48" height="48"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                         <animations/>
                                         <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="NSLockLockedTemplate" imagePosition="only" alignment="center" alternateImage="NSLockUnlockedTemplate" imageScaling="proportionallyDown" inset="2" id="V9D-sm-5VC">
@@ -784,6 +784,11 @@
                                         <action selector="toggleStructures:" target="B8D-0N-5wS" id="3dp-l0-sR2"/>
                                     </connections>
                                 </toolbarItem>
+                                <toolbarItem implicitItemIdentifier="0302A97E-16E5-4332-ACC3-04FC49BF8561" label="testprog" paletteLabel="testprog" tag="-1" id="Oq5-cW-5Yg">
+                                    <connections>
+                                        <action selector="progtest:" target="B8D-0N-5wS" id="ifL-8l-FRj"/>
+                                    </connections>
+                                </toolbarItem>
                             </allowedToolbarItems>
                             <defaultToolbarItems>
                                 <toolbarItem reference="Qg8-AC-EiI"/>
@@ -805,6 +810,7 @@
                     </window>
                     <connections>
                         <outlet property="datasetController" destination="RSx-fX-J7D" id="Baf-Ht-YGx"/>
+                        <outlet property="mainToolbar" destination="pyn-dH-y2N" id="Pzo-nf-9lz"/>
                         <segue destination="vdt-QS-Jtu" kind="relationship" relationship="window.shadowedContentViewController" id="rbE-Ek-Sz7"/>
                     </connections>
                 </windowController>
@@ -1750,7 +1756,7 @@
                                             <rect key="frame" x="10" y="33" width="580" height="353"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <subviews>
-                                                <splitView dividerStyle="thin" translatesAutoresizingMaskIntoConstraints="NO" id="Ghb-Ne-Lzr">
+                                                <splitView misplaced="YES" dividerStyle="thin" translatesAutoresizingMaskIntoConstraints="NO" id="Ghb-Ne-Lzr">
                                                     <rect key="frame" x="0.0" y="0.0" width="580" height="354"/>
                                                     <subviews>
                                                         <customView id="aYu-JO-eKa">
@@ -2318,82 +2324,6 @@
             </objects>
             <point key="canvasLocation" x="817" y="110"/>
         </scene>
-        <!--Plexus Progress Panel-->
-        <scene sceneID="xgP-Ks-UFl">
-            <objects>
-                <viewController storyboardIdentifier="ProgressViewController" id="dxZ-pc-hFQ" customClass="PlexusProgressPanel" customModule="Plexus" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" id="U7z-T2-coZ">
-                        <rect key="frame" x="0.0" y="0.0" width="574" height="104"/>
-                        <autoresizingMask key="autoresizingMask"/>
-                        <subviews>
-                            <progressIndicator fixedFrame="YES" maxValue="100" indeterminate="YES" style="bar" translatesAutoresizingMaskIntoConstraints="NO" id="nB7-Ey-ym8">
-                                <rect key="frame" x="20" y="35" width="534" height="20"/>
-                                <animations/>
-                            </progressIndicator>
-                            <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="mIT-iF-pNa">
-                                <rect key="frame" x="478" y="56" width="83" height="32"/>
-                                <animations/>
-                                <buttonCell key="cell" type="push" title="Cancel" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="42b-dd-VLq">
-                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                    <font key="font" metaFont="system"/>
-                                    <string key="keyEquivalent" base64-UTF8="YES">
-Gw
-</string>
-                                </buttonCell>
-                                <connections>
-                                    <action selector="cancelButton:" target="dxZ-pc-hFQ" id="0pt-C5-CNx"/>
-                                </connections>
-                            </button>
-                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="kLp-OE-xxU">
-                                <rect key="frame" x="70" y="65" width="85" height="17"/>
-                                <animations/>
-                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" placeholderString="Working..." id="s9w-Hr-MDq">
-                                    <font key="font" metaFont="system"/>
-                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                                </textFieldCell>
-                            </textField>
-                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Pb4-hw-a4v">
-                                <rect key="frame" x="373" y="67" width="23" height="17"/>
-                                <animations/>
-                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="of" placeholderString="" id="mOf-Rx-VMm">
-                                    <font key="font" metaFont="system"/>
-                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                                </textFieldCell>
-                            </textField>
-                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="T2S-Sk-hS8">
-                                <rect key="frame" x="400" y="67" width="54" height="17"/>
-                                <animations/>
-                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="0" placeholderString="" id="ZIN-TR-Wp1">
-                                    <font key="font" metaFont="system"/>
-                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                                </textFieldCell>
-                            </textField>
-                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="WMv-Gh-NWi">
-                                <rect key="frame" x="308" y="66" width="54" height="17"/>
-                                <animations/>
-                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="0" placeholderString="" id="OwZ-v1-d9z">
-                                    <font key="font" metaFont="system"/>
-                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                                </textFieldCell>
-                            </textField>
-                        </subviews>
-                        <animations/>
-                    </view>
-                    <connections>
-                        <outlet property="curWork" destination="WMv-Gh-NWi" id="IrR-YS-5bb"/>
-                        <outlet property="maxWork" destination="T2S-Sk-hS8" id="FTO-fP-jmc"/>
-                        <outlet property="progressBar" destination="nB7-Ey-ym8" id="5gE-To-IqH"/>
-                        <outlet property="progressLabel" destination="kLp-OE-xxU" id="n3Q-aN-Tk6"/>
-                    </connections>
-                </viewController>
-                <customObject id="5H9-M4-FOn" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="749" y="318"/>
-        </scene>
         <!--Plexus Model View Controller-->
         <scene sceneID="V2l-RG-rvG">
             <objects>
@@ -2916,7 +2846,7 @@ Gw
         </scene>
     </scenes>
     <resources>
-        <image name="483701ED-9D3F-472C-B32C-7F6ED629597D" width="1" height="1">
+        <image name="CD4174B6-7750-443F-935A-33635187DAF0" width="1" height="1">
             <mutableData key="keyedArchiveRepresentation">
 YnBsaXN0MDDUAQIDBAUGPT5YJHZlcnNpb25YJG9iamVjdHNZJGFyY2hpdmVyVCR0b3ASAAGGoK4HCBMU
 GR4fIyQrLjE3OlUkbnVsbNUJCgsMDQ4PEBESVk5TU2l6ZVYkY2xhc3NcTlNJbWFnZUZsYWdzVk5TUmVw

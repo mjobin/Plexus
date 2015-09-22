@@ -11,6 +11,8 @@
 
 @implementation PlexusCalculationOperation
 
+static void *ProgressObserverContext = &ProgressObserverContext;
+
 - (id)init
 {
     self = [super init];
@@ -32,6 +34,9 @@
         burnins = inBurnins;
         computes = inComputes;
         resultNodes = [NSMutableArray array];
+
+        
+        
         
         NSLog(@"BN calc operation loaded");
         
@@ -48,6 +53,9 @@
 - (NSError *)calc:(id)sender
 {
     NSError * calcerr = nil;
+    
+    
+
     
     
     
@@ -785,10 +793,7 @@
             //add completed
             
             ct += thisWork;
-            
-            
-            
-        //    NSLog(@"work added is now %i out of %i ", ct, [computes intValue]);
+
             
          //   NSLog(@"******");
             
@@ -898,6 +903,7 @@
     free(nodeFreqs);
     
     //if end is reached safely, no error
+
     
     return calcerr;
 
@@ -909,6 +915,7 @@
 - (NSMutableArray *)getResults:(id)sender{
     return resultNodes;
 }
+
 
 
 @end

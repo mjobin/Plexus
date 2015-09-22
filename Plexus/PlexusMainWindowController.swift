@@ -22,6 +22,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
     @IBOutlet var datasetController : NSArrayController!
     @IBOutlet var testprog : NSProgressIndicator!
     var queue: dispatch_queue_t = dispatch_queue_create("My Queue", DISPATCH_QUEUE_SERIAL)
+   // var group : dispatch_group_t = dispatch_group_create()
     
     var progSheet : NSWindow!
     var progInd : NSProgressIndicator!
@@ -189,12 +190,12 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         var retWin : NSWindow!
         
         //sheet programamticaly
-        let sheetRect = NSRect(x: 0, y: 0, width: 400, height: 114)
+        let sheetRect = NSRect(x: 0, y: 0, width: 400, height: 82)
         retWin = NSWindow(contentRect: sheetRect, styleMask: NSTitledWindowMask, backing: NSBackingStoreType.Buffered, `defer`: true)
         let contentView = NSView(frame: sheetRect)
-        self.progInd = NSProgressIndicator(frame: NSRect(x: 143, y: 72, width: 239, height: 20))
+        self.progInd = NSProgressIndicator(frame: NSRect(x: 143, y: 52, width: 239, height: 20))
         
-        self.workLabel = NSTextField(frame: NSRect(x: 10, y: 72, width: 64, height: 20))
+        self.workLabel = NSTextField(frame: NSRect(x: 10, y: 52, width: 64, height: 20))
         workLabel.editable = false
         workLabel.drawsBackground = false
         workLabel.selectable = false
@@ -229,9 +230,9 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         curLabel.stringValue = String(0)
         
         contentView.addSubview(workLabel)
-        contentView.addSubview(curLabel)
-        contentView.addSubview(ofLabel)
-        contentView.addSubview(maxLabel)
+        //contentView.addSubview(curLabel)
+        //contentView.addSubview(ofLabel)
+        //contentView.addSubview(maxLabel)
         contentView.addSubview(progInd)
         contentView.addSubview(cancelButton)
         
@@ -240,7 +241,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         
         return retWin
     }
-    
+    /*
     @IBAction func  progtest(x:NSToolbarItem){
 
         let testmax = 100
@@ -343,7 +344,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
 
         self.breakloop = true
     }
-    
+    */
     @IBAction func  calculate(x:NSToolbarItem){
         
         
@@ -351,7 +352,8 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         progSheet = self.progSetup(self)
         self.window!.beginSheet(progSheet, completionHandler: nil)
         progSheet.makeKeyAndOrderFront(self)
-        progInd.indeterminate = true
+        //progInd.doubleValue = 0
+        progInd.indeterminate = false
         progInd.startAnimation(self)
         
 
@@ -368,7 +370,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
     
         
 //dispatch_async(queue) {
-            let op = PlexusCalculationOperation(nodes: nodesForCalc, withRuns: curModel.runsper, withBurnin: curModel.burnins, withComputes: curModel.runstot)
+        let op = PlexusCalculationOperation(nodes: nodesForCalc, withRuns: curModel.runsper, withBurnin: curModel.burnins, withComputes: curModel.runstot)
         
             
             var operr: NSError?
@@ -473,10 +475,9 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
             }
         
 
-        self.progInd.indeterminate = true
         self.window!.endSheet(self.progSheet)
         self.progSheet.orderOut(self)
-    
+        
         print("End calcuilate fxn")
     }
 
@@ -493,6 +494,14 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                  print(outFile)
                 
                 sv.close()
+                
+                
+                self.progSheet = self.progSetup(self)
+                self.window!.beginSheet(self.progSheet, completionHandler: nil)
+                self.progSheet.makeKeyAndOrderFront(self)
+                self.progInd.indeterminate = true
+                self.workLabel.stringValue = "Exporting..."
+                self.progInd.startAnimation(self)
                 
                 var outText = "Name,"
                 
@@ -584,7 +593,8 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                 */
                 
                 
-
+                self.window!.endSheet(self.progSheet)
+                self.progSheet.orderOut(self)
             }
             
             else { return }
@@ -594,7 +604,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
     
     @IBAction func importCSV(x:NSToolbarItem){
 
-        
+
         
         let op:NSOpenPanel = NSOpenPanel()
         op.allowsMultipleSelection = false
@@ -684,15 +694,16 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                     self.maxLabel.stringValue = String(fileLines.count)
                     self.curLabel.stringValue = String(0)
                     
+
+                    
                     
                     var batchCount : Int = 0
                     var columnCount = 0
                     var nameColumn = -1
                     var structureColumn = -1
                     var headers = [String]()
+
                     
-                    
-                        
                         for thisLine : String in fileLines {
                             
                             if(self.breakloop){
@@ -781,6 +792,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                             firstLine = false
                             i++
 
+
                             
                                 batchCount++
                             
@@ -795,22 +807,26 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                                 batchCount = 0
                                 self.moc.reset()
 
+
                                 
                                 inDataset = self.moc.objectWithID(datasetID) as! Dataset
 
                                 
                             }
+                            
+
 
 
                             
                         }
                         
-
-                        
-                        
+                    
                     
 
+                        
+
                     
+
                     
                         do {
                             try self.moc.save()
@@ -842,8 +858,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                         self.datasetController.setSelectedObjects(nDarray)
 
 
-
-                    self.progInd.indeterminate = true
+    
                     self.window!.endSheet(self.progSheet)
                     self.progSheet.orderOut(self)
                     
@@ -876,6 +891,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
     
 
     
+
 
 
 }
