@@ -11,6 +11,7 @@ import CoreData
 import OpenCL
 
 
+
 class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
     
     
@@ -508,58 +509,54 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                 //Exporting current daatset only
                 let curDatasets : [Dataset] = self.datasetController.selectedObjects as! [Dataset]
                 let curDataset : Dataset = curDatasets[0]
-                //get list of all traits in this dataset
                 let trequest = NSFetchRequest(entityName: "Trait")
+
                 let tpredicate = NSPredicate(format: "entry.dataset == %@", curDataset)
-                trequest.resultType = .DictionaryResultType
                 trequest.predicate = tpredicate
-                trequest.returnsDistinctResults = true
-                trequest.propertiesToFetch = ["name"]
                 
-                
+
                 
                 do {
-                    let headerTraits  = try self.moc!.executeFetchRequest(trequest)
-                    //test and print for now
-                    for headerTrait in headerTraits {
-                       // println(headerTrait.name)
-                        
-                       outText += headerTrait.valueForKey("name") as! String
-                       // outText += headerTrait
+                    let headerTraits : [Trait] = try self.moc!.executeFetchRequest(trequest) as! [Trait]
+                    
+                    let distinctHeaderTraits = NSSet(array: headerTraits.map { $0.name })
+                    
+
+                    for headerTrait in distinctHeaderTraits {
+                        outText += headerTrait as! String
+                      
+                       
                         outText += ","
 
                     }
                     outText += "\n"
+        
+                    
                     let entries : [Entry] = curDataset.entry.allObjects as! [Entry]
                     for entry : Entry in entries {
                         outText += entry.name
                         outText += ","
                         
-                        //let traits = entry.trait
-                        
-                        for _ in headerTraits {
-                            
-                            
-                            /*
-                            let ttrequest = NSFetchRequest(entityName: "Trait")
-                            var ttpredicate = NSPredicate(format: "entry == %@ AND name == %@", entry, headerTrait.name)
-                            
-                            if let ttTraits : [Trait] = self.moc!.executeFetchRequest(ttrequest, error:err) as? [Trait]{
-                                outText += ttTraits[0].traitValue //should only ever get one anyway
+                        let tTraits = entry.trait
+                        for headerTrait in distinctHeaderTraits {
+                            let hKey = headerTrait as! String
+                            for tTrait in tTraits{
+                                let tKey = tTrait.valueForKey("name") as! String
+                                if hKey == tKey{
+                                    outText += tTrait.valueForKey("traitValue") as! String
+                                }
+                                
                                 
                             }
-                            */
-                            
                             outText += ","
-                            
                         }
-                        
+
 
                         outText += "\n"
+
                     }
                     
-                    
-                    
+
                     
                     do {
                         try outText.writeToURL(sv.URL!, atomically: true, encoding: NSUTF8StringEncoding)
@@ -572,27 +569,8 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                     fatalError()
                 }
                 
-                //Fetch all Datasets
-                /*
-                
-                let datafetch = NSFetchRequest(entityName: "Dataset")
-                let datasets : [Dataset] = self.moc.executeFetchRequest(datafetch, error: err) as! [Dataset]
-            
-                
-                for dataset : Dataset in datasets {
-                    let entries : [Entry] = dataset.entry.allObjects as! [Entry]
-                    for entry : Entry in entries {
-                        entry.name.writeToURL(sv.URL!, atomically: false, encoding: NSUTF8StringEncoding, error: nil)
-                        let traits : [Trait] = entry.trait.allObjects as! [Trait]
-                        for trait :Trait in traits{
-                            
-                        }
-                    }
-                    
-                }
-                */
-                
-                
+              
+
                 self.window!.endSheet(self.progSheet)
                 self.progSheet.orderOut(self)
             }
@@ -603,7 +581,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
     }
     
     @IBAction func importCSV(x:NSToolbarItem){
-
+        var error: NSErrorPointer = nil
 
         
         let op:NSOpenPanel = NSOpenPanel()
@@ -686,6 +664,23 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                     // print(fileContents)
                     let fileLines : [String] = fileContents.componentsSeparatedByString("\n")
                     
+                    let headerLine = fileLines[0]
+                    
+
+
+                    
+                    
+                    var delimiterCharacterSet = NSMutableCharacterSet(charactersInString: ",\"")
+                    delimiterCharacterSet.formUnionWithCharacterSet(NSCharacterSet.whitespaceAndNewlineCharacterSet())
+
+                    
+                  
+                    
+
+                    
+
+
+                    
                     
                     self.progInd.indeterminate = false
                     self.progInd.maxValue =  Double(fileLines.count)
@@ -711,12 +706,12 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                                 break
                             }
                             
-                            
+                          //  print("\(i) \(thisLine)")
                             
                             if firstLine {  //this is the header line
+                                
                                 let theHeader : [String] = thisLine.componentsSeparatedByString(",")
                                 for thisHeader in theHeader {
-                                 //   println(thisHeader)
                                     if thisHeader == "Name" {
                                         nameColumn = columnCount
                                     }
@@ -726,67 +721,98 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                                     headers.append(thisHeader)
                                     columnCount++
                                 }
+
                                 
                             }
-                            
-                            let newEntry : Entry = Entry(entity: NSEntityDescription.entityForName("Entry", inManagedObjectContext: self.moc)!, insertIntoManagedObjectContext: self.moc)
-                            var theTraits : [String] = thisLine.componentsSeparatedByString(",")
-
-                            if nameColumn >= 0{
-                                newEntry.setValue(theTraits[nameColumn], forKey: "name")
-                            }
+                            //what happens when the line is blank
                             else {
-                                newEntry.setValue(String(i), forKey: "name")
-                            }
-                            /*
-                            if structureColumn >=0 {
-                                let strerror = nil
-                                let request = NSFetchRequest(entityName: "Structure")
-                                let predicate = NSPredicate(format: "dataset == %@ AND name == %@", inDataset, theTraits[structureColumn])
-                                let strCount = moc.countForFetchRequest(request, error: strerror)
-                                if(strCount == NSNotFound){ //does not exist, create
-                                    var newStructure : Structure = Structure(entity: NSEntityDescription.entityForName("Structure", inManagedObjectContext: self.moc)!, insertIntoManagedObjectContext: self.moc)
+                                
+                                
+                                if(thisLine.stringByTrimmingCharactersInSet(delimiterCharacterSet) != "" ){ //ignore lines that are blank and/or only contain commas
+                            
+                                    let newEntry : Entry = Entry(entity: NSEntityDescription.entityForName("Entry", inManagedObjectContext: self.moc)!, insertIntoManagedObjectContext: self.moc)
+                                    var theTraits : [String] = thisLine.componentsSeparatedByString(",")
+
+                                    if nameColumn >= 0{
+                                        newEntry.setValue(theTraits[nameColumn], forKey: "name")
+                                    }
+                                    else {
+                                        newEntry.setValue(String(i), forKey: "name")
+                                    }
                                     
+                                    if (structureColumn >= 0 ) {
+                                        let strerror: NSErrorPointer = nil
+                                        let request = NSFetchRequest(entityName: "Structure")
+                                        let predicate = NSPredicate(format: "dataset == %@ AND name == %@", inDataset, theTraits[structureColumn])
+                                        request.predicate = predicate
+                                        let strCount = self.moc.countForFetchRequest(request, error: strerror)
+                                        if(strCount == NSNotFound || strCount < 1){ //does not exist, create
+                                            let newStructure : Structure = Structure(entity: NSEntityDescription.entityForName("Structure", inManagedObjectContext: self.moc)!, insertIntoManagedObjectContext: self.moc)
+                                            newStructure.setValue(theTraits[structureColumn], forKey: "name")
+                                            newStructure.setValue(inDataset, forKey: "dataset")
+                                            newStructure.addEntryObject(newEntry)
+                                            inDataset.addStructureObject(newStructure)
+    
+
+                                        }
+                                        else { //exists
+                                            
+                                            do{
+                                                let fetch = try self.moc.executeFetchRequest(request)
+                                                let thisStructure = fetch[0] as! Structure //always hand the first one , should only be one
+                                                thisStructure.setValue(theTraits[structureColumn], forKey: "name")
+                                                thisStructure.setValue(inDataset, forKey: "dataset")
+                                                thisStructure.addEntryObject(newEntry)
+                                                inDataset.addStructureObject(thisStructure)
+                                                
+                                                
+                                            } catch let error as NSError {
+                                                print(error)
+                                                
+                                            }
+                                        }
+                
+                                        
+                                    }
+
+
+                                    
+                                    newEntry.setValue("Entry", forKey: "type")
                                     newEntry.setValue(inDataset, forKey: "dataset")
+                                    inDataset.addEntryObject(newEntry)
 
-                                }
-                                else { //exists
                                     
+                                    
+
+                                    columnCount = 0
+                                    for thisTrait in theTraits {
+                                      //  print(thisTrait)
+                                        
+                                        let theSubTraits : [String] = thisTrait.componentsSeparatedByString("\r")
+                                        
+                                        for thisSubTrait in theSubTraits {
+                                          //  print(thisSubTrait)
+                                            if(thisSubTrait.stringByTrimmingCharactersInSet(delimiterCharacterSet) != "" ){//ignore empty
+                                                let newTrait : Trait = Trait(entity: NSEntityDescription.entityForName("Trait", inManagedObjectContext: self.moc)!, insertIntoManagedObjectContext: self.moc)
+                                                newTrait.setValue(headers[columnCount], forKey: "name")
+                                                newTrait.setValue(thisSubTrait.stringByReplacingOccurrencesOfString("\"", withString: ""), forKey: "traitValue")
+                                                newTrait.setValue(newEntry, forKey: "entry")
+                                                
+                                                newEntry.addTraitObject(newTrait)
+                                            }
+                                        }
+                                        
+                                        
+
+
+
+                                        
+                                        columnCount++
+                                        
+                                    }
                                 }
-        
-                                
+                            
                             }
-    */
-                            
-                            newEntry.setValue("Entry", forKey: "type")
-                            newEntry.setValue(inDataset, forKey: "dataset")
-                            inDataset.addEntryObject(newEntry)
-
-                            
-
-                            columnCount = 0
-                            for thisTrait in theTraits {
-                                
-                                if columnCount == structureColumn {
-                                   //FIXME check if the streucvture exists, if not make it here
-                                    
-
-                                    
-                                   // if let fetch = moc!.executeFetchRequest(request, error:&err)
-                                }
-
-                                let newTrait : Trait = Trait(entity: NSEntityDescription.entityForName("Trait", inManagedObjectContext: self.moc)!, insertIntoManagedObjectContext: self.moc)
-                                newTrait.setValue(headers[columnCount], forKey: "name")
-                                newTrait.setValue(thisTrait, forKey: "traitValue")
-                                newTrait.setValue(newEntry, forKey: "entry")
-                                
-                                newEntry.addTraitObject(newTrait)
-                                
-                                columnCount++
-                                
-                            }
-                            
-
 
        
                             firstLine = false
@@ -796,7 +822,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                             
                                 batchCount++
                             
-                            if(batchCount > 100){
+                            if(batchCount > 1000){
                                 do {
                                     try self.moc.save()
                                 } catch let error as NSError {
@@ -805,11 +831,11 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                                     fatalError()
                                 }
                                 batchCount = 0
-                                self.moc.reset()
+                              //  self.moc.reset()
 
 
                                 
-                                inDataset = self.moc.objectWithID(datasetID) as! Dataset
+                            //    inDataset = self.moc.objectWithID(datasetID) as! Dataset
 
                                 
                             }
@@ -891,6 +917,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
     
 
     
+
 
 
 
