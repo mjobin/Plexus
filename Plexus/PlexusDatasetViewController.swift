@@ -45,7 +45,7 @@ class PlexusDatasetViewController: NSViewController {
     
 @IBAction func removeDataset (sender: AnyObject) {
     
-    let errorPtr : NSErrorPointer = nil
+   // let errorPtr : NSErrorPointer = nil
     
 
     if(datasetController.arrangedObjects.count > 1){
@@ -57,7 +57,7 @@ class PlexusDatasetViewController: NSViewController {
         do {
             try self.moc.save()
         } catch let error as NSError {
-            errorPtr.memory = error
+            print(error)
         }
     }
 }
@@ -66,7 +66,7 @@ class PlexusDatasetViewController: NSViewController {
     
 @IBAction func copyDataset (sender: AnyObject){
     
-    let errorPtr : NSErrorPointer = nil
+    //let errorPtr : NSErrorPointer = nil
 
     
         
@@ -99,7 +99,7 @@ class PlexusDatasetViewController: NSViewController {
     do {
         try self.moc.save()
     } catch let error as NSError {
-        errorPtr.memory = error
+        print(error)
     }
   
         
