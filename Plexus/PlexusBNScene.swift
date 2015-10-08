@@ -291,14 +291,14 @@ class PlexusBNScene: SKScene {
 
                 nodesController.setSelectedObjects(idArray)
                 /*
-                println("mouseDown: nodescontrolelr slected objects:")
+                print("mouseDown: nodescontrolelr slected objects:")
                 
-                var newSels : [BNNode] = nodesController.selectedObjects as! [BNNode]
+                let newSels : [BNNode] = nodesController.selectedObjects as! [BNNode]
                 for newSel : BNNode in newSels {
-                    println (newSel.nodeLink.name)
+                    print (newSel.nodeLink.name)
                 }
+*/
 
-                */
                 
                 if(theEvent.clickCount > 1){ //double-clicks open single node view
                     NSNotificationCenter.defaultCenter().postNotificationName("edu.scu.Plexus.toggleSingleNode", object: self)
@@ -379,7 +379,7 @@ class PlexusBNScene: SKScene {
     
     
     override func mouseUp(theEvent: NSEvent) {
-        let errorPtr : NSErrorPointer = nil
+        //let errorPtr : NSErrorPointer = nil
         
         let loc = theEvent.locationInNode(self)
         
@@ -424,7 +424,7 @@ class PlexusBNScene: SKScene {
             do {
                 try moc.save()
             } catch let error as NSError {
-                errorPtr.memory = error
+                print(error)
             }
 
             
@@ -493,12 +493,15 @@ class PlexusBNScene: SKScene {
 
       //  println("bnscene reload")
         //save the moc here to make sure changes read properly
-        let errorPtr : NSErrorPointer = nil
+        /*
+        
       do {
           try moc.save()
       } catch let error as NSError {
-          errorPtr.memory = error
+          print(error)
       }
+        */
+
         
         self.enumerateChildNodesWithName("nodeName", usingBlock: { thisLine, stop in
             thisLine.removeFromParent()
