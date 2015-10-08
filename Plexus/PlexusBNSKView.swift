@@ -76,7 +76,7 @@ class PlexusBNSKView: SKView {
 
     
     @IBAction func removeNode(sender: AnyObject) {
-        let errorPtr : NSErrorPointer = nil
+       // let errorPtr : NSErrorPointer = nil
         
         
         var curNodes : [BNNode] = nodesController.selectedObjects as! [BNNode]
@@ -90,7 +90,7 @@ class PlexusBNSKView: SKView {
         do {
             try moc.save()
         } catch let error as NSError {
-            errorPtr.memory = error
+            self.print(error)
         }
         
         
@@ -99,7 +99,7 @@ class PlexusBNSKView: SKView {
 
     
     func addNode(mourl: NSURL){
-        let errorPtr : NSErrorPointer = nil
+       // let errorPtr : NSErrorPointer = nil
         if let id : NSManagedObjectID? = moc.persistentStoreCoordinator?.managedObjectIDForURIRepresentation(mourl){
             
             let mo : NodeLink = moc.objectWithID(id!) as! NodeLink
@@ -125,7 +125,7 @@ class PlexusBNSKView: SKView {
             do {
                 try moc.save()
             } catch let error as NSError {
-                errorPtr.memory = error
+                self.print(error)
             }
 
             
