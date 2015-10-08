@@ -70,7 +70,7 @@ class PlexusEntryViewController: NSViewController, NSOutlineViewDelegate, NSOutl
         
         
 
-        var thisEntry = item.representedObject
+      //  var thisEntry = item.representedObject
 
         
         return thisView
