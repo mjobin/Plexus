@@ -371,7 +371,7 @@ extension BNNode {
     }
     
     func calcWParentCPT(sender:AnyObject) {
-        let errorPtr : NSErrorPointer = nil
+        //let errorPtr : NSErrorPointer = nil
         
         //Get MOC from App delegate
         let appDelegate : AppDelegate = NSApplication.sharedApplication().delegate as! AppDelegate
@@ -444,13 +444,13 @@ extension BNNode {
                                // println(" global entry with parent \(tresult)")
                                 self.cptFreq = tresult
                             } catch let error as NSError {
-                                errorPtr.memory = error
+                                print(error)
                                 self.cptFreq = 0.0
                             }
                             
                             
                         } catch let error as NSError {
-                            errorPtr.memory = error
+                            print(error)
                             self.cptFreq = -999
                         }
                         
@@ -491,14 +491,14 @@ extension BNNode {
 
                                 self.cptFreq = tresult
                             } catch let error as NSError {
-                                errorPtr.memory = error
+                                print(error)
                                 self.cptFreq = 0.0
                             }
                             
                             
                             
                         } catch let error as NSError {
-                            errorPtr.memory = error
+                            print(error)
                             self.cptFreq = -999
                         }
                         
@@ -548,13 +548,13 @@ extension BNNode {
                                 self.cptFreq = tresult
                                 
                             } catch let error as NSError {
-                                errorPtr.memory = error
+                                print(error)
                                 self.cptFreq = -999
                             }
                             
                             
                         } catch let error as NSError {
-                            errorPtr.memory = error
+                            print(error)
                             self.cptFreq = -999
                         }
                         
@@ -599,13 +599,13 @@ extension BNNode {
                                 self.cptFreq = tresult
                                 
                             } catch let error as NSError {
-                                errorPtr.memory = error
+                                print(error)
                                 self.cptFreq = -999
                             }
                             
                             
                         } catch let error as NSError {
-                            errorPtr.memory = error
+                            print(error)
                             self.cptFreq = -999
                         }
                         
@@ -649,13 +649,13 @@ extension BNNode {
                                 self.cptFreq = tresult
                                 
                             } catch let error as NSError {
-                                errorPtr.memory = error
+                                print(error)
                                 self.cptFreq = -999
                             }
                             
                             
                         } catch let error as NSError {
-                            errorPtr.memory = error
+                            print(error)
                             self.cptFreq = -999
                         }
                         
