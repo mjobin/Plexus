@@ -592,6 +592,124 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                     fatalError()
                 }
                 
+                
+                
+                //now print nodes
+                let outDir = sv.directoryURL?.absoluteString
+                let baseDir = outFile?.absoluteString
+                let curModels : [Model] = self.mainSplitViewController.modelTreeController?.selectedObjects as! [Model]
+                let curModel : Model = curModels[0]
+                
+                var i = 0
+                for node in self.mainSplitViewController.modelDetailViewController?.nodesController.arrangedObjects as! [BNNode] {
+                    self.mainSplitViewController.modelDetailViewController?.nodesController.setSelectionIndex(i)
+                    
+                    
+                    
+                    //create a compound of the outFile name and node name
+                    let nodeTXTFileName = baseDir! + "-" + node.nodeLink.name + ".csv"
+                    let nodeTXTURL = NSURL(string: nodeTXTFileName)
+                    //  print(nodeURL)
+                    
+                    
+                    var outText : String = String()
+                    outText += nodeTXTFileName
+                    if node.priorArray != nil {
+                        let priorArray = NSKeyedUnarchiver.unarchiveObjectWithData(node.valueForKey("priorArray") as! NSData) as! [Int]
+
+                        
+                        for thisPrior in priorArray {
+                            outText += String(thisPrior)
+                            outText += ","
+                        }
+                        outText += "\n"
+                        
+                    }
+                    if node.postArray != nil {
+                        let postArray = NSKeyedUnarchiver.unarchiveObjectWithData(node.valueForKey("postArray") as! NSData) as! [Int]
+
+                        
+                        for thisPost in postArray {
+                            outText += String(thisPost)
+                            outText += ","
+                        }
+                        outText += "\n"
+                        
+                    }
+                    do {
+                        try outText.writeToURL(nodeTXTURL!, atomically: true, encoding: NSUTF8StringEncoding)
+                    }
+                    catch let error as NSError {
+                        print(error)
+                    } catch {
+                        fatalError()
+                    }
+                    
+                    //create a compound of the outFile name and node name
+                    let nodePDFFileName = baseDir! + "-" + node.nodeLink.name + ".pdf"
+                    let nodeURL = NSURL(string: nodePDFFileName)
+                    print(nodeURL)
+                    
+                    let graphView = self.mainSplitViewController.modelDetailViewController?.graphView
+                    graphView?.frame = NSMakeRect(0, 0, 792, 612)
+                    
+                    
+                    let graph = self.mainSplitViewController.modelDetailViewController?.graph
+                    
+                    graph?.frame = NSMakeRect(0, 0, 792, 612)
+                    /*
+                    let titleStyle = CPTMutableTextStyle()
+                    titleStyle.fontName = "SanFrancisco"
+                    titleStyle.fontSize = 18.0
+                    titleStyle.color = CPTColor.blackColor()
+                    graph?.titleTextStyle = titleStyle
+
+                    
+                    graph?.title = node.nodeLink.name
+                    
+                    
+                    graph?.paddingTop = 10.0
+                    graph?.paddingBottom = 10.0
+                    graph?.paddingLeft = 10.0
+                    graph?.paddingRight = 10.0
+                    
+                    let plotSpace : CPTXYPlotSpace = graph?.defaultPlotSpace as! CPTXYPlotSpace
+                    plotSpace.allowsUserInteraction = false
+                    
+                    
+                    let xRange = plotSpace.xRange.mutableCopy() as! CPTMutablePlotRange
+                    let yRange = plotSpace.yRange.mutableCopy() as! CPTMutablePlotRange
+                    
+                    xRange.length = 1.1
+                    yRange.length = 1.1
+                    
+                    
+                    plotSpace.xRange = xRange
+                    plotSpace.yRange = yRange
+                    plotSpace.scaleToFitPlots(graph?.allPlots())
+                    
+                    print ("title \(graph?.title)")
+                    
+                    
+                    for plot in (graph?.allPlots())! {
+                        
+                        plot.frame = (graph?.bounds)!
+                        //print("plot \(plot.identifier) \(plot.frame.size)")
+                        //plot.reloadData()
+                        
+                    }
+
+                    
+*/
+
+
+                    let pdfData = graph?.dataForPDFRepresentationOfLayer()
+                    pdfData!.writeToURL(nodeURL!, atomically: true)
+                    
+                    
+                    i++
+                }
+                
               
 
                 self.window!.endSheet(self.progSheet)
@@ -817,6 +935,8 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                                     for thisTrait in theTraits {
                                       //  print(thisTrait)
                                         
+                                        if(columnCount != nameColumn && columnCount != structureColumn){
+                                        
                                         let theSubTraits : [String] = thisTrait.componentsSeparatedByString("\r")
                                         
                                         for thisSubTrait in theSubTraits {
@@ -832,7 +952,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                                         }
                                         
                                         
-
+                                        }
 
 
                                         
@@ -931,6 +1051,9 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         
         
     }
+    
+   
+    
     
 
     
