@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="8191" systemVersion="15B22c" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" initialViewController="B8D-0N-5wS">
+<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="9060" systemVersion="15B42" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" initialViewController="B8D-0N-5wS">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="8191"/>
-        <plugIn identifier="com.apple.MapKitIBPlugin" version="8191"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="9060"/>
+        <plugIn identifier="com.apple.MapKitIBPlugin" version="9060"/>
+        <capability name="stacking Non-gravity area distributions on NSStackView" minToolsVersion="7.0" minSystemVersion="10.11"/>
     </dependencies>
     <scenes>
         <!--Application-->
@@ -713,7 +714,7 @@
                                         <action selector="calculate:" target="B8D-0N-5wS" id="VCg-wJ-cZX"/>
                                     </connections>
                                 </toolbarItem>
-                                <toolbarItem implicitItemIdentifier="E18303A5-037B-44FE-878B-72401FAAC926" label="Models" paletteLabel="Models" image="1063311D-A787-42C8-B1BB-E73DFB87E101" id="VR9-AM-azT">
+                                <toolbarItem implicitItemIdentifier="E18303A5-037B-44FE-878B-72401FAAC926" label="Models" paletteLabel="Models" image="5C013438-0EDB-417A-BCFE-F3C4DC1DDF7B" id="VR9-AM-azT">
                                     <nil key="toolTip"/>
                                     <size key="minSize" width="13" height="13"/>
                                     <size key="maxSize" width="37" height="34"/>
@@ -721,7 +722,7 @@
                                         <rect key="frame" x="5" y="14" width="37" height="34"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                         <animations/>
-                                        <buttonCell key="cell" type="squareTextured" bezelStyle="texturedSquare" image="1063311D-A787-42C8-B1BB-E73DFB87E101" imagePosition="only" alignment="left" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="s8L-6c-2d7">
+                                        <buttonCell key="cell" type="squareTextured" bezelStyle="texturedSquare" image="5C013438-0EDB-417A-BCFE-F3C4DC1DDF7B" imagePosition="only" alignment="left" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="s8L-6c-2d7">
                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
@@ -1387,7 +1388,7 @@
                                                                 <tableColumns>
                                                                     <tableColumn width="160" minWidth="40" maxWidth="1000" id="4BX-7v-RBu">
                                                                         <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="left" title="Trait">
-                                                                            <font key="font" metaFont="systemMedium" size="11"/>
+                                                                            <font key="font" metaFont="smallSystem"/>
                                                                             <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
                                                                             <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
                                                                         </tableHeaderCell>
@@ -2143,6 +2144,102 @@
                                             <animations/>
                                         </view>
                                     </tabViewItem>
+                                    <tabViewItem label="Child" identifier="" id="Rfs-37-JqF">
+                                        <view key="view" id="sy8-EW-SuJ">
+                                            <rect key="frame" x="10" y="33" width="580" height="354"/>
+                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                            <subviews>
+                                                <stackView distribution="fill" orientation="vertical" alignment="leading" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="83V-Om-Enq">
+                                                    <rect key="frame" x="0.0" y="0.0" width="580" height="354"/>
+                                                    <subviews>
+                                                        <scrollView autohidesScrollers="YES" horizontalLineScroll="19" horizontalPageScroll="10" verticalLineScroll="19" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="e8u-VB-2d6">
+                                                            <rect key="frame" x="0.0" y="0.0" width="580" height="354"/>
+                                                            <clipView key="contentView" id="qCR-l5-eAu">
+                                                                <rect key="frame" x="1" y="0.0" width="578" height="353"/>
+                                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                                <subviews>
+                                                                    <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" columnSelection="YES" multipleSelection="NO" autosaveColumns="NO" headerView="6YA-vC-GzD" id="ac1-HH-luG">
+                                                                        <rect key="frame" x="0.0" y="0.0" width="578" height="330"/>
+                                                                        <autoresizingMask key="autoresizingMask"/>
+                                                                        <animations/>
+                                                                        <size key="intercellSpacing" width="3" height="2"/>
+                                                                        <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                                        <color key="gridColor" name="gridColor" catalog="System" colorSpace="catalog"/>
+                                                                        <tableColumns>
+                                                                            <tableColumn width="116" minWidth="40" maxWidth="1000" id="y4w-Vk-8so">
+                                                                                <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border">
+                                                                                    <font key="font" metaFont="smallSystem"/>
+                                                                                    <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
+                                                                                    <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
+                                                                                </tableHeaderCell>
+                                                                                <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" title="Text Cell" id="vaa-7X-unD">
+                                                                                    <font key="font" metaFont="system"/>
+                                                                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                                                    <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                                                </textFieldCell>
+                                                                                <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
+                                                                                <connections>
+                                                                                    <binding destination="C3z-F0-cfl" name="value" keyPath="arrangedObjects.nodeLink.name" id="VZ0-SP-WoJ"/>
+                                                                                </connections>
+                                                                            </tableColumn>
+                                                                            <tableColumn width="456" minWidth="40" maxWidth="1000" id="PPd-Bd-1Pm">
+                                                                                <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border">
+                                                                                    <font key="font" metaFont="smallSystem"/>
+                                                                                    <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
+                                                                                    <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
+                                                                                </tableHeaderCell>
+                                                                                <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" title="Text Cell" id="1CK-RS-3HH">
+                                                                                    <font key="font" metaFont="system"/>
+                                                                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                                                    <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                                                </textFieldCell>
+                                                                                <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
+                                                                                <connections>
+                                                                                    <binding destination="C3z-F0-cfl" name="value" keyPath="arrangedObjects.isParent" id="vqz-su-GCC"/>
+                                                                                </connections>
+                                                                            </tableColumn>
+                                                                        </tableColumns>
+                                                                    </tableView>
+                                                                </subviews>
+                                                                <animations/>
+                                                                <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                            </clipView>
+                                                            <animations/>
+                                                            <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="YES" id="mLh-oJ-dcS">
+                                                                <rect key="frame" x="1" y="7" width="0.0" height="16"/>
+                                                                <autoresizingMask key="autoresizingMask"/>
+                                                                <animations/>
+                                                            </scroller>
+                                                            <scroller key="verticalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="NO" id="mU0-se-pkb">
+                                                                <rect key="frame" x="-15" y="23" width="16" height="0.0"/>
+                                                                <autoresizingMask key="autoresizingMask"/>
+                                                                <animations/>
+                                                            </scroller>
+                                                            <tableHeaderView key="headerView" id="6YA-vC-GzD">
+                                                                <rect key="frame" x="0.0" y="0.0" width="578" height="23"/>
+                                                                <autoresizingMask key="autoresizingMask"/>
+                                                                <animations/>
+                                                            </tableHeaderView>
+                                                        </scrollView>
+                                                    </subviews>
+                                                    <animations/>
+                                                    <visibilityPriorities>
+                                                        <integer value="1000"/>
+                                                    </visibilityPriorities>
+                                                    <customSpacing>
+                                                        <real value="3.4028234663852886e+38"/>
+                                                    </customSpacing>
+                                                </stackView>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstAttribute="trailing" secondItem="83V-Om-Enq" secondAttribute="trailing" id="5Jd-Z0-VRa"/>
+                                                <constraint firstItem="83V-Om-Enq" firstAttribute="leading" secondItem="sy8-EW-SuJ" secondAttribute="leading" id="7FA-Ef-vr6"/>
+                                                <constraint firstItem="83V-Om-Enq" firstAttribute="top" secondItem="sy8-EW-SuJ" secondAttribute="top" id="hT1-fB-h1x"/>
+                                                <constraint firstAttribute="bottom" secondItem="83V-Om-Enq" secondAttribute="bottom" id="xQ7-ej-tpC"/>
+                                            </constraints>
+                                            <animations/>
+                                        </view>
+                                    </tabViewItem>
                                 </tabViewItems>
                             </tabView>
                         </subviews>
@@ -2156,6 +2253,7 @@
                         <animations/>
                     </view>
                     <connections>
+                        <outlet property="childNodesController" destination="C3z-F0-cfl" id="Lfg-hM-MfO"/>
                         <outlet property="cptControlsView" destination="32V-bJ-Q2I" id="gWk-kf-4Q8"/>
                         <outlet property="dataLabel" destination="rok-Z1-3qt" id="qmw-C6-8o2"/>
                         <outlet property="dataPopup" destination="m4F-Tu-7t6" id="Xl5-0z-4Ie"/>
@@ -2183,6 +2281,12 @@
                     </connections>
                 </arrayController>
                 <userDefaultsController id="Z9C-rm-re7"/>
+                <arrayController mode="entity" entityName="BNNode" fetchPredicateFormat="isParent = 1" automaticallyPreparesContent="YES" clearsFilterPredicateOnInsertion="NO" id="C3z-F0-cfl" userLabel="Child Nodes Controller">
+                    <connections>
+                        <binding destination="Jh7-dX-xVp" name="contentArray" keyPath="arrangedObjects" id="hJ0-tV-5wo"/>
+                        <binding destination="VWs-jl-vPz" name="managedObjectContext" keyPath="moc" id="a5Z-bf-xDL"/>
+                    </connections>
+                </arrayController>
             </objects>
             <point key="canvasLocation" x="657" y="1472.5"/>
         </scene>
@@ -2810,7 +2914,7 @@
         </scene>
     </scenes>
     <resources>
-        <image name="1063311D-A787-42C8-B1BB-E73DFB87E101" width="1" height="1">
+        <image name="5C013438-0EDB-417A-BCFE-F3C4DC1DDF7B" width="1" height="1">
             <mutableData key="keyedArchiveRepresentation">
 YnBsaXN0MDDUAQIDBAUGPT5YJHZlcnNpb25YJG9iamVjdHNZJGFyY2hpdmVyVCR0b3ASAAGGoK4HCBMU
 GR4fIyQrLjE3OlUkbnVsbNUJCgsMDQ4PEBESVk5TU2l6ZVYkY2xhc3NcTlNJbWFnZUZsYWdzVk5TUmVw
