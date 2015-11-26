@@ -14,6 +14,7 @@ class PlexusModelDetailViewController: NSViewController, CPTScatterPlotDataSourc
     var moc : NSManagedObjectContext!
     dynamic var modelTreeController : NSTreeController!
     @IBOutlet dynamic var nodesController : NSArrayController!
+    @IBOutlet dynamic var childNodesController : NSArrayController!
     
     
     //Nodes View
@@ -39,6 +40,7 @@ class PlexusModelDetailViewController: NSViewController, CPTScatterPlotDataSourc
     @IBOutlet var scopeLabel : NSTextField!
     @IBOutlet var scopePopup : NSPopUpButton!
     @IBOutlet var numericButton : NSButton!
+    @IBOutlet var numericField : NSTextField!
     @IBOutlet var dataLabel : NSTextField!
     @IBOutlet var dataPopup : NSPopUpButton!
     @IBOutlet var dataSubPopup : NSPopUpButton!
@@ -53,6 +55,8 @@ class PlexusModelDetailViewController: NSViewController, CPTScatterPlotDataSourc
     var graph : CPTXYGraph!
     var priorPlot : CPTScatterPlot!
     
+    @IBOutlet var childPredicate : NSPredicate!
+    
     
     required init?(coder aDecoder: NSCoder)
     {
@@ -60,12 +64,21 @@ class PlexusModelDetailViewController: NSViewController, CPTScatterPlotDataSourc
         let appDelegate : AppDelegate = NSApplication.sharedApplication().delegate as! AppDelegate
         moc = appDelegate.managedObjectContext
         
+
+        
         super.init(coder: aDecoder)
     }
 
     override func viewDidLoad() {
         super.viewDidLoad()
+          childPredicate = NSPredicate(format: "isParent = %i", 1)
+        childNodesController.filterPredicate = childPredicate
         
+      //  childPredicate = NSPredicate(format: "model == %@ AND isParent = %i", modelTreeController.selection, 1)
+      //  childNodesController.fetchPredicate = childPredicate
+        //let tpredicate = NSPredicate(format: "entry.structure == %@ AND name == %@ AND traitValue == %@", thisStructure, self.dataName, self.dataSubName)
+        
+
         
         nodeVisView.blendingMode = NSVisualEffectBlendingMode.BehindWindow
         nodeVisView.material = NSVisualEffectMaterial.Dark
