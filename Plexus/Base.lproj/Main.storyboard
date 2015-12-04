@@ -714,7 +714,7 @@
                                         <action selector="calculate:" target="B8D-0N-5wS" id="VCg-wJ-cZX"/>
                                     </connections>
                                 </toolbarItem>
-                                <toolbarItem implicitItemIdentifier="E18303A5-037B-44FE-878B-72401FAAC926" label="Models" paletteLabel="Models" image="5C013438-0EDB-417A-BCFE-F3C4DC1DDF7B" id="VR9-AM-azT">
+                                <toolbarItem implicitItemIdentifier="E18303A5-037B-44FE-878B-72401FAAC926" label="Models" paletteLabel="Models" image="E89B6A70-14DB-4052-AF0A-D8526FF4AF05" id="VR9-AM-azT">
                                     <nil key="toolTip"/>
                                     <size key="minSize" width="13" height="13"/>
                                     <size key="maxSize" width="37" height="34"/>
@@ -722,7 +722,7 @@
                                         <rect key="frame" x="5" y="14" width="37" height="34"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                         <animations/>
-                                        <buttonCell key="cell" type="squareTextured" bezelStyle="texturedSquare" image="5C013438-0EDB-417A-BCFE-F3C4DC1DDF7B" imagePosition="only" alignment="left" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="s8L-6c-2d7">
+                                        <buttonCell key="cell" type="squareTextured" bezelStyle="texturedSquare" image="E89B6A70-14DB-4052-AF0A-D8526FF4AF05" imagePosition="only" alignment="left" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="s8L-6c-2d7">
                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
@@ -1505,7 +1505,7 @@
                                                     </clipView>
                                                     <animations/>
                                                     <scroller key="horizontalScroller" verticalHuggingPriority="750" horizontal="YES" id="Efc-Va-mBE">
-                                                        <rect key="frame" x="1" y="223" width="194" height="16"/>
+                                                        <rect key="frame" x="1" y="224" width="194" height="15"/>
                                                         <autoresizingMask key="autoresizingMask"/>
                                                         <animations/>
                                                     </scroller>
@@ -2008,7 +2008,7 @@
                                             <animations/>
                                         </view>
                                     </tabViewItem>
-                                    <tabViewItem label="Table" identifier="2" id="23r-jM-960">
+                                    <tabViewItem label="Parent" identifier="2" id="23r-jM-960">
                                         <view key="view" id="WMg-dx-8ky">
                                             <rect key="frame" x="10" y="33" width="580" height="354"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -2040,7 +2040,7 @@
                                                                         </textFieldCell>
                                                                         <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
                                                                         <connections>
-                                                                            <binding destination="Jh7-dX-xVp" name="value" keyPath="arrangedObjects.nodeLink.name" id="SV7-Nb-09B"/>
+                                                                            <binding destination="dTd-a7-hXz" name="value" keyPath="arrangedObjects.nodeLink.name" id="X9c-fm-Bdt"/>
                                                                         </connections>
                                                                     </tableColumn>
                                                                     <tableColumn width="63.70703125" minWidth="10" maxWidth="3.4028234663852886e+38" id="xso-co-DFO">
@@ -2065,7 +2065,7 @@
                                                                         </popUpButtonCell>
                                                                         <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
                                                                         <connections>
-                                                                            <binding destination="Jh7-dX-xVp" name="selectedIndex" keyPath="arrangedObjects.priorDistType" id="dyU-SB-sfz"/>
+                                                                            <binding destination="dTd-a7-hXz" name="selectedIndex" keyPath="arrangedObjects.priorDistType" id="uAS-lf-lei"/>
                                                                         </connections>
                                                                     </tableColumn>
                                                                     <tableColumn width="68.63671875" minWidth="10" maxWidth="3.4028234663852886e+38" id="54V-LF-FHH">
@@ -2085,7 +2085,7 @@
                                                                         </textFieldCell>
                                                                         <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
                                                                         <connections>
-                                                                            <binding destination="Jh7-dX-xVp" name="value" keyPath="arrangedObjects.priorV1" id="9mi-MY-vmz"/>
+                                                                            <binding destination="dTd-a7-hXz" name="value" keyPath="arrangedObjects.priorV1" id="qfl-N9-dIg"/>
                                                                         </connections>
                                                                     </tableColumn>
                                                                     <tableColumn width="334.5" minWidth="10" maxWidth="3.4028234663852886e+38" id="Xp1-1O-Gvy">
@@ -2105,7 +2105,7 @@
                                                                         </textFieldCell>
                                                                         <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
                                                                         <connections>
-                                                                            <binding destination="Jh7-dX-xVp" name="value" keyPath="arrangedObjects.priorV2" id="jeO-E4-gPu"/>
+                                                                            <binding destination="dTd-a7-hXz" name="value" keyPath="arrangedObjects.priorV2" id="wgE-sp-FUJ"/>
                                                                         </connections>
                                                                     </tableColumn>
                                                                 </tableColumns>
@@ -2167,7 +2167,7 @@
                                                                         <color key="gridColor" name="gridColor" catalog="System" colorSpace="catalog"/>
                                                                         <tableColumns>
                                                                             <tableColumn width="116" minWidth="40" maxWidth="1000" id="y4w-Vk-8so">
-                                                                                <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border">
+                                                                                <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" title="Node">
                                                                                     <font key="font" metaFont="smallSystem"/>
                                                                                     <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
                                                                                     <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
@@ -2182,8 +2182,8 @@
                                                                                     <binding destination="C3z-F0-cfl" name="value" keyPath="arrangedObjects.nodeLink.name" id="VZ0-SP-WoJ"/>
                                                                                 </connections>
                                                                             </tableColumn>
-                                                                            <tableColumn width="456" minWidth="40" maxWidth="1000" id="PPd-Bd-1Pm">
-                                                                                <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border">
+                                                                            <tableColumn width="100" minWidth="40" maxWidth="1000" id="PPd-Bd-1Pm">
+                                                                                <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" title="Data Scope">
                                                                                     <font key="font" metaFont="smallSystem"/>
                                                                                     <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
                                                                                     <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
@@ -2195,7 +2195,71 @@
                                                                                 </textFieldCell>
                                                                                 <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
                                                                                 <connections>
-                                                                                    <binding destination="C3z-F0-cfl" name="value" keyPath="arrangedObjects.isParent" id="vqz-su-GCC"/>
+                                                                                    <binding destination="C3z-F0-cfl" name="value" keyPath="arrangedObjects.dataScope" id="h0H-Tk-nju"/>
+                                                                                </connections>
+                                                                            </tableColumn>
+                                                                            <tableColumn identifier="" width="66" minWidth="10" maxWidth="3.4028234663852886e+38" id="bEQ-aw-3Ow">
+                                                                                <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="left" title="Data Name">
+                                                                                    <font key="font" metaFont="smallSystem"/>
+                                                                                    <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
+                                                                                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                                                                </tableHeaderCell>
+                                                                                <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" alignment="left" title="Text Cell" id="W12-CF-lbI">
+                                                                                    <font key="font" metaFont="system"/>
+                                                                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                                                    <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                                                </textFieldCell>
+                                                                                <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
+                                                                                <connections>
+                                                                                    <binding destination="C3z-F0-cfl" name="value" keyPath="arrangedObjects.dataName" id="lhy-1T-bdo"/>
+                                                                                </connections>
+                                                                            </tableColumn>
+                                                                            <tableColumn identifier="" width="84" minWidth="10" maxWidth="3.4028234663852886e+38" id="N63-jJ-B2M">
+                                                                                <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="left" title="DataSubName">
+                                                                                    <font key="font" metaFont="smallSystem"/>
+                                                                                    <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
+                                                                                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                                                                </tableHeaderCell>
+                                                                                <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" alignment="left" title="Text Cell" id="ocf-YU-cES">
+                                                                                    <font key="font" metaFont="system"/>
+                                                                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                                                    <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                                                </textFieldCell>
+                                                                                <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
+                                                                                <connections>
+                                                                                    <binding destination="C3z-F0-cfl" name="value" keyPath="arrangedObjects.dataSubName" id="8ir-BL-ytj"/>
+                                                                                </connections>
+                                                                            </tableColumn>
+                                                                            <tableColumn identifier="" width="64" minWidth="10" maxWidth="3.4028234663852886e+38" id="VPi-dE-EPs">
+                                                                                <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="left" title="Numeric">
+                                                                                    <font key="font" metaFont="smallSystem"/>
+                                                                                    <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
+                                                                                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                                                                </tableHeaderCell>
+                                                                                <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" alignment="left" title="Text Cell" id="s5X-JT-sOR">
+                                                                                    <font key="font" metaFont="system"/>
+                                                                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                                                    <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                                                </textFieldCell>
+                                                                                <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
+                                                                                <connections>
+                                                                                    <binding destination="C3z-F0-cfl" name="value" keyPath="arrangedObjects.numericData" id="1BY-lO-59H"/>
+                                                                                </connections>
+                                                                            </tableColumn>
+                                                                            <tableColumn identifier="" width="64" minWidth="10" maxWidth="3.4028234663852886e+38" id="Vjd-E3-wBb">
+                                                                                <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="left" title="Tolerance">
+                                                                                    <font key="font" metaFont="smallSystem"/>
+                                                                                    <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
+                                                                                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                                                                </tableHeaderCell>
+                                                                                <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" alignment="left" title="Text Cell" id="sDM-s6-6TN">
+                                                                                    <font key="font" metaFont="system"/>
+                                                                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                                                    <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                                                </textFieldCell>
+                                                                                <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
+                                                                                <connections>
+                                                                                    <binding destination="C3z-F0-cfl" name="value" keyPath="arrangedObjects.tolerance" id="EQr-g1-8zf"/>
                                                                                 </connections>
                                                                             </tableColumn>
                                                                         </tableColumns>
@@ -2206,7 +2270,7 @@
                                                             </clipView>
                                                             <animations/>
                                                             <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="YES" id="mLh-oJ-dcS">
-                                                                <rect key="frame" x="1" y="7" width="0.0" height="16"/>
+                                                                <rect key="frame" x="1" y="337" width="578" height="16"/>
                                                                 <autoresizingMask key="autoresizingMask"/>
                                                                 <animations/>
                                                             </scroller>
@@ -2262,6 +2326,7 @@
                         <outlet property="nodeVisView" destination="G5e-uy-BBg" id="qts-nC-2A4"/>
                         <outlet property="nodesController" destination="Jh7-dX-xVp" id="Ij5-nk-AeL"/>
                         <outlet property="numericButton" destination="HSn-X9-ktf" id="lTr-f9-EsU"/>
+                        <outlet property="parentNodesController" destination="dTd-a7-hXz" id="Uh7-Fx-WeI"/>
                         <outlet property="priorControlsView" destination="DcL-Va-ids" id="bwh-ia-xfn"/>
                         <outlet property="priorTypePopup" destination="x5q-Eg-8KT" id="XFF-wf-FJM"/>
                         <outlet property="priorV1Field" destination="2ht-n7-JVP" id="R4j-Ee-N6J"/>
@@ -2281,10 +2346,16 @@
                     </connections>
                 </arrayController>
                 <userDefaultsController id="Z9C-rm-re7"/>
-                <arrayController mode="entity" entityName="BNNode" fetchPredicateFormat="isParent = 1" automaticallyPreparesContent="YES" clearsFilterPredicateOnInsertion="NO" id="C3z-F0-cfl" userLabel="Child Nodes Controller">
+                <arrayController mode="entity" entityName="BNNode" fetchPredicateFormat="" automaticallyPreparesContent="YES" clearsFilterPredicateOnInsertion="NO" id="C3z-F0-cfl" userLabel="Child Nodes Controller">
                     <connections>
-                        <binding destination="Jh7-dX-xVp" name="contentArray" keyPath="arrangedObjects" id="hJ0-tV-5wo"/>
                         <binding destination="VWs-jl-vPz" name="managedObjectContext" keyPath="moc" id="a5Z-bf-xDL"/>
+                        <binding destination="VWs-jl-vPz" name="contentSet" keyPath="modelTreeController.selection.bnnode" id="FqT-dw-kXp"/>
+                    </connections>
+                </arrayController>
+                <arrayController mode="entity" automaticallyPreparesContent="YES" id="dTd-a7-hXz" userLabel="Parent Nodes Controller">
+                    <connections>
+                        <binding destination="VWs-jl-vPz" name="managedObjectContext" keyPath="moc" id="VkS-LJ-Xef"/>
+                        <binding destination="VWs-jl-vPz" name="contentSet" keyPath="modelTreeController.selection.bnnode" id="cRU-wD-QUT"/>
                     </connections>
                 </arrayController>
             </objects>
@@ -2914,7 +2985,7 @@
         </scene>
     </scenes>
     <resources>
-        <image name="5C013438-0EDB-417A-BCFE-F3C4DC1DDF7B" width="1" height="1">
+        <image name="E89B6A70-14DB-4052-AF0A-D8526FF4AF05" width="1" height="1">
             <mutableData key="keyedArchiveRepresentation">
 YnBsaXN0MDDUAQIDBAUGPT5YJHZlcnNpb25YJG9iamVjdHNZJGFyY2hpdmVyVCR0b3ASAAGGoK4HCBMU
 GR4fIyQrLjE3OlUkbnVsbNUJCgsMDQ4PEBESVk5TU2l6ZVYkY2xhc3NcTlNJbWFnZUZsYWdzVk5TUmVw

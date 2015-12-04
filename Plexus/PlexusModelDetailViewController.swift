@@ -15,6 +15,7 @@ class PlexusModelDetailViewController: NSViewController, CPTScatterPlotDataSourc
     dynamic var modelTreeController : NSTreeController!
     @IBOutlet dynamic var nodesController : NSArrayController!
     @IBOutlet dynamic var childNodesController : NSArrayController!
+    @IBOutlet dynamic var parentNodesController : NSArrayController!
     
     
     //Nodes View
@@ -71,12 +72,11 @@ class PlexusModelDetailViewController: NSViewController, CPTScatterPlotDataSourc
 
     override func viewDidLoad() {
         super.viewDidLoad()
-          childPredicate = NSPredicate(format: "isParent = %i", 1)
+        let  childPredicate = NSPredicate(format: "isParent = %i", 0)
         childNodesController.filterPredicate = childPredicate
         
-      //  childPredicate = NSPredicate(format: "model == %@ AND isParent = %i", modelTreeController.selection, 1)
-      //  childNodesController.fetchPredicate = childPredicate
-        //let tpredicate = NSPredicate(format: "entry.structure == %@ AND name == %@ AND traitValue == %@", thisStructure, self.dataName, self.dataSubName)
+        let  parentPredicate = NSPredicate(format: "isParent = %i", 1)
+        parentNodesController.filterPredicate = parentPredicate
         
 
         
@@ -221,6 +221,31 @@ class PlexusModelDetailViewController: NSViewController, CPTScatterPlotDataSourc
     //******CPTScatterPlotDataSource fxns
     
     func reloadData() {
+        
+        let allNodes : [BNNode] = nodesController.arrangedObjects as! [BNNode]
+
+        for chkNode : BNNode in allNodes {
+            // print("chknode \(chkNode.nodeLink.name) isParent \(chkNode.isParent)")
+            if(chkNode.influencedBy.count > 0) { //child
+                if(chkNode.isParent != 0){
+                    chkNode.setValue(0, forKey: "isParent")
+
+
+                }
+                
+            }
+            else {
+                if(chkNode.isParent != 1){
+                    chkNode.setValue(1, forKey: "isParent")
+
+                }
+            }
+            
+            parentNodesController.rearrangeObjects()
+            childNodesController.rearrangeObjects()
+            
+        }
+
         
         
         
