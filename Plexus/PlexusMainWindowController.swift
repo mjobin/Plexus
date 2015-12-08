@@ -486,13 +486,30 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
     @IBAction func exportCSV(x:NSToolbarItem){
         let err : NSErrorPointer = nil
         
+        //Exporting current daatset only
+        let curDatasets : [Dataset] = self.datasetController.selectedObjects as! [Dataset]
+        let curDataset : Dataset = curDatasets[0]
+        
+        let curModels : [Model] = self.mainSplitViewController.modelTreeController?.selectedObjects as! [Model]
+        let curModel : Model = curModels[0]
+        
         let sv:NSSavePanel = NSSavePanel()
-        sv.allowedFileTypes = ["csv"]
+        //sv.allowedFileTypes = ["csv"]
+        sv.nameFieldStringValue = curDataset.name + "-" + curModel.name
         
         sv.beginSheetModalForWindow(window!, completionHandler: {(result:Int) -> Void in
+            
+
+            
             if (result == NSFileHandlingPanelOKButton) {
-                let outFile  = sv.URL
-                 print(outFile)
+               
+                let baseFile  = sv.URL?.absoluteString
+                let outFileName = baseFile! + ".csv"
+
+                let outURL = NSURL(string: outFileName)
+                print(outURL)
+                
+
                 
                 sv.close()
                 
@@ -506,9 +523,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                 
                 var outText = "Name,"
                 
-                //Exporting current daatset only
-                let curDatasets : [Dataset] = self.datasetController.selectedObjects as! [Dataset]
-                let curDataset : Dataset = curDatasets[0]
+
                 let trequest = NSFetchRequest(entityName: "Trait")
 
                 let tpredicate = NSPredicate(format: "entry.dataset == %@", curDataset)
@@ -582,7 +597,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
 
                     
                     do {
-                        try outText.writeToURL(sv.URL!, atomically: true, encoding: NSUTF8StringEncoding)
+                        try outText.writeToURL(outURL!, atomically: true, encoding: NSUTF8StringEncoding)
                     } catch _ {
                     }
                 } catch let error as NSError {
@@ -595,10 +610,10 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                 
                 
                 //now print nodes
-                let outDir = sv.directoryURL?.absoluteString
-                let baseDir = outFile?.absoluteString
-                let curModels : [Model] = self.mainSplitViewController.modelTreeController?.selectedObjects as! [Model]
-                let curModel : Model = curModels[0]
+               // let outDir = sv.directoryURL?.absoluteString
+               // let baseDir = outFile.absoluteString
+                
+
                 
                 var i = 0
                 for node in self.mainSplitViewController.modelDetailViewController?.nodesController.arrangedObjects as! [BNNode] {
@@ -607,14 +622,21 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                     
                     
                     //create a compound of the outFile name and node name
-                    let nodeTXTFileName = baseDir! + "-" + node.nodeLink.name + ".csv"
+                    let nodeTXTFileName = baseFile! + "-" + node.nodeLink.name + ".csv"
                     let nodeTXTURL = NSURL(string: nodeTXTFileName)
                     //  print(nodeURL)
                     
                     
                     var outText : String = String()
-                    outText += nodeTXTFileName
+                    outText += node.nodeLink.name
+                    outText += "\n"
+
+                        outText += "cptFreq,"
+                        outText += String(node.cptFreq)
+                        outText += "\n"
+                    
                     if node.priorArray != nil {
+                        outText += "prior,"
                         let priorArray = NSKeyedUnarchiver.unarchiveObjectWithData(node.valueForKey("priorArray") as! NSData) as! [Int]
 
                         
@@ -626,6 +648,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                         
                     }
                     if node.postArray != nil {
+                        outText += "posterior,"
                         let postArray = NSKeyedUnarchiver.unarchiveObjectWithData(node.valueForKey("postArray") as! NSData) as! [Int]
 
                         
@@ -646,7 +669,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                     }
                     
                     //create a compound of the outFile name and node name
-                    let nodePDFFileName = baseDir! + "-" + node.nodeLink.name + ".pdf"
+                    let nodePDFFileName = baseFile! + "-" + node.nodeLink.name + ".pdf"
                     let nodeURL = NSURL(string: nodePDFFileName)
                     print(nodeURL)
                     
