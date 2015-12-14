@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="7701" systemVersion="14E46" minimumToolsVersion="Automatic" macOSVersion="Automatic" iOSVersion="Automatic">
+<model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="9057" systemVersion="15B42" minimumToolsVersion="Automatic">
     <entity name="BNNode" representedClassName="Plexus.BNNode" syncable="YES">
         <attribute name="cptFreq" optional="YES" attributeType="Double" minValueString="0" maxValueString="1" defaultValueString="0.0" syncable="YES"/>
         <attribute name="dataName" optional="YES" attributeType="String" defaultValueString="NoData" syncable="YES"/>
         <attribute name="dataScope" optional="YES" attributeType="Integer 32" minValueString="0" defaultValueString="0" syncable="YES"/>
         <attribute name="dataSubName" optional="YES" attributeType="String" defaultValueString="NoData" syncable="YES"/>
+        <attribute name="isParent" optional="YES" attributeType="Integer 16" defaultValueString="YES" syncable="YES"/>
         <attribute name="numericData" optional="YES" attributeType="Boolean" defaultValueString="NO" syncable="YES"/>
         <attribute name="postArray" optional="YES" attributeType="Binary" syncable="YES"/>
         <attribute name="postCount" optional="YES" attributeType="Binary" valueTransformerName="PlexusBNNodePostArrayTransformer" syncable="YES"/>
@@ -13,6 +14,7 @@
         <attribute name="priorDistType" optional="YES" attributeType="Integer 32" minValueString="0" defaultValueString="0" syncable="YES"/>
         <attribute name="priorV1" optional="YES" attributeType="Double" defaultValueString="0.5" syncable="YES"/>
         <attribute name="priorV2" optional="YES" attributeType="Double" defaultValueString="0.5" syncable="YES"/>
+        <attribute name="tolerance" optional="YES" attributeType="Double" minValueString="0" maxValueString="1" defaultValueString="0.05" syncable="YES"/>
         <relationship name="influencedBy" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="BNNode" inverseName="influences" inverseEntity="BNNode" syncable="YES"/>
         <relationship name="influences" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="BNNode" inverseName="influencedBy" inverseEntity="BNNode" syncable="YES"/>
         <relationship name="model" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Model" inverseName="bnnode" inverseEntity="Model" syncable="YES"/>
@@ -65,7 +67,7 @@
         <relationship name="entry" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Entry" inverseName="trait" inverseEntity="Entry" syncable="YES"/>
     </entity>
     <elements>
-        <element name="BNNode" positionX="54" positionY="18" width="128" height="285"/>
+        <element name="BNNode" positionX="54" positionY="18" width="128" height="315"/>
         <element name="Dataset" positionX="63" positionY="-157" width="128" height="150"/>
         <element name="Entry" positionX="-468" positionY="-36" width="128" height="165"/>
         <element name="Model" positionX="349" positionY="-9" width="128" height="225"/>
