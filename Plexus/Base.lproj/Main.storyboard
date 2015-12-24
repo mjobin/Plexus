@@ -713,14 +713,14 @@
                                         <action selector="calculate:" target="B8D-0N-5wS" id="VCg-wJ-cZX"/>
                                     </connections>
                                 </toolbarItem>
-                                <toolbarItem implicitItemIdentifier="E18303A5-037B-44FE-878B-72401FAAC926" label="Models" paletteLabel="Models" image="CF69CFD2-42B9-466D-8B49-FF545218D12A" id="VR9-AM-azT">
+                                <toolbarItem implicitItemIdentifier="E18303A5-037B-44FE-878B-72401FAAC926" label="Models" paletteLabel="Models" image="AC5716BA-2190-417C-993D-69ABE767A9A8" id="VR9-AM-azT">
                                     <nil key="toolTip"/>
                                     <size key="minSize" width="13" height="13"/>
                                     <size key="maxSize" width="37" height="34"/>
                                     <button key="view" horizontalHuggingPriority="750" verticalHuggingPriority="750" id="vcL-Vh-Set">
                                         <rect key="frame" x="5" y="14" width="37" height="34"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="squareTextured" bezelStyle="texturedSquare" image="CF69CFD2-42B9-466D-8B49-FF545218D12A" imagePosition="only" alignment="left" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="s8L-6c-2d7">
+                                        <buttonCell key="cell" type="squareTextured" bezelStyle="texturedSquare" image="AC5716BA-2190-417C-993D-69ABE767A9A8" imagePosition="only" alignment="left" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="s8L-6c-2d7">
                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
@@ -2112,7 +2112,7 @@
                                                                                     <binding destination="C3z-F0-cfl" name="selectedIndex" keyPath="arrangedObjects.dataScope" id="LHA-Nx-AI8"/>
                                                                                 </connections>
                                                                             </tableColumn>
-                                                                            <tableColumn identifier="" width="66" minWidth="10" maxWidth="3.4028234663852886e+38" id="bEQ-aw-3Ow">
+                                                                            <tableColumn identifier="DataName" width="66" minWidth="10" maxWidth="3.4028234663852886e+38" id="bEQ-aw-3Ow">
                                                                                 <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="left" title="Data Name">
                                                                                     <font key="font" metaFont="smallSystem"/>
                                                                                     <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
@@ -2125,10 +2125,10 @@
                                                                                 </textFieldCell>
                                                                                 <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
                                                                                 <connections>
-                                                                                    <binding destination="C3z-F0-cfl" name="value" keyPath="arrangedObjects.dataName" id="lhy-1T-bdo"/>
+                                                                                    <binding destination="C3z-F0-cfl" name="value" keyPath="arrangedObjects.dataName" id="swB-Wb-cQm"/>
                                                                                 </connections>
                                                                             </tableColumn>
-                                                                            <tableColumn identifier="" width="84" minWidth="10" maxWidth="3.4028234663852886e+38" id="N63-jJ-B2M">
+                                                                            <tableColumn identifier="DataSubName" width="84" minWidth="10" maxWidth="3.4028234663852886e+38" id="N63-jJ-B2M">
                                                                                 <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="left" title="DataSubName">
                                                                                     <font key="font" metaFont="smallSystem"/>
                                                                                     <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
@@ -2180,6 +2180,9 @@
                                                                                 </connections>
                                                                             </tableColumn>
                                                                         </tableColumns>
+                                                                        <connections>
+                                                                            <outlet property="delegate" destination="VWs-jl-vPz" id="p1k-Qr-xeM"/>
+                                                                        </connections>
                                                                     </tableView>
                                                                 </subviews>
                                                                 <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -2192,7 +2195,7 @@
                                                                 <rect key="frame" x="-15" y="23" width="16" height="0.0"/>
                                                                 <autoresizingMask key="autoresizingMask"/>
                                                             </scroller>
-                                                            <tableHeaderView key="headerView" id="6YA-vC-GzD">
+                                                            <tableHeaderView key="headerView" identifier="DataName" id="6YA-vC-GzD">
                                                                 <rect key="frame" x="0.0" y="0.0" width="578" height="23"/>
                                                                 <autoresizingMask key="autoresizingMask"/>
                                                             </tableHeaderView>
@@ -2227,6 +2230,7 @@
                     </view>
                     <connections>
                         <outlet property="childNodesController" destination="C3z-F0-cfl" id="Lfg-hM-MfO"/>
+                        <outlet property="childTableView" destination="ac1-HH-luG" id="D2g-qr-4Tk"/>
                         <outlet property="cptControlsView" destination="32V-bJ-Q2I" id="gWk-kf-4Q8"/>
                         <outlet property="dataLabel" destination="rok-Z1-3qt" id="qmw-C6-8o2"/>
                         <outlet property="dataPopup" destination="m4F-Tu-7t6" id="Xl5-0z-4Ie"/>
@@ -2848,7 +2852,7 @@
         </scene>
     </scenes>
     <resources>
-        <image name="CF69CFD2-42B9-466D-8B49-FF545218D12A" width="1" height="1">
+        <image name="AC5716BA-2190-417C-993D-69ABE767A9A8" width="1" height="1">
             <mutableData key="keyedArchiveRepresentation">
 YnBsaXN0MDDUAQIDBAUGPT5YJHZlcnNpb25YJG9iamVjdHNZJGFyY2hpdmVyVCR0b3ASAAGGoK4HCBMU
 GR4fIyQrLjE3OlUkbnVsbNUJCgsMDQ4PEBESVk5TU2l6ZVYkY2xhc3NcTlNJbWFnZUZsYWdzVk5TUmVw
