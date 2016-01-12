@@ -28,4 +28,6 @@ class BNNode: NSManagedObject {
     @NSManaged var cptFreq: NSNumber
     @NSManaged var priorCount: NSData?
     @NSManaged var priorArray: NSData?
+    @NSManaged var isParent: NSNumber
+
 }
