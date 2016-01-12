@@ -65,82 +65,7 @@ class PlexusBNScene: SKScene {
         
         
         
-        //create bumper for lower left corner?
-        /*
-        var bumperPath = CGPathCreateWithRoundedRect(CGRectMake(0, 0, 100, 32), 4, 4, nil)
-        let shape = SKShapeNode(path: bumperPath)
-        shape.userInteractionEnabled = false
-        shape.position = CGPointZero
-        shape.physicsBody = SKPhysicsBody(rectangleOfSize: CGRectMake(0, 0, 100, 32).size)
-        shape.physicsBody?.mass = 1.0
-        shape.physicsBody?.restitution = 0.3
-        shape.name = "bumper"
-        shape.physicsBody?.affectedByGravity = false
-        shape.physicsBody?.dynamic = false
-        shape.physicsBody?.allowsRotation = false
-        shape.physicsBody?.categoryBitMask = ColliderType.Node.rawValue
-        shape.physicsBody?.collisionBitMask = ColliderType.Node.rawValue
-        shape.strokeColor = NSColor.blueColor()
-        shape.fillColor = NSColor.grayColor()
-        self.addChild(shape)
-        */
-        
-        // Name label
-        
-        
-        //let nameLabel = SKLabelNode(text: "Bayesian Network 0")
-       // nameLabel.fontSize = 18
-       // nameLabel.zPosition = 1
-       // nameLabel.position = CGPointMake(self.frame.width*0.5, self.frame.height*0.95)
-        
-       // self.addChild(nameLabel)
-        
-        
-        
-        
-        
-        //parent button
-        /*
-        
-        let parent = SKSpriteNode(imageNamed:"Plexus Node")
-        parent.position = CGPointMake(self.frame.width*0.05, self.frame.height*0.95)
-        parent.setScale(0.1)
-        parent.physicsBody = SKPhysicsBody(rectangleOfSize: parent.size)
-        parent.physicsBody?.mass = 1.0
-        parent.physicsBody?.restitution = 0.6
-        parent.name = "fixedButton"
-        
-        parent.physicsBody?.affectedByGravity = 0
-        parent.physicsBody?.dynamic = 0
-        
-        self.addChild(parent)
-        */
-        
-        
-        //flip button
-        
-        
-        /*
-        let flip = SKSpriteNode(imageNamed:"Flip Button")
-        flip.position = CGPointMake(self.frame.width*0.95, self.frame.height*0.95)
-        flip.setScale(0.05)
-        flip.physicsBody = SKPhysicsBody(rectangleOfSize: flip.size)
-        flip.physicsBody?.mass = 1.0
-        flip.physicsBody?.restitution = 0.6
-        flip.name = "flipButton"
-        
-        flip.physicsBody?.affectedByGravity = 0
-        flip.physicsBody?.dynamic = 0
-        
-        self.addChild(flip)
-        */
-        
-        
-        // flip button
-        //         let flip = PlexusFTButtonNode(normalTexture: "Flip Button")
-        //   let flip = PlexusFTButtonNode(normalTexture: "Flip Button", selectedTexture: "Flip Button Selected", disabledTexture: "FlipButton Disabled")
-        //    let flip = PlexusFTButtonNode(normalTexture: "Flip Button")
-        //     let flip = PlexusFTButtonNode(normalTexture: "Flip Button", selectedTexture: "Flip Button Selected", disabledTexture: "Flip Button Disabled")
+      
         
 
  
@@ -163,96 +88,17 @@ class PlexusBNScene: SKScene {
         
         
         var touchedNode : SKNode = self.nodeAtPoint(loc)
-        //println("mousDown touched \(touchedNode) name: \(touchedNode.name) ue: \(touchedNode.userInteractionEnabled)")
+       // print("mouseDown touched \(touchedNode.name) ue: \(touchedNode.userInteractionEnabled)")
 
  
         
         //for now, spawn a new node if you did not touch an exisitng node
         if(touchedNode.isEqualTo(self)) {
-              print("miss")
+            //  print("miss")
             
            
             
-            
-            //create path
-            
-            /*
-            
-            var shapePath = CGPathCreateWithRoundedRect(CGRectMake(-50, -25, 100, 50), 4, 4, nil) //reaplce with size of name eventually
-            
-            let shape = PlexusBNNode(path: shapePath)
-            shape.position = loc
-            //shape.userInteractionEnabled = true
-            shape.physicsBody = SKPhysicsBody(rectangleOfSize: CGRectMake(-25, -25, 50, 50).size)
-            shape.physicsBody?.mass = 1.0
-            shape.physicsBody?.restitution = 0.3
-            shape.name = "bnNode"
-            shape.physicsBody?.affectedByGravity = false
-            shape.physicsBody?.dynamic = true
-            shape.physicsBody?.allowsRotation = false
-            shape.physicsBody?.categoryBitMask = ColliderType.Node.rawValue
-            shape.physicsBody?.collisionBitMask = ColliderType.Node.rawValue
-            shape.strokeColor = NSColor.blueColor()
-            shape.fillColor = NSColor.grayColor()
-            
 
-            
-            //give it an initial model
-            var newNode : BNNode = BNNode(entity: NSEntityDescription.entityForName("BNNode", inManagedObjectContext: moc)!, insertIntoManagedObjectContext: moc)
-            shape.node = newNode
-        
-
-        
-            
-            var curModels : [Model] = modelTreeController.selectedObjects as [Model]
-            var curModel : Model = curModels[0]
-            
-
-            curModel.addBNNodeObject(newNode)
-            newNode.setValue(curModel, forKey: "model")
-
-
-            
-            moc.save(errorPtr)
-            self.addChild(shape)
-            
-            let myLabel = SKLabelNode(text: "New Node")
-            myLabel.fontSize = 18
-            myLabel.zPosition = 1
-            myLabel.name = "nodeName"
-            myLabel.userInteractionEnabled = false
-            myLabel.position = shape.position
-            myLabel.physicsBody = SKPhysicsBody(rectangleOfSize: CGRectMake(-25, -25, 50, 50).size)
-            
-            self.addChild(myLabel)
-            
-            let labelJoint = SKPhysicsJointFixed.jointWithBodyA(myLabel.physicsBody, bodyB: shape.physicsBody, anchor: shape.position)
-            
-            self.physicsWorld.addJoint(labelJoint)
-            */
-            
-            
-            /*
-            let sprite = SKSpriteNode(imageNamed:"Plexus Node")
-            sprite.position = loc;
-            sprite.setScale(0.1)
-            sprite.physicsBody = SKPhysicsBody(rectangleOfSize: sprite.size)
-            sprite.physicsBody?.mass = 1.0
-            sprite.physicsBody?.restitution = 0.3
-            sprite.name = "bnNode"
-            
-            sprite.physicsBody?.affectedByGravity = 0
-            sprite.physicsBody?.dynamic = 1
-            
-            */
-            
-            
-            
-            // let action = SKAction.rotateByAngle(CGFloat(M_PI), duration:1)
-            // sprite.runAction(SKAction.repeatActionForever(action))
-            
-            //  self.addChild(sprite)
-            
 
             
             
@@ -263,6 +109,8 @@ class PlexusBNScene: SKScene {
             if(touchedNode.name == "nodeName"){//passing mouseDown to node beenath
                 let allNodes : [SKNode] = self.nodesAtPoint(touchedNode.position) 
                 for theNode : SKNode in allNodes {
+                    
+                   // print("theNode \(theNode)")
 
                     if(theNode.name == "bnNode" && theNode.position == touchedNode.position)
                     {
@@ -271,6 +119,8 @@ class PlexusBNScene: SKScene {
                 }
                 
             }
+            
+         //   print ("now touchedNode is \(touchedNode)")
 
             if(touchedNode.name == "bnNode"){
                 
@@ -283,16 +133,19 @@ class PlexusBNScene: SKScene {
                 
                let idNode : PlexusBNNode = touchedNode as! PlexusBNNode
                 
+                //print("idNode \(idNode)")
                 idNode.glowWidth = 5
                 let idArray : [BNNode] = [idNode.node]
 
-               // println (idArray)
+               // print (idArray)
                 
 
                 nodesController.setSelectedObjects(idArray)
-                /*
-                print("mouseDown: nodescontrolelr slected objects:")
+
                 
+                
+               // print("mouseDown: nodescontrolelr slected objects:")
+               /*
                 let newSels : [BNNode] = nodesController.selectedObjects as! [BNNode]
                 for newSel : BNNode in newSels {
                     print (newSel.nodeLink.name)
@@ -730,10 +583,6 @@ class PlexusBNScene: SKScene {
         }
 
 
-        
-
-        
-
 /*
       
         var selNodes : [BNNode] = nodesController.selectedObjects as [BNNode]
@@ -884,8 +733,7 @@ class PlexusBNScene: SKScene {
         let nodeWidth = (myLabel.frame.size.width)+10
         let nodeHeight = (myLabel.frame.size.height)+10
 
-      //  let nodeWidth = (myLabel.frame.size.width)*1.5
-       // let nodeHeight = (myLabel.frame.size.height)*1.3
+
         
         
         
