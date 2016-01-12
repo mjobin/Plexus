@@ -9,7 +9,7 @@
 import Cocoa
 import SpriteKit
 
-class PlexusModelDetailViewController: NSViewController, CPTScatterPlotDataSource, CPTScatterPlotDelegate {
+class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, CPTScatterPlotDataSource, CPTScatterPlotDelegate {
     
     var moc : NSManagedObjectContext!
     dynamic var modelTreeController : NSTreeController!
@@ -57,6 +57,7 @@ class PlexusModelDetailViewController: NSViewController, CPTScatterPlotDataSourc
     var priorPlot : CPTScatterPlot!
     
     @IBOutlet var childPredicate : NSPredicate!
+        @IBOutlet weak var childTableView : NSTableView!
     
     
     required init?(coder aDecoder: NSCoder)
@@ -623,12 +624,14 @@ class PlexusModelDetailViewController: NSViewController, CPTScatterPlotDataSourc
             let request = NSFetchRequest(entityName: "Trait")
             var predicate = NSPredicate()
             
+            dataNames = curNode.getDataNames()
+            
             
             switch(curNode.dataScope) {
             case 0://global // ALL entities matching this one's name
                 
                 //   println("global \(curNode.nodeLink.name)")
-                dataNames.append(curNode.nodeLink.name)
+                //dataNames.append(curNode.nodeLink.name)
                 self.dataPopup.enabled = false
                 self.dataPopup.hidden = true
                 self.dataSubPopup.enabled = false
@@ -641,15 +644,17 @@ class PlexusModelDetailViewController: NSViewController, CPTScatterPlotDataSourc
                 //from that object, select only the names of what is directly connected to it
                 if(curNode.nodeLink.entity.name == "Entry"){
                     //  println("entry")
+                    /*
                     let curEntry = curNode.nodeLink as! Entry
                     let theTraits = curEntry.trait
                     for thisTrait in theTraits {
                         dataNames.append(thisTrait.name)
                     }
+*/
                     
                 }
                 else if (curNode.nodeLink.entity.name == "Trait"){//if you select trait here, you can only mean this trait
-                    dataNames.append(curNode.nodeLink.name)
+                 //   dataNames.append(curNode.nodeLink.name)
                     self.dataPopup.enabled = false
                     self.dataPopup.hidden = true
                     self.dataSubPopup.enabled = false
@@ -657,6 +662,7 @@ class PlexusModelDetailViewController: NSViewController, CPTScatterPlotDataSourc
                 }
                     
                 else if (curNode.nodeLink.entity.name == "Structure"){    //The traits whose entries are part of this structure
+                    /*
                     let curStructure = curNode.nodeLink as! Structure
                     let curEntries = curStructure.entry
                     for curEntry in curEntries {
@@ -665,13 +671,14 @@ class PlexusModelDetailViewController: NSViewController, CPTScatterPlotDataSourc
                             dataNames.append(curTrait.name)
                         }
                     }
+*/
                     
                 }
                 else {
-                    dataNames = [String]()
+                    //dataNames = [String]()
                 }
                 
-                
+             /*
             case 2: //children
                 //   println("children \(curNode.nodeLink.name)")
                 
@@ -713,7 +720,7 @@ class PlexusModelDetailViewController: NSViewController, CPTScatterPlotDataSourc
                     dataNames = [String]()
                     
                 }
-                
+                */
                 
                 
             default:
@@ -735,7 +742,10 @@ class PlexusModelDetailViewController: NSViewController, CPTScatterPlotDataSourc
             
             // println("curNode.dataName \(curNode.dataName)")
             
+            dataSubNames = curNode.getDataSubNames()
+            self.dataSubPopup.addItemsWithTitles(dataSubNames)
             
+            /*
 
             //if the currentdataName can be found in the list, it is selected and them subNames can be found, otherwise just return
             if dataNames.contains(curNode.dataName){
@@ -831,6 +841,8 @@ class PlexusModelDetailViewController: NSViewController, CPTScatterPlotDataSourc
                 
             }
             
+            */
+            
             //          println("and after \(curNode.dataName) \(curNode.dataSubName)")
             
         }
@@ -889,5 +901,60 @@ class PlexusModelDetailViewController: NSViewController, CPTScatterPlotDataSourc
         self.reloadData()
         
         
+    }
+    
+    
+    
+    
+    //NSTableView delegate methods
+    
+    func tableView(tableView: NSTableView, dataCellForTableColumn tableColumn: NSTableColumn?, row: Int) -> NSCell? {
+        
+        
+        if(tableView == childTableView){
+            
+            let curNodes : [BNNode] = childNodesController.arrangedObjects as! [BNNode]
+            let curNode : BNNode = curNodes[row]
+            
+            if(tableColumn?.identifier == "DataName" ){
+                
+                let cell = tableColumn?.dataCellForRow(row) as! NSPopUpButtonCell
+                cell.removeAllItems()
+                
+                
+                cell.bordered = false
+                
+                
+                let dataNames : [String] = curNode.getDataNames()
+                
+                
+                
+                cell.addItemsWithTitles(dataNames)
+                
+                print("row \(row) dataName: \(curNode.dataName) items: \(cell.itemArray)")
+                
+                cell.selectItemWithTitle(curNode.dataName)
+                
+                return cell
+            }
+                
+            else if (tableColumn?.identifier == "DataSubName" ){
+                let cell = NSPopUpButtonCell()
+                cell.removeAllItems()
+                
+                cell.bordered = false
+                
+                let dataSubNames : [String] = curNode.getDataSubNames()
+                
+                cell.addItemsWithTitles(dataSubNames)
+                
+                cell.selectItemWithTitle(curNode.dataSubName)
+                
+                return cell
+                
+            }
+            
+        }
+        return nil
     }
 }
