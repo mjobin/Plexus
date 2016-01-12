@@ -429,9 +429,6 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                     let archivedPostArray = NSKeyedArchiver.archivedDataWithRootObject(fline)
                     inNode.setValue(archivedPostArray, forKey: "postArray")
                     
-                    
-                    
-                   // self.moc.save(errorPtr)
 
 
                     fi++
@@ -440,7 +437,6 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                 
                 let notification:NSUserNotification = NSUserNotification()
                 notification.title = "Plexus"
-                //notification.subtitle = "Yur stuff are done"
                 notification.informativeText = "\(curModel.runstot.integerValue) runs completed."
                 
                 notification.soundName = NSUserNotificationDefaultSoundName
