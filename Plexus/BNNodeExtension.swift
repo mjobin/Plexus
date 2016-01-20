@@ -951,9 +951,6 @@ extension BNNode {
             if !dataSubNames.contains(dataSubName){
                 dataSubName = dataSubNames[0]
             }
-            else {
-                print("do contain")
-            }
         }
 
         return dataSubNames
