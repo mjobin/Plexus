@@ -931,15 +931,23 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, CP
                 
                 cell.addItemsWithTitles(dataNames)
                 
-                print("row \(row) dataName: \(curNode.dataName) items: \(cell.itemArray)")
+                /*
+                print("row \(row) dataName: \(curNode.dataName)")
+                for item in cell.itemArray {
+                    print(item)
+                }
+                print("----------------------")
+*/
+
                 
-                cell.selectItemWithTitle(curNode.dataName)
+                //cell.selectItemWithTitle(curNode.dataName)
                 
                 return cell
             }
                 
             else if (tableColumn?.identifier == "DataSubName" ){
-                let cell = NSPopUpButtonCell()
+                //let cell = NSPopUpButtonCell()
+                let cell = tableColumn?.dataCellForRow(row) as! NSPopUpButtonCell
                 cell.removeAllItems()
                 
                 cell.bordered = false
@@ -949,6 +957,41 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, CP
                 cell.addItemsWithTitles(dataSubNames)
                 
                 cell.selectItemWithTitle(curNode.dataSubName)
+                
+                if(cell.itemArray.count < 1){
+                    cell.enabled = false
+                    cell.editable = false
+                }
+                else {
+                    cell.enabled = true
+                    cell.editable = false
+                }
+
+                /*
+                
+                print("row \(row) dataSubName: \(curNode.dataSubName) enabled \(cell.enabled)")
+                for item in cell.itemArray {
+                    print(item)
+                }
+                print("----------------------")
+*/
+                
+                /*
+                switch(curNode.dataScope) {
+                case 0:
+                    switch(curNode.nodeLink.entity.name!) {
+                    case "Entry":
+                        cell.enabled = false
+                        
+                    default:
+                        cell.enabled = true
+                    }
+                    
+                default:
+                    cell.enabled = true
+                    
+                }
+                */
                 
                 return cell
                 

@@ -778,6 +778,9 @@ extension BNNode {
             
             case 0://global // ALL entities matching this one's name
              dataNames.append(self.nodeLink.name)
+             if(self.dataName != self.nodeLink.name){
+            self.dataName = self.nodeLink.name
+            }
             
         case 1:// self
 
@@ -792,6 +795,9 @@ extension BNNode {
             }
             else if (self.nodeLink.entity.name == "Trait"){//if you select trait here, you can only mean this trait
                 dataNames.append(self.nodeLink.name)
+                if(self.dataName != self.nodeLink.name){
+                    self.dataName = self.nodeLink.name
+                }
 
             }
                 
@@ -820,10 +826,16 @@ extension BNNode {
                 
                 let curEntry = self.nodeLink as! Entry
                 let curKids = curEntry.children
-                for curKid in curKids {
-                    let curTraits = curKid.trait
-                    for curTrait in curTraits{
-                        dataNames.append(curTrait.name)
+                if (curKids.count < 1){
+                    self.dataScope = 0
+                    dataNames = [String]()
+                }
+                else {
+                    for curKid in curKids {
+                        let curTraits = curKid.trait
+                        for curTrait in curTraits{
+                            dataNames.append(curTrait.name)
+                        }
                     }
                 }
                 
@@ -846,6 +858,13 @@ extension BNNode {
             default:
                 dataNames = [String]()
             
+        }
+        
+        //select first option if current dataName not availble
+        if(dataNames.count > 0){
+            if !dataNames.contains(dataName){
+                dataName = dataNames[0]
+            }
         }
         
         return dataNames
@@ -927,7 +946,16 @@ extension BNNode {
             print(error)
         }
 
-        
+        //select first option if current dataName not availble
+        if(dataSubNames.count > 0){
+            if !dataSubNames.contains(dataSubName){
+                dataSubName = dataSubNames[0]
+            }
+            else {
+                print("do contain")
+            }
+        }
+
         return dataSubNames
     }
     
