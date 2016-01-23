@@ -32,8 +32,8 @@ class PlexusModelViewController: NSViewController {
    @IBAction func childModel(sender : AnyObject){
         let errorPtr : NSErrorPointer = nil
     
-        let curDatasets : [Dataset] = datasetController.selectedObjects as! [Dataset]
-        let curDataset : Dataset = curDatasets[0]
+      //  let curDatasets : [Dataset] = datasetController.selectedObjects as! [Dataset]
+      //  let curDataset : Dataset = curDatasets[0]
     
         let curModels : [Model] = modelTreeController.selectedObjects as! [Model]
         let curModel : Model = curModels[0]
@@ -41,15 +41,15 @@ class PlexusModelViewController: NSViewController {
 
     
     
-    if let _ : NSIndexPath = modelTreeController.selectionIndexPath {
-       // let newPath : NSIndexPath = curPath.indexPathByAddingIndex(curModel.children.count)
+    if let curPath : NSIndexPath = modelTreeController.selectionIndexPath {
+        let newPath : NSIndexPath = curPath.indexPathByAddingIndex(curModel.children.count)
         
 
 
         let newModel : Model = Model(entity: NSEntityDescription.entityForName("Model", inManagedObjectContext: self.moc)!, insertIntoManagedObjectContext: self.moc)
-        curModel.addChildObject(newModel)
-        newModel.setValue(curModel, forKey: "parent")
-        //modelTreeController.insertObject(newModel, atArrangedObjectIndexPath: newPath)
+       // curModel.addChildObject(newModel)
+       // newModel.setValue(curModel, forKey: "parent")
+        modelTreeController.insertObject(newModel, atArrangedObjectIndexPath: newPath)
         let copyName : String = curModel.name + " copy"
         newModel.setValue(copyName, forKey: "name")
 
@@ -92,8 +92,8 @@ class PlexusModelViewController: NSViewController {
         
 
         
-        newModel.setValue(curDataset, forKey: "dataset")
-        curDataset.addModelObject(newModel)
+       // newModel.setValue(curDataset, forKey: "dataset")
+      //  curDataset.addModelObject(newModel)
         
         
         
