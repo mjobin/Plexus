@@ -29,5 +29,6 @@ class BNNode: NSManagedObject {
     @NSManaged var priorCount: NSData?
     @NSManaged var priorArray: NSData?
     @NSManaged var isParent: NSNumber
+    @NSManaged var tolerance: NSNumber
 
 }

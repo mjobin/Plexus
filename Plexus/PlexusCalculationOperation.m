@@ -90,6 +90,12 @@ static void *ProgressObserverContext = &ProgressObserverContext;
                                  NSLocalizedRecoverySuggestionErrorKey: NSLocalizedString(@"Restart the program to reset", nil)
                                  };
     
+    
+    NSMutableDictionary *cptCalcFail = [NSMutableDictionary new]; //1006
+    [cptCalcFail setObject:@"CPTCalc" forKey:NSLocalizedDescriptionKey];
+    [cptCalcFail setObject:@"Check parameters for all nodes and hit Calculate again." forKey:NSLocalizedRecoverySuggestionErrorKey];
+  
+    
     unsigned int i;
     cl_kernel bncalc_Kernel;
     
@@ -283,7 +289,16 @@ static void *ProgressObserverContext = &ProgressObserverContext;
     for (BNNode * fNode in initialNodes) {
          NSMutableOrderedSet * theInfluencedBy = [fNode recursiveInfBy:self infBy:[[NSMutableOrderedSet alloc] init] depth:0];
         if (theInfluencedBy.count > 0){
-            [fNode calcWParentCPT:self];
+           NSString * errMesg = [fNode calcWParentCPT:self];
+            
+            if(![errMesg  isEqual: @"No Error"]){
+                
+                [cptCalcFail setObject:errMesg forKey:NSLocalizedFailureReasonErrorKey];                
+
+                calcerr = [NSError errorWithDomain:@"plexusCalc" code:1006 userInfo:cptCalcFail];
+                return calcerr;
+
+            }
         }
     }
     
@@ -293,7 +308,7 @@ static void *ProgressObserverContext = &ProgressObserverContext;
         // NSLog(@"***************Node: %@", [[fNode nodeLink] name]);
         
         
-   
+   have a single calc CPT fxn and that one can call freqForCPT????
         
         //add freq
         nodeFreqs[freqOffset] = [fNode freqForCPT:self];

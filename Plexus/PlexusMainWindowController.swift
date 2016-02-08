@@ -456,7 +456,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                 calcAlert.informativeText = (operr?.localizedRecoverySuggestion)!
                 calcAlert.addButtonWithTitle("OK")
                 
-              //  let res = calcAlert.runModal()
+                let _ = calcAlert.runModal()
 
                 
                 
