@@ -91,9 +91,15 @@ static void *ProgressObserverContext = &ProgressObserverContext;
                                  };
     
     
+    
+    
     NSMutableDictionary *cptCalcFail = [NSMutableDictionary new]; //1006
     [cptCalcFail setObject:@"CPTCalc" forKey:NSLocalizedDescriptionKey];
-    [cptCalcFail setObject:@"Check parameters for all nodes and hit Calculate again." forKey:NSLocalizedRecoverySuggestionErrorKey];
+    [cptCalcFail setObject:@"Check parameters for all nodes and Calculate again." forKey:NSLocalizedRecoverySuggestionErrorKey];
+    
+    NSMutableDictionary *cptInfFail = [NSMutableDictionary new]; //1007
+    [cptCalcFail setObject:@"CPTCalc" forKey:NSLocalizedDescriptionKey];
+    [cptCalcFail setObject:@"Node corrupt. Recreate dataset." forKey:NSLocalizedRecoverySuggestionErrorKey];
   
     
     unsigned int i;
@@ -232,26 +238,17 @@ static void *ProgressObserverContext = &ProgressObserverContext;
     
     //get maximum size of inputs and outputsd
     
-    
-
-        
+  
     for (BNNode * fNode in initialNodes) {
         NSMutableOrderedSet * allInSet = [fNode recursiveInfBy:self infBy:[[NSMutableOrderedSet alloc] init] depth:0];
         if([allInSet count] > maxCPTSize) maxCPTSize = [allInSet count];
     }
     
-    
-    
-    
     for (BNNode * fNode in initialNodes) {
         NSMutableOrderedSet * allOutSet = [fNode recursiveInfs:self infs:[[NSMutableOrderedSet alloc] init] depth:0];
         if([allOutSet count] > maxCPTSize) maxCPTSize = [allOutSet count];
     }
-    
-        
-    
-    
-    
+
     if(maxCPTSize < 1){
         calcerr = [NSError errorWithDomain:@"plexusCalc" code:1001 userInfo:noNode];
         return calcerr;
@@ -262,10 +259,6 @@ static void *ProgressObserverContext = &ProgressObserverContext;
     cl_int* infnet = malloc(sizeof(cl_int)*INSize*(maxCPTSize*2)); //size of whole list twice on x (influences and influenced by) and once on y (each node)
     
     NSLog(@"infnet size: %lu", (sizeof(cl_int[INSize*(maxCPTSize*2)])));
-    
-    
-    
-    
     NSLog(@"But %lu nodes if we use the maximum input/output size of any node", maxCPTSize);
     unsigned long sparseCPTsize = pow((double) 2.0, maxCPTSize);
     NSLog(@"And %lu CPT entries per node", sparseCPTsize);
@@ -285,21 +278,18 @@ static void *ProgressObserverContext = &ProgressObserverContext;
     cl_float* nodeFreqs = (cl_float *)malloc(sizeof(cl_float)*INSize); //one for the type of distn, and two for its parameters
     int freqOffset =0;
     
-    //make sure all the parented nodes have their CPT freq set 
+    //make sure all nodes have their CPT freq set
     for (BNNode * fNode in initialNodes) {
-         NSMutableOrderedSet * theInfluencedBy = [fNode recursiveInfBy:self infBy:[[NSMutableOrderedSet alloc] init] depth:0];
-        if (theInfluencedBy.count > 0){
-           NSString * errMesg = [fNode calcWParentCPT:self];
+  
+       NSString * errMesg = [fNode calcCPT:self];
+        if(![errMesg  isEqual: @"No Error"]){
             
-            if(![errMesg  isEqual: @"No Error"]){
-                
-                [cptCalcFail setObject:errMesg forKey:NSLocalizedFailureReasonErrorKey];                
+            [cptCalcFail setObject:errMesg forKey:NSLocalizedFailureReasonErrorKey];
+            calcerr = [NSError errorWithDomain:@"plexusCalc" code:1006 userInfo:cptCalcFail];
+            return calcerr;
 
-                calcerr = [NSError errorWithDomain:@"plexusCalc" code:1006 userInfo:cptCalcFail];
-                return calcerr;
-
-            }
         }
+        
     }
     
     //Construct influences, CPT, fequencies
@@ -307,11 +297,10 @@ static void *ProgressObserverContext = &ProgressObserverContext;
     for (BNNode * fNode in initialNodes) {
         // NSLog(@"***************Node: %@", [[fNode nodeLink] name]);
         
-        
-   have a single calc CPT fxn and that one can call freqForCPT????
-        
+
         //add freq
-        nodeFreqs[freqOffset] = [fNode freqForCPT:self];
+        nodeFreqs[freqOffset] = [fNode getCPTFreq:self];
+    // replaces   [fNode freqForCPT:self];
         
         //------------- influenced by
         
@@ -398,8 +387,18 @@ static void *ProgressObserverContext = &ProgressObserverContext;
                 [ftft insertObject:[NSNumber numberWithBool:FALSE] atIndex:0];
             }
             
+            cl_float thisCPT = [fNode CPT:self infBy:theInfluencedBy.array ftft:[NSArray arrayWithArray:ftft] depth:0];
+            if(thisCPT == NAN){
+                NSString * cptInfFailNodeMesg = [[fNode nodeLink] name];
+                NSString * cptInfFailMesg = [cptInfFailNodeMesg stringByAppendingString:@" cannot find denoted influence in CPT function."];
+                [cptInfFail setObject:cptInfFailMesg forKey:NSLocalizedFailureReasonErrorKey];
+                calcerr = [NSError errorWithDomain:@"plexusCalc" code:1007 userInfo:cptCalcFail];
+                return calcerr;
+            }
+            else{
+                cptnet[(cptoffset+i)] = thisCPT;            }
             
-            cptnet[(cptoffset+i)] = [fNode CPT:self infBy:theInfluencedBy.array ftft:[NSArray arrayWithArray:ftft] depth:0];
+            
             
 
             
