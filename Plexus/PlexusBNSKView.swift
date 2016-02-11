@@ -50,6 +50,9 @@ class PlexusBNSKView: SKView {
             return false
         }
         
+
+        
+        
         return true
     }
     
@@ -103,6 +106,13 @@ class PlexusBNSKView: SKView {
         if let id : NSManagedObjectID? = moc.persistentStoreCoordinator?.managedObjectIDForURIRepresentation(mourl){
             
             let mo : NodeLink = moc.objectWithID(id!) as! NodeLink
+            
+            let curNodes : [BNNode] = nodesController.arrangedObjects as! [BNNode]
+            for curNode : BNNode in curNodes {
+                if(curNode.nodeLink == mo) { //cannot add a node the same as an exisitng node
+                    return
+                }
+            }
             
             
             let newNode : BNNode = BNNode(entity: NSEntityDescription.entityForName("BNNode", inManagedObjectContext: moc)!, insertIntoManagedObjectContext: moc)
