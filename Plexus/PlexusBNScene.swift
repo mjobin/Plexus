@@ -95,12 +95,7 @@ class PlexusBNScene: SKScene {
         //for now, spawn a new node if you did not touch an exisitng node
         if(touchedNode.isEqualTo(self)) {
             //  print("miss")
-            
-           
-            
 
-
-            
             
         }
             
@@ -132,25 +127,11 @@ class PlexusBNScene: SKScene {
                 })
                 
                let idNode : PlexusBNNode = touchedNode as! PlexusBNNode
-                
-                //print("idNode \(idNode)")
+
                 idNode.glowWidth = 5
                 let idArray : [BNNode] = [idNode.node]
 
-               // print (idArray)
-                
-
                 nodesController.setSelectedObjects(idArray)
-
-                
-                
-               // print("mouseDown: nodescontrolelr slected objects:")
-               /*
-                let newSels : [BNNode] = nodesController.selectedObjects as! [BNNode]
-                for newSel : BNNode in newSels {
-                    print (newSel.nodeLink.name)
-                }
-*/
 
                 
                 if(theEvent.clickCount > 1){ //double-clicks open single node view
@@ -158,12 +139,9 @@ class PlexusBNScene: SKScene {
                     
                 }
                 
-                
-                
             }
 
 
-            
         }
 
         
@@ -202,32 +180,27 @@ class PlexusBNScene: SKScene {
                 thisLine.removeFromParent()
             })
             
-            
-            
-            let arrowPath = CGPath.bezierPathWithArrowFromPoint(CGPointMake(startNode.position.x,startNode.position.y), endPoint: CGPointMake(loc.x,loc.y), tailWidth: 2, headWidth: 10, headLength: 10, d1: d1, d2: d2)
-            d1+=0.1
-            d2+=0.1
-            if (d2>=1){
-                d2=d1
-                d1=0
+            if(!startNode.isEqualToNode(self)){
+                let arrowPath = CGPath.bezierPathWithArrowFromPoint(CGPointMake(startNode.position.x,startNode.position.y), endPoint: CGPointMake(loc.x,loc.y), tailWidth: 2, headWidth: 10, headLength: 10, d1: d1, d2: d2)
+                d1+=0.1
+                d2+=0.1
+                if (d2>=1){
+                    d2=d1
+                    d1=0
+                }
+                
+                
+                let joinLine = SKShapeNode(path: arrowPath)
+                joinLine.name = "joinLine"
+                joinLine.zPosition = -1
+                joinLine.fillColor = NSColor.whiteColor()
+                joinLine.glowWidth = 1
+
+                self.addChild(joinLine)
             }
             
-            
-            let joinLine = SKShapeNode(path: arrowPath)
-            joinLine.name = "joinLine"
-            joinLine.zPosition = -1
-            joinLine.fillColor = NSColor.whiteColor()
-            joinLine.glowWidth = 1
-            
-            
-            
-            self.addChild(joinLine)
-            
         }
-        
 
-
-        
     }
     
     
@@ -251,18 +224,19 @@ class PlexusBNScene: SKScene {
         }
         
 
-      //  println("start \(startNode) and released \(releasedNode)")
 
         
-        if(!startNode.isEqualTo(self) && startNode.name == "bnNode" && !releasedNode.isEqualTo(self) && releasedNode.name == "bnNode" && !startNode.isEqualTo(releasedNode) ) {
+        if(!startNode.isEqualToNode(self) && startNode.name == "bnNode" && !releasedNode.isEqualToNode(self) && releasedNode.name == "bnNode" && !startNode.isEqualToNode(releasedNode) ) {
 
             //create physics joint between these two
             
+            
             let theJoint = SKPhysicsJointSpring.jointWithBodyA(startNode.physicsBody!, bodyB: releasedNode.physicsBody!, anchorA: startNode.position, anchorB: releasedNode.position)
             
+
             
-            
-            
+            print("BODYA \(theJoint.bodyA) BODYB \(theJoint.bodyB)")
+           //FIXME very possibly when there are duplicate nodes this causes an error
             self.physicsWorld.addJoint(theJoint)
             
             
@@ -281,12 +255,9 @@ class PlexusBNScene: SKScene {
             }
 
             
-            
-            
         }
         
 
-        
         
         //remove all existing lines
         
@@ -406,7 +377,6 @@ class PlexusBNScene: SKScene {
     }
     
     
-    
     override func update(currentTime: CFTimeInterval) {
         
         //var inset : CGRect = CGRectMake(self.frame.width*0.05, self.frame.height*0.05, self.frame.width*0.9, self.frame.height*0.9)
@@ -430,14 +400,6 @@ class PlexusBNScene: SKScene {
         
             let curNodes : [BNNode]  = nodesController.arrangedObjects as! [BNNode]
             
-            /*
-            for curNode :BNNode in curNodes{ //check to see if any nodes are connected to deleted nodeLinks, and if so delete the node
-                println(curNode.nodeLink)
-
-            }
-            */
-
-            
 
             for curNode :BNNode in curNodes{
                 
@@ -455,21 +417,13 @@ class PlexusBNScene: SKScene {
                 })
                 
                 if(!matchNode){//no visible node exists, so make one
-                   // let rawx = CGFloat(arc4random())/CGFloat(UInt32.max) //random from 0 to 1
-                   // let rawy = CGFloat(arc4random())/CGFloat(UInt32.max)
-                    //let posPoint = CGPointMake(self.frame.width*rawx, self.frame.height*rawy)
                     self.makeNode(curNode, inPos: CGPointMake(self.frame.width*0.5,  self.frame.height*0.5) )
                     
                 }
-
                 
             }
             
             
-            
-            
-            
-
             //draw arrows
             
             for curNode :BNNode in curNodes{
@@ -489,21 +443,14 @@ class PlexusBNScene: SKScene {
                 })
                 
                 
-                
-
-                
-                
 
                 
                 let theInfluenced : [BNNode] = curNode.influences.allObjects as! [BNNode]
-                
 
-
-                
                 for thisInfluenced : BNNode in theInfluenced as [BNNode] {
 
                     
-                    //FIXME this is s stupid way to do this
+                    //FIXME this is a stupid way to do this
                     var infNode : PlexusBNNode!
                     
                     self.enumerateChildNodesWithName("bnNode", usingBlock: { thatNode, stop in
@@ -549,10 +496,7 @@ class PlexusBNScene: SKScene {
                 
             }
             
-            
-            
 
-            
             //glow selected
             
 
@@ -583,30 +527,7 @@ class PlexusBNScene: SKScene {
         }
 
 
-/*
-      
-        var selNodes : [BNNode] = nodesController.selectedObjects as [BNNode]
-        for selNode : BNNode in selNodes {
-            
-            self.enumerateChildNodesWithName("bnNode", usingBlock: { thisNode, stop in
-                
-                var idNode : PlexusBNNode = thisNode as PlexusBNNode
-                
-                if(idNode.node == selNode){
-                    idNode.glowWidth = 5
-                    
-                }
-                else {
-                    idNode.glowWidth = 0
-                }
-        
-                
-            })
-            
-            
-        }
 
-        */
         
         /* Called before each frame is rendered */
         var angle : CGFloat = 0.0
@@ -642,7 +563,7 @@ class PlexusBNScene: SKScene {
         })
   
         //Post message in nodes area if no nodes yet
-        /*
+        
         if(nodesController != nil ){
             
             let curNodes : [BNNode]  = nodesController.arrangedObjects as! [BNNode]
@@ -674,7 +595,7 @@ class PlexusBNScene: SKScene {
                 self.addChild(nnl3)
             }
         }
-        */
+
 
         
     }
