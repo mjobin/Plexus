@@ -137,7 +137,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         
         for fNode in nodes {
             if(fNode.influencedBy.count > 0){
-                fNode.calcWParentCPT(self)
+                fNode.calcCPT(self)
             }
         }
         
