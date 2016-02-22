@@ -51,29 +51,18 @@ class PlexusBNScene: SKScene {
         self.backgroundColor = SKColor.clearColor()
         
         self.physicsWorld.gravity = CGVectorMake(0, 0)
-        
-        //var inset : CGRect = CGRectMake(self.frame.width*0.05, self.frame.height*0.05, self.frame.width*0.9, self.frame.height*0.9)
-        //var inset : CGRect = CGRectMake(25, 25, self.frame.width-50, self.frame.height-50)
+
 
         //var borderBody = SKPhysicsBody(edgeLoopFromRect: inset)
         let borderBody = SKPhysicsBody(edgeLoopFromRect: self.frame)
         self.physicsBody = borderBody
         self.physicsBody?.friction = 0.0
         startNode = self // so initialized
-        
-        
-        
-        
-        
-      
-        
 
- 
         
     }
     
     override func didChangeSize(oldSize: CGSize) {
-        
         
         self.redrawNodes()
     }
@@ -84,15 +73,10 @@ class PlexusBNScene: SKScene {
         
         let loc = theEvent.locationInNode(self)
         dragStart = loc
-        
-        
-        
+       
         var touchedNode : SKNode = self.nodeAtPoint(loc)
-       // print("mouseDown touched \(touchedNode.name) ue: \(touchedNode.userInteractionEnabled)")
+        //print("mouseDown touched \(touchedNode) parent: \(touchedNode.parent)")
 
- 
-        
-        //for now, spawn a new node if you did not touch an exisitng node
         if(touchedNode.isEqualTo(self)) {
             //  print("miss")
 
@@ -105,7 +89,7 @@ class PlexusBNScene: SKScene {
                 let allNodes : [SKNode] = self.nodesAtPoint(touchedNode.position) 
                 for theNode : SKNode in allNodes {
                     
-                   // print("theNode \(theNode)")
+                //   print("mouseDOWN sknode \(theNode)")
 
                     if(theNode.name == "bnNode" && theNode.position == touchedNode.position)
                     {
@@ -115,7 +99,7 @@ class PlexusBNScene: SKScene {
                 
             }
             
-         //   print ("now touchedNode is \(touchedNode)")
+           // print ("mouseDOWN now touchedNode is \(touchedNode)")
 
             if(touchedNode.name == "bnNode"){
                 
@@ -146,6 +130,16 @@ class PlexusBNScene: SKScene {
 
         
                startNode = touchedNode
+        /*
+        if(startNode.name == "bnNode"){
+            let IDNode : PlexusBNNode = startNode as! PlexusBNNode
+            print("mouseDOWN now startNode is bnnode \(startNode) \(IDNode.node.nodeLink.name)")
+
+        }
+        else {
+            print ("mouseDown startnode is \(startNode)")
+        }
+        */
     }
     
     
@@ -211,10 +205,15 @@ class PlexusBNScene: SKScene {
         
         var releasedNode : SKNode = self.nodeAtPoint(loc)
         
+
+
+
+        
         
         if(releasedNode.name == "nodeName"){//passing mouseDown to node beenath
             let allNodes : [SKNode] = self.nodesAtPoint(releasedNode.position)
             for theNode : SKNode in allNodes {
+                //print("mouseup sknode \(theNode)")
                 if(theNode.name == "bnNode" && theNode.position == releasedNode.position)
                 {
                     releasedNode = theNode //switch to the bnNode in the position of the label
@@ -233,19 +232,22 @@ class PlexusBNScene: SKScene {
             
             let theJoint = SKPhysicsJointSpring.jointWithBodyA(startNode.physicsBody!, bodyB: releasedNode.physicsBody!, anchorA: startNode.position, anchorB: releasedNode.position)
             
-
-            
-            print("BODYA \(theJoint.bodyA) BODYB \(theJoint.bodyB)")
-           //FIXME very possibly when there are duplicate nodes this causes an error
-            self.physicsWorld.addJoint(theJoint)
-            
-            
             
             //now add the necessary relationships in the data
             let startIDNode : PlexusBNNode = startNode as! PlexusBNNode
             let releasedIDNode : PlexusBNNode = releasedNode as! PlexusBNNode
             
+
             
+            
+       //     print("startIDNode \(startNode) \(startIDNode.node.nodeLink.name)")
+         //   print("releasedIDNode \(releasedNode) \(releasedIDNode.node.nodeLink.name)")
+           // print("BODYA \(theJoint.bodyA) BODYB \(theJoint.bodyB)")
+           //FIXME very possibly when there are duplicate nodes this causes an error
+
+            self.physicsWorld.addJoint(theJoint)
+            
+
             startIDNode.node.addInfluencesObject(releasedIDNode.node)
             releasedIDNode.node.addInfluencedByObject(startIDNode.node)
             do {
@@ -254,7 +256,7 @@ class PlexusBNScene: SKScene {
                 print(error)
             }
 
-            
+
         }
         
 
@@ -266,7 +268,9 @@ class PlexusBNScene: SKScene {
         })
         
      
-        
+        //reset startnode
+        startNode = self
+        releasedNode = self
     }
     
     
@@ -315,7 +319,7 @@ class PlexusBNScene: SKScene {
     
     func reloadDataWPos() { //this just removes the nodes so that update can restopre them
 
-      //  println("bnscene reload")
+     //   print("bnscene reloadDataWpos")
         //save the moc here to make sure changes read properly
         /*
         
@@ -360,7 +364,7 @@ class PlexusBNScene: SKScene {
         })
 
 
-
+        startNode = self //to ensure no deleted nodes retained as startNode
         
     }
    
@@ -394,6 +398,7 @@ class PlexusBNScene: SKScene {
             thisLine.removeFromParent()
         })
         
+
         //make sure all listed nodes are drawn
         
         if(nodesController != nil ){
@@ -418,6 +423,7 @@ class PlexusBNScene: SKScene {
                 
                 if(!matchNode){//no visible node exists, so make one
                     self.makeNode(curNode, inPos: CGPointMake(self.frame.width*0.5,  self.frame.height*0.5) )
+                    startNode = self //to ensure no deleted nodes rteained as startNode
                     
                 }
                 
@@ -637,8 +643,7 @@ class PlexusBNScene: SKScene {
 
     
     func makeNode(inNode : BNNode, inPos: CGPoint){
-        
-        
+               
        // var labelString = inNode.nodeLink.name
         //truncate
         
@@ -654,7 +659,7 @@ class PlexusBNScene: SKScene {
         let nodeWidth = (myLabel.frame.size.width)+10
         let nodeHeight = (myLabel.frame.size.height)+10
 
-
+        
         
         
         
