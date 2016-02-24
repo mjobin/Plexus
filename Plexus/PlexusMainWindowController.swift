@@ -22,8 +22,8 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
     @IBOutlet var mainToolbar : NSToolbar!
     @IBOutlet var datasetController : NSArrayController!
     @IBOutlet var testprog : NSProgressIndicator!
-    var queue: dispatch_queue_t = dispatch_queue_create("My Queue", DISPATCH_QUEUE_SERIAL)
-   // var group : dispatch_group_t = dispatch_group_create()
+    //var queue: dispatch_queue_t = dispatch_queue_create("Plexus I/O Queue", DISPATCH_QUEUE_CONCURRENT)
+    //var group : dispatch_group_t = dispatch_group_create()
     
     var progSheet : NSWindow!
     var progInd : NSProgressIndicator!
@@ -195,6 +195,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         retWin = NSWindow(contentRect: sheetRect, styleMask: NSTitledWindowMask, backing: NSBackingStoreType.Buffered, `defer`: true)
         let contentView = NSView(frame: sheetRect)
         self.progInd = NSProgressIndicator(frame: NSRect(x: 143, y: 52, width: 239, height: 20))
+        self.progInd.canDrawConcurrently = true
         
         self.workLabel = NSTextField(frame: NSRect(x: 10, y: 52, width: 64, height: 20))
         workLabel.editable = false
@@ -403,7 +404,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                     
                     let fline : [Double] = fNode as! [Double]
 
-                  //  println("fline \(fline)")
+                    //print("fline \(fline)")
                     var gi = 0
                     for gNode : Double in fline {
                     //    println(gNode)
@@ -459,7 +460,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                 let _ = calcAlert.runModal()
 
                 
-                
+
 
         }
 
@@ -742,6 +743,8 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
     
     @IBAction func importCSV(x:NSToolbarItem){
         var error: NSErrorPointer = nil
+        
+      //  let priority = DISPATCH_QUEUE_PRIORITY_DEFAULT
 
         
         let op:NSOpenPanel = NSOpenPanel()
@@ -830,7 +833,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
 
                     
                     
-                    var delimiterCharacterSet = NSMutableCharacterSet(charactersInString: ",\"")
+                    let delimiterCharacterSet = NSMutableCharacterSet(charactersInString: ",\"")
                     delimiterCharacterSet.formUnionWithCharacterSet(NSCharacterSet.whitespaceAndNewlineCharacterSet())
 
                     
@@ -857,6 +860,28 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                     var nameColumn = -1
                     var structureColumn = -1
                     var headers = [String]()
+                    var existingStructures = [Structure]()
+                    var existingStructureNames = [String]() //for speed
+                    
+
+                    let request = NSFetchRequest(entityName: "Structure")
+                    let predicate = NSPredicate(format: "dataset == %@", inDataset)
+                    request.predicate = predicate
+                    do{
+                        existingStructures = try self.moc.executeFetchRequest(request) as! [Structure]
+
+                        
+                        
+                    } catch let error as NSError {
+                        print(error)
+                    }
+                    
+                    for curStructure :Structure in existingStructures {
+                        existingStructureNames.append(curStructure.name)
+                        //print("existing sructure \(curStructure.name)")
+                    }
+                    
+
 
                     
                         for thisLine : String in fileLines {
@@ -901,46 +926,31 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                                         newEntry.setValue(String(i), forKey: "name")
                                     }
                                     
-                                    /*
                                     if (structureColumn >= 0 ) {
-                                        let theSubStructures : [String] = theTraits[structureColumn].componentsSeparatedByString("\r")
+                                        let theSubStructures : [String] = theTraits[structureColumn].componentsSeparatedByString("\t")
                                         for thisSubStructure in theSubStructures {
-                                        
-                                            let strerror: NSErrorPointer = nil
-                                            let request = NSFetchRequest(entityName: "Structure")
-                                            let predicate = NSPredicate(format: "dataset == %@ AND name == %@", inDataset, thisSubStructure)
-                                            request.predicate = predicate
-                                            let strCount = self.moc.countForFetchRequest(request, error: strerror)
-                                            if(strCount == NSNotFound || strCount < 1){ //does not exist, create
+                                            if(existingStructureNames.contains(thisSubStructure)){
+                                                for chkStructure in existingStructures {
+                                                    if (chkStructure.name == thisSubStructure){
+                                                        chkStructure.addEntryObject(newEntry)
+                                                       //  an entry is part of EACH structure of that name
+                                                    }
+                                                }
+                                                
+                                            }
+                                            else{ // a new stuetcure must be made, and added to exisitngStructures and existingStructureNames
                                                 let newStructure : Structure = Structure(entity: NSEntityDescription.entityForName("Structure", inManagedObjectContext: self.moc)!, insertIntoManagedObjectContext: self.moc)
                                                 newStructure.setValue(thisSubStructure, forKey: "name")
                                                 newStructure.setValue(inDataset, forKey: "dataset")
                                                 newStructure.addEntryObject(newEntry)
                                                 inDataset.addStructureObject(newStructure)
-        
-
-                                            }
-                                            else { //exists
-                                                
-                                                do{
-                                                    let fetch = try self.moc.executeFetchRequest(request)
-                                                    let thisStructure = fetch[0] as! Structure //always hand the first one , should only be one
-                                                   // thisStructure.setValue(theTraits[structureColumn], forKey: "name")
-                                                   // thisStructure.setValue(inDataset, forKey: "dataset")
-                                                    thisStructure.addEntryObject(newEntry)
-                                                   // inDataset.addStructureObject(thisStructure)
-                                                    
-                                                    
-                                                } catch let error as NSError {
-                                                    print(error)
-                                                    
-                                                }
+                                                existingStructures.append(newStructure)
+                                                existingStructureNames.append(newStructure.name)
                                             }
                                         }
-                
                                         
                                     }
-*/
+                                    
 
                                     
                                     newEntry.setValue("Entry", forKey: "type")
@@ -956,7 +966,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                                         
                                         if(columnCount != nameColumn && columnCount != structureColumn){
                                         
-                                        let theSubTraits : [String] = thisTrait.componentsSeparatedByString("\r")
+                                        let theSubTraits : [String] = thisTrait.componentsSeparatedByString("\t")
                                         
                                         for thisSubTrait in theSubTraits {
                                           //  print(thisSubTrait)
@@ -985,6 +995,8 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
        
                             firstLine = false
                             i++
+                            
+
 
 
                             
