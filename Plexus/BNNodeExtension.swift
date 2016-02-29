@@ -94,10 +94,11 @@ extension BNNode {
     func calcCPT(sender:AnyObject) -> NSString {
         
         
+        
         if(self.influencedBy.count < 1){//no parents, use prior to get a deviate
             self.cptFreq = self.freqForCPT(self)
             if(self.cptFreq == cl_float.NaN){
-                return "Node: \(self.nodeLink.name). NaN calculated for cptFreq."
+                return "Node: \(self.nodeLink.name). NaN calculated for cptFreq. Please check that Traits list not empty for the data linked by that node."
             }
             
         }
@@ -217,6 +218,10 @@ extension BNNode {
             do {
                 let fetch = try moc.executeFetchRequest(request)
                 
+                if(fetch.count < 1){
+                    return "Node: \(self.nodeLink.name). Traits to be counted must exceed 0."
+                }
+                
                 if(self.numericData == true){
                     
                     if (curTarget < 0 || curTarget > 1){
@@ -301,10 +306,10 @@ extension BNNode {
                 
                 //println("fftft is \(ftft[pos!])")
                 if(ftft[pos!] == 1){//if true
-                    return self.freqForCPT(self) //FIXME should i be rolling the dice again?
+                    return Float(self.cptFreq)
                 }
                 else {
-                    return (1.0-self.freqForCPT(self))
+                    return (1.0-Float(self.cptFreq))
                 }
                 
             }
