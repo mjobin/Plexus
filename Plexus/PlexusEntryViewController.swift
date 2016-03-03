@@ -19,9 +19,6 @@ class PlexusEntryViewController: NSViewController, NSOutlineViewDelegate, NSOutl
 
 
     
-    
-    
-    
     required init?(coder aDecoder: NSCoder)
     {
 
@@ -44,46 +41,54 @@ class PlexusEntryViewController: NSViewController, NSOutlineViewDelegate, NSOutl
         entryOutlineView.setDraggingSourceOperationMask(NSDragOperation.Every, forLocal: true)
         entryOutlineView.setDraggingSourceOperationMask(NSDragOperation.Every, forLocal: false)
         entryOutlineView.verticalMotionCanBeginDrag = true
+        
+        
+        
+        let sortDescriptor = NSSortDescriptor(key: "name", ascending: true, selector: "localizedStandardCompare:")
+        entryTreeController.sortDescriptors = [sortDescriptor]
+
 
     }
     
     
-    @IBAction func addEntry(sender : AnyObject){
-        print("add entry")
-        
-    }
-    
-    @IBAction func removeEntry(sender : AnyObject){
-        print("remove entry")
-        
-    }
-    
-    @IBAction func addChildEntry(sender : AnyObject){
-        print("add child entry")
-        
-    }
+
 
     //nsoutlineview delegate methods
     func outlineView(outlineView: NSOutlineView, viewForTableColumn tableColumn: NSTableColumn?, item: AnyObject) -> NSView? {
-       // println("outlineview viewfortabelciom")
+
         let thisView : NSTableCellView = outlineView.makeViewWithIdentifier("Entry Cell", owner: self) as! NSTableCellView
-        
-        
 
-      //  var thisEntry = item.representedObject
-
-        
         return thisView
-        
     }
     
+    
+    func outlineView(outlineView: NSOutlineView, mouseDownInHeaderOfTableColumn tableColumn: NSTableColumn) {
+        
+        let sds = entryTreeController.sortDescriptors
+        if(sds.count > 0){
+        
+            let sd = entryTreeController.sortDescriptors[0]
+
+            let sortDescriptor = NSSortDescriptor(key: "name", ascending: !sd.ascending, selector: "localizedStandardCompare:")
+
+            entryTreeController.sortDescriptors = [sortDescriptor]
+            
+        }
+        else {
+            let sortDescriptor = NSSortDescriptor(key: "name", ascending: true, selector: "localizedStandardCompare:") //This should not happen, but default to true just in case sortDescriptiors empty
+            
+            entryTreeController.sortDescriptors = [sortDescriptor]
+        }
+
+    }
+
 
     
     
     
     
     func outlineView(outlineView: NSOutlineView, writeItems items: [AnyObject], toPasteboard pasteboard: NSPasteboard) -> Bool {
-        //println("writeItems")
+
         let mutableArray : NSMutableArray = NSMutableArray()
         
         for object : AnyObject in items{
