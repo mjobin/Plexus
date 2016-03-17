@@ -251,310 +251,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
     }
     
     
-    /*
-    @IBAction func  importCSV(x:NSToolbarItem){
-        
-        let priority = DISPATCH_QUEUE_PRIORITY_DEFAULT
-        
-        
-        
-        //Open panel for .csv files only
-        let op:NSOpenPanel = NSOpenPanel()
-        op.allowsMultipleSelection = false
-        op.canChooseDirectories = false
-        op.canChooseFiles = true
-        op.allowedFileTypes = ["csv"]
-        
-        //accessory view to allow addition to current dataset
-        let av:NSButton = NSButton(frame: NSMakeRect(0.0, 0.0, 324.0, 22.0))
-        av.setButtonType(NSButtonType.SwitchButton)
-        av.title = "Add to Current Dataset"
-        op.accessoryView = av
-        
-        let result = op.runModal()
-        
-        
-        
-        op.close()
-        
-        
-        
-        if (result == NSFileHandlingPanelOKButton) {
-            var i = 1
-            var firstLine = true
-            let inFile  = op.URL
-            
-            
-            
-            
-            dispatch_async(dispatch_get_global_queue(priority, 0)) {
-                
-                
-                //create moc
-                let inMOC = NSManagedObjectContext()
-                inMOC.undoManager = nil
-                inMOC.persistentStoreCoordinator = self.moc.persistentStoreCoordinator
-                
-                
-                /*
-                
-                var inDataset : Dataset!
-                if(av.state == 0){//new dataset
-                    inDataset = Dataset(entity: NSEntityDescription.entityForName("Dataset", inManagedObjectContext: inMOC)!, insertIntoManagedObjectContext: inMOC)
-                    inDataset.setValue(inFile!.lastPathComponent, forKey: "name")
-                }
-                else {// the
-                    let curDatasets : [Dataset] = self.datasetController.selectedObjects as! [Dataset]
-                    inDataset = curDatasets[0]
-                }
-                
-                let datasetID = inDataset.objectID
-                
-                
-                
-                
-                
-                //give it an initial model
-                let newModel : Model = Model(entity: NSEntityDescription.entityForName("Model", inManagedObjectContext: inMOC)!, insertIntoManagedObjectContext: inMOC)
-                newModel.setValue("First Model", forKey: "name")
-                newModel.setValue(inDataset, forKey: "dataset")
-                inDataset.addModelObject(newModel)
-*/
-                
-                
-                let fileContents : String = (try! NSString(contentsOfFile: inFile!.path!, encoding: NSUTF8StringEncoding)) as String
-                let fileLines : [String] = fileContents.componentsSeparatedByString("\n")
-                
-                
-                let delimiterCharacterSet = NSMutableCharacterSet(charactersInString: ",\"")
-                delimiterCharacterSet.formUnionWithCharacterSet(NSCharacterSet.whitespaceAndNewlineCharacterSet())
-                
-                var batchCount : Int = 0
-                var columnCount = 0
-                var nameColumn = -1
-                var structureColumn = -1
-                var headers = [String]()
-                var existingStructures = [Structure]()
-                var existingStructureNames = [String]() //for speed
-                
-                
-                let request = NSFetchRequest(entityName: "Structure")
-               // let predicate = NSPredicate(format: "dataset == %@", inDataset)
-               // request.predicate = predicate
-                do{
-                    existingStructures = try self.moc.executeFetchRequest(request) as! [Structure]
-                    
-                } catch let error as NSError {
-                    print(error)
-                }
-                
-                for curStructure :Structure in existingStructures {
-                    existingStructureNames.append(curStructure.name)
-                }
-                
-                
-                self.progSheet = self.progSetup(self)
-                self.maxLabel.stringValue = String(fileLines.count)
-                self.window!.beginSheet(self.progSheet, completionHandler: nil)
-                self.progSheet.makeKeyAndOrderFront(self)
-                self.progInd.indeterminate = false
-                self.progInd.doubleValue = 0
-                
-                self.progInd.startAnimation(self)
-                
-                
-                self.progInd.maxValue =  Double(fileLines.count)
-                
-                
-                for thisLine : String in fileLines {
-                    
-                    if(self.breakloop){
-                        self.breakloop = false
-                        break
-                    }
-                    
-                    if firstLine {  //this is the header line
-                        
-                        let theHeader : [String] = thisLine.componentsSeparatedByString(",")
-                        for thisHeader in theHeader {
-                            if thisHeader == "Name" {
-                                nameColumn = columnCount
-                            }
-                            if thisHeader == "Structure" {
-                                structureColumn = columnCount
-                            }
-                            headers.append(thisHeader.stringByTrimmingCharactersInSet(delimiterCharacterSet))
-                            columnCount++
-                        }
-                        
-                        
-                    }
-                        
-                    else {
-                        
-                        
-                        if(thisLine.stringByTrimmingCharactersInSet(delimiterCharacterSet) != "" ){ //ignore lines that are blank and/or only contain commas
-                            
-                            let newEntry : Entry = Entry(entity: NSEntityDescription.entityForName("Entry", inManagedObjectContext: inMOC)!, insertIntoManagedObjectContext: inMOC)
-                            var theTraits : [String] = thisLine.componentsSeparatedByString(",")
-                            
-                            if nameColumn >= 0{
-                                newEntry.setValue(theTraits[nameColumn], forKey: "name")
-                            }
-                            else {
-                                newEntry.setValue(String(i), forKey: "name")
-                            }
-                            
-                            if (structureColumn >= 0 ) {
-                                let theSubStructures : [String] = theTraits[structureColumn].componentsSeparatedByString("\t")
-                                for thisSubStructure in theSubStructures {
-                                    if(existingStructureNames.contains(thisSubStructure)){
-                                        for chkStructure in existingStructures {
-                                            if (chkStructure.name == thisSubStructure){
-                                                chkStructure.addEntryObject(newEntry)
-                                                //  an entry is part of EACH structure of that name
-                                            }
-                                        }
-                                        
-                                    }
-                                    else{ // a new stuetcure must be made, and added to exisitngStructures and existingStructureNames
-                                        let newStructure : Structure = Structure(entity: NSEntityDescription.entityForName("Structure", inManagedObjectContext: inMOC)!, insertIntoManagedObjectContext: inMOC)
-                                        newStructure.setValue(thisSubStructure, forKey: "name")
-                                     //   newStructure.setValue(inDataset, forKey: "dataset")
-                                        newStructure.addEntryObject(newEntry)
-                                     //   inDataset.addStructureObject(newStructure)
-                                        existingStructures.append(newStructure)
-                                        existingStructureNames.append(newStructure.name)
-                                    }
-                                }
-                                
-                            }
-                            
-                            
-                            
-                            newEntry.setValue("Entry", forKey: "type")
-                           // newEntry.setValue(inDataset, forKey: "dataset")
-                           // inDataset.addEntryObject(newEntry)
-                            
-                            
-                            
-                            
-                            columnCount = 0
-                            for thisTrait in theTraits {
-                                //  print(thisTrait)
-                                
-                                if(columnCount != nameColumn && columnCount != structureColumn){
-                                    
-                                    let theSubTraits : [String] = thisTrait.componentsSeparatedByString("\t")
-                                    
-                                    for thisSubTrait in theSubTraits {
-                                        //  print(thisSubTrait)
-                                        if(thisSubTrait.stringByTrimmingCharactersInSet(delimiterCharacterSet) != "" ){//ignore empty
-                                            let newTrait : Trait = Trait(entity: NSEntityDescription.entityForName("Trait", inManagedObjectContext: inMOC)!, insertIntoManagedObjectContext: inMOC)
-                                            newTrait.setValue(headers[columnCount], forKey: "name")
-                                            newTrait.setValue(thisSubTrait.stringByTrimmingCharactersInSet(delimiterCharacterSet), forKey: "traitValue")
-                                            newTrait.setValue(newEntry, forKey: "entry")
-                                            
-                                            newEntry.addTraitObject(newTrait)
-                                        }
-                                    }
-                                    
-                                    
-                                }
-                                
-                                
-                                
-                                columnCount++
-                                
-                            }
-                        }
-                        
-                    }
-                    
-                    
-                    dispatch_async(dispatch_get_main_queue()) {
-                        
-                        self.progInd.incrementBy(1)
-                        self.curLabel.stringValue = String(i)
-                        
-                    }
-                    
-                    
-                    firstLine = false
-                    i++
-                    
-                    
-                    
-                    batchCount++
-                    
-                    if(batchCount > 1000){
-                    do {
-                    try inMOC.save()
-                    } catch let error as NSError {
-                    print(error)
-                    } catch {
-                    fatalError()
-                    }
-                    batchCount = 0
-                    inMOC.reset()
-                    
-                    // inDataset = inMOC.objectWithID(datasetID) as! Dataset
-                    
-                    
-                    }
-
-                    
-                }
-                
-                
-                
-                
-                do {
-                    try inMOC.save()
-                } catch let error as NSError {
-                    print(error)
-                } catch {
-                    fatalError()
-                }
-                
-                inMOC.reset()
-                
-                
-                dispatch_async(dispatch_get_main_queue()) {
-                    
-                    self.progInd.indeterminate = true
-                    self.progInd.startAnimation(self)
-                    self.window!.endSheet(self.progSheet)
-                    self.progSheet.orderOut(self)
-                    
-                    //merge in changes, select new dataset here
-                    //self.moc.reset()
-                    self.moc.processPendingChanges()
-                    /*
-                    let datafetch = NSFetchRequest(entityName: "Dataset")
-                    let datasets : [Dataset] = try! self.moc.executeFetchRequest(datafetch) as! [Dataset]
-                    self.datasetController.addObjects(datasets)
-                    inDataset = self.moc.objectWithID(datasetID) as! Dataset
-                    self.moc.refreshObject(inDataset, mergeChanges: true)
-                    print ("datasetID \(datasetID)")
-                    print("indataset \(inDataset)")
-                    let nDarray : [Dataset] = [inDataset]
-                    self.datasetController.setSelectedObjects(nDarray)
-                    
-                    */
-                    
-                }
-                
-                
-            }
-            
-        }
-        
-        
-        
-    }
     
-    */
     
     
     @IBAction func  importCSV(x:NSToolbarItem){
@@ -582,7 +279,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         
         op.close()
         
-        var mocDataset : Dataset!
+
         
         if (result == NSFileHandlingPanelOKButton) {
             var i = 1
@@ -625,7 +322,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
 
                 
                 let datasetID = inDataset.objectID
-                mocDataset = self.moc.objectWithID(datasetID) as! Dataset
+
                 
 
                
@@ -649,6 +346,8 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                 var columnCount = 0
                 var nameColumn = -1
                 var structureColumn = -1
+                var latitudeColumn = -1
+                var longitudeColumn = -1
                 var headers = [String]()
                 var existingStructures = [Structure]()
                 var existingStructureNames = [String]() //for speed
@@ -698,6 +397,12 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                             if thisHeader == "Structure" {
                                 structureColumn = columnCount
                             }
+                            if thisHeader == "Latitude" {
+                                latitudeColumn = columnCount
+                            }
+                            if thisHeader == "Longitude" {
+                                longitudeColumn = columnCount
+                            }
                             headers.append(thisHeader.stringByTrimmingCharactersInSet(delimiterCharacterSet))
                             columnCount++
                         }
@@ -718,6 +423,15 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                             }
                             else {
                                 newEntry.setValue(String(i), forKey: "name")
+                            }
+                            
+                            if latitudeColumn >= 0 {
+                            
+                                newEntry.setValue(Float(theTraits[latitudeColumn]), forKey: "latitude")
+                            }
+                            
+                            if longitudeColumn >= 0 {
+                                newEntry.setValue(Float(theTraits[longitudeColumn]), forKey: "longitude")
                             }
                             
                             if (structureColumn >= 0 ) {
@@ -756,7 +470,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                             for thisTrait in theTraits {
                                 //  print(thisTrait)
                                 
-                                if(columnCount != nameColumn && columnCount != structureColumn){
+                                if(columnCount != nameColumn && columnCount != structureColumn && columnCount != longitudeColumn && columnCount != latitudeColumn){
                                     
                                     let theSubTraits : [String] = thisTrait.componentsSeparatedByString("\t")
                                     
@@ -802,7 +516,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
 
                     
                     batchCount++
-                    if(batchCount > 1000){
+                    if(batchCount > 100){
                         do {
                             try inMOC.save()
                         } catch let error as NSError {

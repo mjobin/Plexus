@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="9057" systemVersion="15B42" minimumToolsVersion="Automatic">
+<model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="9525" systemVersion="15D21" minimumToolsVersion="Automatic">
     <entity name="BNNode" representedClassName="Plexus.BNNode" syncable="YES">
         <attribute name="cptFreq" optional="YES" attributeType="Double" minValueString="0" maxValueString="1" defaultValueString="0.0" syncable="YES"/>
         <attribute name="dataName" optional="YES" attributeType="String" defaultValueString="NoData" syncable="YES"/>
-        <attribute name="dataScope" optional="YES" attributeType="Integer 32" minValueString="0" defaultValueString="0" syncable="YES"/>
+        <attribute name="dataScope" optional="YES" attributeType="Integer 32" minValueString="0" defaultValueString="1" syncable="YES"/>
         <attribute name="dataSubName" optional="YES" attributeType="String" defaultValueString="NoData" syncable="YES"/>
         <attribute name="isParent" optional="YES" attributeType="Integer 16" defaultValueString="YES" syncable="YES"/>
         <attribute name="numericData" optional="YES" attributeType="Boolean" defaultValueString="NO" syncable="YES"/>
@@ -30,8 +30,8 @@
         <relationship name="structure" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="Structure" inverseName="dataset" inverseEntity="Structure" syncable="YES"/>
     </entity>
     <entity name="Entry" representedClassName="Plexus.Entry" parentEntity="NodeLink" syncable="YES">
-        <attribute name="latitude" optional="YES" attributeType="Double" minValueString="-90" maxValueString="90" defaultValueString="0.0" syncable="YES"/>
-        <attribute name="longitude" optional="YES" attributeType="Double" minValueString="-180" maxValueString="180" defaultValueString="0.0" syncable="YES"/>
+        <attribute name="latitude" optional="YES" attributeType="Double" defaultValueString="0.0" syncable="YES"/>
+        <attribute name="longitude" optional="YES" attributeType="Double" defaultValueString="0.0" syncable="YES"/>
         <attribute name="notes" optional="YES" attributeType="Binary" syncable="YES"/>
         <relationship name="children" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="Entry" inverseName="parent" inverseEntity="Entry" syncable="YES"/>
         <relationship name="dataset" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Dataset" inverseName="entry" inverseEntity="Dataset" syncable="YES"/>
@@ -67,7 +67,7 @@
         <relationship name="entry" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Entry" inverseName="trait" inverseEntity="Entry" syncable="YES"/>
     </entity>
     <elements>
-        <element name="BNNode" positionX="54" positionY="18" width="128" height="315"/>
+        <element name="BNNode" positionX="54" positionY="18" width="128" height="30"/>
         <element name="Dataset" positionX="63" positionY="-157" width="128" height="150"/>
         <element name="Entry" positionX="-468" positionY="-36" width="128" height="165"/>
         <element name="Model" positionX="349" positionY="-9" width="128" height="225"/>
