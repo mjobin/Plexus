@@ -373,6 +373,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                 self.progSheet.makeKeyAndOrderFront(self)
                 self.progInd.indeterminate = false
                 self.progInd.doubleValue = 0
+                self.workLabel.stringValue = "Importing..."
 
                 self.progInd.startAnimation(self)
                 
@@ -417,6 +418,35 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                             
                             let newEntry : Entry = Entry(entity: NSEntityDescription.entityForName("Entry", inManagedObjectContext: inMOC)!, insertIntoManagedObjectContext: inMOC)
                             var theTraits : [String] = thisLine.componentsSeparatedByString(",")
+                            
+                            if(theTraits.count != columnCount){
+                                
+                                
+                                dispatch_async(dispatch_get_main_queue()) {
+                                    
+
+                                    self.window!.endSheet(self.progSheet)
+                                    self.progSheet.orderOut(self)
+                                    
+                                    let question = NSLocalizedString("Line \(i) has \(theTraits.count) entries, while the header line has \(columnCount) entries", comment: "Non-matching line sizes")
+                                    let info = NSLocalizedString("Make sure that you use tab (\t) for multiple entries within a cell, and newlines (\n) for the end of each line", comment: "Non-matching line sizes");
+                                    let cancelButton = NSLocalizedString("Cancel", comment: "Cancel button title")
+                                    let alert = NSAlert()
+                                    alert.messageText = question
+                                    alert.informativeText = info
+                                    
+                                    alert.addButtonWithTitle(cancelButton)
+                                    
+                                    let _ = alert.runModal()
+
+
+                                    
+                                }
+                                
+                                return
+
+                            }
+                            
                             
                             if nameColumn >= 0{
                                 newEntry.setValue(theTraits[nameColumn], forKey: "name")
@@ -722,6 +752,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
     
     @IBAction func exportCSV(x:NSToolbarItem){
         let err : NSErrorPointer = nil
+        let priority = DISPATCH_QUEUE_PRIORITY_DEFAULT
         
         //Exporting current daatset only
         let curDatasets : [Dataset] = self.datasetController.selectedObjects as! [Dataset]
@@ -734,28 +765,37 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         //sv.allowedFileTypes = ["csv"]
         sv.nameFieldStringValue = curDataset.name + "-" + curModel.name
         
-        sv.beginSheetModalForWindow(window!, completionHandler: {(result:Int) -> Void in
+        
+        let result = sv.runModal()
+        sv.close()
+        
+        if (result == NSFileHandlingPanelOKButton) {
+           
+            let baseFile  = sv.URL?.absoluteString
+            let outFileName = baseFile! + ".csv"
+
+            let outURL = NSURL(string: outFileName)
             
 
+            dispatch_async(dispatch_get_global_queue(priority, 0)) {
             
-            if (result == NSFileHandlingPanelOKButton) {
-               
-                let baseFile  = sv.URL?.absoluteString
-                let outFileName = baseFile! + ".csv"
-
-                let outURL = NSURL(string: outFileName)
-                print(outURL)
-                
-
-                
-                sv.close()
-                
+                let entries : [Entry] = curDataset.entry.allObjects as! [Entry]
+            
                 
                 self.progSheet = self.progSetup(self)
+                self.maxLabel.stringValue = String(entries.count)
                 self.window!.beginSheet(self.progSheet, completionHandler: nil)
                 self.progSheet.makeKeyAndOrderFront(self)
                 self.progInd.indeterminate = true
-                self.workLabel.stringValue = "Exporting..."
+                self.workLabel.stringValue = "Exporting Entries..."
+                self.progInd.doubleValue = 0
+                
+                self.progInd.startAnimation(self)
+                
+                
+                self.progInd.maxValue =  Double(entries.count)
+
+                
                 self.progInd.startAnimation(self)
                 
                 var outText = "Name,"
@@ -766,7 +806,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                 let tpredicate = NSPredicate(format: "entry.dataset == %@", curDataset)
                 trequest.predicate = tpredicate
                 
-
+                var i = 0
                 
                 do {
                     let headerTraits : [Trait] = try self.moc!.executeFetchRequest(trequest) as! [Trait]
@@ -783,8 +823,8 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                     }
                     outText += "\n"
         
+                    self.progInd.indeterminate = false
                     
-                    let entries : [Entry] = curDataset.entry.allObjects as! [Entry]
                     for entry : Entry in entries {
                         outText += entry.name
                         outText += ","
@@ -828,6 +868,14 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
 
 
                         outText += "\n"
+                        
+                        dispatch_async(dispatch_get_main_queue()) {
+                            
+                            self.progInd.incrementBy(1)
+                            self.curLabel.stringValue = String(i)
+                            
+                        }
+                        i++
 
                     }
                     
@@ -849,483 +897,155 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                 //now print nodes
                // let outDir = sv.directoryURL?.absoluteString
                // let baseDir = outFile.absoluteString
+                dispatch_async(dispatch_get_main_queue()) {
                 
-
-                
-                var i = 0
-                for node in self.mainSplitViewController.modelDetailViewController?.nodesController.arrangedObjects as! [BNNode] {
-                    self.mainSplitViewController.modelDetailViewController?.nodesController.setSelectionIndex(i)
-                    
-                    
-                    
-                    //create a compound of the outFile name and node name
-                    let nodeTXTFileName = baseFile! + "-" + node.nodeLink.name + ".csv"
-                    let nodeTXTURL = NSURL(string: nodeTXTFileName)
-                    //  print(nodeURL)
-                    
-                    
-                    var outText : String = String()
-                    outText += node.nodeLink.name
-                    outText += "\n"
-
-                        outText += "cptFreq,"
-                        outText += String(node.cptFreq)
-                        outText += "\n"
-                    
-                    if node.priorArray != nil {
-                        outText += "prior,"
-                        let priorArray = NSKeyedUnarchiver.unarchiveObjectWithData(node.valueForKey("priorArray") as! NSData) as! [Int]
-
-                        
-                        for thisPrior in priorArray {
-                            outText += String(thisPrior)
-                            outText += ","
-                        }
-                        outText += "\n"
-                        
-                    }
-                    if node.postArray != nil {
-                        outText += "posterior,"
-                        let postArray = NSKeyedUnarchiver.unarchiveObjectWithData(node.valueForKey("postArray") as! NSData) as! [Int]
-
-                        
-                        for thisPost in postArray {
-                            outText += String(thisPost)
-                            outText += ","
-                        }
-                        outText += "\n"
-                        
-                    }
-                    do {
-                        try outText.writeToURL(nodeTXTURL!, atomically: true, encoding: NSUTF8StringEncoding)
-                    }
-                    catch let error as NSError {
-                        print(error)
-                    } catch {
-                        fatalError()
-                    }
-                    
-                    //create a compound of the outFile name and node name
-                    let nodePDFFileName = baseFile! + "-" + node.nodeLink.name + ".pdf"
-                    let nodeURL = NSURL(string: nodePDFFileName)
-                    print(nodeURL)
-                    
-                    let graphView = self.mainSplitViewController.modelDetailViewController?.graphView
-                    graphView?.frame = NSMakeRect(0, 0, 792, 612)
-                    
-                    
-                    let graph = self.mainSplitViewController.modelDetailViewController?.graph
-                    
-                    graph?.frame = NSMakeRect(0, 0, 792, 612)
-                    /*
-                    let titleStyle = CPTMutableTextStyle()
-                    titleStyle.fontName = "SanFrancisco"
-                    titleStyle.fontSize = 18.0
-                    titleStyle.color = CPTColor.blackColor()
-                    graph?.titleTextStyle = titleStyle
-
-                    
-                    graph?.title = node.nodeLink.name
-                    
-                    
-                    graph?.paddingTop = 10.0
-                    graph?.paddingBottom = 10.0
-                    graph?.paddingLeft = 10.0
-                    graph?.paddingRight = 10.0
-                    
-                    let plotSpace : CPTXYPlotSpace = graph?.defaultPlotSpace as! CPTXYPlotSpace
-                    plotSpace.allowsUserInteraction = false
-                    
-                    
-                    let xRange = plotSpace.xRange.mutableCopy() as! CPTMutablePlotRange
-                    let yRange = plotSpace.yRange.mutableCopy() as! CPTMutablePlotRange
-                    
-                    xRange.length = 1.1
-                    yRange.length = 1.1
-                    
-                    
-                    plotSpace.xRange = xRange
-                    plotSpace.yRange = yRange
-                    plotSpace.scaleToFitPlots(graph?.allPlots())
-                    
-                    print ("title \(graph?.title)")
-                    
-                    
-                    for plot in (graph?.allPlots())! {
-                        
-                        plot.frame = (graph?.bounds)!
-                        //print("plot \(plot.identifier) \(plot.frame.size)")
-                        //plot.reloadData()
-                        
-                    }
-
-                    
-*/
-
-
-                    let pdfData = graph?.dataForPDFRepresentationOfLayer()
-                    pdfData!.writeToURL(nodeURL!, atomically: true)
-                    
-                    
-                    i++
-                }
-                
-              
-
-                self.window!.endSheet(self.progSheet)
-                self.progSheet.orderOut(self)
-            }
-            
-            else { return }
-        })
-        
-    }
-    
-
-    /*
-    @IBAction func importCSV(x:NSToolbarItem){
-        var error: NSErrorPointer = nil
-        
-      //  let priority = DISPATCH_QUEUE_PRIORITY_DEFAULT
-
-        
-        let op:NSOpenPanel = NSOpenPanel()
-        op.allowsMultipleSelection = false
-        op.canChooseDirectories = false
-        op.canChooseFiles = true
-        op.allowedFileTypes = ["csv"]
-        
-        //accessory view
-        let av:NSButton = NSButton(frame: NSMakeRect(0.0, 0.0, 324.0, 22.0))
-        av.setButtonType(NSButtonType.SwitchButton)
-        av.title = "Add to Current Dataset"
-
-        op.accessoryView = av
-        
-        
-
-
-        
-        
-        op.beginSheetModalForWindow(window!, completionHandler: {(result:Int) -> Void in
-            if (result == NSFileHandlingPanelOKButton) {
-
-                let inFile  = op.URL
-                
-                op.close()
-                
-                
-                
-                var i = 1
-                
-                var firstLine = true
-                
-                if (inFile != nil){ // operate on iput file
-                    
-
-
-                    
-                    //instatntiate progress controller
-                    
-                    self.progSheet = self.progSetup(self)
-                    self.window!.beginSheet(self.progSheet, completionHandler: nil)
-                    self.progSheet.makeKeyAndOrderFront(self)
                     self.progInd.indeterminate = true
-                    self.workLabel.stringValue = "Importing..."
                     self.progInd.startAnimation(self)
+                    self.workLabel.stringValue = "Exporting Nodes..."
+                    
+                    i = 0
 
-
-                    
-                    var inDataset : Dataset!
-                    if(av.state == 0){//new dataset
-                        inDataset = Dataset(entity: NSEntityDescription.entityForName("Dataset", inManagedObjectContext: self.moc)!, insertIntoManagedObjectContext: self.moc)
-                        inDataset.setValue(inFile!.lastPathComponent, forKey: "name")
-                    }
-                    else {// the
-                        let curDatasets : [Dataset] = self.datasetController.selectedObjects as! [Dataset]
-                        inDataset = curDatasets[0]
-                    }
-                    
-
-
-
-                    
-                    do {
-                        try self.moc.save()
-                    } catch let error as NSError {
-                        print(error)
-                    } catch {
-                        fatalError()
-                    }
-                    
-
-                    let datasetID = inDataset.objectID
-
-                    
-                    //give it an initial model
-                    let newModel : Model = Model(entity: NSEntityDescription.entityForName("Model", inManagedObjectContext: self.moc)!, insertIntoManagedObjectContext: self.moc)
-                    newModel.setValue("First Model", forKey: "name")
-                    newModel.setValue(inDataset, forKey: "dataset")
-                    inDataset.addModelObject(newModel)
-                    
-                    
-                    let fileContents : String = (try! NSString(contentsOfFile: inFile!.path!, encoding: NSUTF8StringEncoding)) as String
-                    // print(fileContents)
-                    let fileLines : [String] = fileContents.componentsSeparatedByString("\n")
-                    
-              //      let headerLine = fileLines[0]
-                    
-
-
-                    
-                    
-                    let delimiterCharacterSet = NSMutableCharacterSet(charactersInString: ",\"")
-                    delimiterCharacterSet.formUnionWithCharacterSet(NSCharacterSet.whitespaceAndNewlineCharacterSet())
-
-                    
-                  
-                    
-
-                    
-
-
-                    
-                    
-                    self.progInd.indeterminate = false
-                    self.progInd.maxValue =  Double(fileLines.count)
-                    self.progInd.doubleValue = 0
-                    
-                    self.maxLabel.stringValue = String(fileLines.count)
-                    self.curLabel.stringValue = String(0)
-                    
-
-                    
-                    
-                    var batchCount : Int = 0
-                    var columnCount = 0
-                    var nameColumn = -1
-                    var structureColumn = -1
-                    var headers = [String]()
-                    var existingStructures = [Structure]()
-                    var existingStructureNames = [String]() //for speed
-                    
-
-                    let request = NSFetchRequest(entityName: "Structure")
-                    let predicate = NSPredicate(format: "dataset == %@", inDataset)
-                    request.predicate = predicate
-                    do{
-                        existingStructures = try self.moc.executeFetchRequest(request) as! [Structure]
+                    for node in self.mainSplitViewController.modelDetailViewController?.nodesController.arrangedObjects as! [BNNode] {
+                        self.mainSplitViewController.modelDetailViewController?.nodesController.setSelectionIndex(i) //FIXME wont work on a background thread
+                        
+                        
+                        
+                        //create a compound of the outFile name and node name
+                        let nodeTXTFileName = baseFile! + "-" + node.nodeLink.name + ".csv"
+                        let nodeTXTURL = NSURL(string: nodeTXTFileName)
 
                         
                         
-                    } catch let error as NSError {
-                        print(error)
-                    }
-                    
-                    for curStructure :Structure in existingStructures {
-                        existingStructureNames.append(curStructure.name)
-                        //print("existing sructure \(curStructure.name)")
-                    }
-                    
+                        var outText : String = String()
+                        outText += node.nodeLink.name
+                        outText += "\n"
 
+                            outText += "cptFreq,"
+                            outText += String(node.cptFreq)
+                            outText += "\n"
+                        
+                        if node.priorArray != nil {
+                            outText += "prior,"
+                            let priorArray = NSKeyedUnarchiver.unarchiveObjectWithData(node.valueForKey("priorArray") as! NSData) as! [Int]
 
-                    
-                        for thisLine : String in fileLines {
                             
-                            
-                            if(self.breakloop){
-                                self.breakloop = false
-                                break
+                            for thisPrior in priorArray {
+                                outText += String(thisPrior)
+                                outText += ","
                             }
-                            
-                          //  print("\(i) \(thisLine)")
-                            
-                            if firstLine {  //this is the header line
-                                
-                                let theHeader : [String] = thisLine.componentsSeparatedByString(",")
-                                for thisHeader in theHeader {
-                                    if thisHeader == "Name" {
-                                        nameColumn = columnCount
-                                    }
-                                    if thisHeader == "Structure" {
-                                        structureColumn = columnCount
-                                    }
-                                    headers.append(thisHeader.stringByTrimmingCharactersInSet(delimiterCharacterSet))
-                                    columnCount++
-                                }
-
-                                
-                            }
-
-                            else {
-                                
-                                
-                                if(thisLine.stringByTrimmingCharactersInSet(delimiterCharacterSet) != "" ){ //ignore lines that are blank and/or only contain commas
-                            
-                                    let newEntry : Entry = Entry(entity: NSEntityDescription.entityForName("Entry", inManagedObjectContext: self.moc)!, insertIntoManagedObjectContext: self.moc)
-                                    var theTraits : [String] = thisLine.componentsSeparatedByString(",")
-
-                                    if nameColumn >= 0{
-                                        newEntry.setValue(theTraits[nameColumn], forKey: "name")
-                                    }
-                                    else {
-                                        newEntry.setValue(String(i), forKey: "name")
-                                    }
-                                    
-                                    if (structureColumn >= 0 ) {
-                                        let theSubStructures : [String] = theTraits[structureColumn].componentsSeparatedByString("\t")
-                                        for thisSubStructure in theSubStructures {
-                                            if(existingStructureNames.contains(thisSubStructure)){
-                                                for chkStructure in existingStructures {
-                                                    if (chkStructure.name == thisSubStructure){
-                                                        chkStructure.addEntryObject(newEntry)
-                                                       //  an entry is part of EACH structure of that name
-                                                    }
-                                                }
-                                                
-                                            }
-                                            else{ // a new stuetcure must be made, and added to exisitngStructures and existingStructureNames
-                                                let newStructure : Structure = Structure(entity: NSEntityDescription.entityForName("Structure", inManagedObjectContext: self.moc)!, insertIntoManagedObjectContext: self.moc)
-                                                newStructure.setValue(thisSubStructure, forKey: "name")
-                                                newStructure.setValue(inDataset, forKey: "dataset")
-                                                newStructure.addEntryObject(newEntry)
-                                                inDataset.addStructureObject(newStructure)
-                                                existingStructures.append(newStructure)
-                                                existingStructureNames.append(newStructure.name)
-                                            }
-                                        }
-                                        
-                                    }
-                                    
-
-                                    
-                                    newEntry.setValue("Entry", forKey: "type")
-                                    newEntry.setValue(inDataset, forKey: "dataset")
-                                    inDataset.addEntryObject(newEntry)
-
-                                    
-                                    
-
-                                    columnCount = 0
-                                    for thisTrait in theTraits {
-                                      //  print(thisTrait)
-                                        
-                                        if(columnCount != nameColumn && columnCount != structureColumn){
-                                        
-                                        let theSubTraits : [String] = thisTrait.componentsSeparatedByString("\t")
-                                        
-                                        for thisSubTrait in theSubTraits {
-                                          //  print(thisSubTrait)
-                                            if(thisSubTrait.stringByTrimmingCharactersInSet(delimiterCharacterSet) != "" ){//ignore empty
-                                                let newTrait : Trait = Trait(entity: NSEntityDescription.entityForName("Trait", inManagedObjectContext: self.moc)!, insertIntoManagedObjectContext: self.moc)
-                                                newTrait.setValue(headers[columnCount], forKey: "name")
-                                                newTrait.setValue(thisSubTrait.stringByTrimmingCharactersInSet(delimiterCharacterSet), forKey: "traitValue")
-                                                newTrait.setValue(newEntry, forKey: "entry")
-                                                
-                                                newEntry.addTraitObject(newTrait)
-                                            }
-                                        }
-                                        
-                                        
-                                        }
-
-
-                                        
-                                        columnCount++
-                                        
-                                    }
-                                }
-                            
-                            }
-
-       
-                            firstLine = false
-                            i++
-                            
-
-
-
-                            
-                                batchCount++
-                            
-                            if(batchCount > 1000){
-                                do {
-                                    try self.moc.save()
-                                } catch let error as NSError {
-                                    print(error)
-                                } catch {
-                                    fatalError()
-                                }
-                                batchCount = 0
-                                self.moc.reset()
-
-
-                                
-                                inDataset = self.moc.objectWithID(datasetID) as! Dataset
-
-                                
-                            }
-                            
-
-
-
+                            outText += "\n"
                             
                         }
-                        
-                    
-                    
+                        if node.postArray != nil {
+                            outText += "posterior,"
+                            let postArray = NSKeyedUnarchiver.unarchiveObjectWithData(node.valueForKey("postArray") as! NSData) as! [Int]
 
-                        
-
-                    
-
-                    
+                            
+                            for thisPost in postArray {
+                                outText += String(thisPost)
+                                outText += ","
+                            }
+                            outText += "\n"
+                            
+                        }
                         do {
-                            try self.moc.save()
-                        } catch let error as NSError {
+                            try outText.writeToURL(nodeTXTURL!, atomically: true, encoding: NSUTF8StringEncoding)
+                        }
+                        catch let error as NSError {
                             print(error)
                         } catch {
                             fatalError()
                         }
-                        self.moc.reset()
+                        
+                        //create a compound of the outFile name and node name
+                        let nodePDFFileName = baseFile! + "-" + node.nodeLink.name + ".pdf"
+                        let nodeURL = NSURL(string: nodePDFFileName)
 
                         
-                      //  self.moc.undoManager = undoM
+                        let graphView = self.mainSplitViewController.modelDetailViewController?.graphView
+                        graphView?.frame = NSMakeRect(0, 0, 792, 612)
                         
-                      //clear controller
+                        
+                        let graph = self.mainSplitViewController.modelDetailViewController?.graph
+                        
+                        graph?.frame = NSMakeRect(0, 0, 792, 612)
+                        /*
+                        let titleStyle = CPTMutableTextStyle()
+                        titleStyle.fontName = "SanFrancisco"
+                        titleStyle.fontSize = 18.0
+                        titleStyle.color = CPTColor.blackColor()
+                        graph?.titleTextStyle = titleStyle
+
+                        
+                        graph?.title = node.nodeLink.name
+                        
+                        
+                        graph?.paddingTop = 10.0
+                        graph?.paddingBottom = 10.0
+                        graph?.paddingLeft = 10.0
+                        graph?.paddingRight = 10.0
+                        
+                        let plotSpace : CPTXYPlotSpace = graph?.defaultPlotSpace as! CPTXYPlotSpace
+                        plotSpace.allowsUserInteraction = false
+                        
+                        
+                        let xRange = plotSpace.xRange.mutableCopy() as! CPTMutablePlotRange
+                        let yRange = plotSpace.yRange.mutableCopy() as! CPTMutablePlotRange
+                        
+                        xRange.length = 1.1
+                        yRange.length = 1.1
+                        
+                        
+                        plotSpace.xRange = xRange
+                        plotSpace.yRange = yRange
+                        plotSpace.scaleToFitPlots(graph?.allPlots())
+                        
+                        print ("title \(graph?.title)")
+                        
+                        
+                        for plot in (graph?.allPlots())! {
+                            
+                            plot.frame = (graph?.bounds)!
+                            //print("plot \(plot.identifier) \(plot.frame.size)")
+                            //plot.reloadData()
+                            
+                        }
+
+                        
+        */
 
 
-                        let datafetch = NSFetchRequest(entityName: "Dataset")
-                        let datasets : [Dataset] = try! self.moc.executeFetchRequest(datafetch) as! [Dataset]
-                        self.datasetController.addObjects(datasets)
-                        inDataset = self.moc.objectWithID(datasetID) as! Dataset
-                        let nDarray : [Dataset] = [inDataset]
-                        self.datasetController.setSelectedObjects(nDarray)
+                        let pdfData = graph?.dataForPDFRepresentationOfLayer()
+                        pdfData!.writeToURL(nodeURL!, atomically: true)
+                        
 
+                        
+                        i++
+                    }
+                
+                
 
-    
+                    
                     self.window!.endSheet(self.progSheet)
                     self.progSheet.orderOut(self)
                     
-                    
                 }
-                
-                
-                
+            
             }
-            else { return }
-        })
+
             
 
-        
+
+            
+
+        }
+        else { return }
         
         
     }
     
-    */
+
    
-    
-    
 
     
     override func prepareForSegue(segue: NSStoryboardSegue, sender: AnyObject!) {
