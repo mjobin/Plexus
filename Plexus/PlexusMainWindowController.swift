@@ -618,38 +618,34 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
     }
     
     @IBAction func  calculate(x:NSToolbarItem){
+        let priority = DISPATCH_QUEUE_PRIORITY_DEFAULT
         
-        
-        
-        progSheet = self.progSetup(self)
-        self.window!.beginSheet(progSheet, completionHandler: nil)
-        progSheet.makeKeyAndOrderFront(self)
-        //progInd.doubleValue = 0
-        progInd.indeterminate = false
-        progInd.startAnimation(self)
-        
-
-
-        
-
         //collect data
         var nodesForCalc : [BNNode] = mainSplitViewController.modelDetailViewController?.nodesController.arrangedObjects as! [BNNode]
-      
         let curModels : [Model] = mainSplitViewController.modelTreeController?.selectedObjects as! [Model]
         let curModel : Model = curModels[0]
         
-        
-    
-        
-//dispatch_async(queue) {
-        let op = PlexusCalculationOperation(nodes: nodesForCalc, withRuns: curModel.runsper, withBurnin: curModel.burnins, withComputes: curModel.runstot)
-        
+        dispatch_async(dispatch_get_global_queue(priority, 0)) {
             
+            
+            self.progSheet = self.progSetup(self)
+            self.window!.beginSheet(self.progSheet, completionHandler: nil)
+            self.progInd.indeterminate = false
+            self.progInd.doubleValue = 0
+            self.progInd.maxValue =  Double(curModel.runstot)
+            self.progSheet.makeKeyAndOrderFront(self)
+
+            
+        
+            let op = PlexusCalculationOperation(nodes: nodesForCalc, withRuns: curModel.runsper, withBurnin: curModel.burnins, withComputes: curModel.runstot)
+
             var operr: NSError?
             
-            operr = op.calc(self)
+            operr = op.calc(self.progInd)
+            
+            self.progInd.indeterminate = true
+            self.progInd.startAnimation(self)
     
-
             if(operr == nil){
                 let resultNodes : NSMutableArray = op.getResults(self)
                 
@@ -674,10 +670,10 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                     
                     let fline : [Double] = fNode as! [Double]
 
-                    //print("fline \(fline)")
+
                     var gi = 0
                     for gNode : Double in fline {
-                    //    println(gNode)
+
                        
                         if(gNode == gNode && gNode >= 0.0 && gNode <= 1.0) {//fails if nan
                             
@@ -734,19 +730,33 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
 
         }
 
+            
+            dispatch_async(dispatch_get_main_queue()) {
+                
 
-            do {
-                //FIXME remove when ready curModel.setValue(true, forKey: "complete")
-                try self.moc.save()
-            } catch let error as NSError {
-                print(error)
+                /*
+                
+                do {
+                    //FIXME remove when ready curModel.setValue(true, forKey: "complete")
+                    try self.moc.save()
+                } catch let error as NSError {
+                    print(error)
+                }
+                */
+                
+                self.window!.endSheet(self.progSheet)
+                self.progSheet.orderOut(self)
+
             }
+            
+
         
 
-        self.window!.endSheet(self.progSheet)
-        self.progSheet.orderOut(self)
+
+            
+        }
         
-        print("End calcuilate fxn")
+        print("End calcuilate fxn reached")
     }
 
     

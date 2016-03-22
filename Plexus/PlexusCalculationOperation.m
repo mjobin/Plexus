@@ -50,7 +50,7 @@ static void *ProgressObserverContext = &ProgressObserverContext;
     return nil;
 }
 
-- (NSError *)calc:(id)sender
+- (NSError *)calc:(NSProgressIndicator *)progInd
 {
     NSError * calcerr = nil;
     
@@ -282,6 +282,8 @@ static void *ProgressObserverContext = &ProgressObserverContext;
     for (BNNode * fNode in initialNodes) {
   
        NSString * errMesg = [fNode calcCPT:self];
+        // NSLog(@"***************Node: %@  cptFreq %f", [[fNode nodeLink] name], [fNode getCPTFreq:self]);
+        
         if(![errMesg  isEqual: @"No Error"]){
             
             [cptCalcFail setObject:errMesg forKey:NSLocalizedFailureReasonErrorKey];
@@ -809,6 +811,11 @@ static void *ProgressObserverContext = &ProgressObserverContext;
             ct += thisWork;
 
             
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [progInd incrementBy:thisWork];
+                
+            });
+            
          //   NSLog(@"******");
             
             //now check output
@@ -852,7 +859,7 @@ static void *ProgressObserverContext = &ProgressObserverContext;
             
             int nodecount = 0;
             for(i=0;i<bnreadsizes[dev];i++){
-              //  NSLog(@"%i: %@ goes into node %i" ,i, [NSNumber numberWithFloat:bnresultsarrays[dev][i]], nodecount);
+                //NSLog(@"%i: %@ goes into node %i" ,i, [NSNumber numberWithFloat:bnresultsarrays[dev][i]], nodecount);
                 
                 if(firsttime){
                     NSMutableArray *newPA = [[NSMutableArray alloc] initWithObjects:[NSNumber numberWithFloat:bnresultsarrays[dev][i]], nil];
@@ -927,6 +934,8 @@ static void *ProgressObserverContext = &ProgressObserverContext;
 
 
 - (NSMutableArray *)getResults:(id)sender{
+    
+    
     return resultNodes;
 }
 
