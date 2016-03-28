@@ -59,10 +59,6 @@
 		C936A70D19F1DDDA00DFB23C /* Entry.swift in Sources */ = {isa = PBXBuildFile; fileRef = C936A70C19F1DDDA00DFB23C /* Entry.swift */; };
 		C939D9221AD56EE30094CF8D /* CPTXYAxis+SwiftCompat.m in Sources */ = {isa = PBXBuildFile; fileRef = C939D9211AD56EE30094CF8D /* CPTXYAxis+SwiftCompat.m */; };
 		C9423AFF19E2FFC200EE109C /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C9423AFE19E2FFC200EE109C /* CoreData.framework */; };
-		C943F0CD1B22164700BE587B /* tinymt.clh in CopyFiles */ = {isa = PBXBuildFile; fileRef = C95937411B2101A600CCDA19 /* tinymt.clh */; };
-		C943F0CE1B22164700BE587B /* tinymt32_jump_table.clh in CopyFiles */ = {isa = PBXBuildFile; fileRef = C95937421B2101A600CCDA19 /* tinymt32_jump_table.clh */; };
-		C943F0CF1B22164700BE587B /* tinymt32_jump.clh in CopyFiles */ = {isa = PBXBuildFile; fileRef = C95937431B2101A600CCDA19 /* tinymt32_jump.clh */; };
-		C943F0D01B22164700BE587B /* tinymt32def.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = C95937441B2101A600CCDA19 /* tinymt32def.h */; };
 		C9464CE01B27B8B9005004F0 /* PlexusEntryDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9464CDF1B27B8B9005004F0 /* PlexusEntryDetailViewController.swift */; };
 		C9464CEB1B27B8F0005004F0 /* PlexusModelDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9464CEA1B27B8F0005004F0 /* PlexusModelDetailViewController.swift */; };
 		C94E80731AF03DCF0016F563 /* plexusmath.c in Sources */ = {isa = PBXBuildFile; fileRef = C94E80721AF03DCF0016F563 /* plexusmath.c */; };
@@ -77,6 +73,10 @@
 		C969470419DF6DEF001CE994 /* CGPath+Arrow.swift in Sources */ = {isa = PBXBuildFile; fileRef = C969470319DF6DEF001CE994 /* CGPath+Arrow.swift */; };
 		C969470519DF6DEF001CE994 /* CGPath+Arrow.swift in Sources */ = {isa = PBXBuildFile; fileRef = C969470319DF6DEF001CE994 /* CGPath+Arrow.swift */; };
 		C96DB1B41A8EAFBE0087762B /* bn_kernel.cl in CopyFiles */ = {isa = PBXBuildFile; fileRef = C92115481A01D9D7006E0183 /* bn_kernel.cl */; };
+		C9716DC61CA369390065D9A4 /* tinymt.clh in CopyFiles */ = {isa = PBXBuildFile; fileRef = C95937411B2101A600CCDA19 /* tinymt.clh */; };
+		C9716DC71CA369390065D9A4 /* tinymt32_jump_table.clh in CopyFiles */ = {isa = PBXBuildFile; fileRef = C95937421B2101A600CCDA19 /* tinymt32_jump_table.clh */; };
+		C9716DC81CA3693A0065D9A4 /* tinymt32_jump.clh in CopyFiles */ = {isa = PBXBuildFile; fileRef = C95937431B2101A600CCDA19 /* tinymt32_jump.clh */; };
+		C9716DC91CA3693A0065D9A4 /* tinymt32def.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = C95937441B2101A600CCDA19 /* tinymt32def.h */; };
 		C97B06EF1A4DE7E100514730 /* PlexusModelTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C97B06EE1A4DE7E100514730 /* PlexusModelTableViewController.swift */; };
 		C98034701AA550CF008B4802 /* NodeLinkExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = C980346F1AA550CF008B4802 /* NodeLinkExtension.swift */; };
 		C98034711AA550CF008B4802 /* NodeLinkExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = C980346F1AA550CF008B4802 /* NodeLinkExtension.swift */; };
@@ -101,6 +101,8 @@
 		C9D80BC419E74779003A7575 /* PlexusEntryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9D80BC219E74779003A7575 /* PlexusEntryViewController.swift */; };
 		C9E374251A005D3700112F5A /* PlexusIconTransformer.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9E374241A005D3700112F5A /* PlexusIconTransformer.swift */; };
 		C9E374261A005D3700112F5A /* PlexusIconTransformer.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9E374241A005D3700112F5A /* PlexusIconTransformer.swift */; };
+		C9E74A7C1CA326E200A930DD /* CorePlot.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C9FC76C01BFE2CD5008CA6D0 /* CorePlot.framework */; };
+		C9E74A7D1CA3272900A930DD /* CorePlot.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = C9FC76C01BFE2CD5008CA6D0 /* CorePlot.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		C9F459041AFA636E00ADB4F4 /* PlexusRunMaxTranformer.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9F459031AFA636E00ADB4F4 /* PlexusRunMaxTranformer.swift */; };
 		C9F4ABE319F70E0400E74B35 /* DatasetExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9F4ABE219F70E0400E74B35 /* DatasetExtension.swift */; };
 /* End PBXBuildFile section */
@@ -165,19 +167,6 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		C943F0CC1B22162C00BE587B /* CopyFiles */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 16;
-			files = (
-				C943F0CD1B22164700BE587B /* tinymt.clh in CopyFiles */,
-				C943F0CE1B22164700BE587B /* tinymt32_jump_table.clh in CopyFiles */,
-				C943F0CF1B22164700BE587B /* tinymt32_jump.clh in CopyFiles */,
-				C943F0D01B22164700BE587B /* tinymt32def.h in CopyFiles */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		C96DB1B11A8EAFB00087762B /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -188,12 +177,26 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		C9716DBC1CA369220065D9A4 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 16;
+			files = (
+				C9716DC61CA369390065D9A4 /* tinymt.clh in CopyFiles */,
+				C9716DC71CA369390065D9A4 /* tinymt32_jump_table.clh in CopyFiles */,
+				C9716DC81CA3693A0065D9A4 /* tinymt32_jump.clh in CopyFiles */,
+				C9716DC91CA3693A0065D9A4 /* tinymt32def.h in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		C9FC76CD1BFE2D90008CA6D0 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				C9E74A7D1CA3272900A930DD /* CorePlot.framework in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -268,6 +271,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C9E74A7C1CA326E200A930DD /* CorePlot.framework in Frameworks */,
 				C9423AFF19E2FFC200EE109C /* CoreData.framework in Frameworks */,
 				C96946FC19DF6C8B001CE994 /* Quartz.framework in Frameworks */,
 				C9307BDB19DCD09E002AFF07 /* OpenCL.framework in Frameworks */,
@@ -457,8 +461,8 @@
 				C9307BAA19DCCA3B002AFF07 /* Frameworks */,
 				C9307BAB19DCCA3B002AFF07 /* Resources */,
 				C96DB1B11A8EAFB00087762B /* CopyFiles */,
-				C943F0CC1B22162C00BE587B /* CopyFiles */,
 				C9FC76CD1BFE2D90008CA6D0 /* CopyFiles */,
+				C9716DBC1CA369220065D9A4 /* CopyFiles */,
 			);
 			buildRules = (
 			);

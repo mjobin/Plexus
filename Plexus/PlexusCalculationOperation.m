@@ -50,7 +50,7 @@ static void *ProgressObserverContext = &ProgressObserverContext;
     return nil;
 }
 
-- (NSError *)calc:(NSProgressIndicator *)progInd
+- (NSError *)calc:(NSProgressIndicator *)progInd withCurLabel:(NSTextField *)curLabel
 {
     NSError * calcerr = nil;
     
@@ -297,7 +297,7 @@ static void *ProgressObserverContext = &ProgressObserverContext;
     //Construct influences, CPT, fequencies
     //NSLog(@"construct influences");
     for (BNNode * fNode in initialNodes) {
-        // NSLog(@"***************Node: %@", [[fNode nodeLink] name]);
+         NSLog(@"***************Node: %@", [[fNode nodeLink] name]);
         
 
         //add freq
@@ -422,9 +422,33 @@ static void *ProgressObserverContext = &ProgressObserverContext;
     
 
     
+
+    
+    
     NSMutableData *sourceData = [[NSMutableData alloc] init];
     
+    /*
+    //START TEST of DIR
+    NSFileManager *filemgr;
+    NSString *currentpath;
     
+    filemgr = [[NSFileManager alloc] init];
+    
+    currentpath = [filemgr currentDirectoryPath];
+    
+    
+    NSAlert *alert = [[NSAlert alloc] init];
+    [alert addButtonWithTitle:@"OK"];
+    [alert addButtonWithTitle:@"Cancel"];
+    [alert setMessageText:@"Working in"];
+    [alert setInformativeText:currentpath];
+    [alert setAlertStyle:NSWarningAlertStyle];
+    
+    [alert runModal];
+    */
+    
+    
+    //END TEST of DIR
     
     //Load the kernel
     NSData *bnData = [NSData dataWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"bn_kernel" ofType:@"cl"]];
@@ -434,6 +458,8 @@ static void *ProgressObserverContext = &ProgressObserverContext;
     
     const char *source = [sourceData bytes];
     size_t length = [sourceData length];
+    
+
     
     
   //  NSLog(@"SOURCE:/n%s",source);
@@ -813,6 +839,7 @@ static void *ProgressObserverContext = &ProgressObserverContext;
             
             dispatch_async(dispatch_get_main_queue(), ^{
                 [progInd incrementBy:thisWork];
+                curLabel.stringValue = [NSString stringWithFormat:@"%i", ct];
                 
             });
             

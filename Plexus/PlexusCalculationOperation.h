@@ -34,7 +34,7 @@
 }
 
 - (id)initWithNodes:(NSArray *) inNodes withRuns:(NSNumber *) inRuns withBurnin:(NSNumber *) inBurnins withComputes:(NSNumber*) inComputes;
-- (NSError *)calc:(id)sender;
+- (NSError *)calc:(NSProgressIndicator *)progInd withCurLabel:(NSTextField *)curLabel;
 - (NSMutableArray *)getResults:(id)sender;
 
 

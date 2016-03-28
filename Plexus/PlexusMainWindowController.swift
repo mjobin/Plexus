@@ -629,6 +629,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
             
             
             self.progSheet = self.progSetup(self)
+            self.maxLabel.stringValue = String(curModel.runstot)
             self.window!.beginSheet(self.progSheet, completionHandler: nil)
             self.progInd.indeterminate = false
             self.progInd.doubleValue = 0
@@ -641,7 +642,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
 
             var operr: NSError?
             
-            operr = op.calc(self.progInd)
+            operr = op.calc(self.progInd, withCurLabel: self.curLabel)
             
             self.progInd.indeterminate = true
             self.progInd.startAnimation(self)
