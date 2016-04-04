@@ -757,7 +757,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
             
         }
         
-        print("End calcuilate fxn reached")
+       // print("End calcuilate fxn reached")
     }
 
     

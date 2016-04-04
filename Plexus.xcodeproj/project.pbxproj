@@ -181,7 +181,7 @@
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
-			dstSubfolderSpec = 16;
+			dstSubfolderSpec = 7;
 			files = (
 				C9716DC61CA369390065D9A4 /* tinymt.clh in CopyFiles */,
 				C9716DC71CA369390065D9A4 /* tinymt32_jump_table.clh in CopyFiles */,

@@ -25,7 +25,7 @@ static void *ProgressObserverContext = &ProgressObserverContext;
 {
     self = [super init];
     if (self) {
-        NSLog(@"init calc op");
+
         //How many devices do we have locally?
         
         
@@ -35,9 +35,7 @@ static void *ProgressObserverContext = &ProgressObserverContext;
         computes = inComputes;
         resultNodes = [NSMutableArray array];
 
-        
-        
-        
+
         NSLog(@"BN calc operation loaded");
         
         
@@ -297,7 +295,7 @@ static void *ProgressObserverContext = &ProgressObserverContext;
     //Construct influences, CPT, fequencies
     //NSLog(@"construct influences");
     for (BNNode * fNode in initialNodes) {
-         NSLog(@"***************Node: %@", [[fNode nodeLink] name]);
+       //  NSLog(@"***************Node: %@", [[fNode nodeLink] name]);
         
 
         //add freq
@@ -427,25 +425,7 @@ static void *ProgressObserverContext = &ProgressObserverContext;
     
     NSMutableData *sourceData = [[NSMutableData alloc] init];
     
-    /*
-    //START TEST of DIR
-    NSFileManager *filemgr;
-    NSString *currentpath;
-    
-    filemgr = [[NSFileManager alloc] init];
-    
-    currentpath = [filemgr currentDirectoryPath];
-    
-    
-    NSAlert *alert = [[NSAlert alloc] init];
-    [alert addButtonWithTitle:@"OK"];
-    [alert addButtonWithTitle:@"Cancel"];
-    [alert setMessageText:@"Working in"];
-    [alert setInformativeText:currentpath];
-    [alert setAlertStyle:NSWarningAlertStyle];
-    
-    [alert runModal];
-    */
+
     
     
     //END TEST of DIR
@@ -474,9 +454,23 @@ static void *ProgressObserverContext = &ProgressObserverContext;
     
     // NSLog(@"%lu",length);
     
+    //get resource directory
+    
+    NSString *bundlePath = [[NSBundle mainBundle] pathForResource:@"bn_kernel" ofType:@"cl"];
+    NSString *resourcesPath = [bundlePath stringByDeletingLastPathComponent];
+    
+    NSString *dashI = @"-I ";
+    NSString *clOptionsLine = [dashI stringByAppendingString:resourcesPath];
+    //NSLog(@"opt: %@",clOptionsLine);
+    const char *ccCloptionsLine = [clOptionsLine cStringUsingEncoding:NSASCIIStringEncoding];
+    
+
+    
     
     //Build executable
-       err = clBuildProgram(bncalc_program, num_devices, device_ids, "-I .", NULL, NULL);
+    //   err = clBuildProgram(bncalc_program, num_devices, device_ids, "-I .", NULL, NULL); //FIXME archive canot find .clh header file
+    err = clBuildProgram(bncalc_program, num_devices, device_ids, ccCloptionsLine, NULL, NULL); //FIXME archive canot find .clh header file
+
     if (err != CL_SUCCESS)
     {
         NSLog(@"BN Calc: Failed to build executable.");
@@ -496,8 +490,9 @@ static void *ProgressObserverContext = &ProgressObserverContext;
                               buffer,               // on return, holds the build log
                               &len);                // on return, the actual size in bytes of the
         //  error data returned
+        NSLog(@"error code: %i", err);
         NSString *buf = [NSString stringWithCString:buffer encoding:4];
-        NSLog(@"%@", buf);
+        NSLog(@"Build error message: %@", buf);
         
         NSDictionary *buildFail = @{
                                      NSLocalizedDescriptionKey: NSLocalizedString(@"OpenCL", nil),
