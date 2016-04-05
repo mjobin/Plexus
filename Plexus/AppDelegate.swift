@@ -29,7 +29,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         let pTypes: [String] = ["Point", "Uniform", "Gaussian", "Beta", "Gamma", "PostPrior"]
         let dTypes: [String] = ["Global", "Self", "Children"]
         let oTypes: [String] = ["Trait", "Entry", "Structure"]
-        let eTypes: [String] = ["Entry", "Expert", "Site", "Person", "Phoneme"]
         let defaultValues = ["PriorTypes": pTypes, "DataScopeTypes": dTypes, "OperationTypes": oTypes]
         defaults.registerDefaults(defaultValues)
       //  let wtf = defaults.objectForKey("selectedDataset")
