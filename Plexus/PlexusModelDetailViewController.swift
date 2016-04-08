@@ -95,7 +95,7 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, CP
         
         //Single Node View
         
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "mocDidChange:", name: NSManagedObjectContextObjectsDidChangeNotification, object: moc)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(PlexusModelDetailViewController.mocDidChange(_:)), name: NSManagedObjectContextObjectsDidChangeNotification, object: moc)
         
         
         
@@ -596,7 +596,7 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, CP
     
     
     func collectData() {
-        let errorPtr : NSErrorPointer = nil
+    //    let errorPtr : NSErrorPointer = nil
         
         self.dataPopup.removeAllItems()
         self.dataSubPopup.removeAllItems()
@@ -608,23 +608,25 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, CP
         var dataSubNames = [String]()
 
         
+
         
         
-        
-        
-        
-        let curModels : [Model] = modelTreeController.selectedObjects as! [Model]
-        let curModel : Model = curModels[0]
-        let curDataset : Dataset = curModel.dataset
+      //  let curModels : [Model] = modelTreeController.selectedObjects as! [Model]
+       // let curModel : Model = curModels[0]
+      //  let curDataset : Dataset = curModel.dataset
         
         var curNodes : [BNNode] = nodesController.selectedObjects as! [BNNode]
         if(curNodes.count>0) {
             curNode = curNodes[0]
             
-            let request = NSFetchRequest(entityName: "Trait")
-            var predicate = NSPredicate()
+        //    let request = NSFetchRequest(entityName: "Trait")
+       //     var predicate = NSPredicate()
+            
+
             
             dataNames = curNode.getDataNames()
+            
+
             
             
             switch(curNode.dataScope) {
@@ -744,6 +746,8 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, CP
             
             dataSubNames = curNode.getDataSubNames()
             self.dataSubPopup.addItemsWithTitles(dataSubNames)
+            
+
             
             /*
 
