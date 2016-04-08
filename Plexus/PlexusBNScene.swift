@@ -41,7 +41,7 @@ class PlexusBNScene: SKScene {
             moc = appDelegate.managedObjectContext
         
         
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "mocDidChange:", name: NSManagedObjectContextObjectsDidChangeNotification, object: moc)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(PlexusBNScene.mocDidChange(_:)), name: NSManagedObjectContextObjectsDidChangeNotification, object: moc)
         
 
  
@@ -239,11 +239,7 @@ class PlexusBNScene: SKScene {
             
 
             
-            
-       //     print("startIDNode \(startNode) \(startIDNode.node.nodeLink.name)")
-         //   print("releasedIDNode \(releasedNode) \(releasedIDNode.node.nodeLink.name)")
-           // print("BODYA \(theJoint.bodyA) BODYB \(theJoint.bodyB)")
-           //FIXME very possibly when there are duplicate nodes this causes an error
+    
 
             self.physicsWorld.addJoint(theJoint)
             
