@@ -171,7 +171,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                     
                     let whut = (Int)(floor(gNode/0.01))
                     
-                    postCount[whut]++
+                    postCount[whut] += 1
                     
                 }
                     
@@ -180,7 +180,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                     // println("problem detected in reloadData. gNode is \(gNode)")
                 }
                 
-                gi++
+                gi += 1
             }
             
             let archivedPostCount = NSKeyedArchiver.archivedDataWithRootObject(postCount)
@@ -196,7 +196,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         
         //sheet programamticaly
         let sheetRect = NSRect(x: 0, y: 0, width: 400, height: 82)
-        retWin = NSWindow(contentRect: sheetRect, styleMask: NSTitledWindowMask, backing: NSBackingStoreType.Buffered, `defer`: true)
+        retWin = NSWindow(contentRect: sheetRect, styleMask: NSTitledWindowMask, backing: NSBackingStoreType.Buffered, defer: true)
         let contentView = NSView(frame: sheetRect)
         self.progInd = NSProgressIndicator(frame: NSRect(x: 143, y: 52, width: 239, height: 20))
         self.progInd.canDrawConcurrently = true
@@ -214,7 +214,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         cancelButton.bezelStyle = NSBezelStyle.RoundedBezelStyle
         cancelButton.title = "Cancel"
         cancelButton.target = self
-        cancelButton.action = "cancelProg:"
+        cancelButton.action = #selector(PlexusMainWindowController.cancelProg(_:))
         
         self.maxLabel = NSTextField(frame: NSRect(x: 138, y: 10, width: 64, height: 20))
         maxLabel.editable = false
@@ -405,7 +405,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                                 longitudeColumn = columnCount
                             }
                             headers.append(thisHeader.stringByTrimmingCharactersInSet(delimiterCharacterSet))
-                            columnCount++
+                            columnCount += 1
                         }
                         
                         
@@ -521,7 +521,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                                 
                                 
                                 
-                                columnCount++
+                                columnCount += 1
                                 
                             }
 
@@ -540,12 +540,12 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                     
 
                     firstLine = false
-                    i++
+                    i += 1
                     
 
 
                     
-                    batchCount++
+                    batchCount += 1
                     if(batchCount > 100){
                         do {
                             try inMOC.save()
@@ -680,7 +680,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                             
                             let whut = (Int)(floor(gNode/0.01))
 
-                            postCount[whut]++
+                            postCount[whut] += 1
 
                         }
                         
@@ -689,7 +689,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                            // println("problem detected in reloadData. gNode is \(gNode)")
                         }
 
-                        gi++
+                        gi += 1
                     }
                     
                     let archivedPostCount = NSKeyedArchiver.archivedDataWithRootObject(postCount)
@@ -699,7 +699,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                     
 
 
-                    fi++
+                    fi += 1
                     
                 }
                 
@@ -866,7 +866,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                                 if(traitString.count > 1 && k < traitString.count){
                                     outText += "\r"
                                 }
-                                k++
+                                k += 1
                             }
                             
                             if(traitString.count > 1){
@@ -886,7 +886,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                             self.curLabel.stringValue = String(i)
                             
                         }
-                        i++
+                        i += 1
 
                     }
                     
@@ -1031,7 +1031,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                         
 
                         
-                        i++
+                        i += 1
                     }
                 
                 
