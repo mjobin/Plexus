@@ -30,9 +30,9 @@ class PlexusModelViewController: NSViewController {
     }
     
    @IBAction func childModel(sender : AnyObject){
-        let errorPtr : NSErrorPointer = nil
+
     
-      //  let curDatasets : [Dataset] = datasetController.selectedObjects as! [Dataset]
+    //    let curDatasets : [Dataset] = datasetController.selectedObjects as! [Dataset]
       //  let curDataset : Dataset = curDatasets[0]
     
         let curModels : [Model] = modelTreeController.selectedObjects as! [Model]
@@ -53,6 +53,7 @@ class PlexusModelViewController: NSViewController {
         let copyName : String = curModel.name + " copy"
         newModel.setValue(copyName, forKey: "name")
 
+        var tempNodeArray = [BNNode]()
         
         let curNodes  = curModel.bnnode.allObjects as! [BNNode]
         for curNode : BNNode in curNodes {
@@ -88,24 +89,47 @@ class PlexusModelViewController: NSViewController {
             newNode.setValue(newModel, forKey: "model")
             newModel.addBNNodeObject(newNode)
             
+            tempNodeArray.append(newNode)
+            
+            
+            
         }
         
+        var infstwod = [[Int]]()
 
         
-       // newModel.setValue(curDataset, forKey: "dataset")
-      //  curDataset.addModelObject(newModel)
+        //Copy Influences
+        for curNode : BNNode in curNodes {
+            var infsoned = [Int]()
+            let infs : [BNNode] = curNode.influences.allObjects as! [BNNode]
+            for inf : BNNode in infs{
+                var chk = 0
+                for chkNode : BNNode in curNodes {
+                    if (chkNode == inf){
+                        infsoned.append(chk)
+                    }
+                    chk += 1
+                }
+                
+            }
+            infstwod.append(infsoned)
+            
+        }
         
-        
+        var i = 0
+        for infsoned : [Int] in infstwod{
+            for thisinf in infsoned{
+                tempNodeArray[i].addInfluencesObject(tempNodeArray[thisinf])
+                tempNodeArray[thisinf].addInfluencedByObject(tempNodeArray[i])
+            }
+            i += 1
+        }
         
     }
+
 
 
     
-    do {
-        try self.moc.save()
-    } catch let error as NSError {
-        errorPtr.memory = error
-    }
 
     
     }
