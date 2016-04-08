@@ -80,7 +80,7 @@ extension BNNode {
             }
             
             
-            chk++
+            chk += 1
             if(chk > 1000){
                 return cl_float.NaN
             }
@@ -219,7 +219,7 @@ extension BNNode {
                 let fetch = try moc.executeFetchRequest(request)
                 
                 if(fetch.count < 1){
-                    return "Node: \(self.nodeLink.name). Traits to be counted must exceed 0."
+                    return "Node: \(self.nodeLink.name). No traits match the selected criterion."
                 }
                 
                 if(self.numericData == true){
@@ -240,7 +240,7 @@ extension BNNode {
                         var inside = 0
                         for thisValue in theValues {
                             if(Double(thisValue) > lowT && Double(thisValue) < highT){
-                                inside++
+                                inside += 1
                             }
                         }
                         
@@ -281,7 +281,7 @@ extension BNNode {
     func CPT(sender:AnyObject, infBy:[BNNode], ftft:[NSNumber] , depth:Int) -> cl_float{
         var cpt : cl_float = 1.0
         
-        //println("CPT: Node name \(self.name) at depth \(depth)")
+       // print("CPT: Node name \(self.nodeLink.name) at depth \(depth)")
         //for every input node
         let theInfluencedBy : [BNNode] = self.influencedBy.allObjects as! [BNNode]
         
@@ -304,7 +304,7 @@ extension BNNode {
                     return cl_float.NaN
                 }
                 
-                //println("fftft is \(ftft[pos!])")
+              //  print("fftft is \(ftft[pos!])")
                 if(ftft[pos!] == 1){//if true
                     return Float(self.cptFreq)
                 }
@@ -466,6 +466,7 @@ extension BNNode {
     }
     
     func getDataSubNames() -> [String] {
+
         var dataSubNames = [String]()
         
         let appDelegate : AppDelegate = NSApplication.sharedApplication().delegate as! AppDelegate
@@ -477,7 +478,7 @@ extension BNNode {
         
         let request = NSFetchRequest(entityName: "Trait")
         var predicate = NSPredicate()
-        
+
         
         switch(self.dataScope) {
         case 0:
@@ -490,6 +491,16 @@ extension BNNode {
                 
                 predicate = NSPredicate(format: "entry.dataset == %@ AND name == %@", curDataset, self.nodeLink.name)
             }
+            
+            else if (self.nodeLink.entity.name == "Structure"){ //Traits whose names match the name of this structure
+                
+                predicate = NSPredicate(format: "entry.dataset == %@ AND name == %@", curDataset, self.nodeLink.name)
+            }
+            
+            else {
+                return dataSubNames
+            }
+            
             
         case 1:
             
@@ -505,6 +516,15 @@ extension BNNode {
                 
             }
             
+            else if (self.nodeLink.entity.name == "Structure"){ 
+                
+                predicate = NSPredicate(format: "entry.structure == %@ AND name == %@", self.nodeLink, self.dataName)
+            }
+                
+            else {
+                return dataSubNames
+            }
+            
         case 2:
             
             if(self.nodeLink.entity.name == "Entry"){ //take this entry's children and look at it's children
@@ -513,13 +533,15 @@ extension BNNode {
                 
             }
                 
-            else if (self.nodeLink.entity.name == "Trait"){ //traits cannot have children
-                
+            else { //traits and structures cannot have children
+
+                return dataSubNames
             }
             
             
         default:
-            dataSubNames = [String]()
+
+            return dataSubNames
             
         }
         
