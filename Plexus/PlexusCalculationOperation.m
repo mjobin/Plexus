@@ -257,7 +257,7 @@ static void *ProgressObserverContext = &ProgressObserverContext;
     cl_int* infnet = malloc(sizeof(cl_int)*INSize*(maxCPTSize*2)); //size of whole list twice on x (influences and influenced by) and once on y (each node)
     
     NSLog(@"infnet size: %lu", (sizeof(cl_int[INSize*(maxCPTSize*2)])));
-    NSLog(@"But %lu nodes if we use the maximum input/output size of any node", maxCPTSize);
+    NSLog(@"But %lu nodes (maxCPTSize) if we use the maximum input/output size of any node.", maxCPTSize);
     unsigned long sparseCPTsize = pow((double) 2.0, maxCPTSize);
     NSLog(@"And %lu CPT entries per node", sparseCPTsize);
     NSLog(@"So %lu CPT entries for all nodes", (sparseCPTsize*INSize));
@@ -265,7 +265,7 @@ static void *ProgressObserverContext = &ProgressObserverContext;
     
     
     cl_float* cptnet = malloc(sizeof(cl_float)*INSize*sparseCPTsize);
-    // NSLog(@"cptnet size: %lu", sizeof(cl_float[INSize*sparseCPTsize]));
+     NSLog(@"cptnet size: %lu", sizeof(cl_float[INSize*sparseCPTsize]));
     
     
     int xoffset = 0;
@@ -295,7 +295,7 @@ static void *ProgressObserverContext = &ProgressObserverContext;
     //Construct influences, CPT, fequencies
     //NSLog(@"construct influences");
     for (BNNode * fNode in initialNodes) {
-       //  NSLog(@"***************Node: %@", [[fNode nodeLink] name]);
+        // NSLog(@"***************Node: %@", [[fNode nodeLink] name]);
         
 
         //add freq
@@ -306,6 +306,7 @@ static void *ProgressObserverContext = &ProgressObserverContext;
         
         NSMutableOrderedSet * theInfluencedBy = [fNode recursiveInfBy:self infBy:[[NSMutableOrderedSet alloc] init] depth:0];
 
+        
         
         
         thisCPT =0;
@@ -320,7 +321,7 @@ static void *ProgressObserverContext = &ProgressObserverContext;
         
         leftOver = maxCPTSize-thisCPT;
         
-        for(i=0; i<=leftOver; i++){
+        for(i=0; i<leftOver; i++){
             //add dummy entries to pad out
             infnet[(xoffset+thisCPT)] = -1;
             thisCPT++;
@@ -343,7 +344,7 @@ static void *ProgressObserverContext = &ProgressObserverContext;
         
         leftOver = maxCPTSize-thisCPT;
         
-        for(i=0; i<=leftOver; i++){
+        for(i=0; i<leftOver; i++){
             //add dummy entries to pad out
             infnet[(xoffset+thisCPT)] = -1;
             thisCPT++;
