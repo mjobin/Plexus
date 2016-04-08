@@ -44,7 +44,7 @@ class PlexusEntryViewController: NSViewController, NSOutlineViewDelegate, NSOutl
         
         
         
-        let sortDescriptor = NSSortDescriptor(key: "name", ascending: true, selector: "localizedStandardCompare:")
+        let sortDescriptor = NSSortDescriptor(key: "name", ascending: true, selector: #selector(NSString.localizedStandardCompare(_:)))
         entryTreeController.sortDescriptors = [sortDescriptor]
 
 
@@ -69,13 +69,13 @@ class PlexusEntryViewController: NSViewController, NSOutlineViewDelegate, NSOutl
         
             let sd = entryTreeController.sortDescriptors[0]
 
-            let sortDescriptor = NSSortDescriptor(key: "name", ascending: !sd.ascending, selector: "localizedStandardCompare:")
+            let sortDescriptor = NSSortDescriptor(key: "name", ascending: !sd.ascending, selector: #selector(NSString.localizedStandardCompare(_:)))
 
             entryTreeController.sortDescriptors = [sortDescriptor]
             
         }
         else {
-            let sortDescriptor = NSSortDescriptor(key: "name", ascending: true, selector: "localizedStandardCompare:") //This should not happen, but default to true just in case sortDescriptiors empty
+            let sortDescriptor = NSSortDescriptor(key: "name", ascending: true, selector: #selector(NSString.localizedStandardCompare(_:))) //This should not happen, but default to true just in case sortDescriptiors empty
             
             entryTreeController.sortDescriptors = [sortDescriptor]
         }
