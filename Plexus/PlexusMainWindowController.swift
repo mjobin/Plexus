@@ -288,7 +288,6 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
             
 
             
-            
             dispatch_async(dispatch_get_global_queue(priority, 0)) {
                 
                 
@@ -303,7 +302,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                 var inDataset : Dataset!
                 if(av.state == 0){//new dataset
                     inDataset = Dataset(entity: NSEntityDescription.entityForName("Dataset", inManagedObjectContext: inMOC)!, insertIntoManagedObjectContext: inMOC)
-                    inDataset.setValue(inFile!.lastPathComponent, forKey: "name")
+                    inDataset.setValue(inFile!.URLByDeletingPathExtension?.lastPathComponent, forKey: "name")
                 }
                 else {// the
                     let curDatasets : [Dataset] = self.datasetController.selectedObjects as! [Dataset]
@@ -765,15 +764,17 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         let err : NSErrorPointer = nil
         let priority = DISPATCH_QUEUE_PRIORITY_DEFAULT
         
-        //Exporting current daatset only
+        //Exporting current dataset only
         let curDatasets : [Dataset] = self.datasetController.selectedObjects as! [Dataset]
         let curDataset : Dataset = curDatasets[0]
         
         let curModels : [Model] = self.mainSplitViewController.modelTreeController?.selectedObjects as! [Model]
         let curModel : Model = curModels[0]
         
+        let defaults = NSUserDefaults.standardUserDefaults()
+        let pTypes = defaults.arrayForKey("PriorTypes") as! [String]
+        
         let sv:NSSavePanel = NSSavePanel()
-        //sv.allowedFileTypes = ["csv"]
         sv.nameFieldStringValue = curDataset.name + "-" + curModel.name
         
         
@@ -783,7 +784,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         if (result == NSFileHandlingPanelOKButton) {
            
             let baseFile  = sv.URL?.absoluteString
-            let outFileName = baseFile! + ".csv"
+            let outFileName = baseFile! + "-data.csv"
 
             let outURL = NSURL(string: outFileName)
             
@@ -915,40 +916,59 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                     self.workLabel.stringValue = "Exporting Nodes..."
                     
                     i = 0
+                    
+                    let nodeTXTFileName = baseFile! + "-nodes.csv"
+                    let nodeTXTURL = NSURL(string: nodeTXTFileName)
+                    var outText : String = String()
 
                     for node in self.mainSplitViewController.modelDetailViewController?.nodesController.arrangedObjects as! [BNNode] {
                         self.mainSplitViewController.modelDetailViewController?.nodesController.setSelectionIndex(i) //FIXME wont work on a background thread
-                        
-                        
-                        
-                        //create a compound of the outFile name and node name
-                        let nodeTXTFileName = baseFile! + "-" + node.nodeLink.name + ".csv"
-                        let nodeTXTURL = NSURL(string: nodeTXTFileName)
 
                         
+                        outText += "********\n"
                         
-                        var outText : String = String()
+                        outText += "Node:,"
                         outText += node.nodeLink.name
                         outText += "\n"
 
-                            outText += "cptFreq,"
-                            outText += String(node.cptFreq)
-                            outText += "\n"
+                        outText += "CPT Frequency,"
+                        outText += String(node.cptFreq)
+                        outText += "\n"
                         
-                        if node.priorArray != nil {
-                            outText += "prior,"
-                            let priorArray = NSKeyedUnarchiver.unarchiveObjectWithData(node.valueForKey("priorArray") as! NSData) as! [Int]
-
+                        let infBy = node.influencedBy.count
+                        if (infBy < 1) { //independent node, print prior info
                             
-                            for thisPrior in priorArray {
-                                outText += String(thisPrior)
-                                outText += ","
-                            }
+                            outText += "Prior Type,"
+                            outText += pTypes[node.priorDistType as Int]
+                            //outText += String(node.priorDistType)
                             outText += "\n"
+                            
+                            outText += "Prior V1,"
+                            outText += String(node.priorV1)
+                            outText += "\n"
+                            
+                            outText += "Prior V2,"
+                            outText += String(node.priorV2)
+                            outText += "\n"
+                            
+                            if node.priorArray != nil {
+                                outText += "Prior Distribution,"
+                                let priorArray = NSKeyedUnarchiver.unarchiveObjectWithData(node.valueForKey("priorArray") as! NSData) as! [Int]
+                                
+                                
+                                for thisPrior in priorArray {
+                                    outText += String(thisPrior)
+                                    outText += ","
+                                }
+                                outText += "\n"
+                                
+                            }
                             
                         }
+                        
+
                         if node.postArray != nil {
-                            outText += "posterior,"
+                            outText += "Posterior Distribution,"
                             let postArray = NSKeyedUnarchiver.unarchiveObjectWithData(node.valueForKey("postArray") as! NSData) as! [Int]
 
                             
@@ -959,6 +979,10 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                             outText += "\n"
                             
                         }
+                        
+                        outText += "\n"
+                        
+                        
                         do {
                             try outText.writeToURL(nodeTXTURL!, atomically: true, encoding: NSUTF8StringEncoding)
                         }
@@ -974,44 +998,52 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
 
                         
                         let graphView = self.mainSplitViewController.modelDetailViewController?.graphView
-                        graphView?.frame = NSMakeRect(0, 0, 792, 612)
+                        graphView?.frame = NSMakeRect(0, 0, 800, 600)
                         
                         
                         let graph = self.mainSplitViewController.modelDetailViewController?.graph
                         
-                        graph?.frame = NSMakeRect(0, 0, 792, 612)
-                        /*
-                        let titleStyle = CPTMutableTextStyle()
-                        titleStyle.fontName = "SanFrancisco"
-                        titleStyle.fontSize = 18.0
-                        titleStyle.color = CPTColor.blackColor()
-                        graph?.titleTextStyle = titleStyle
-
-                        
-                        graph?.title = node.nodeLink.name
-                        
+                        graph?.frame = NSMakeRect(0, 0, 800, 600)
                         
                         graph?.paddingTop = 10.0
                         graph?.paddingBottom = 10.0
                         graph?.paddingLeft = 10.0
                         graph?.paddingRight = 10.0
                         
-                        let plotSpace : CPTXYPlotSpace = graph?.defaultPlotSpace as! CPTXYPlotSpace
-                        plotSpace.allowsUserInteraction = false
+
+                        
+
+
+                        
+                        /*
+
                         
                         
-                        let xRange = plotSpace.xRange.mutableCopy() as! CPTMutablePlotRange
-                        let yRange = plotSpace.yRange.mutableCopy() as! CPTMutablePlotRange
+                         let titleStyle = CPTMutableTextStyle()
+                         titleStyle.fontName = "SanFrancisco"
+                         titleStyle.fontSize = 18.0
+                         titleStyle.color = CPTColor.blackColor()
+                         graph?.titleTextStyle = titleStyle
+                         graph?.title = node.nodeLink.name
+                         print ("title \(graph?.title)")
                         
-                        xRange.length = 1.1
-                        yRange.length = 1.1
+                         let plotSpace : CPTXYPlotSpace = graph?.defaultPlotSpace as! CPTXYPlotSpace
+                         plotSpace.allowsUserInteraction = false
+                         
+                         
+                         let xRange = plotSpace.xRange.mutableCopy() as! CPTMutablePlotRange
+                         let yRange = plotSpace.yRange.mutableCopy() as! CPTMutablePlotRange
+                         
+                         xRange.length = 1.1
+                         yRange.length = 1.1
+                         
+                         
+                         plotSpace.xRange = xRange
+                         plotSpace.yRange = yRange
+
+                                                 plotSpace.scaleToFitPlots(graph?.allPlots())
                         
                         
-                        plotSpace.xRange = xRange
-                        plotSpace.yRange = yRange
-                        plotSpace.scaleToFitPlots(graph?.allPlots())
-                        
-                        print ("title \(graph?.title)")
                         
                         
                         for plot in (graph?.allPlots())! {
