@@ -111,7 +111,6 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, CP
         
         
         let titleStyle = graph.titleTextStyle!.mutableCopy() as! CPTMutableTextStyle
-       // titleStyle.fontName = "HelveticaNeue-Bold"
         titleStyle.fontName = "SanFrancisco"
         titleStyle.fontSize = 18.0
         titleStyle.color = CPTColor.whiteColor()
@@ -168,7 +167,8 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, CP
         priorLineStyle.lineColor = CPTColor.lightGrayColor()
         priorPlot.dataLineStyle = priorLineStyle
         
-        priorPlot.interpolation = CPTScatterPlotInterpolation.Linear
+        //priorPlot.interpolation = CPTScatterPlotInterpolation.Linear
+        priorPlot.interpolation = CPTScatterPlotInterpolation.Stepped
         
         priorPlot.dataSource = self
         priorPlot.delegate = self
@@ -285,6 +285,22 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, CP
                     priorV2Slider.minValue = 0.0
                     priorV2Slider.maxValue = 1.0
                     
+                    priorPlot.interpolation = CPTScatterPlotInterpolation.Linear
+                   
+                case 2: // gaussian
+                    
+                    priorV1Slider.hidden = false
+                    priorV1Field.hidden = false
+                    priorV2Slider.hidden = false
+                    priorV2Field.hidden = false
+                    priorV1Slider.minValue = 0.0
+                    priorV1Slider.maxValue = 1.0
+                    priorV2Slider.minValue = 0.0
+                    priorV2Slider.maxValue = 1.0
+                    
+                    priorPlot.interpolation = CPTScatterPlotInterpolation.Curved
+                    
+                    
                 case 3: //beta
                     priorV1Slider.hidden = false
                     priorV1Field.hidden = false
@@ -295,6 +311,11 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, CP
                     priorV2Slider.minValue = 0.0
                     priorV2Slider.maxValue = 10.0
                     
+                    priorPlot.interpolation = CPTScatterPlotInterpolation.Curved
+                    
+
+                    
+                    
                 case 4: //gamma
                     priorV1Slider.hidden = false
                     priorV1Field.hidden = false
@@ -304,6 +325,8 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, CP
                     priorV1Slider.maxValue = 10.0
                     priorV2Slider.minValue = 0.0
                     priorV2Slider.maxValue = 10.0
+                    
+                    priorPlot.interpolation = CPTScatterPlotInterpolation.Curved
                     
                     
                 case 5: //priorpost
@@ -325,6 +348,9 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, CP
                     priorV1Slider.maxValue = 1.0
                     priorV2Slider.minValue = 0.0
                     priorV2Slider.maxValue = 1.0
+                    
+                    priorPlot.interpolation = CPTScatterPlotInterpolation.Histogram
+                    
                 }
 
                 
