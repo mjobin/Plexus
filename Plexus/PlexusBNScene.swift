@@ -451,8 +451,6 @@ class PlexusBNScene: SKScene {
 
                 for thisInfluenced : BNNode in theInfluenced as [BNNode] {
 
-                    
-                    //FIXME this is a stupid way to do this
                     var infNode : PlexusBNNode!
                     
                     self.enumerateChildNodesWithName("bnNode", usingBlock: { thatNode, stop in
@@ -465,28 +463,24 @@ class PlexusBNScene: SKScene {
                         }
                         
                     })
-                    
-                    
-                    
+
                     if (idNode != nil && infNode != nil) {
                        
+
+                        if(idNode.position.x != infNode.position.x && idNode.position.y != infNode.position.y){ //don't bother drawing the line if nodes right on top of each other. Causes Core Graphics to complain
+                        
+                            let arrowPath = CGPath.bezierPathWithArrowFromPoint(CGPointMake(idNode.position.x,idNode.position.y), endPoint: CGPointMake(infNode.position.x,infNode.position.y), tailWidth: 2, headWidth: 10, headLength: 10, d1: 0.25, d2: 0.75)
+                            
+                            
+                            let joinLine = SKShapeNode(path: arrowPath)
+                            joinLine.name = "nodeLine"
+                            joinLine.zPosition = -1
+                            joinLine.fillColor = NSColor.whiteColor()
+                            
+                            self.addChild(joinLine)
+                        }
                         
 
-                        
-                        let arrowPath = CGPath.bezierPathWithArrowFromPoint(CGPointMake(idNode.position.x,idNode.position.y), endPoint: CGPointMake(infNode.position.x,infNode.position.y), tailWidth: 2, headWidth: 10, headLength: 10, d1: 0.25, d2: 0.75)
-                        
-                        
-                        let joinLine = SKShapeNode(path: arrowPath)
-                        joinLine.name = "nodeLine"
-                        joinLine.zPosition = -1
-                        joinLine.fillColor = NSColor.whiteColor()
-                        
-                        
-                        
-                        self.addChild(joinLine)
-                        
-                        
-                        
 
                     }
                     
