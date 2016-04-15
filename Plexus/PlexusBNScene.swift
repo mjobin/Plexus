@@ -61,12 +61,12 @@ class PlexusBNScene: SKScene {
 
         
     }
-    
+  /*
     override func didChangeSize(oldSize: CGSize) {
         
         self.redrawNodes()
     }
-
+*/
     
     override func mouseDown(theEvent: NSEvent) {
 
@@ -264,52 +264,14 @@ class PlexusBNScene: SKScene {
         })
         
      
+        
+        
         //reset startnode
         startNode = self
         releasedNode = self
     }
     
     
-    /*
-    override func didSimulatePhysics() {
-        
-        //remove all existing lines
-    
-        self.enumerateChildNodesWithName("nodeLine", usingBlock: { thisLine, stop in
-            thisLine.removeFromParent()
-        })
-
-
-
-  
-        self.enumerateChildNodesWithName("bnNode", usingBlock: { thisKid, stop in
-            
-            var shortestDistance = self.size.width
-            
-            self.enumerateChildNodesWithName("bnNode", usingBlock: { thatKid, stop in
-                if(!thisKid.isEqualTo(thatKid)){
-                    
-                   
-
-                    
-                    
-                    
-                    
-                    
-                    
-                }
-                
-            })
-            
-
-            
-        })
-        
-
-        
-        
-    }
-*/
     
     
     
@@ -379,8 +341,11 @@ class PlexusBNScene: SKScene {
     
     override func update(currentTime: CFTimeInterval) {
         
-        //var inset : CGRect = CGRectMake(self.frame.width*0.05, self.frame.height*0.05, self.frame.width*0.9, self.frame.height*0.9)
-        let inset : CGRect = CGRectMake(25, 25, self.frame.width-50, self.frame.height-50)
+
+        let inset : CGRect = CGRectMake(25, 25, self.size.width-50, self.size.height-50)
+        
+       // let inset : CGRect = CGRectMake(25, 25, self.frame.width-50, self.frame.height-50)
+        
         let borderBody = SKPhysicsBody(edgeLoopFromRect: inset)
         self.physicsBody = borderBody
         
@@ -395,6 +360,24 @@ class PlexusBNScene: SKScene {
         })
         
 
+        
+        var outOfBounds = false
+        self.enumerateChildNodesWithName("bnNode", usingBlock: { thisNode, stop in
+            let idNode : PlexusBNNode = thisNode as! PlexusBNNode
+        
+            if(idNode.position.x < 0 || idNode.position.y < 0 || idNode.position.x > self.size.width || idNode.position.y  > self.size.height) {
+                
+                outOfBounds = true
+            }
+
+        })
+        
+        if (outOfBounds == true){
+            self.reloadData()
+        }
+        
+        
+        
         //make sure all listed nodes are drawn
         
         if(nodesController != nil ){
@@ -557,6 +540,8 @@ class PlexusBNScene: SKScene {
             thisKid.physicsBody?.applyImpulse(self.vectorFromRadians(angle))
             
         })
+        
+        //redrawNodes()
   
         //Post message in nodes area if no nodes yet
         
@@ -595,41 +580,45 @@ class PlexusBNScene: SKScene {
 
         
     }
-    
+  
+    /*
     func redrawNodes() {
-
+        
+    
         self.enumerateChildNodesWithName("bnNode", usingBlock: { thisNode, stop in
             let idNode : PlexusBNNode = thisNode as! PlexusBNNode
-            
+
             if(idNode.position.x < 25){
                 idNode.position.x = 25
-                //println("too left")
+                print("too left")
                 
             }
             if(idNode.position.y < 25){
                 idNode.position.y = 25
-               // println("too low")
+                print("too low")
                 
             }
             
             if((idNode.position.x + idNode.frame.width) > self.frame.width-25){
                 idNode.position.x = (self.frame.width-25 - idNode.frame.width)
-                // println("too right")
+                 print("too right")
                 
             }
             if((idNode.position.y + idNode.frame.height) > self.frame.height-25){
                 idNode.position.y = (self.frame.height-25 - idNode.frame.height)
-             //   println("too high and y position now \(idNode.position.y) where height is \(self.frame.height)")
+                print("too high")
+             
             }
-            
-            
+ 
+ 
             
         })
         
+        self.reloadDataWPos()
         
     }
     
-    
+    */
 
     
     func makeNode(inNode : BNNode, inPos: CGPoint){
