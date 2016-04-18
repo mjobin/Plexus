@@ -151,7 +151,6 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
             
             var postCount = [Int](count: 101, repeatedValue: 0)
             
- 
             fNode.setValue(blankData, forKey: "postCount")
             fNode.setValue(blankData, forKey: "postArray")
             
@@ -168,11 +167,8 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                 
                 
                 if(gNode == gNode && gNode >= 0.0 && gNode <= 1.0) {//fails if nan
-                    
-                    let whut = (Int)(floor(gNode/0.01))
-                    
-                    postCount[whut] += 1
-                    
+                    let x = (Int)(floor(gNode/0.01))
+                    postCount[x] += 1
                 }
                     
                     
@@ -645,6 +641,8 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
             
             self.progInd.indeterminate = true
             self.progInd.startAnimation(self)
+            self.workLabel.stringValue = "Saving..."
+
     
             if(operr == nil){
                 let resultNodes : NSMutableArray = op.getResults(self)
@@ -652,10 +650,24 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                 let blankArray = [NSNumber]()
                 let blankData = NSKeyedArchiver.archivedDataWithRootObject(blankArray)
                 
+                var bins = Int(curModel.runstot.intValue/100)
+                if(bins < 100) {
+                    bins = 100
+                }
+                if(bins>100000){
+                    bins = 100000
+                }
+                
+                
+                let binQuotient = 1.0/Double(bins)
+            
+                
                 var fi = 0
                 for fNode in resultNodes {
+                
+                   // print("\n\n\n\n\n\n\n\n\n\n\n\n************\(fi)")
                     
-                    var postCount = [Int](count: 101, repeatedValue: 0)
+                    var postCount = [Int](count: bins, repeatedValue: 0)
                     
 
                     
@@ -677,9 +689,9 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                        
                         if(gNode == gNode && gNode >= 0.0 && gNode <= 1.0) {//fails if nan
                             
-                            let whut = (Int)(floor(gNode/0.01))
-
-                            postCount[whut] += 1
+                            let x = (Int)(floor(gNode/binQuotient))
+                           // print ("result: \(gNode)  bin:\(x)")
+                            postCount[x] += 1
 
                         }
                         
@@ -693,10 +705,15 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                     
                     let archivedPostCount = NSKeyedArchiver.archivedDataWithRootObject(postCount)
                     inNode.setValue(archivedPostCount, forKey: "postCount")
-                    let archivedPostArray = NSKeyedArchiver.archivedDataWithRootObject(fline)
-                    inNode.setValue(archivedPostArray, forKey: "postArray")
                     
+                    
+                    let defaults = NSUserDefaults.standardUserDefaults()
+                    let preserveRO = defaults.valueForKey("preserveRawOutput") as! Int
 
+                    if(preserveRO == 1){
+                        let archivedPostArray = NSKeyedArchiver.archivedDataWithRootObject(fline)
+                        inNode.setValue(archivedPostArray, forKey: "postArray")
+                    }
 
                     fi += 1
                     
@@ -940,7 +957,6 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                             
                             outText += "Prior Type,"
                             outText += pTypes[node.priorDistType as Int]
-                            //outText += String(node.priorDistType)
                             outText += "\n"
                             
                             outText += "Prior V1,"
@@ -966,10 +982,32 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                             
                         }
                         
+                        if node.postCount != nil {
+                            outText += "Posterior Count Bin,"
+                            let postCount = NSKeyedUnarchiver.unarchiveObjectWithData(node.valueForKey("postCount") as! NSData) as! [Int]
+                            let postBins = Double(postCount.count)
+                            
+                            var binc = 0.0
+                            for _ in postCount {
+                                outText += String(binc/postBins)
+                                outText += ","
+                                binc = binc + 1
+                            }
+                            outText += "\n"
+                            outText += "Posterior Count,"
+                            for thisPost in postCount {
+                                outText += String(thisPost)
+                                outText += ","
+                            }
+                            outText += "\n"
 
+                        }
+                        
                         if node.postArray != nil {
+                            
+                            
                             outText += "Posterior Distribution,"
-                            let postArray = NSKeyedUnarchiver.unarchiveObjectWithData(node.valueForKey("postArray") as! NSData) as! [Int]
+                            let postArray = NSKeyedUnarchiver.unarchiveObjectWithData(node.valueForKey("postArray") as! NSData) as! [Double]
 
                             
                             for thisPost in postArray {
