@@ -622,6 +622,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         
         dispatch_async(dispatch_get_global_queue(priority, 0)) {
             
+            var starttime = NSDate.timeIntervalSinceReferenceDate();
             
             self.progSheet = self.progSetup(self)
             self.maxLabel.stringValue = String(curModel.runstot)
@@ -650,14 +651,11 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                 let blankArray = [NSNumber]()
                 let blankData = NSKeyedArchiver.archivedDataWithRootObject(blankArray)
                 
-                var bins = Int(curModel.runstot.intValue/100)
+                var bins = Int(pow(Double(curModel.runstot), 0.5))
+                
                 if(bins < 100) {
                     bins = 100
                 }
-                if(bins>100000){
-                    bins = 100000
-                }
-                
                 
                 let binQuotient = 1.0/Double(bins)
             
@@ -769,8 +767,9 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
 
         
 
-
-            
+            var endtime = NSDate.timeIntervalSinceReferenceDate();
+            var interval = endtime-starttime
+            print("took \(interval) seconds");
         }
         
        // print("End calcuilate fxn reached")
