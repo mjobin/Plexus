@@ -18,6 +18,7 @@
     cl_device_id device_ids[256];
     cl_command_queue cl_queues[256];
     cl_ulong gMemSize, lMemSize, cMemSize;
+    cl_device_fp_config fpconfig;
     size_t returned_size;
     cl_context       context;
 
