@@ -71,7 +71,7 @@ extension BNNode {
             case 5: //sample from the prioarray
                 let priorArray = NSKeyedUnarchiver.unarchiveObjectWithData(self.valueForKey("priorArray") as! NSData) as! [cl_float]
                 let randomIndex = Int(arc4random_uniform(UInt32(priorArray.count)))
-                //println("sample from piorarray \(priorArray[randomIndex])")
+                
                 pVal = priorArray[randomIndex]
                 
                 
@@ -277,6 +277,7 @@ extension BNNode {
     }
     
     
+
     
     func CPT(sender:AnyObject, infBy:[BNNode], ftft:[NSNumber] , depth:Int) -> cl_float{
         var cpt : cl_float = 1.0
@@ -341,6 +342,10 @@ extension BNNode {
         return infBy
     }
     
+    func infBy(sender:AnyObject) -> NSArray {
+        return self.influencedBy.allObjects as! [BNNode]
+    }
+    
     func recursiveInfs(sender:AnyObject, infs:NSMutableOrderedSet , depth:Int) -> NSMutableOrderedSet {
         
         if(depth > 0){
@@ -362,6 +367,9 @@ extension BNNode {
     }
     
     
+    func infs(sender:AnyObject) -> NSArray {
+        return self.influences.allObjects as! [BNNode]
+    }
     
     
     
