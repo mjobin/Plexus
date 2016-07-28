@@ -22,8 +22,12 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
     @IBOutlet var mainToolbar : NSToolbar!
     @IBOutlet var datasetController : NSArrayController!
     @IBOutlet var testprog : NSProgressIndicator!
-    //var queue: dispatch_queue_t = dispatch_queue_create("Plexus I/O Queue", DISPATCH_QUEUE_CONCURRENT)
-    //var group : dispatch_group_t = dispatch_group_create()
+
+    
+    let priority = DISPATCH_QUEUE_PRIORITY_DEFAULT
+    
+    let calcop = PlexusCalculationOperation()
+
     
     var progSheet : NSWindow!
     var progInd : NSProgressIndicator!
@@ -84,7 +88,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         }
 
 
-        
+
         
         
     }
@@ -109,6 +113,10 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         
         
       //  NSNotificationCenter.defaultCenter().addObserver(self, selector: "mocDidChange:", name: NSManagedObjectContextDidSaveNotification, object: nil)
+        
+        dispatch_async(dispatch_get_global_queue(priority, 0)) {
+            let calcerr = self.calcop.clCompile();
+        }
         
         
     }
@@ -252,7 +260,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
     
     @IBAction func  importCSV(x:NSToolbarItem){
 
-        let priority = DISPATCH_QUEUE_PRIORITY_DEFAULT
+
         
         
         
@@ -622,7 +630,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         
         dispatch_async(dispatch_get_global_queue(priority, 0)) {
             
-            var starttime = NSDate.timeIntervalSinceReferenceDate();
+            let starttime = NSDate.timeIntervalSinceReferenceDate();
             
             self.progSheet = self.progSetup(self)
             self.maxLabel.stringValue = String(curModel.runstot)
@@ -634,11 +642,11 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
 
             
         
-            let op = PlexusCalculationOperation(nodes: nodesForCalc, withRuns: curModel.runsper, withBurnin: curModel.burnins, withComputes: curModel.runstot)
+            //let op = PlexusCalculationOperation(nodes: nodesForCalc, withRuns: curModel.runsper, withBurnin: curModel.burnins, withComputes: curModel.runstot)
 
             var operr: NSError?
             
-            operr = op.calc(self.progInd, withCurLabel: self.curLabel)
+            operr = self.calcop.calc(self.progInd, withCurLabel: self.curLabel, withNodes: nodesForCalc, withRuns: curModel.runsper, withBurnin: curModel.burnins, withComputes: curModel.runstot)
             
             self.progInd.indeterminate = true
             self.progInd.startAnimation(self)
@@ -646,7 +654,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
 
     
             if(operr == nil){
-                let resultNodes : NSMutableArray = op.getResults(self)
+                let resultNodes : NSMutableArray = self.calcop.getResults(self)
                 
                 let blankArray = [NSNumber]()
                 let blankData = NSKeyedArchiver.archivedDataWithRootObject(blankArray)
@@ -659,6 +667,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                 
                 let binQuotient = 1.0/Double(bins)
             
+                bins = bins + 1 //one more bin for anything that is a 1.0
                 
                 var fi = 0
                 for fNode in resultNodes {
@@ -688,7 +697,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                         if(gNode == gNode && gNode >= 0.0 && gNode <= 1.0) {//fails if nan
                             
                             let x = (Int)(floor(gNode/binQuotient))
-                           // print ("result: \(gNode)  bin:\(x)")
+                            //print ("result: \(gNode)  bin:\(x)")
                             postCount[x] += 1
 
                         }
@@ -767,9 +776,9 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
 
         
 
-            var endtime = NSDate.timeIntervalSinceReferenceDate();
-            var interval = endtime-starttime
-            print("took \(interval) seconds");
+            let endtime = NSDate.timeIntervalSinceReferenceDate();
+            let interval = endtime-starttime
+            print("Calculation took \(interval) seconds");
         }
         
        // print("End calcuilate fxn reached")

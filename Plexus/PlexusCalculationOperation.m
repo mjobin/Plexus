@@ -16,41 +16,140 @@ static void *ProgressObserverContext = &ProgressObserverContext;
 - (id)init
 {
     self = [super init];
+
+
+    NSLog(@"PlexusCalcOp initd");
+    
+    err = clGetDeviceIDs(NULL, CL_DEVICE_TYPE_ALL, sizeof(device_ids), device_ids, &num_devices);
+    if(err || num_devices <= 0)
+    {
+
+    }
+    
+    //create context
+    context = clCreateContext(0, num_devices, device_ids, NULL, NULL, &err);
+    if(!context || err)
+    {
+        NSLog(@"Failed to create openCL context!");
+        return nil;
+    }
     
     return self;
     
 }
 
-- (id)initWithNodes:(NSArray *) inNodes withRuns:(NSNumber *) inRuns withBurnin:(NSNumber *) inBurnins withComputes:(NSNumber*) inComputes
+
+
+
+- (NSError *) clCompile
+
 {
-    self = [super init];
-    if (self) {
+
+    NSLog(@"BN compikle");
+    NSError * calcerr = nil;
+    
+
+    NSDictionary *kernelFail = @{//1002
+                                 NSLocalizedDescriptionKey: NSLocalizedString(@"OpenCL", nil),
+                                 NSLocalizedFailureReasonErrorKey: NSLocalizedString(@"The OpenCL Kernel has failed to build or enqueue", nil),
+                                 NSLocalizedRecoverySuggestionErrorKey: NSLocalizedString(@"Restart the program to reset", nil)
+                                 };
+    
+    
+    
+    
+    NSMutableData *sourceData = [[NSMutableData alloc] init];
+    
+    
+    //Load the kernel
+    NSData *bnData = [NSData dataWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"bn_kernel" ofType:@"cl"]];
+    
+    
+    [sourceData appendData:bnData];
+    
+    const char *source = [sourceData bytes];
+    size_t length = [sourceData length];
+    
+
+
+    for(int dev = 0; dev < num_devices; dev++){
         
-        //How many devices do we have locally?
-        
-        
-        initialNodes = inNodes;
-        runs =inRuns;
-        burnins = inBurnins;
-        computes = inComputes;
-        resultNodes = [NSMutableArray array];
-        
-        
-        NSLog(@"BN calc operation loaded");
-        
-        
-        
-        
-        
-        return self;
+        char device_name[200];
+        err = clGetDeviceInfo(device_ids[dev], CL_DEVICE_NAME, sizeof(device_name), device_name, NULL);
+        if(err == CL_SUCCESS)
+        {
+            NSLog(@"%s reporting.", device_name);
+        }
     }
     
-    return nil;
+        bn_program = clCreateProgramWithSource(context, 1, &source, &length, &err);
+        if (!bn_program || err != CL_SUCCESS) {
+            NSLog(@"BN Calc: Fail to create OpenCL program object.");
+            calcerr = [NSError errorWithDomain:@"plexusCalc" code:1002 userInfo:kernelFail];
+            return calcerr;
+        }
+        
+        
+        //get resource directory
+        
+        NSString *bundlePath = [[NSBundle mainBundle] pathForResource:@"bn_kernel" ofType:@"cl"];
+        NSString *resourcesPath = [bundlePath stringByDeletingLastPathComponent];
+        
+        NSString *dashI = @"-I ";
+        NSString *clOptionsLine = [dashI stringByAppendingString:resourcesPath];
+        const char *ccCloptionsLine = [clOptionsLine cStringUsingEncoding:NSASCIIStringEncoding];
+        
+
+    
+    //Build executables
+
+    
+        err = clBuildProgram(bn_program, num_devices, device_ids, ccCloptionsLine, NULL, NULL);
+        if (err != CL_SUCCESS)
+        {
+            NSLog(@"BN Calc: Failed to build executable.");
+            
+            
+            size_t len;
+            
+            // declare a buffer to hold the build info
+            char buffer[10000];
+            
+            // get the details on the error, and store it in buffer
+            clGetProgramBuildInfo(
+                                  bn_program,              // the program object being queried
+                                  device_ids[0],            // the device for which the OpenCL code was built
+                                  CL_PROGRAM_BUILD_LOG, // specifies that we want the build log
+                                  sizeof(buffer),       // the size of the buffer
+                                  buffer,               // on return, holds the build log
+                                  &len);                // on return, the actual size in bytes of the
+            //  error data returned
+            NSLog(@"error code: %i", err);
+            NSString *buf = [NSString stringWithCString:buffer encoding:4];
+            NSLog(@"Build error message: %@", buf);
+            
+            NSDictionary *buildFail = @{
+                                        NSLocalizedDescriptionKey: NSLocalizedString(@"OpenCL", nil),
+                                        NSLocalizedFailureReasonErrorKey: NSLocalizedString(@"The OpenCL Kernel has failed to build as an executable.", nil),
+                                        NSLocalizedRecoverySuggestionErrorKey: NSLocalizedString(buf, nil)
+                                        };
+            calcerr = [NSError errorWithDomain:@"plexusCalc" code:1003 userInfo:buildFail];
+            return calcerr;
+        }
+    
+    
+    return calcerr;
 }
 
-- (NSError *)calc:(NSProgressIndicator *)progInd withCurLabel:(NSTextField *)curLabel
+- (NSError *)calc:(NSProgressIndicator *)progInd withCurLabel:(NSTextField *)curLabel withNodes:(NSArray *) inNodes withRuns:(NSNumber *) inRuns withBurnin:(NSNumber *) inBurnins withComputes:(NSNumber*) inComputes
 {
     NSError * calcerr = nil;
+    
+    initialNodes = inNodes;
+    runs =inRuns;
+    burnins = inBurnins;
+    computes = inComputes;
+    resultNodes = [NSMutableArray array];
     
     
     NSDate * startcalc = [NSDate date];
@@ -103,17 +202,15 @@ static void *ProgressObserverContext = &ProgressObserverContext;
     unsigned int i;
     cl_kernel bncalc_Kernel;
     
-    
+    /*
     
     NSUInteger devPref = [[[[NSUserDefaultsController sharedUserDefaultsController] values] valueForKey:@"hardwareDevice"] integerValue];
     //    NSLog(@"hw pref pref %lu", (unsigned long)devPref);
     
-    // calcerr = [NSError errorWithDomain:@"plexusCalc" code:1000 userInfo:errorInfo];
-    // return calcerr;
     
     if (devPref == 0) { //CPU
         err = clGetDeviceIDs(NULL, CL_DEVICE_TYPE_CPU, sizeof(device_ids), device_ids, &num_devices);
-        if(err || num_devices <= 0)
+        if(err || num_devices <= 0)bn
         {
             calcerr = [NSError errorWithDomain:@"plexusCalc" code:1000 userInfo:noOpenCL];
             return calcerr;
@@ -160,6 +257,7 @@ static void *ProgressObserverContext = &ProgressObserverContext;
         return nil;
     }
     
+    */
     
     double timedi = [startcalc timeIntervalSinceNow] * -1000.0;
     NSLog(@"Before getdeviceinfo %f since starting calc fxn", timedi);
@@ -327,24 +425,7 @@ static void *ProgressObserverContext = &ProgressObserverContext;
         prioroffset++;
     }
     
-    /*
-     cl_mem * clPriorCounts = malloc(sizeof(cl_mem)*INSize);
-     //Retrieve priorarray/count for those nodes using it
-     int ncount = 0;
-     for (BNNode * fNode in initialNodes) {
-     NSLog(@"***************Node: %@", [[fNode nodeLink] name]);
-     NSArray* priorCount = [NSKeyedUnarchiver unarchiveObjectWithData:[fNode valueForKey:(@"priorCount")]];
-     cl_int * clPriorCount = (cl_int *)malloc(sizeof(cl_int)*priorCount.count);
-     int pcount = 0;
-     for(NSNumber * priorCountElem in priorCount){
-     NSLog(@"count: %@", priorCountElem);
-     clPriorCount[pcount] = [priorCountElem intValue];
-     pcount++;
-     }
-     clPriorCounts[ncount] = clPriorCount;
-     ncount++;
-     }
-     */
+
     
     
     //Construct influences, CPT, fequencies
@@ -485,95 +566,23 @@ static void *ProgressObserverContext = &ProgressObserverContext;
     
     
     
-    
-    
-    
-    
-    NSMutableData *sourceData = [[NSMutableData alloc] init];
-    
-    
-    
-    
-    //END TEST of DIR
-    
-    //Load the kernel
-    NSData *bnData = [NSData dataWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"bn_kernel" ofType:@"cl"]];
-    
-    
-    [sourceData appendData:bnData];
-    
-    const char *source = [sourceData bytes];
-    size_t length = [sourceData length];
-    
-    
-    
-    
-    //  NSLog(@"SOURCE:/n%s",source);
-    
-    
-    cl_program bncalc_program = clCreateProgramWithSource(context, 1, &source, &length, &err);
-    if (!bncalc_program || err != CL_SUCCESS) {
-        NSLog(@"BN Calc: Fail to create OpenCL program object.");
-        calcerr = [NSError errorWithDomain:@"plexusCalc" code:1002 userInfo:kernelFail];
-        return calcerr;
+    if(bn_program == nil){
+        NSLog(@"No program, compile now.");
+        [self clCompile];
+    }
+    else {
+       NSLog(@"There is a program.");
     }
     
-    // NSLog(@"%lu",length);
-    
-    //get resource directory
-    
-    NSString *bundlePath = [[NSBundle mainBundle] pathForResource:@"bn_kernel" ofType:@"cl"];
-    NSString *resourcesPath = [bundlePath stringByDeletingLastPathComponent];
-    
-    NSString *dashI = @"-I ";
-    NSString *clOptionsLine = [dashI stringByAppendingString:resourcesPath];
-    //NSLog(@"opt: %@",clOptionsLine);
-    const char *ccCloptionsLine = [clOptionsLine cStringUsingEncoding:NSASCIIStringEncoding];
     
     
-    double timebp = [startcalc timeIntervalSinceNow] * -1000.0;
-    NSLog(@"Before buildprogram %f since starting calc fxn", timebp);
-    
-    //Build executable
-    //   err = clBuildProgram(bncalc_program, num_devices, device_ids, "-I .", NULL, NULL);
-    err = clBuildProgram(bncalc_program, num_devices, device_ids, ccCloptionsLine, NULL, NULL);
-    if (err != CL_SUCCESS)
-    {
-        NSLog(@"BN Calc: Failed to build executable.");
-        
-        
-        size_t len;
-        
-        // declare a buffer to hold the build info
-        char buffer[10000];
-        
-        // get the details on the error, and store it in buffer
-        clGetProgramBuildInfo(
-                              bncalc_program,              // the program object being queried
-                              device_ids[0],            // the device for which the OpenCL code was built
-                              CL_PROGRAM_BUILD_LOG, // specifies that we want the build log
-                              sizeof(buffer),       // the size of the buffer
-                              buffer,               // on return, holds the build log
-                              &len);                // on return, the actual size in bytes of the
-        //  error data returned
-        NSLog(@"error code: %i", err);
-        NSString *buf = [NSString stringWithCString:buffer encoding:4];
-        NSLog(@"Build error message: %@", buf);
-        
-        NSDictionary *buildFail = @{
-                                    NSLocalizedDescriptionKey: NSLocalizedString(@"OpenCL", nil),
-                                    NSLocalizedFailureReasonErrorKey: NSLocalizedString(@"The OpenCL Kernel has failed to build as an executable.", nil),
-                                    NSLocalizedRecoverySuggestionErrorKey: NSLocalizedString(buf, nil)
-                                    };
-        calcerr = [NSError errorWithDomain:@"plexusCalc" code:1003 userInfo:buildFail];
-        return calcerr;
-    }
+  
     
     
     double timeck = [startcalc timeIntervalSinceNow] * -1000.0;
     NSLog(@"Before createkernelr %f since starting calc fxn", timeck);
     
-    bncalc_Kernel = clCreateKernel(bncalc_program, "BNGibbs", &err);
+    bncalc_Kernel = clCreateKernel(bn_program, "BNGibbs", &err);
     if (!bncalc_Kernel || err != CL_SUCCESS) {
         NSLog(@"Couldn't find the function 'BNGibbs' in the program.");
         calcerr = [NSError errorWithDomain:@"plexusCalc" code:1002 userInfo:kernelFail];
@@ -588,12 +597,7 @@ static void *ProgressObserverContext = &ProgressObserverContext;
     size_t bnreadsizes[num_devices];
     size_t maxworksize = 0; //this will end up being the column size for the data
     
-    // cl_mem * infnetbufs = malloc(sizeof(cl_mem)*num_devices);
-    // cl_mem * cptnetbufs = malloc(sizeof(cl_mem)*num_devices);
-    // cl_mem * freqbufs = malloc(sizeof(cl_mem)*num_devices);
-    // cl_mem * priordisttypebufs = malloc(sizeof(cl_mem)*num_devices);
-    // cl_mem * priorv1bufs = malloc(sizeof(cl_mem)*num_devices);
-    // cl_mem * priorv2bufs = malloc(sizeof(cl_mem)*num_devices);
+
     
     
     double timecb = [startcalc timeIntervalSinceNow] * -1000.0;
@@ -1238,21 +1242,13 @@ static void *ProgressObserverContext = &ProgressObserverContext;
         clEnqueueUnmapMemObject(cl_queues[dev], priorv2buf, mappedPriorv2s,  0, NULL, NULL);
         
         
-        
-        //   clReleaseMemObject(infnetbufs[dev]);
-        //  clReleaseMemObject(cptnetbufs[dev]);
-        //  clReleaseMemObject(freqbufs[dev]);
-        //  clReleaseMemObject(priordisttypebufs[dev]);
-        //  clReleaseMemObject(priorv1bufs[dev]);
-        //  clReleaseMemObject(priorv2bufs[dev]);
-        
         clReleaseCommandQueue(cl_queues[dev]);
     }
     
     
-    clReleaseProgram(bncalc_program);
+   // clReleaseProgram(bncalc_program);
     clReleaseKernel(bncalc_Kernel);
-    clReleaseContext(context);
+   // clReleaseContext(context);
     
     
     

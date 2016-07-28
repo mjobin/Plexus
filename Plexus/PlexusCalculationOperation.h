@@ -17,6 +17,7 @@
     unsigned int num_devices;
     cl_device_id device_ids[256];
     cl_command_queue cl_queues[256];
+    cl_program bn_program;
     cl_ulong gMemSize, lMemSize, cMemSize, pMemSize;
     cl_device_fp_config fpconfig;
     size_t returned_size;
@@ -34,8 +35,9 @@
 
 }
 
-- (id)initWithNodes:(NSArray *) inNodes withRuns:(NSNumber *) inRuns withBurnin:(NSNumber *) inBurnins withComputes:(NSNumber*) inComputes;
-- (NSError *)calc:(NSProgressIndicator *)progInd withCurLabel:(NSTextField *)curLabel;
+//- (id)initWithNodes:(NSArray *) inNodes withRuns:(NSNumber *) inRuns withBurnin:(NSNumber *) inBurnins withComputes:(NSNumber*) inComputes;
+- (NSError *) clCompile;
+- (NSError *)calc:(NSProgressIndicator *)progInd withCurLabel:(NSTextField *)curLabel withNodes:(NSArray *) inNodes withRuns:(NSNumber *) inRuns withBurnin:(NSNumber *) inBurnins withComputes:(NSNumber*) inComputes;
 - (NSMutableArray *)getResults:(id)sender;
 
 
