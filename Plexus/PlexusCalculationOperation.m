@@ -886,9 +886,12 @@ static void *ProgressObserverContext = &ProgressObserverContext;
     worksize = gWorkItems;
     bnreadsize = worksize * [initialNodes count]; //All the memory needed to read one work units data
 
-    int numpasses = ([computes intValue] / worksize)+1; //The number of passes with this device needed to
-    
-    
+   // NSLog(@"computes %i  worksize %zu remainder %lu", [computes intValue], worksize, [computes intValue]%worksize);
+    int numpasses = ([computes intValue] / worksize); //The number of passes with this device needed to
+
+    if([computes intValue]%worksize != 0){
+        numpasses++;
+    }
     
    // size_t bnstatesize = worksize * [initialNodes count];
     
@@ -923,7 +926,7 @@ static void *ProgressObserverContext = &ProgressObserverContext;
        // NSLog(@"Top of ct loop %f since starting calc fxn", timer);
     
             
-        //   NSLog(@"******");
+    //    NSLog(@"******  tt is %i", tt);
         
         
         size_t thisWork = worksize;
@@ -1167,6 +1170,7 @@ static void *ProgressObserverContext = &ProgressObserverContext;
           //  NSLog(@"Bottom of ct loop %f since starting calc fxn", timer);
         
         
+        
     
 
         
@@ -1187,10 +1191,9 @@ static void *ProgressObserverContext = &ProgressObserverContext;
     
     
     
-    
+    int totcount = 0;
     for(int dev = 0; dev < numpasses; dev++) {
-        
-        
+
         int nodecount = 0;
         for(i=0;i<bnreadsize;i++){
           //   NSLog(@"Pass %i run %i: %@ goes into node %i" ,dev, i, [NSNumber numberWithFloat:bnresultsarrays[dev][i]], nodecount);
@@ -1208,7 +1211,11 @@ static void *ProgressObserverContext = &ProgressObserverContext;
             if(nodecount >= [initialNodes count]){
                 firsttime = FALSE;
                 nodecount=0;
+                totcount++;
+                
             }
+            
+            if(totcount >= [computes intValue])break;
         }
         
     }
@@ -1220,7 +1227,7 @@ static void *ProgressObserverContext = &ProgressObserverContext;
     for(int dev = 0; dev < numpasses; dev++){
         
         clEnqueueUnmapMemObject(cl_queue, offsetbufs[dev], offsetarrays[dev],  0, NULL, NULL);
-        clEnqueueUnmapMemObject(cl_queue, bnresultsbufs[dev], bnresultsarrays[dev],  0, NULL, NULL);
+        clEnqueueUnmapMemObject(cl_queue, bnresultsbufs[dev], bnresultsarrays[dev],  0, NULL, NULL); //FIXME bnresultsbufs should have numpasses entries
         
         
     }
