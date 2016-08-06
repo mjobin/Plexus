@@ -16,13 +16,16 @@
     cl_int err;
     unsigned int num_devices;
     cl_device_id device_ids[256];
-    cl_command_queue cl_queues[256];
+    cl_device_id the_device;
+    cl_command_queue cl_queue;
     cl_program bn_program;
     cl_ulong gMemSize, lMemSize, cMemSize, pMemSize;
     cl_device_fp_config fpconfig;
     size_t returned_size;
     cl_context       context;
 
+    
+    
     
     
     

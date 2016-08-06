@@ -244,15 +244,18 @@ __kernel void BNGibbs(__constant int* offsets, __constant int* params, __constan
     // params[3] = clBurnins; == burnins
     
     
+    
+    
     int gid = get_global_id(0); //A global identifier for this work-item. Used to access its part of the offset, bnstates and results
     
     int boffset = gid*params[0]; //offset to part of bnstates buffer used by this work-item
     
     int sparseCPTsize = pow(2.0f, params[1]);
     
+    //int trueoffset = ctoffset+gid;
     
      // printf("--------------------------\n");
-   // printf("work id is %i, bnsize is %i, maxCPTsize is %i, number of runs %i and burn-in %i\n", gid, params[0],params[1], params[2],params[3]);
+   // printf("work id is %i, bnsize is %i, maxCPTsize is %i, number of runs %i and burn-in %i \n", gid, params[0],params[1], params[2],params[3]);
     
     //Seed variable for random number generator
     int x = offsets[gid]*get_global_size(0);

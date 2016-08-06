@@ -18,21 +18,17 @@ static void *ProgressObserverContext = &ProgressObserverContext;
     self = [super init];
 
 
-    NSLog(@"PlexusCalcOp initd");
-    
-    err = clGetDeviceIDs(NULL, CL_DEVICE_TYPE_ALL, sizeof(device_ids), device_ids, &num_devices);
-    if(err || num_devices <= 0)
-    {
-
+    NSLog(@"PlexusCalcOp init");
+    if(self) {
+        
+        
+        [[NSUserDefaults standardUserDefaults] addObserver:self
+                                                forKeyPath:@"hardwareDevice" options:NSKeyValueObservingOptionNew
+                                                   context:NULL];
+        
     }
     
-    //create context
-    context = clCreateContext(0, num_devices, device_ids, NULL, NULL, &err);
-    if(!context || err)
-    {
-        NSLog(@"Failed to create openCL context!");
-        return nil;
-    }
+   
     
     return self;
     
@@ -45,17 +41,176 @@ static void *ProgressObserverContext = &ProgressObserverContext;
 
 {
 
-    NSLog(@"BN compikle");
+    NSLog(@"clCompile");
+    
     NSError * calcerr = nil;
     
-
+    NSDictionary *noOpenCL = @{//1000
+                               NSLocalizedDescriptionKey: NSLocalizedString(@"No available OpenCL devices", nil),
+                               NSLocalizedFailureReasonErrorKey: NSLocalizedString(@"No available OpenCL devices", nil),
+                               NSLocalizedRecoverySuggestionErrorKey: NSLocalizedString(@"Restart the program to reset", nil)
+                               };
+    
+    NSDictionary *noNode = @{//1001
+                             NSLocalizedDescriptionKey: NSLocalizedString(@"No nodes in model", nil),
+                             NSLocalizedFailureReasonErrorKey: NSLocalizedString(@"No nodes in model", nil),
+                             NSLocalizedRecoverySuggestionErrorKey: NSLocalizedString(@"Make sure that the model has at least one node before calculation", nil)
+                             };
+    
     NSDictionary *kernelFail = @{//1002
                                  NSLocalizedDescriptionKey: NSLocalizedString(@"OpenCL", nil),
                                  NSLocalizedFailureReasonErrorKey: NSLocalizedString(@"The OpenCL Kernel has failed to build or enqueue", nil),
                                  NSLocalizedRecoverySuggestionErrorKey: NSLocalizedString(@"Restart the program to reset", nil)
                                  };
     
+    NSDictionary *bufferFail = @{//1004
+                                 NSLocalizedDescriptionKey: NSLocalizedString(@"OpenCL", nil),
+                                 NSLocalizedFailureReasonErrorKey: NSLocalizedString(@"The OpenCL could not create a buffer", nil),
+                                 NSLocalizedRecoverySuggestionErrorKey: NSLocalizedString(@"Restart the program to reset", nil)
+                                 };
     
+    NSDictionary *argFail = @{//1005
+                              NSLocalizedDescriptionKey: NSLocalizedString(@"OpenCL", nil),
+                              NSLocalizedFailureReasonErrorKey: NSLocalizedString(@"The OpenCL could not set one of its arguments", nil),
+                              NSLocalizedRecoverySuggestionErrorKey: NSLocalizedString(@"Restart the program to reset", nil)
+                              };
+    
+    
+     
+     NSUInteger devPref = [[[[NSUserDefaultsController sharedUserDefaultsController] values] valueForKey:@"hardwareDevice"] integerValue];
+     //    NSLog(@"hw pref pref %lu", (unsigned long)devPref);
+     
+     
+     if (devPref == 0) { //CPU
+     err = clGetDeviceIDs(NULL, CL_DEVICE_TYPE_CPU, sizeof(device_ids), device_ids, &num_devices);
+     if(err || num_devices <= 0)
+         {
+             calcerr = [NSError errorWithDomain:@"plexusCalc" code:1000 userInfo:noOpenCL];
+             return calcerr;
+         }
+     }
+     
+     else if (devPref == 1) { //GPU
+     
+     err = clGetDeviceIDs(NULL, CL_DEVICE_TYPE_GPU, sizeof(device_ids), device_ids, &num_devices);
+     if(err || num_devices <= 0)
+     {
+     
+         err = clGetDeviceIDs(NULL, CL_DEVICE_TYPE_ALL, sizeof(device_ids), device_ids, &num_devices);
+     
+         if(err || num_devices <= 0)
+         {
+                calcerr = [NSError errorWithDomain:@"plexusCalc" code:1000 userInfo:noOpenCL];
+                return calcerr;
+         }
+     
+        }
+     
+     
+     }
+     
+     else {//all types
+     err = clGetDeviceIDs(NULL, CL_DEVICE_TYPE_ALL, sizeof(device_ids), device_ids, &num_devices);
+     if(err || num_devices <= 0)
+         {
+             calcerr = [NSError errorWithDomain:@"plexusCalc" code:1000 userInfo:noOpenCL];
+             return calcerr;
+         }
+     }
+     
+     
+    the_device = device_ids[0];
+    
+     
+     //create context
+     context = clCreateContext(0, 1, &the_device, NULL, NULL, &err);
+     if(!context || err)
+     {
+         NSLog(@"Failed to create openCL context!");
+         return nil;
+     }
+     
+     
+    
+
+    
+    //Look for available devices and get their info
+    
+
+        
+    //Check availability of the devices returned first
+    cl_bool device_available;
+    err = clGetDeviceInfo(the_device, CL_DEVICE_AVAILABLE, sizeof(cl_bool), &device_available, NULL);
+    if(err)
+    {
+        NSLog(@"Device cannot be checked for availability");
+    }
+    
+    //Test... what have we got here?
+    char device_name[200];
+    err = clGetDeviceInfo(the_device, CL_DEVICE_NAME, sizeof(device_name), device_name, NULL);
+    if(err == CL_SUCCESS)
+    {
+        NSLog(@"%s reporting.", device_name);
+    }
+    
+    //how much mem?
+    
+    err = clGetDeviceInfo(the_device, CL_DEVICE_GLOBAL_MEM_SIZE, sizeof(cl_ulong), &gMemSize, NULL);
+    if(err == CL_SUCCESS)
+    {
+        gMemSize /= (1024*1024);
+        NSLog(@"Global memory %llu megabytes.", gMemSize);
+    }
+    
+    err = clGetDeviceInfo(the_device, CL_DEVICE_LOCAL_MEM_SIZE, sizeof(cl_ulong), &lMemSize, NULL);
+    if(err == CL_SUCCESS)
+    {
+        lMemSize /= (1024*1024);
+        NSLog(@"Device local memory %llu megabytes.", lMemSize);
+    }
+    
+    err = clGetDeviceInfo(the_device, CL_DEVICE_MAX_CONSTANT_BUFFER_SIZE, sizeof(cl_ulong), &cMemSize, NULL);
+    if(err == CL_SUCCESS)
+    {
+        cMemSize /= (1024*1024);
+        NSLog(@"Constant memory %llu megabytes.", cMemSize);
+    }
+    
+    
+    
+    err = clGetDeviceInfo(the_device, CL_DEVICE_DOUBLE_FP_CONFIG, sizeof(cl_device_fp_config), &fpconfig, NULL);
+    if(err == CL_SUCCESS)
+    {
+        
+        NSLog(@"Double FP config %llu.", fpconfig);
+    }
+    
+    
+    char device_extensions[2000];
+    err = clGetDeviceInfo(the_device, CL_DEVICE_EXTENSIONS, sizeof(device_extensions), device_extensions, NULL);
+    if(err == CL_SUCCESS)
+    {
+        NSLog(@"Extensions: %s.", device_extensions);
+    }
+        
+        
+        
+        
+        
+    
+    
+    cl_queue = clCreateCommandQueue(context, the_device, 0, &err); //chooses the first available of chosen devices
+    
+    if(!cl_queue || err)
+    {
+        NSLog(@"BN calc: Failed to create openCL queue!");
+        return nil;
+    }
+    
+    
+
+
     
     
     NSMutableData *sourceData = [[NSMutableData alloc] init];
@@ -71,16 +226,6 @@ static void *ProgressObserverContext = &ProgressObserverContext;
     size_t length = [sourceData length];
     
 
-
-    for(int dev = 0; dev < num_devices; dev++){
-        
-        char device_name[200];
-        err = clGetDeviceInfo(device_ids[dev], CL_DEVICE_NAME, sizeof(device_name), device_name, NULL);
-        if(err == CL_SUCCESS)
-        {
-            NSLog(@"%s reporting.", device_name);
-        }
-    }
     
         bn_program = clCreateProgramWithSource(context, 1, &source, &length, &err);
         if (!bn_program || err != CL_SUCCESS) {
@@ -104,7 +249,7 @@ static void *ProgressObserverContext = &ProgressObserverContext;
     //Build executables
 
     
-        err = clBuildProgram(bn_program, num_devices, device_ids, ccCloptionsLine, NULL, NULL);
+        err = clBuildProgram(bn_program, 1, &(the_device), ccCloptionsLine, NULL, NULL);
         if (err != CL_SUCCESS)
         {
             NSLog(@"BN Calc: Failed to build executable.");
@@ -118,7 +263,7 @@ static void *ProgressObserverContext = &ProgressObserverContext;
             // get the details on the error, and store it in buffer
             clGetProgramBuildInfo(
                                   bn_program,              // the program object being queried
-                                  device_ids[0],            // the device for which the OpenCL code was built
+                                  the_device,            // the device for which the OpenCL code was built
                                   CL_PROGRAM_BUILD_LOG, // specifies that we want the build log
                                   sizeof(buffer),       // the size of the buffer
                                   buffer,               // on return, holds the build log
@@ -157,6 +302,7 @@ static void *ProgressObserverContext = &ProgressObserverContext;
     
     
     
+
     NSDictionary *noOpenCL = @{//1000
                                NSLocalizedDescriptionKey: NSLocalizedString(@"No available OpenCL devices", nil),
                                NSLocalizedFailureReasonErrorKey: NSLocalizedString(@"No available OpenCL devices", nil),
@@ -189,7 +335,6 @@ static void *ProgressObserverContext = &ProgressObserverContext;
     
     
     
-    
     NSMutableDictionary *cptCalcFail = [NSMutableDictionary new]; //1006
     [cptCalcFail setObject:@"CPTCalc" forKey:NSLocalizedDescriptionKey];
     [cptCalcFail setObject:@"Check parameters for all nodes and Calculate again." forKey:NSLocalizedRecoverySuggestionErrorKey];
@@ -202,138 +347,10 @@ static void *ProgressObserverContext = &ProgressObserverContext;
     unsigned int i;
     cl_kernel bncalc_Kernel;
     
-    /*
     
-    NSUInteger devPref = [[[[NSUserDefaultsController sharedUserDefaultsController] values] valueForKey:@"hardwareDevice"] integerValue];
-    //    NSLog(@"hw pref pref %lu", (unsigned long)devPref);
+
     
-    
-    if (devPref == 0) { //CPU
-        err = clGetDeviceIDs(NULL, CL_DEVICE_TYPE_CPU, sizeof(device_ids), device_ids, &num_devices);
-        if(err || num_devices <= 0)bn
-        {
-            calcerr = [NSError errorWithDomain:@"plexusCalc" code:1000 userInfo:noOpenCL];
-            return calcerr;
-        }
-    }
-    
-    else if (devPref == 1) { //GPU
-        
-        err = clGetDeviceIDs(NULL, CL_DEVICE_TYPE_GPU, sizeof(device_ids), device_ids, &num_devices);
-        if(err || num_devices <= 0)
-        {
-            
-            err = clGetDeviceIDs(NULL, CL_DEVICE_TYPE_ALL, sizeof(device_ids), device_ids, &num_devices);
-            
-            if(err || num_devices <= 0)
-            {
-                calcerr = [NSError errorWithDomain:@"plexusCalc" code:1000 userInfo:noOpenCL];
-                return calcerr;
-            }
-            
-        }
-        
-        
-    }
-    
-    else {//all types
-        err = clGetDeviceIDs(NULL, CL_DEVICE_TYPE_ALL, sizeof(device_ids), device_ids, &num_devices);
-        if(err || num_devices <= 0)
-        {
-            calcerr = [NSError errorWithDomain:@"plexusCalc" code:1000 userInfo:noOpenCL];
-            return calcerr;
-        }
-    }
-    
-    
-    
-    
-    
-    //create context
-    context = clCreateContext(0, num_devices, device_ids, NULL, NULL, &err);
-    if(!context || err)
-    {
-        NSLog(@"Failed to create openCL context!");
-        return nil;
-    }
-    
-    */
-    
-    double timedi = [startcalc timeIntervalSinceNow] * -1000.0;
-    NSLog(@"Before getdeviceinfo %f since starting calc fxn", timedi);
-    
-    //Look for available devices and get their info
-    //b unsigned int i;
-    for(i = 0; i < num_devices; i++)
-    {
-        
-        //Check availability of the devices returned first
-        cl_bool device_available;
-        err = clGetDeviceInfo(device_ids[i], CL_DEVICE_AVAILABLE, sizeof(cl_bool), &device_available, NULL);
-        if(err)
-        {
-            NSLog(@"Device %i cannot be checked for availability", i);
-        }
-        
-        //Test... what have we got here?
-        char device_name[200];
-        err = clGetDeviceInfo(device_ids[i], CL_DEVICE_NAME, sizeof(device_name), device_name, NULL);
-        if(err == CL_SUCCESS)
-        {
-            NSLog(@"%s reporting.", device_name);
-        }
-        
-        //how much mem?
-        
-        err = clGetDeviceInfo(device_ids[i], CL_DEVICE_GLOBAL_MEM_SIZE, sizeof(cl_ulong), &gMemSize, NULL);
-        if(err == CL_SUCCESS)
-        {
-            gMemSize /= (1024*1024);
-            NSLog(@"Global memory %llu megabytes.", gMemSize);
-        }
-        
-        err = clGetDeviceInfo(device_ids[i], CL_DEVICE_LOCAL_MEM_SIZE, sizeof(cl_ulong), &lMemSize, NULL);
-        if(err == CL_SUCCESS)
-        {
-            lMemSize /= (1024*1024);
-            NSLog(@"Device local memory %llu megabytes.", lMemSize);
-        }
-        
-        err = clGetDeviceInfo(device_ids[i], CL_DEVICE_MAX_CONSTANT_BUFFER_SIZE, sizeof(cl_ulong), &cMemSize, NULL);
-        if(err == CL_SUCCESS)
-        {
-            cMemSize /= (1024*1024);
-            NSLog(@"Constant memory %llu megabytes.", cMemSize);
-        }
-        
-        
-        
-        err = clGetDeviceInfo(device_ids[i], CL_DEVICE_DOUBLE_FP_CONFIG, sizeof(cl_device_fp_config), &fpconfig, NULL);
-        if(err == CL_SUCCESS)
-        {
-            
-            NSLog(@"Double FP config %llu.", fpconfig);
-        }
-        
-        
-        char device_extensions[2000];
-        err = clGetDeviceInfo(device_ids[i], CL_DEVICE_EXTENSIONS, sizeof(device_extensions), device_extensions, NULL);
-        if(err == CL_SUCCESS)
-        {
-            NSLog(@"Extensions: %s.", device_extensions);
-        }
-        
-        
-        cl_queues[i] = clCreateCommandQueue(context, device_ids[i], 0, &err);
-        
-        if(!cl_queues[i] || err)
-        {
-            NSLog(@"BN calc: Failed to create openCL queue for CPU device!");
-            return nil;
-        }
-        
-        
-    }
+
     
     
     //*****************************
@@ -349,7 +366,7 @@ static void *ProgressObserverContext = &ProgressObserverContext;
     NSUInteger clBurnins = [burnins integerValue];
     
     
-    //get maximum size of inputs and outputsd
+    //get maximum size of inputs and outputs
     
     
     for (BNNode * fNode in initialNodes) {
@@ -384,8 +401,9 @@ static void *ProgressObserverContext = &ProgressObserverContext;
     NSLog(@"cptnet size: %lu", sizeof(cl_float[INSize*sparseCPTsize]));
     
     
-    double timenf = [startcalc timeIntervalSinceNow] * -1000.0;
-    NSLog(@"Before nodefreqs %f since starting calc fxn", timenf);
+    
+    double timer = [startcalc timeIntervalSinceNow] * -1000.0;
+   // NSLog(@"Before getdeviceinfo %f since starting calc fxn", timer);
     
     int xoffset = 0;
     int cptoffset =0;
@@ -436,14 +454,9 @@ static void *ProgressObserverContext = &ProgressObserverContext;
         
         //add freq
         nodeFreqs[freqOffset] = [fNode getCPTFreq:self];
-        // replaces   [fNode freqForCPT:self];
+
         
         //------------- influenced by
-        
-        //NSMutableOrderedSet * theInfluencedBy = [fNode recursiveInfBy:self infBy:[[NSMutableOrderedSet alloc] init] depth:0];
-        
-        //   NSOrderedSet * theInfluencedBy = [fNode influencedBy]; //6/20/16 changed this no longer needs to be recurseive
-        
         NSArray * theInfluencedBy = [fNode infBy:self];
         
         
@@ -473,8 +486,6 @@ static void *ProgressObserverContext = &ProgressObserverContext;
         thisCPT =0;
         
       //  NSLog(@"INFS:");
-        // NSMutableOrderedSet * theInfluences = [fNode recursiveInfs:self infs:[[NSMutableOrderedSet alloc] init] depth:0];
-        //NSOrderedSet * theInfluences = [fNode influences]; //6/20/16 changed this no longer needs to be recurseive
         NSArray * theInfluences = [fNode infs:self];
         
         for (BNNode * outNode in theInfluences) {
@@ -579,8 +590,8 @@ static void *ProgressObserverContext = &ProgressObserverContext;
   
     
     
-    double timeck = [startcalc timeIntervalSinceNow] * -1000.0;
-    NSLog(@"Before createkernelr %f since starting calc fxn", timeck);
+    timer = [startcalc timeIntervalSinceNow] * -1000.0;
+    NSLog(@"Before clCreateKernal %f since starting calc fxn", timer);
     
     bncalc_Kernel = clCreateKernel(bn_program, "BNGibbs", &err);
     if (!bncalc_Kernel || err != CL_SUCCESS) {
@@ -593,15 +604,15 @@ static void *ProgressObserverContext = &ProgressObserverContext;
     
     
     //SETUP LOOP
-    size_t worksizes[num_devices];
-    size_t bnreadsizes[num_devices];
-    size_t maxworksize = 0; //this will end up being the column size for the data
-    
-
+    size_t worksize;
+    size_t bnreadsize;
     
     
-    double timecb = [startcalc timeIntervalSinceNow] * -1000.0;
-    NSLog(@"Before createbuffer %f since starting calc fxn", timecb);
+    timer = [startcalc timeIntervalSinceNow] * -1000.0;
+    NSLog(@"Before createbuffer %f since starting calc fxn", timer);
+    
+    
+    
     
     //********************************
     // MAPPED BUFFER CREATION - ARG 1
@@ -710,202 +721,189 @@ static void *ProgressObserverContext = &ProgressObserverContext;
     // MAPPING ONCE-ONLY BUFFERS
     //********************************
     
-    int * mappedParams = NULL;
-    float * mappedFreqs = NULL;
-    int * mappedInfnet = NULL;
-    float * mappedCptnet = NULL;
-    int * mappedPriordisttype = NULL;
-    float * mappedPriorv1s = NULL;
-    float * mappedPriorv2s = NULL;
+
+
     
-    double timebm = [startcalc timeIntervalSinceNow] * -1000.0;
-    NSLog(@"Before enqueuemapbuffer %f since starting calc fxn", timebm);
+    timer = [startcalc timeIntervalSinceNow] * -1000.0;
+   // NSLog(@"Before enqueuemapbuffers %f since starting calc fxn", timer);
     
-    for(int dev = 0; dev < num_devices; dev++){
-        
-        //********************************
-        // MAPPED BUFFER CREATION - ARG 1
-        //********************************
-        
-        mappedParams = clEnqueueMapBuffer(cl_queues[dev], paramsbuf, CL_TRUE, CL_MAP_READ, 0, 4*sizeof(cl_int), 0, NULL, NULL, NULL);
-        mappedParams[0] = (int)INSize;
-        mappedParams[1] = (int)maxCPTSize;
-        mappedParams[2] = (int)clRuns;
-        mappedParams[3] = (int)clBurnins;
-        
-        //********************************
-        //********************************
-        
-        //********************************
-        // MAPPED BUFFER CREATION - ARG 2
-        //********************************
-        //create the buffer for the freqs
-        // clEnqueueWriteBuffer(cl_queues[dev], freqbuf, CL_TRUE, 0, sizeof(cl_float)*INSize, (void*)nodeFreqs, 0, 0, 0);
-        // freqbufs[dev]=freqbuf;
-        
-        mappedFreqs = clEnqueueMapBuffer(cl_queues[dev], freqbuf, CL_TRUE, CL_MAP_READ, 0, INSize*sizeof(cl_int), 0, NULL, NULL, NULL);
-        
-        for(i=0;i<INSize;i++){
-            mappedFreqs[i] = nodeFreqs[i];
-          //  NSLog(@"freq %f", mappedFreqs[i]);
-        }
-        
-        
-        
-        
-        
-        //********************************
-        // MAPPED BUFFER CREATION - ARG 3
-        //********************************
-        
-        // clEnqueueWriteBuffer(cl_queues[dev], infnetbuf, CL_TRUE, 0, INSize*(maxCPTSize*2)*sizeof(cl_int), (void*)infnet, 0, 0, 0);
-        // infnetbufs[dev] = infnetbuf;
-        
-        
-        mappedInfnet = clEnqueueMapBuffer(cl_queues[dev], infnetbuf, CL_TRUE, CL_MAP_READ, 0, INSize*(maxCPTSize*2)*sizeof(cl_int), 0, NULL, NULL, NULL);
-        
-        for(i=0;i<(INSize*(maxCPTSize*2));i++){
-            mappedInfnet[i] = infnet[i];
-          //   NSLog(@"infnet %i", mappedInfnet[i]);
-        }
-        
-        //********************************
-        //********************************
-        
-        
-        
-        //********************************
-        // MAPPED BUFFER CREATION - ARG 4 - CPTNET
-        //********************************
-        //  clEnqueueWriteBuffer(cl_queues[dev], cptnetbuf, CL_TRUE, 0, sizeof(cl_float)*INSize*sparseCPTsize, (void*)cptnet, 0, 0, 0);
-        // cptnetbufs[dev] = cptnetbuf;
-        
-        mappedCptnet = clEnqueueMapBuffer(cl_queues[dev], cptnetbuf, CL_TRUE, CL_MAP_READ, 0, sizeof(cl_float)*INSize*sparseCPTsize, 0, NULL, NULL, NULL);
-        
-        for(i=0;i<(INSize*sparseCPTsize);i++){
-            mappedCptnet[i] = cptnet[i];
-             //  NSLog(@"cptnet %f", mappedCptnet[i]);
-        }
-        
-        //********************************
-        //********************************
-        
-        
-        
 
         
-        
-        //********************************
-        // MAPPED BUFFER CREATION - ARG 9 - PRIORDISTTYPE
-        //********************************
-        
-        //clEnqueueWriteBuffer(cl_queues[dev], priordisttypebuf, CL_TRUE, 0, sizeof(cl_int)*INSize, (void*)priorDistType, 0, 0, 0);
-        //  priordisttypebufs[dev]=priordisttypebuf;
-        
-        mappedPriordisttype = clEnqueueMapBuffer(cl_queues[dev], priordisttypebuf, CL_TRUE, CL_MAP_READ, 0, sizeof(cl_int)*INSize, 0, NULL, NULL, NULL);
-        
-        for(i=0;i<(INSize);i++){
-            mappedPriordisttype[i] = priorDistType[i];
-         //   NSLog(@"mappedPriordisttype %i", mappedPriordisttype[i]);
-        }
-        
-        //********************************
-        //********************************
-        
-        
-        //********************************
-        // MAPPED BUFFER CREATION - ARG 10 - PRIORV1s
-        //********************************
-        
-        //  clEnqueueWriteBuffer(cl_queues[dev], priorv1buf, CL_TRUE, 0, sizeof(cl_float)*INSize, (void*)priorV1, 0, 0, 0);
-        // priorv1bufs[dev]=priorv1buf;
-        
-        mappedPriorv1s = clEnqueueMapBuffer(cl_queues[dev], priorv1buf, CL_TRUE, CL_MAP_READ, 0, sizeof(cl_float)*INSize, 0, NULL, NULL, NULL);
-        
-        for(i=0;i<(INSize);i++){
-            mappedPriorv1s[i] = priorV1[i];
-         //    NSLog(@"mappedPriorv1s %f", mappedPriorv1s[i]);
-        }
-        
-        //********************************
-        //********************************
-        
-        //********************************
-        // MAPPED BUFFER CREATION - ARG 11 - PRIORV2s
-        //********************************
-        
-        //clEnqueueWriteBuffer(cl_queues[dev], priorv2buf, CL_TRUE, 0, sizeof(cl_float)*INSize, (void*)priorV2, 0, 0, 0);
-        //priorv2bufs[dev]=priorv2buf;
-        
-        mappedPriorv2s = clEnqueueMapBuffer(cl_queues[dev], priorv2buf, CL_TRUE, CL_MAP_READ, 0, sizeof(cl_float)*INSize, 0, NULL, NULL, NULL);
-        
-        for(i=0;i<(INSize);i++){
-            mappedPriorv2s[i] = priorV2[i];
-          //   NSLog(@"mappedPriorv2s %f", mappedPriorv2s[i]);
-        }
-        
-        //********************************
-        //********************************
-        
-        
-        
-        size_t max_work_item_dims;
-        err = clGetDeviceInfo(device_ids[dev], CL_DEVICE_DOUBLE_FP_CONFIG, sizeof(max_work_item_dims), &max_work_item_dims, &returned_size);
-        
-        
-        
-        
-        size_t max_work_item_sizes[3];
-        err = clGetDeviceInfo(device_ids[dev], CL_DEVICE_MAX_WORK_ITEM_SIZES, sizeof(max_work_item_sizes), max_work_item_sizes, &returned_size);
-        for(size_t i=0;i<3;i++) {
-            NSLog(@"Max Work Items in Dim %lu: %lu\n",(long unsigned)(i+1),(long unsigned)max_work_item_sizes[i]);
-        }
-        
-        size_t kwBuf = 0;
-        err = clGetKernelWorkGroupInfo(
-                                       bncalc_Kernel,                      // the kernel object being queried
-                                       device_ids[dev], // a device associated with the kernel object
-                                       CL_KERNEL_WORK_GROUP_SIZE,    // requests the work-group size
-                                       sizeof(kwBuf),             // size in bytes of return buffer
-                                       &kwBuf,                    // on return, points to requested information
-                                       &returned_size);
-        
-        NSLog(@"Kernel work group size for bn_kernel %lu", (long unsigned)kwBuf);
-        
-        //Figure out how many work items - use all initially
-        size_t gWorkItems = max_work_item_sizes[0]*max_work_item_sizes[1]*max_work_item_sizes[2];
-        
-        
-        if(gWorkItems > kwBuf) gWorkItems = kwBuf;
-        //if(gWorkItems > [computes intValue]) gWorkItems = [computes intValue];
-        
-        
-        NSLog(@"work-group items %lu", (long unsigned)gWorkItems);
-        worksizes[dev] = gWorkItems;
-        bnreadsizes[dev] = gWorkItems * [initialNodes count];
-        if(worksizes[dev] > maxworksize) maxworksize = worksizes[dev];
-        
+
+    
+    //********************************
+    // MAPPED BUFFER CREATION - ARG 1
+    //********************************
+    
+    int * mappedParams = clEnqueueMapBuffer(cl_queue, paramsbuf, CL_TRUE, CL_MAP_READ, 0, 4*sizeof(cl_int), 0, NULL, NULL, NULL);
+    mappedParams[0] = (int)INSize;
+    mappedParams[1] = (int)maxCPTSize;
+    mappedParams[2] = (int)clRuns;
+    mappedParams[3] = (int)clBurnins;
+    
+    //********************************
+    //********************************
+    
+    //********************************
+    // MAPPED BUFFER CREATION - ARG 2
+    //********************************
+    //create the buffer for the freqs
+    // clEnqueueWriteBuffer(cl_queues[dev], freqbuf, CL_TRUE, 0, sizeof(cl_float)*INSize, (void*)nodeFreqs, 0, 0, 0);
+    // freqbufs[dev]=freqbuf;
+    
+    float * mappedFreqs = clEnqueueMapBuffer(cl_queue, freqbuf, CL_TRUE, CL_MAP_READ, 0, INSize*sizeof(cl_int), 0, NULL, NULL, NULL);
+    
+    for(i=0;i<INSize;i++){
+        mappedFreqs[i] = nodeFreqs[i];
+      //  NSLog(@"freq %f", mappedFreqs[i]);
     }
     
     
-    size_t bnstatesize = maxworksize * [initialNodes count];
+    //********************************
+    // MAPPED BUFFER CREATION - ARG 3
+    //********************************
     
-    //initialize and zero read arrays
-    cl_float bnresultsarrays[num_devices] [bnstatesize];
+    // clEnqueueWriteBuffer(cl_queues[dev], infnetbuf, CL_TRUE, 0, INSize*(maxCPTSize*2)*sizeof(cl_int), (void*)infnet, 0, 0, 0);
+    // infnetbufs[dev] = infnetbuf;
     
     
-    for (int i =0; i < num_devices; i++) {
-        
-        for (int j = 0; j < bnstatesize; j++) {
-            
-            bnresultsarrays [i][j] = 0.0;
-        }
-        
+    int * mappedInfnet = clEnqueueMapBuffer(cl_queue, infnetbuf, CL_TRUE, CL_MAP_READ, 0, INSize*(maxCPTSize*2)*sizeof(cl_int), 0, NULL, NULL, NULL);
+    
+    for(i=0;i<(INSize*(maxCPTSize*2));i++){
+        mappedInfnet[i] = infnet[i];
+      //   NSLog(@"infnet %i", mappedInfnet[i]);
     }
     
+    //********************************
+    //********************************
     
-    double timePassed_ms = [startcalc timeIntervalSinceNow] * -1000.0;
-    NSLog(@"Before main queueing loop time %f since starting calc fxn", timePassed_ms);
+    
+    
+    //********************************
+    // MAPPED BUFFER CREATION - ARG 4 - CPTNET
+    //********************************
+    //  clEnqueueWriteBuffer(cl_queues[dev], cptnetbuf, CL_TRUE, 0, sizeof(cl_float)*INSize*sparseCPTsize, (void*)cptnet, 0, 0, 0);
+    // cptnetbufs[dev] = cptnetbuf;
+    
+    float * mappedCptnet = clEnqueueMapBuffer(cl_queue, cptnetbuf, CL_TRUE, CL_MAP_READ, 0, sizeof(cl_float)*INSize*sparseCPTsize, 0, NULL, NULL, NULL);
+    
+    for(i=0;i<(INSize*sparseCPTsize);i++){
+        mappedCptnet[i] = cptnet[i];
+         //  NSLog(@"cptnet %f", mappedCptnet[i]);
+    }
+    
+    //********************************
+    //********************************
+    
+
+    
+    //********************************
+    // MAPPED BUFFER CREATION - ARG 9 - PRIORDISTTYPE
+    //********************************
+    
+    //clEnqueueWriteBuffer(cl_queues[dev], priordisttypebuf, CL_TRUE, 0, sizeof(cl_int)*INSize, (void*)priorDistType, 0, 0, 0);
+    //  priordisttypebufs[dev]=priordisttypebuf;
+    
+     int *mappedPriordisttype = clEnqueueMapBuffer(cl_queue, priordisttypebuf, CL_TRUE, CL_MAP_READ, 0, sizeof(cl_int)*INSize, 0, NULL, NULL, NULL);
+    
+    for(i=0;i<(INSize);i++){
+        mappedPriordisttype[i] = priorDistType[i];
+     //   NSLog(@"mappedPriordisttype %i", mappedPriordisttype[i]);
+    }
+    
+    //********************************
+    //********************************
+    
+    
+    //********************************
+    // MAPPED BUFFER CREATION - ARG 10 - PRIORV1s
+    //********************************
+    
+    //  clEnqueueWriteBuffer(cl_queues[dev], priorv1buf, CL_TRUE, 0, sizeof(cl_float)*INSize, (void*)priorV1, 0, 0, 0);
+    // priorv1bufs[dev]=priorv1buf;
+    
+    float * mappedPriorv1s = clEnqueueMapBuffer(cl_queue, priorv1buf, CL_TRUE, CL_MAP_READ, 0, sizeof(cl_float)*INSize, 0, NULL, NULL, NULL);
+    
+    for(i=0;i<(INSize);i++){
+        mappedPriorv1s[i] = priorV1[i];
+     //    NSLog(@"mappedPriorv1s %f", mappedPriorv1s[i]);
+    }
+    
+    //********************************
+    //********************************
+    
+    //********************************
+    // MAPPED BUFFER CREATION - ARG 11 - PRIORV2s
+    //********************************
+    
+    //clEnqueueWriteBuffer(cl_queues[dev], priorv2buf, CL_TRUE, 0, sizeof(cl_float)*INSize, (void*)priorV2, 0, 0, 0);
+    //priorv2bufs[dev]=priorv2buf;
+    
+    float * mappedPriorv2s = clEnqueueMapBuffer(cl_queue, priorv2buf, CL_TRUE, CL_MAP_READ, 0, sizeof(cl_float)*INSize, 0, NULL, NULL, NULL);
+    
+    for(i=0;i<(INSize);i++){
+        mappedPriorv2s[i] = priorV2[i];
+      //   NSLog(@"mappedPriorv2s %f", mappedPriorv2s[i]);
+    }
+    
+    //********************************
+    //********************************
+        
+        
+    
+    size_t max_work_item_dims;
+    err = clGetDeviceInfo(the_device, CL_DEVICE_DOUBLE_FP_CONFIG, sizeof(max_work_item_dims), &max_work_item_dims, &returned_size);
+    
+    
+    
+    
+    size_t max_work_item_sizes[3];
+    err = clGetDeviceInfo(the_device, CL_DEVICE_MAX_WORK_ITEM_SIZES, sizeof(max_work_item_sizes), max_work_item_sizes, &returned_size);
+    for(size_t i=0;i<3;i++) {
+        NSLog(@"Max Work Items in Dim %lu: %lu\n",(long unsigned)(i+1),(long unsigned)max_work_item_sizes[i]);
+    }
+    
+    size_t kwBuf = 0;
+    err = clGetKernelWorkGroupInfo(
+                                   bncalc_Kernel,                      // the kernel object being queried
+                                   the_device, // a device associated with the kernel object
+                                   CL_KERNEL_WORK_GROUP_SIZE,    // requests the work-group size
+                                   sizeof(kwBuf),             // size in bytes of return buffer
+                                   &kwBuf,                    // on return, points to requested information
+                                   &returned_size);
+    
+    NSLog(@"Kernel work group size for bn_kernel %lu", (long unsigned)kwBuf);
+    
+    //Figure out how many work items - use all initially
+    size_t gWorkItems = max_work_item_sizes[0]*max_work_item_sizes[1]*max_work_item_sizes[2];
+    
+    
+    if(gWorkItems > kwBuf) gWorkItems = kwBuf;
+    //if(gWorkItems > [computes intValue]) gWorkItems = [computes intValue];
+    
+    
+    NSLog(@"work-group items %lu", (long unsigned)gWorkItems);
+    worksize = gWorkItems;
+    bnreadsize = worksize * [initialNodes count]; //All the memory needed to read one work units data
+
+    int numpasses = ([computes intValue] / worksize)+1; //The number of passes with this device needed to
+    
+    
+    
+   // size_t bnstatesize = worksize * [initialNodes count];
+    
+    
+    
+    cl_int * offsetarrays[numpasses];
+    cl_float * bnresultsarrays[numpasses];
+    
+     NSLog(@"bnreadsize: %zu worksize %zu computes %i numpasses %i", bnreadsize, worksize, [computes intValue], numpasses);
+    
+
+
+    
+    timer = [startcalc timeIntervalSinceNow] * -1000.0;
+   // NSLog(@"Before main queueing loop %f since starting calc fxn", timer);
     
     
     BOOL firsttime = TRUE;
@@ -913,234 +911,238 @@ static void *ProgressObserverContext = &ProgressObserverContext;
     // MAIN QUEUEING LOOP
     //********************************
     int ct =0;
+    int tt = 0;
+
+    
+      cl_mem * bnresultsbufs = malloc(sizeof(cl_mem)*numpasses);
+      cl_mem * offsetbufs = malloc(sizeof(cl_mem)*numpasses);
+    
     while(ct < [computes intValue]){
         
+        timer = [startcalc timeIntervalSinceNow] * -1000.0;
+       // NSLog(@"Top of ct loop %f since starting calc fxn", timer);
+    
+            
+        //   NSLog(@"******");
         
-        cl_mem * bnresultsbufs = malloc(sizeof(cl_mem)*num_devices);
-        cl_mem * offsetbufs = malloc(sizeof(cl_mem)*num_devices);
+        
+        size_t thisWork = worksize;
+        
+        //    NSLog(@"worksize for this dev %lu", thisWork);
+        
+        size_t workRemaining = [computes intValue] - ct;
+        
+        //      NSLog(@"remaining work %lu", workRemaining);
+        
+        if (thisWork > workRemaining) thisWork = workRemaining;
+        
+        //   NSLog(@"worksize should now be %lu", thisWork);
+        
+        
+        timer = [startcalc timeIntervalSinceNow] * -1000.0;
+       // NSLog(@"Before offsets enqueue %f since starting calc fxn", timer);
+        
+        
+        //********************************
+        // MAPPED BUFFER CREATION - ARG 0
+        //********************************
+        
+        //create the buffer for RNG seeds
+        cl_mem offsetbuf = clCreateBuffer(context, CL_MEM_READ_ONLY | CL_MEM_ALLOC_HOST_PTR, worksize*sizeof(cl_int), 0, &err);
+        if (!offsetbuf || err != CL_SUCCESS) {
+            NSLog(@"BN calc: Failed to create initial rng offsets buffer!");
+            calcerr = [NSError errorWithDomain:@"plexusCalc" code:1004 userInfo:bufferFail];
+            return calcerr;
+        }
+        
+        timer = [startcalc timeIntervalSinceNow] * -1000.0;
+      //  NSLog(@"Before offsets enqueuemapbiuffer %f since starting calc fxn", timer);
+        
+        int * mappedOffsets = clEnqueueMapBuffer(cl_queue, offsetbuf, CL_FALSE, CL_MAP_READ, 0, worksize*sizeof(cl_int), 0, NULL, NULL, NULL);
+        
+        timer = [startcalc timeIntervalSinceNow] * -1000.0;
+       // NSLog(@"Before offsets arcrandopm  %f since starting calc fxn", timer);
+        for(i=0;i<worksize;i++){
+            mappedOffsets[i] = arc4random();
+            //  NSLog(@"offset %i", mappedOffsets[i]);
+        }
+        
+        offsetbufs[tt] = offsetbuf;
+        offsetarrays[tt] = mappedOffsets;
+        
+        //********************************
+        //********************************
+        
+        
+        timer = [startcalc timeIntervalSinceNow] * -1000.0;
+      //  NSLog(@"Before results enqueue %f since starting calc fxn", timer);
+        
+        //********************************
+        // MAPPED BUFFER CREATION - ARG 6
+        //********************************
+        
+        
+        cl_mem bnresultsbuf = clCreateBuffer(context, CL_MEM_READ_WRITE | CL_MEM_ALLOC_HOST_PTR, bnreadsize*sizeof(cl_float), 0, &err);
+        if (!bnresultsbuf || err != CL_SUCCESS) {
+            NSLog(@"BN calc: Failed to create initial bnresults buffer!");
+            calcerr = [NSError errorWithDomain:@"plexusCalc" code:1004 userInfo:bufferFail];
+            return calcerr;
+        }
+        
+        float *mappedBNresults = clEnqueueMapBuffer(cl_queue, bnresultsbuf, CL_FALSE, CL_MAP_WRITE, 0, bnreadsize*sizeof(cl_float), 0, NULL, NULL, NULL);
+        bnresultsbufs[tt] = bnresultsbuf;
+        bnresultsarrays[tt] = mappedBNresults;
+
+        
+        //********************************
+        //********************************
+        
+
+        
+        timer = [startcalc timeIntervalSinceNow] * -1000.0;
+      //  NSLog(@"Before set arguments %f since starting calc fxn", timer);
+        
+        //********************************
+        //********************************
+        
+        
+        //set args
         
         
         
         
-        for(int dev = 0; dev < num_devices; dev++){
-            
-            //   NSLog(@"******");
-            
-            
-            
-            
-            size_t thisWork = worksizes[dev];
-            
-            //    NSLog(@"worksize for this dev %lu", thisWork);
-            
-            size_t workRemaining = [computes intValue] - ct;
-            
-            //      NSLog(@"remaining work %lu", workRemaining);
-            
-            if (thisWork > workRemaining) thisWork = workRemaining;
-            
-            //   NSLog(@"worksize should now be %lu", thisWork);
-            
-            //********************************
-            // MAPPED BUFFER CREATION - ARG 6
-            //********************************
-            
-            
-            cl_mem bnresultsbuf = clCreateBuffer(context, CL_MEM_READ_WRITE | CL_MEM_ALLOC_HOST_PTR, bnstatesize*sizeof(cl_float), 0, &err);
-            if (!bnresultsbuf || err != CL_SUCCESS) {
-                NSLog(@"BN calc: Failed to create initial bnresults buffer!");
-                calcerr = [NSError errorWithDomain:@"plexusCalc" code:1004 userInfo:bufferFail];
-                return calcerr;
-            }
-            
-            float *mappedBNresults = clEnqueueMapBuffer(cl_queues[dev], bnresultsbuf, CL_TRUE, CL_MAP_READ, 0, bnstatesize*sizeof(cl_float), 0, NULL, NULL, NULL);
-            
-            for(i=0;i<bnstatesize;i++){
-                mappedBNresults [i] = bnresultsarrays[dev][i];
-                // NSLog(@"bnresults %f", mappedBNresults[i]);
-            }
-            
-            // clEnqueueWriteBuffer(cl_queues[dev], bnresultsbuf, CL_TRUE, 0, bnstatesize*sizeof(cl_float), (void*)bnresultsarrays[dev], 0, 0, 0);
-            bnresultsbufs[dev] = bnresultsbuf;
-            
-            //********************************
-            //********************************
-            
-            
-            //********************************
-            // MAPPED BUFFER CREATION - ARG 0
-            //********************************
-            
-            //create the buffer for RNG seeds
-            cl_mem offsetbuf = clCreateBuffer(context, CL_MEM_READ_ONLY | CL_MEM_ALLOC_HOST_PTR, thisWork*sizeof(cl_int), 0, &err);
-            if (!offsetbuf || err != CL_SUCCESS) {
-                NSLog(@"BN calc: Failed to create initial rng offsets buffer!");
-                calcerr = [NSError errorWithDomain:@"plexusCalc" code:1004 userInfo:bufferFail];
-                return calcerr;
-            }
-            int * mappedOffsets = clEnqueueMapBuffer(cl_queues[dev], offsetbuf, CL_TRUE, CL_MAP_READ, 0, thisWork*sizeof(cl_int), 0, NULL, NULL, NULL);
-            
-            for(i=0;i<thisWork;i++){
-                mappedOffsets[i] = arc4random();
-                //  NSLog(@"offset %i", mappedOffsets[i]);
-            }
-            
-            
-            //********************************
-            //********************************
-            
-            
-            
-            
-            
-            
-            
-            
-            //set args
-            
-            
-            
-            
-            err = clSetKernelArg(bncalc_Kernel, 0, sizeof(cl_mem), (void*)&offsetbuf);
-            if (err != CL_SUCCESS) {
-                NSLog(@"Failure setting argument");
-                calcerr = [NSError errorWithDomain:@"plexusCalc" code:1005 userInfo:argFail];
-                return calcerr;
-            }
-            
-            
-            err = clSetKernelArg(bncalc_Kernel, 1, sizeof(cl_mem), (void*)&paramsbuf);
-            if (err != CL_SUCCESS) {
-                NSLog(@"Failure setting argument");
-                calcerr = [NSError errorWithDomain:@"plexusCalc" code:1005 userInfo:argFail];
-                return calcerr;
-            }
-            
-            
-            err = clSetKernelArg(bncalc_Kernel, 2, sizeof(cl_mem), (void*)&freqbuf);
-            if (err != CL_SUCCESS) {
-                NSLog(@"Failure setting argument");
-                calcerr = [NSError errorWithDomain:@"plexusCalc" code:1005 userInfo:argFail];
-                return calcerr;
-            }
-            
-            
-            err = clSetKernelArg(bncalc_Kernel, 3, sizeof(cl_mem), (void*)&infnetbuf);
-            if (err != CL_SUCCESS) {
-                NSLog(@"Failure setting argument");
-                calcerr = [NSError errorWithDomain:@"plexusCalc" code:1005 userInfo:argFail];
-                return calcerr;
-            }
-            
-            err = clSetKernelArg(bncalc_Kernel, 4, sizeof(cl_mem), (void*)&cptnetbuf);
-            if (err != CL_SUCCESS) {
-                NSLog(@"Failure setting argument");
-                calcerr = [NSError errorWithDomain:@"plexusCalc" code:1005 userInfo:argFail];
-                return calcerr;
-            }
-            
-            err = clSetKernelArg(bncalc_Kernel, 5, bnstatesize*sizeof(cl_int), NULL);
-            if (err != CL_SUCCESS) {
-                NSLog(@"Failure setting argument 6");
-                calcerr = [NSError errorWithDomain:@"plexusCalc" code:1005 userInfo:argFail];
-                return calcerr;
-            }
-            
-            err = clSetKernelArg(bncalc_Kernel, 6, sizeof(cl_mem), (void*)&bnresultsbuf);
-            if (err != CL_SUCCESS) {
-                NSLog(@"Failure setting argument 7");
-                calcerr = [NSError errorWithDomain:@"plexusCalc" code:1005 userInfo:argFail];
-                return calcerr;
-            }
-            
-            
-            err = clSetKernelArg(bncalc_Kernel, 7, thisWork * INSize * sizeof(cl_int), NULL); //this is the array size of the shuffled nodes...uses local mem
-            if (err != CL_SUCCESS) {
-                NSLog(@"Failure setting argument 8");
-                calcerr = [NSError errorWithDomain:@"plexusCalc" code:1005 userInfo:argFail];
-                return calcerr;
-            }
-            
-            err = clSetKernelArg(bncalc_Kernel, 8, sizeof(cl_mem), (void*)&priordisttypebuf);
-            if (err != CL_SUCCESS) {
-                NSLog(@"Failure setting argument");
-                calcerr = [NSError errorWithDomain:@"plexusCalc" code:1005 userInfo:argFail];
-                return calcerr;
-            }
-            
-            err = clSetKernelArg(bncalc_Kernel, 9, sizeof(cl_mem), (void*)&priorv1buf);
-            if (err != CL_SUCCESS) {
-                NSLog(@"Failure setting argument");
-                calcerr = [NSError errorWithDomain:@"plexusCalc" code:1005 userInfo:argFail];
-                return calcerr;
-            }
-            
-            err = clSetKernelArg(bncalc_Kernel, 10, sizeof(cl_mem), (void*)&priorv2buf);
-            if (err != CL_SUCCESS) {
-                NSLog(@"Failure setting argument");
-                calcerr = [NSError errorWithDomain:@"plexusCalc" code:1005 userInfo:argFail];
-                return calcerr;
-            }
-            
-            err = clSetKernelArg(bncalc_Kernel, 11, thisWork * INSize * sizeof(cl_int), NULL); //this is the array size of the parent nodes...uses local mem
-            if (err != CL_SUCCESS) {
-                NSLog(@"Failure setting argument 14");
-                calcerr = [NSError errorWithDomain:@"plexusCalc" code:1005 userInfo:argFail];
-                return calcerr;
-            }
-            
-            err = clSetKernelArg(bncalc_Kernel, 12, thisWork * INSize * sizeof(cl_int), NULL); //this is the array size of the lvc nodes...uses local mem
-            if (err != CL_SUCCESS) {
-                NSLog(@"Failure setting argument 15");
-                calcerr = [NSError errorWithDomain:@"plexusCalc" code:1005 userInfo:argFail];
-                return calcerr;
-            }
-            
-            
-            //double twotimePassed_ms = [startcalc timeIntervalSinceNow] * -1000.0;
-          //  NSLog(@"Before next kernel queued %f since starting calc fxn", twotimePassed_ms);
-            
-            //Enqueue kernel
-            err = CL_SUCCESS;
-            err = clEnqueueNDRangeKernel(
-                                         cl_queues[dev],         // a valid command queue
-                                         bncalc_Kernel,           // a valid kernel object
-                                         1,                       // the data dimensions                   [4]
-                                         NULL,                    // reserved; must be NULL
-                                         &thisWork,                  // work sizes for each dimension         [5]
-                                         NULL,                   // work-group sizes for each dimension   [6]
-                                         0,                       // num entires in event wait list        [7]
-                                         NULL,                    // event wait list                       [8]
-                                         NULL);                   // on return, points to new event object [9]
-            
-            
-            if (err != CL_SUCCESS){
-                NSLog(@"Failure enqueueing kernel. Error %i", err);
-                
-                NSString * recStr = @"The OpenCL error returned is %i";
-                NSString * errStr = [NSString stringWithFormat:@"%i", err];
-                NSString * recerrStr = [recStr stringByAppendingString:errStr];
-                
-                NSDictionary *enqueueFail = @{//1006
-                                              NSLocalizedDescriptionKey: NSLocalizedString(@"OpenCL", nil),
-                                              NSLocalizedFailureReasonErrorKey: NSLocalizedString(@"The OpenCL Kernel has failed to enqueue.", nil),
-                                              NSLocalizedRecoverySuggestionErrorKey: NSLocalizedString(recerrStr, nil)
-                                              };
-                calcerr = [NSError errorWithDomain:@"plexusCalc" code:1006 userInfo:enqueueFail];
-                return calcerr;
-            }
-            
-            
-            //FIXME change to non blocking
-            
-            
-            clEnqueueReadBuffer(cl_queues[dev], bnresultsbuf, CL_FALSE, 0, bnstatesize*sizeof(cl_float), (void*)bnresultsarrays[dev], 0, 0, 0);
-            
-            clEnqueueUnmapMemObject(cl_queues[dev], offsetbuf, mappedOffsets,  0, NULL, NULL);
-            
-            
-            clEnqueueUnmapMemObject(cl_queues[dev], bnresultsbuf, mappedBNresults,  0, NULL, NULL);
-            
+        err = clSetKernelArg(bncalc_Kernel, 0, sizeof(cl_mem), (void*)&offsetbuf);
+        if (err != CL_SUCCESS) {
+            NSLog(@"Failure setting argument");
+            calcerr = [NSError errorWithDomain:@"plexusCalc" code:1005 userInfo:argFail];
+            return calcerr;
+        }
+        
+        
+        err = clSetKernelArg(bncalc_Kernel, 1, sizeof(cl_mem), (void*)&paramsbuf);
+        if (err != CL_SUCCESS) {
+            NSLog(@"Failure setting argument");
+            calcerr = [NSError errorWithDomain:@"plexusCalc" code:1005 userInfo:argFail];
+            return calcerr;
+        }
+        
+        
+        err = clSetKernelArg(bncalc_Kernel, 2, sizeof(cl_mem), (void*)&freqbuf);
+        if (err != CL_SUCCESS) {
+            NSLog(@"Failure setting argument");
+            calcerr = [NSError errorWithDomain:@"plexusCalc" code:1005 userInfo:argFail];
+            return calcerr;
+        }
+        
+        
+        err = clSetKernelArg(bncalc_Kernel, 3, sizeof(cl_mem), (void*)&infnetbuf);
+        if (err != CL_SUCCESS) {
+            NSLog(@"Failure setting argument");
+            calcerr = [NSError errorWithDomain:@"plexusCalc" code:1005 userInfo:argFail];
+            return calcerr;
+        }
+        
+        err = clSetKernelArg(bncalc_Kernel, 4, sizeof(cl_mem), (void*)&cptnetbuf);
+        if (err != CL_SUCCESS) {
+            NSLog(@"Failure setting argument");
+            calcerr = [NSError errorWithDomain:@"plexusCalc" code:1005 userInfo:argFail];
+            return calcerr;
+        }
+        
+        err = clSetKernelArg(bncalc_Kernel, 5, bnreadsize*sizeof(cl_int), NULL);
+        if (err != CL_SUCCESS) {
+            NSLog(@"Failure setting argument 6");
+            calcerr = [NSError errorWithDomain:@"plexusCalc" code:1005 userInfo:argFail];
+            return calcerr;
+        }
+        
+        err = clSetKernelArg(bncalc_Kernel, 6, sizeof(cl_mem), (void*)&bnresultsbuf);
+        if (err != CL_SUCCESS) {
+            NSLog(@"Failure setting argument 7");
+            calcerr = [NSError errorWithDomain:@"plexusCalc" code:1005 userInfo:argFail];
+            return calcerr;
+        }
+        
+        
+        err = clSetKernelArg(bncalc_Kernel, 7, thisWork * INSize * sizeof(cl_int), NULL); //this is the array size of the shuffled nodes...uses local mem
+        if (err != CL_SUCCESS) {
+            NSLog(@"Failure setting argument 8");
+            calcerr = [NSError errorWithDomain:@"plexusCalc" code:1005 userInfo:argFail];
+            return calcerr;
+        }
+        
+        err = clSetKernelArg(bncalc_Kernel, 8, sizeof(cl_mem), (void*)&priordisttypebuf);
+        if (err != CL_SUCCESS) {
+            NSLog(@"Failure setting argument");
+            calcerr = [NSError errorWithDomain:@"plexusCalc" code:1005 userInfo:argFail];
+            return calcerr;
+        }
+        
+        err = clSetKernelArg(bncalc_Kernel, 9, sizeof(cl_mem), (void*)&priorv1buf);
+        if (err != CL_SUCCESS) {
+            NSLog(@"Failure setting argument");
+            calcerr = [NSError errorWithDomain:@"plexusCalc" code:1005 userInfo:argFail];
+            return calcerr;
+        }
+        
+        err = clSetKernelArg(bncalc_Kernel, 10, sizeof(cl_mem), (void*)&priorv2buf);
+        if (err != CL_SUCCESS) {
+            NSLog(@"Failure setting argument");
+            calcerr = [NSError errorWithDomain:@"plexusCalc" code:1005 userInfo:argFail];
+            return calcerr;
+        }
+        
+        err = clSetKernelArg(bncalc_Kernel, 11, thisWork * INSize * sizeof(cl_int), NULL); //this is the array size of the parent nodes...uses local mem
+        if (err != CL_SUCCESS) {
+            NSLog(@"Failure setting argument 14");
+            calcerr = [NSError errorWithDomain:@"plexusCalc" code:1005 userInfo:argFail];
+            return calcerr;
+        }
+        
+        err = clSetKernelArg(bncalc_Kernel, 12, thisWork * INSize * sizeof(cl_int), NULL); //this is the array size of the lvc nodes...uses local mem
+        if (err != CL_SUCCESS) {
+            NSLog(@"Failure setting argument 15");
+            calcerr = [NSError errorWithDomain:@"plexusCalc" code:1005 userInfo:argFail];
+            return calcerr;
+        }
+        
+
+        
+        timer = [startcalc timeIntervalSinceNow] * -1000.0;
+        //NSLog(@"Before kernel enqueue %f since starting calc fxn", timer);
+        
+        //Enqueue kernel
+        err = CL_SUCCESS;
+        err = clEnqueueNDRangeKernel(
+                                     cl_queue,         // a valid command queue
+                                     bncalc_Kernel,           // a valid kernel object
+                                     1,                       // the data dimensions                   [4]
+                                     NULL,                    // reserved; must be NULL
+                                     &worksize,                  // work sizes for each dimension         [5]
+                                     NULL,                   // work-group sizes for each dimension   [6]
+                                     0,                       // num entires in event wait list        [7]
+                                     NULL,                    // event wait list                       [8]
+                                     NULL);                   // on return, points to new event object [9]
+        
+        
+        if (err != CL_SUCCESS){
+            NSLog(@"Failure enqueueing kernel. Error %i", err);
+            
+            NSString * recStr = @"The OpenCL error returned is %i";
+            NSString * errStr = [NSString stringWithFormat:@"%i", err];
+            NSString * recerrStr = [recStr stringByAppendingString:errStr];
+            
+            NSDictionary *enqueueFail = @{//1006
+                                          NSLocalizedDescriptionKey: NSLocalizedString(@"OpenCL", nil),
+                                          NSLocalizedFailureReasonErrorKey: NSLocalizedString(@"The OpenCL Kernel has failed to enqueue.", nil),
+                                          NSLocalizedRecoverySuggestionErrorKey: NSLocalizedString(recerrStr, nil)
+                                          };
+            calcerr = [NSError errorWithDomain:@"plexusCalc" code:1006 userInfo:enqueueFail];
+            return calcerr;
+        }
+            
+            
+
             //add completed
             
             ct += thisWork;
@@ -1152,103 +1154,101 @@ static void *ProgressObserverContext = &ProgressObserverContext;
                 
             });
             
-            //   NSLog(@"******");
+           //    NSLog(@"******");
             
             
             
             
             
             //end device loop
+            tt++;
             if(ct >= [computes intValue]) break; //in case we do not need all the devices
-        }
-        
-        //  NSLog(@"ENDED CT loop");
-        //make sure all queues complete before we read results from the buffers
-        for(int dev = 0; dev < num_devices; dev++){
-            clFinish(cl_queues[dev]);
-        }
-        //  NSLog(@"ENDED cl_finish loop");
+            timer = [startcalc timeIntervalSinceNow] * -1000.0;
+          //  NSLog(@"Bottom of ct loop %f since starting calc fxn", timer);
         
         
+    
 
-        
-        
-        //read results
-        for(int dev = 0; dev < num_devices; dev++) {
-            
-            
-            for(int i=0;i<bnreadsizes[dev];i++){
-                //  NSLog(@"state %i : result %f", bnstatesarrays[dev][i], bnresultsarrays[dev][i]);
-                
-            }
-            
-            int nodecount = 0;
-            for(i=0;i<bnreadsizes[dev];i++){
-                // NSLog(@"%i: %@ goes into node %i" ,i, [NSNumber numberWithFloat:bnresultsarrays[dev][i]], nodecount);
-                
-                if(firsttime){
-                    NSMutableArray *newPA = [[NSMutableArray alloc] initWithObjects:[NSNumber numberWithFloat:bnresultsarrays[dev][i]], nil];
-                    [resultNodes addObject:newPA];
-                    
-                }
-                else {
-                    [[resultNodes objectAtIndex:nodecount] addObject:[NSNumber numberWithFloat:bnresultsarrays[dev][i]]];
-                }
-                
-                nodecount++;
-                if(nodecount >= [initialNodes count]){
-                    firsttime = FALSE;
-                    nodecount=0;
-                }
-            }
-        }
-        
-        for(int dev = 0; dev < num_devices; dev++){
-            
-            
-            clReleaseMemObject(bnresultsbufs[dev]);
-            clReleaseMemObject(offsetbufs[dev]);
-            
-            
-        }
         
         
         
         //end while ct < computes
     }
     
-    double results_ms = [startcalc timeIntervalSinceNow] * -1000.0;
-    NSLog(@"After CT %f since starting calc fxn", results_ms);
-    /*
-     for(int dev = 0; dev < num_devices; dev++){
-     clFinish(cl_queues[dev]);
+
+    
+
+    clFinish(cl_queue); //FIXME go back to enqueue read buffer instead?
      
-     }
-     */
-    
-    //
     
     
+    timer = [startcalc timeIntervalSinceNow] * -1000.0;
+     NSLog(@"After clFinish %f since starting calc fxn", timer);
     
-    for(int dev = 0; dev < num_devices; dev++){
-        
-        clEnqueueUnmapMemObject(cl_queues[dev], paramsbuf, mappedParams,  0, NULL, NULL);
-        clEnqueueUnmapMemObject(cl_queues[dev], freqbuf, mappedFreqs,  0, NULL, NULL);
-        clEnqueueUnmapMemObject(cl_queues[dev], infnetbuf, mappedInfnet,  0, NULL, NULL);
-        clEnqueueUnmapMemObject(cl_queues[dev], cptnetbuf, mappedCptnet,  0, NULL, NULL);
-        clEnqueueUnmapMemObject(cl_queues[dev], cptnetbuf, mappedCptnet,  0, NULL, NULL);
-        clEnqueueUnmapMemObject(cl_queues[dev], priordisttypebuf, mappedPriordisttype,  0, NULL, NULL);
-        clEnqueueUnmapMemObject(cl_queues[dev], priorv1buf, mappedPriorv1s,  0, NULL, NULL);
-        clEnqueueUnmapMemObject(cl_queues[dev], priorv2buf, mappedPriorv2s,  0, NULL, NULL);
+    
+    
+    
+    for(int dev = 0; dev < numpasses; dev++) {
         
         
-        clReleaseCommandQueue(cl_queues[dev]);
+        int nodecount = 0;
+        for(i=0;i<bnreadsize;i++){
+          //   NSLog(@"Pass %i run %i: %@ goes into node %i" ,dev, i, [NSNumber numberWithFloat:bnresultsarrays[dev][i]], nodecount);
+            
+            if(firsttime){
+                NSMutableArray *newPA = [[NSMutableArray alloc] initWithObjects:[NSNumber numberWithFloat:bnresultsarrays[dev][i]], nil];
+                [resultNodes addObject:newPA];
+                
+            }
+            else {
+                [[resultNodes objectAtIndex:nodecount] addObject:[NSNumber numberWithFloat:bnresultsarrays[dev][i]]];
+            }
+            
+            nodecount++;
+            if(nodecount >= [initialNodes count]){
+                firsttime = FALSE;
+                nodecount=0;
+            }
+        }
+        
     }
     
+    timer = [startcalc timeIntervalSinceNow] * -1000.0;
+    NSLog(@"After results read %f since starting calc fxn", timer);
     
-   // clReleaseProgram(bncalc_program);
+    
+    for(int dev = 0; dev < numpasses; dev++){
+        
+        clEnqueueUnmapMemObject(cl_queue, offsetbufs[dev], offsetarrays[dev],  0, NULL, NULL);
+        clEnqueueUnmapMemObject(cl_queue, bnresultsbufs[dev], bnresultsarrays[dev],  0, NULL, NULL);
+        
+        
+    }
+   
+    
+
+    
+    
+    
+
+        
+    clEnqueueUnmapMemObject(cl_queue, paramsbuf, mappedParams,  0, NULL, NULL);
+    clEnqueueUnmapMemObject(cl_queue, freqbuf, mappedFreqs,  0, NULL, NULL);
+    clEnqueueUnmapMemObject(cl_queue, infnetbuf, mappedInfnet,  0, NULL, NULL);
+    clEnqueueUnmapMemObject(cl_queue, cptnetbuf, mappedCptnet,  0, NULL, NULL);
+    clEnqueueUnmapMemObject(cl_queue, cptnetbuf, mappedCptnet,  0, NULL, NULL);
+    clEnqueueUnmapMemObject(cl_queue, priordisttypebuf, mappedPriordisttype,  0, NULL, NULL);
+    clEnqueueUnmapMemObject(cl_queue, priorv1buf, mappedPriorv1s,  0, NULL, NULL);
+    clEnqueueUnmapMemObject(cl_queue, priorv2buf, mappedPriorv2s,  0, NULL, NULL);
+    
+    
+    clReleaseCommandQueue(cl_queue);
+    
+    
+    
+
     clReleaseKernel(bncalc_Kernel);
-   // clReleaseContext(context);
+
     
     
     
@@ -1258,6 +1258,9 @@ static void *ProgressObserverContext = &ProgressObserverContext;
     
     //if end is reached safely, no error
     
+    
+    timer = [startcalc timeIntervalSinceNow] * -1000.0;
+    NSLog(@"At end of calc fxn %f since starting calc fxn", timer);
     
     return calcerr;
     
@@ -1272,6 +1275,14 @@ static void *ProgressObserverContext = &ProgressObserverContext;
     return resultNodes;
 }
 
+
+
+-(void)observeValueForKeyPath:(NSString *)aKeyPath ofObject:(id)anObject
+                       change:(NSDictionary *)aChange context:(void *)aContext
+{
+
+    [self clCompile];
+}
 
 
 @end
