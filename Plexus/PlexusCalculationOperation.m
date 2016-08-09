@@ -1249,7 +1249,7 @@ static void *ProgressObserverContext = &ProgressObserverContext;
     clEnqueueUnmapMemObject(cl_queue, priorv2buf, mappedPriorv2s,  0, NULL, NULL);
     
     
-    clReleaseCommandQueue(cl_queue);
+   // clReleaseCommandQueue(cl_queue);
     
     
     
