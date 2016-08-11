@@ -200,7 +200,7 @@ static void *ProgressObserverContext = &ProgressObserverContext;
         
     
     
-    cl_queue = clCreateCommandQueue(context, the_device, 0, &err); //chooses the first available of chosen devices
+    cl_queue = clCreateCommandQueue(context, the_device, CL_QUEUE_PROFILING_ENABLE, &err); //chooses the first available of chosen devices
     
     if(!cl_queue || err)
     {
@@ -230,6 +230,7 @@ static void *ProgressObserverContext = &ProgressObserverContext;
         bn_program = clCreateProgramWithSource(context, 1, &source, &length, &err);
         if (!bn_program || err != CL_SUCCESS) {
             NSLog(@"BN Calc: Fail to create OpenCL program object.");
+            NSLog(@"error code: %i", err);
             calcerr = [NSError errorWithDomain:@"plexusCalc" code:1002 userInfo:kernelFail];
             return calcerr;
         }
@@ -257,10 +258,20 @@ static void *ProgressObserverContext = &ProgressObserverContext;
             
             size_t len;
             
-            // declare a buffer to hold the build info
-            char buffer[10000];
+
             
             // get the details on the error, and store it in buffer
+            clGetProgramBuildInfo(
+                                  bn_program,              // the program object being queried
+                                  the_device,            // the device for which the OpenCL code was built
+                                  CL_PROGRAM_BUILD_LOG, // specifies that we want the build log
+                                  0,       // the size of the buffer
+                                  NULL,               // on return, holds the build log
+                                  &len);                // on return, the actual size in bytes of the
+            //  error data returned
+            
+            char *buffer = calloc(len, sizeof(char));
+            
             clGetProgramBuildInfo(
                                   bn_program,              // the program object being queried
                                   the_device,            // the device for which the OpenCL code was built
@@ -268,8 +279,10 @@ static void *ProgressObserverContext = &ProgressObserverContext;
                                   sizeof(buffer),       // the size of the buffer
                                   buffer,               // on return, holds the build log
                                   &len);                // on return, the actual size in bytes of the
-            //  error data returned
+            
+            NSLog(@"len %zu", len);
             NSLog(@"error code: %i", err);
+            NSLog(@"buffer %s", buffer);
             NSString *buf = [NSString stringWithCString:buffer encoding:4];
             NSLog(@"Build error message: %@", buf);
             
@@ -585,8 +598,7 @@ static void *ProgressObserverContext = &ProgressObserverContext;
        NSLog(@"There is a program.");
     }
     
-    
-    
+
   
     
     
@@ -596,6 +608,7 @@ static void *ProgressObserverContext = &ProgressObserverContext;
     bncalc_Kernel = clCreateKernel(bn_program, "BNGibbs", &err);
     if (!bncalc_Kernel || err != CL_SUCCESS) {
         NSLog(@"Couldn't find the function 'BNGibbs' in the program.");
+        NSLog(@"error code: %i", err);
         calcerr = [NSError errorWithDomain:@"plexusCalc" code:1002 userInfo:kernelFail];
         return calcerr;
     }
@@ -881,6 +894,7 @@ static void *ProgressObserverContext = &ProgressObserverContext;
     if(gWorkItems > kwBuf) gWorkItems = kwBuf;
     //if(gWorkItems > [computes intValue]) gWorkItems = [computes intValue];
     
+    //gWorkItems = 1;
     
     NSLog(@"work-group items %lu", (long unsigned)gWorkItems);
     worksize = gWorkItems;
@@ -893,8 +907,7 @@ static void *ProgressObserverContext = &ProgressObserverContext;
         numpasses++;
     }
     
-   // size_t bnstatesize = worksize * [initialNodes count];
-    
+
     
     
     cl_int * offsetarrays[numpasses];
@@ -919,6 +932,8 @@ static void *ProgressObserverContext = &ProgressObserverContext;
     
       cl_mem * bnresultsbufs = malloc(sizeof(cl_mem)*numpasses);
       cl_mem * offsetbufs = malloc(sizeof(cl_mem)*numpasses);
+        cl_event * prof_events = malloc(sizeof(cl_event)*numpasses);
+
     
     while(ct < [computes intValue]){
         
@@ -1125,7 +1140,7 @@ static void *ProgressObserverContext = &ProgressObserverContext;
                                      NULL,                   // work-group sizes for each dimension   [6]
                                      0,                       // num entires in event wait list        [7]
                                      NULL,                    // event wait list                       [8]
-                                     NULL);                   // on return, points to new event object [9]
+                                     &prof_events[tt]);                   // on return, points to new event object [9]
         
         
         if (err != CL_SUCCESS){
@@ -1190,6 +1205,21 @@ static void *ProgressObserverContext = &ProgressObserverContext;
      NSLog(@"After clFinish %f since starting calc fxn", timer);
     
     
+    for(int dev = 0; dev < numpasses; dev++){
+        cl_ulong ev_start_time=(cl_ulong)0;
+        cl_ulong ev_end_time=(cl_ulong)0;
+        cl_ulong ev_queued_time=(cl_ulong)0;
+        cl_ulong ev_submit_time=(cl_ulong)0;
+        err = clWaitForEvents(1, &prof_events[dev]);
+        err |= clGetEventProfilingInfo(prof_events[dev], CL_PROFILING_COMMAND_START, sizeof(cl_ulong), &ev_start_time, NULL);
+        err |= clGetEventProfilingInfo(prof_events[dev], CL_PROFILING_COMMAND_END, sizeof(cl_ulong), &ev_end_time, NULL);
+        err |= clGetEventProfilingInfo(prof_events[dev], CL_PROFILING_COMMAND_QUEUED, sizeof(cl_ulong), &ev_queued_time, NULL);
+        err |= clGetEventProfilingInfo(prof_events[dev], CL_PROFILING_COMMAND_SUBMIT, sizeof(cl_ulong), &ev_submit_time, NULL);
+        float que_time_gpu = (float)(ev_submit_time - ev_queued_time)/1000; // in usec
+        float sub_time_gpu = (float)(ev_start_time - ev_submit_time)/1000; // in usec
+        float run_time_gpu = (float)(ev_end_time - ev_start_time)/1000; // in usec
+        NSLog(@"Pass %i: Queued until submitted %f. Submitted until start %f. Start until finished %f", dev, que_time_gpu, sub_time_gpu, run_time_gpu);
+    }
     
     int totcount = 0;
     for(int dev = 0; dev < numpasses; dev++) {
