@@ -15,8 +15,8 @@
 #pragma OPENCL EXTENSION cl_khr_fp64 : enable
 //#define DOUBLE_SUPPORT_AVAILABLE
 #else
-#define double float //hackity hacky hack
-#define M_E 2.7182818284590452353602874713527f //super ultra hacky hack
+#define double float
+#define M_E 2.7182818284590452353602874713527f
 #endif
 
 
@@ -246,19 +246,22 @@ __kernel void BNGibbs(__constant int* offsets, __constant int* params, __constan
     
     
     
-    int gid = get_global_id(0); //A global identifier for this work-item. Used to access its part of the offset, bnstates and results
+    __local int gid;
+    gid = get_global_id(0); //A global identifier for this work-item. Used to access its part of the offset, bnstates and results
     
-    int boffset = gid*params[0]; //offset to part of bnstates buffer used by this work-item
+    __local int boffset;
+    boffset = gid*params[0]; //offset to part of bnstates buffer used by this work-item
     
-    int sparseCPTsize = pow(2.0f, params[1]);
+    __local int sparseCPTsize;
+    sparseCPTsize = pow(2.0f, params[1]);
     
-    //int trueoffset = ctoffset+gid;
     
      // printf("--------------------------\n");
    // printf("work id is %i, bnsize is %i, maxCPTsize is %i, number of runs %i and burn-in %i \n", gid, params[0],params[1], params[2],params[3]);
     
     //Seed variable for random number generator
-    int x = offsets[gid]*get_global_size(0);
+    __local int x;
+    x = offsets[gid]*get_global_size(0);
     
     
 
@@ -270,21 +273,34 @@ __kernel void BNGibbs(__constant int* offsets, __constant int* params, __constan
     
     
     //Count variables
-    int g, h, i, k = 0;
+    __local int g;
+    __local int h;
+    __local int i;
+    __local int k;
+    g = 0;
+    h = 0;
+    i = 0;
+    k = 0;
     
     
-    int binsum = 0; //Binary sum of the states of all the nodes that influence the current node
-    float binx = 0; //Float coutn variable, needed because will be using 2.0^binx
+    //int binsum = 0; //Binary sum of the states of all the nodes that influence the current node
+   // float binx = 0; //Float coutn variable, needed because will be using 2.0^binx
     
-    int infoffset = 0; //Offset variale for influences array
-    int cptoffset = 0; //Offset variale for CPT array
+    __local infoffset;
+    infoffset = 0; //Offset variale for influences array
+    __local int cptoffset;
+    cptoffset = 0; //Offset variale for CPT array
     
     
-    int sampletot = 0; //Number of sampled results
-    int laststate = -1; //Previous state of a node, used to check for a stationary distribution
-    int runstationary = 0; //Number of times in a row the chosen state is the same as before. Used to see if we are converging on a stationary distritbution.
+    __local int sampletot;
+    sampletot = 0; //Number of sampled results
+    __local int laststate;
+    laststate = -1; //Previous state of a node, used to check for a stationary distribution
+    __local int runstationary;
+    runstationary = 0; //Number of times in a row the chosen state is the same as before. Used to see if we are converging on a stationary distritbution.
     
-    int shuffleoffset = gid * params[0];
+    __local int shuffleoffset;
+    shuffleoffset = gid * params[0];
     
     
     
@@ -399,7 +415,8 @@ __kernel void BNGibbs(__constant int* offsets, __constant int* params, __constan
     }
     printf("\n\n");
 */
-    
+  
+
     //****************************************************************
     //****************************************************************
     //MAIN RUN LOOP
@@ -411,7 +428,10 @@ __kernel void BNGibbs(__constant int* offsets, __constant int* params, __constan
         
         
         //Fisher-Yates shuffle: randomly sort the node array
-        int j, tmp = 0;
+        __local int j;
+        j = 0;
+        __local int tmp;
+        tmp = 0;
         for (i = params[0] - 1; i > 0; i--) {
             j = randomx(&tinymt, i + 1);
             tmp = shufflenodes[j+shuffleoffset];
@@ -471,21 +491,31 @@ __kernel void BNGibbs(__constant int* offsets, __constant int* params, __constan
             //Morris Traversal
             //****************************************************************
             //****************************************************************
-            int cur_node = sn; //root
-            bool run_visit = true;
-            int oldparent = -1;
-            int next_child = -1;
-            int parentholder = -1;
-            float product = 1.0;
+            __local int cur_node;
+            cur_node = sn; //root of tree
+            __local bool run_visit;
+            run_visit = true;
+            __local int oldparent;
+            oldparent = -1;
+            __local int next_child;
+            next_child = -1;
+            __local int parentholder;
+            parentholder = -1;
+            __local float product;
+            product = 1.0;
+            __local double flip;
+            flip = -999.00;
+            __local int curoffset;
+            __local int parentoffset;
             
               //  printf("state of %i WAS %i\n", sn, bnstates[sn+boffset]);
             while (cur_node >=0){
-                int curoffset = (params[1]*2) * cur_node; //Location in input array
+                curoffset = (params[1]*2) * cur_node; //Location in input array
                 
                //    printf("\ncur_node %i  parent %i lvc %i\n", cur_node, parentnodes[cur_node+shuffleoffset], lastvisitedchild[cur_node+shuffleoffset]);
                 if(run_visit == true){
                     // printf("VISIT  node %i\n", cur_node);
-                    
+
                     if(infnet[curoffset] >= 0) {//the first infBy not -1 means this node has children
                         //      printf("has children, dependent node. State currenbtly %i\n", bnstates[cur_node+curoffset]);
                         next_child = 0;//next child is the first one
@@ -501,7 +531,7 @@ __kernel void BNGibbs(__constant int* offsets, __constant int* params, __constan
                     else{
                          //   printf("has NO children. independent node\n");
                         
-                        double flip = -999.00;
+                        
                         
                         while(flip < 0 || flip > 1){
                             switch(priordisttypes[sn]) {
@@ -542,7 +572,7 @@ __kernel void BNGibbs(__constant int* offsets, __constant int* params, __constan
                 
                 if(next_child >=0 && infnet[curoffset+next_child] >=0){ //if we are NOT at end of children
                     oldparent = cur_node;
-                    int parentoffset = (params[1]*2) * cur_node; //Location in input array
+                    parentoffset = (params[1]*2) * cur_node; //Location in input array
                     cur_node = infnet[parentoffset+next_child];
                     parentnodes[cur_node+shuffleoffset] = oldparent;
                      // printf("not at end. going to child %i whose parent is %i\n", cur_node, parentnodes[cur_node+shuffleoffset]);
@@ -579,8 +609,8 @@ __kernel void BNGibbs(__constant int* offsets, __constant int* params, __constan
             
             
             //Iterate through the nodes that influence this node to create the binary sum of the influences
-            binsum = 0;
-            binx =0;
+         //   binsum = 0;
+           // binx =0;
             /*
              for (i=infoffset; i<(infoffset+params[1]); i++){
              if(infnet[i] < 0) break;
@@ -612,6 +642,7 @@ __kernel void BNGibbs(__constant int* offsets, __constant int* params, __constan
         }
         
         
+        
         //Begin to record results after burnins value exceeded
         if(g>=params[3]){
             for(k=0; k<params[0]; k++){
@@ -626,6 +657,7 @@ __kernel void BNGibbs(__constant int* offsets, __constant int* params, __constan
         
         //END loop of runs with count variable g
     }
+    
     
     for(int l=0; l<params[0]; l++){
         bnresults[l+boffset] /= sampletot; //To obtain posterior point, divide the compiled results through by number of samples taken
