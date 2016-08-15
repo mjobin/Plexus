@@ -35,6 +35,12 @@
     NSNumber *burnins;
     NSNumber *computes;
     NSMutableArray *resultNodes;
+    
+    NSDictionary *noOpenCL;
+    NSDictionary *noNode;
+    NSDictionary *kernelFail;
+    NSDictionary *bufferFail;
+    NSDictionary *argFail;
 
 }
 

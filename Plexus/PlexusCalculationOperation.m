@@ -26,6 +26,36 @@ static void *ProgressObserverContext = &ProgressObserverContext;
                                                 forKeyPath:@"hardwareDevice" options:NSKeyValueObservingOptionNew
                                                    context:NULL];
         
+        noOpenCL = @{//1000
+                     NSLocalizedDescriptionKey: NSLocalizedString(@"No available OpenCL devices", nil),
+                     NSLocalizedFailureReasonErrorKey: NSLocalizedString(@"No available OpenCL devices", nil),
+                     NSLocalizedRecoverySuggestionErrorKey: NSLocalizedString(@"Restart the program to reset", nil)
+                     };
+        
+        noNode = @{//1001
+                   NSLocalizedDescriptionKey: NSLocalizedString(@"No nodes in model", nil),
+                   NSLocalizedFailureReasonErrorKey: NSLocalizedString(@"No nodes in model", nil),
+                   NSLocalizedRecoverySuggestionErrorKey: NSLocalizedString(@"Make sure that the model has at least one node before calculation", nil)
+                   };
+        
+        kernelFail = @{//1002
+                       NSLocalizedDescriptionKey: NSLocalizedString(@"OpenCL", nil),
+                       NSLocalizedFailureReasonErrorKey: NSLocalizedString(@"The OpenCL Kernel has failed to build or enqueue", nil),
+                       NSLocalizedRecoverySuggestionErrorKey: NSLocalizedString(@"Restart the program to reset", nil)
+                       };
+        bufferFail = @{//1004
+                       NSLocalizedDescriptionKey: NSLocalizedString(@"OpenCL", nil),
+                       NSLocalizedFailureReasonErrorKey: NSLocalizedString(@"The OpenCL could not create a buffer", nil),
+                       NSLocalizedRecoverySuggestionErrorKey: NSLocalizedString(@"Restart the program to reset", nil)
+                       };
+        argFail = @{//1005
+                    NSLocalizedDescriptionKey: NSLocalizedString(@"OpenCL", nil),
+                    NSLocalizedFailureReasonErrorKey: NSLocalizedString(@"The OpenCL could not set one of its arguments", nil),
+                    NSLocalizedRecoverySuggestionErrorKey: NSLocalizedString(@"Restart the program to reset", nil)
+                    };
+
+
+        
     }
     
    
@@ -45,37 +75,7 @@ static void *ProgressObserverContext = &ProgressObserverContext;
     
     NSError * calcerr = nil;
     
-    NSDictionary *noOpenCL = @{//1000
-                               NSLocalizedDescriptionKey: NSLocalizedString(@"No available OpenCL devices", nil),
-                               NSLocalizedFailureReasonErrorKey: NSLocalizedString(@"No available OpenCL devices", nil),
-                               NSLocalizedRecoverySuggestionErrorKey: NSLocalizedString(@"Restart the program to reset", nil)
-                               };
-    
-    NSDictionary *noNode = @{//1001
-                             NSLocalizedDescriptionKey: NSLocalizedString(@"No nodes in model", nil),
-                             NSLocalizedFailureReasonErrorKey: NSLocalizedString(@"No nodes in model", nil),
-                             NSLocalizedRecoverySuggestionErrorKey: NSLocalizedString(@"Make sure that the model has at least one node before calculation", nil)
-                             };
-    
-    NSDictionary *kernelFail = @{//1002
-                                 NSLocalizedDescriptionKey: NSLocalizedString(@"OpenCL", nil),
-                                 NSLocalizedFailureReasonErrorKey: NSLocalizedString(@"The OpenCL Kernel has failed to build or enqueue", nil),
-                                 NSLocalizedRecoverySuggestionErrorKey: NSLocalizedString(@"Restart the program to reset", nil)
-                                 };
-    
-    NSDictionary *bufferFail = @{//1004
-                                 NSLocalizedDescriptionKey: NSLocalizedString(@"OpenCL", nil),
-                                 NSLocalizedFailureReasonErrorKey: NSLocalizedString(@"The OpenCL could not create a buffer", nil),
-                                 NSLocalizedRecoverySuggestionErrorKey: NSLocalizedString(@"Restart the program to reset", nil)
-                                 };
-    
-    NSDictionary *argFail = @{//1005
-                              NSLocalizedDescriptionKey: NSLocalizedString(@"OpenCL", nil),
-                              NSLocalizedFailureReasonErrorKey: NSLocalizedString(@"The OpenCL could not set one of its arguments", nil),
-                              NSLocalizedRecoverySuggestionErrorKey: NSLocalizedString(@"Restart the program to reset", nil)
-                              };
-    
-    
+
      
      NSUInteger devPref = [[[[NSUserDefaultsController sharedUserDefaultsController] values] valueForKey:@"hardwareDevice"] integerValue];
      //    NSLog(@"hw pref pref %lu", (unsigned long)devPref);
@@ -311,41 +311,6 @@ static void *ProgressObserverContext = &ProgressObserverContext;
     
     
     NSDate * startcalc = [NSDate date];
-    
-    
-    
-    
-
-    NSDictionary *noOpenCL = @{//1000
-                               NSLocalizedDescriptionKey: NSLocalizedString(@"No available OpenCL devices", nil),
-                               NSLocalizedFailureReasonErrorKey: NSLocalizedString(@"No available OpenCL devices", nil),
-                               NSLocalizedRecoverySuggestionErrorKey: NSLocalizedString(@"Restart the program to reset", nil)
-                               };
-    
-    NSDictionary *noNode = @{//1001
-                             NSLocalizedDescriptionKey: NSLocalizedString(@"No nodes in model", nil),
-                             NSLocalizedFailureReasonErrorKey: NSLocalizedString(@"No nodes in model", nil),
-                             NSLocalizedRecoverySuggestionErrorKey: NSLocalizedString(@"Make sure that the model has at least one node before calculation", nil)
-                             };
-    
-    NSDictionary *kernelFail = @{//1002
-                                 NSLocalizedDescriptionKey: NSLocalizedString(@"OpenCL", nil),
-                                 NSLocalizedFailureReasonErrorKey: NSLocalizedString(@"The OpenCL Kernel has failed to build or enqueue", nil),
-                                 NSLocalizedRecoverySuggestionErrorKey: NSLocalizedString(@"Restart the program to reset", nil)
-                                 };
-    
-    NSDictionary *bufferFail = @{//1004
-                                 NSLocalizedDescriptionKey: NSLocalizedString(@"OpenCL", nil),
-                                 NSLocalizedFailureReasonErrorKey: NSLocalizedString(@"The OpenCL could not create a buffer", nil),
-                                 NSLocalizedRecoverySuggestionErrorKey: NSLocalizedString(@"Restart the program to reset", nil)
-                                 };
-    
-    NSDictionary *argFail = @{//1005
-                              NSLocalizedDescriptionKey: NSLocalizedString(@"OpenCL", nil),
-                              NSLocalizedFailureReasonErrorKey: NSLocalizedString(@"The OpenCL could not set one of its arguments", nil),
-                              NSLocalizedRecoverySuggestionErrorKey: NSLocalizedString(@"Restart the program to reset", nil)
-                              };
-    
     
     
     NSMutableDictionary *cptCalcFail = [NSMutableDictionary new]; //1006
@@ -1195,7 +1160,7 @@ static void *ProgressObserverContext = &ProgressObserverContext;
        // NSLog(@"***************************");
         for (NSNumber * chknum in passchk) {
            // NSLog(@"checking on %@", chknum);
-            cl_int prof_status = clGetEventInfo(prof_events[[chknum intValue]], CL_EVENT_COMMAND_EXECUTION_STATUS, sizeof(cl_int), (void *)&info, NULL);
+            clGetEventInfo(prof_events[[chknum intValue]], CL_EVENT_COMMAND_EXECUTION_STATUS, sizeof(cl_int), (void *)&info, NULL);
             if ( info == CL_COMPLETE ){
               //  NSLog(@"*****Event %i complete", [chknum intValue]);
                 dispatch_async(dispatch_get_main_queue(), ^{
@@ -1282,9 +1247,6 @@ static void *ProgressObserverContext = &ProgressObserverContext;
    
     
 
-    
-    
-    
 
         
     clEnqueueUnmapMemObject(cl_queue, paramsbuf, mappedParams,  0, NULL, NULL);
@@ -1296,10 +1258,7 @@ static void *ProgressObserverContext = &ProgressObserverContext;
     clEnqueueUnmapMemObject(cl_queue, priorv1buf, mappedPriorv1s,  0, NULL, NULL);
     clEnqueueUnmapMemObject(cl_queue, priorv2buf, mappedPriorv2s,  0, NULL, NULL);
     
-    
-   // clReleaseCommandQueue(cl_queue);
-    
-    
+
     
 
     clReleaseKernel(bncalc_Kernel);

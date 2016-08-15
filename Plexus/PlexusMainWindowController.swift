@@ -115,7 +115,20 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
       //  NSNotificationCenter.defaultCenter().addObserver(self, selector: "mocDidChange:", name: NSManagedObjectContextDidSaveNotification, object: nil)
         
         dispatch_async(dispatch_get_global_queue(priority, 0)) {
-            let calcerr = self.calcop.clCompile();
+            let operr = self.calcop.clCompile();
+            
+           if(operr != nil){
+                
+                let calcAlert : NSAlert = NSAlert()
+                calcAlert.alertStyle = NSAlertStyle.WarningAlertStyle
+                calcAlert.messageText = (operr?.localizedFailureReason)!
+                calcAlert.informativeText = (operr?.localizedRecoverySuggestion)!
+                calcAlert.addButtonWithTitle("OK")
+                
+                let _ = calcAlert.runModal()
+
+            }
+            
         }
         
         
