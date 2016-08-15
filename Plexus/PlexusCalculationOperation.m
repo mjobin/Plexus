@@ -916,6 +916,10 @@ static void *ProgressObserverContext = &ProgressObserverContext;
      NSLog(@"bnreadsize: %zu worksize %zu computes %i numpasses %i", bnreadsize, worksize, [computes intValue], numpasses);
     
 
+    NSMutableArray *passchk = [NSMutableArray arrayWithCapacity:numpasses];
+    for(i=0; i<numpasses; i++){
+        [passchk addObject:[NSNumber numberWithInt:i]];
+    }
 
     
     timer = [startcalc timeIntervalSinceNow] * -1000.0;
@@ -1165,17 +1169,8 @@ static void *ProgressObserverContext = &ProgressObserverContext;
             
             ct += thisWork;
             
-            
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [progInd incrementBy:thisWork];
-                curLabel.stringValue = [NSString stringWithFormat:@"%i", ct];
+
                 
-            });
-            
-           //    NSLog(@"******");
-            
-            
-            
             
             
             //end device loop
@@ -1193,11 +1188,34 @@ static void *ProgressObserverContext = &ProgressObserverContext;
         
         //end while ct < computes
     }
+    cl_int info;
+  
+    while([passchk count]>0){
+        NSMutableArray *tmppasschk = [NSMutableArray arrayWithCapacity:numpasses];
+       // NSLog(@"***************************");
+        for (NSNumber * chknum in passchk) {
+           // NSLog(@"checking on %@", chknum);
+            cl_int prof_status = clGetEventInfo(prof_events[[chknum intValue]], CL_EVENT_COMMAND_EXECUTION_STATUS, sizeof(cl_int), (void *)&info, NULL);
+            if ( info == CL_COMPLETE ){
+              //  NSLog(@"*****Event %i complete", [chknum intValue]);
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [progInd incrementBy:worksize];
+                    curLabel.stringValue = [NSString stringWithFormat:@"%i", ct];
+                    //FIXME can only advance if first time completing this one
+                });
+     
+            }
+            else{
+                [tmppasschk addObject:chknum];
+            }
+        }
+        passchk = tmppasschk;
+        usleep(10000);
+    }
     
 
-    
 
-    clFinish(cl_queue); //FIXME go back to enqueue read buffer instead?
+
      
     
     
@@ -1218,7 +1236,7 @@ static void *ProgressObserverContext = &ProgressObserverContext;
         float que_time_gpu = (float)(ev_submit_time - ev_queued_time)/1000; // in usec
         float sub_time_gpu = (float)(ev_start_time - ev_submit_time)/1000; // in usec
         float run_time_gpu = (float)(ev_end_time - ev_start_time)/1000; // in usec
-        NSLog(@"Pass %i: Queued until submitted %f. Submitted until start %f. Start until finished %f", dev, que_time_gpu, sub_time_gpu, run_time_gpu);
+       // NSLog(@"Pass %i: Queued until submitted %f. Submitted until start %f. Start until finished %f", dev, que_time_gpu, sub_time_gpu, run_time_gpu);
     }
     
     int totcount = 0;
