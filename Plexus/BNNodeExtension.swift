@@ -21,10 +21,18 @@ extension BNNode {
         influences.addObject(value)
     }
     
+
+
+
+    
     func addInfluencedByObject(value:BNNode) {
         let influencedBy = self.mutableSetValueForKey("influencedBy");
         influencedBy.addObject(value)
     }
+    
+
+
+    
     func getCPTFreq(sender:AnyObject) -> cl_float {
         return cl_float(self.cptFreq)
     }
@@ -277,7 +285,40 @@ extension BNNode {
     }
     
     
+    func DFTcyclechk(nodeStack:[BNNode]) -> Bool {
+        
+       // print("checking \(self.nodeLink.name)")
+        var tmpnodeStack = nodeStack
+        
+        //check if any two in the array are the same, if so return true
+        for chknode in tmpnodeStack {
 
+            var chkcount = 0
+            for chkchknode in tmpnodeStack{
+                if(chknode == chkchknode){
+                    chkcount += 1
+                }
+            }
+            //print("chknode \(chknode.nodeLink.name) has \(chkcount) copies")
+            if(chkcount > 1) {
+                return true
+            }
+        }
+        //
+
+        let theInfluences : [BNNode] = self.influences.allObjects as! [BNNode]
+
+        for thisInfluences in theInfluences {
+           // print("influences \(thisInfluences.nodeLink.name)")
+            tmpnodeStack.append(thisInfluences)
+            if(thisInfluences.DFTcyclechk(tmpnodeStack) == true){
+                return true;
+            }
+        }
+        
+        
+        return false;
+    }
     
     func CPT(sender:AnyObject, infBy:[BNNode], ftft:[NSNumber] , depth:Int) -> cl_float{
         var cpt : cl_float = 1.0

@@ -54,6 +54,19 @@ static void *ProgressObserverContext = &ProgressObserverContext;
                     NSLocalizedRecoverySuggestionErrorKey: NSLocalizedString(@"Restart the program to reset", nil)
                     };
 
+        
+        cptCalcFail = [NSMutableDictionary new]; //1006
+        [cptCalcFail setObject:@"CPTCalc" forKey:NSLocalizedDescriptionKey];
+        [cptCalcFail setObject:@"Check parameters for all nodes and Calculate again." forKey:NSLocalizedRecoverySuggestionErrorKey];
+        
+        cptInfFail = [NSMutableDictionary new]; //1007
+        [cptCalcFail setObject:@"CPTCalc" forKey:NSLocalizedDescriptionKey];
+        [cptCalcFail setObject:@"Node corrupt. Recreate dataset." forKey:NSLocalizedRecoverySuggestionErrorKey];
+        
+        cycleFail = [NSMutableDictionary new]; //1008
+        [cycleFail setObject:@"Cycle" forKey:NSLocalizedDescriptionKey];
+        [cycleFail setObject:@"Delete problem influences at node and check all nodes for cycles." forKey:NSLocalizedRecoverySuggestionErrorKey];
+        
 
         
     }
@@ -225,12 +238,11 @@ static void *ProgressObserverContext = &ProgressObserverContext;
     const char *source = [sourceData bytes];
     size_t length = [sourceData length];
     
-
+    //NSLog(@"source: %s", source);
     
         bn_program = clCreateProgramWithSource(context, 1, &source, &length, &err);
         if (!bn_program || err != CL_SUCCESS) {
-            NSLog(@"BN Calc: Fail to create OpenCL program object.");
-            NSLog(@"error code: %i", err);
+            NSLog(@"BN Calc: Fail to create OpenCL program object. Error code: %i", err);
             calcerr = [NSError errorWithDomain:@"plexusCalc" code:1002 userInfo:kernelFail];
             return calcerr;
         }
@@ -246,6 +258,7 @@ static void *ProgressObserverContext = &ProgressObserverContext;
         const char *ccCloptionsLine = [clOptionsLine cStringUsingEncoding:NSASCIIStringEncoding];
         
 
+    //NSLog(@"ccoptions line %s", ccCloptionsLine);
     
     //Build executables
 
@@ -253,7 +266,7 @@ static void *ProgressObserverContext = &ProgressObserverContext;
         err = clBuildProgram(bn_program, 1, &(the_device), ccCloptionsLine, NULL, NULL);
         if (err != CL_SUCCESS)
         {
-            NSLog(@"BN Calc: Failed to build executable.");
+            NSLog(@"BN Calc: Failed to build executable.Error code: %i", err);
             
             
             size_t len;
@@ -271,6 +284,7 @@ static void *ProgressObserverContext = &ProgressObserverContext;
             //  error data returned
             
             char *buffer = calloc(len, sizeof(char));
+            NSLog(@"buffer len %zu", len);
             
             clGetProgramBuildInfo(
                                   bn_program,              // the program object being queried
@@ -281,7 +295,6 @@ static void *ProgressObserverContext = &ProgressObserverContext;
                                   &len);                // on return, the actual size in bytes of the
             
             NSLog(@"len %zu", len);
-            NSLog(@"error code: %i", err);
             NSLog(@"buffer %s", buffer);
             NSString *buf = [NSString stringWithCString:buffer encoding:4];
             NSLog(@"Build error message: %@", buf);
@@ -313,13 +326,7 @@ static void *ProgressObserverContext = &ProgressObserverContext;
     NSDate * startcalc = [NSDate date];
     
     
-    NSMutableDictionary *cptCalcFail = [NSMutableDictionary new]; //1006
-    [cptCalcFail setObject:@"CPTCalc" forKey:NSLocalizedDescriptionKey];
-    [cptCalcFail setObject:@"Check parameters for all nodes and Calculate again." forKey:NSLocalizedRecoverySuggestionErrorKey];
-    
-    NSMutableDictionary *cptInfFail = [NSMutableDictionary new]; //1007
-    [cptCalcFail setObject:@"CPTCalc" forKey:NSLocalizedDescriptionKey];
-    [cptCalcFail setObject:@"Node corrupt. Recreate dataset." forKey:NSLocalizedRecoverySuggestionErrorKey];
+
     
     
     unsigned int i;
@@ -342,6 +349,21 @@ static void *ProgressObserverContext = &ProgressObserverContext;
     
     NSUInteger clRuns = [runs integerValue]; // to tranfer to buffer
     NSUInteger clBurnins = [burnins integerValue];
+    
+    //*****************************
+    //Check to make sure the graph is acyclic
+    //Advise deleting influences if not
+    //This should no longer happen since cycles checked on adding influences
+    for (BNNode * fNode in initialNodes) {
+        if([fNode DFTcyclechk:[NSArray arrayWithObject:fNode]]){
+            NSString * cycleFailNodeMesg = [[fNode nodeLink] name];
+            NSString * cycleFailMesg = [cycleFailNodeMesg stringByAppendingString:@" is the start of a cycle of influences."];
+            [cycleFail setObject:cycleFailMesg forKey:NSLocalizedFailureReasonErrorKey];
+            calcerr = [NSError errorWithDomain:@"plexusCalc" code:1008 userInfo:cycleFail];
+            return calcerr;
+        }
+    }
+    
     
     
     //get maximum size of inputs and outputs
@@ -556,11 +578,8 @@ static void *ProgressObserverContext = &ProgressObserverContext;
     
     
     if(bn_program == nil){
-        NSLog(@"No program, compile now.");
+        NSLog(@"No bn_program, compiling now.");
         [self clCompile];
-    }
-    else {
-       NSLog(@"There is a program.");
     }
     
 
@@ -568,7 +587,7 @@ static void *ProgressObserverContext = &ProgressObserverContext;
     
     
     timer = [startcalc timeIntervalSinceNow] * -1000.0;
-    NSLog(@"Before clCreateKernal %f since starting calc fxn", timer);
+    NSLog(@"Before clCreateKernel %f since starting calc fxn", timer);
     
     bncalc_Kernel = clCreateKernel(bn_program, "BNGibbs", &err);
     if (!bncalc_Kernel || err != CL_SUCCESS) {

@@ -41,6 +41,9 @@
     NSDictionary *kernelFail;
     NSDictionary *bufferFail;
     NSDictionary *argFail;
+    NSMutableDictionary *cptCalcFail;
+    NSMutableDictionary *cptInfFail;
+    NSMutableDictionary *cycleFail;
 
 }
 

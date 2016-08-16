@@ -99,7 +99,7 @@ class PlexusBNScene: SKScene {
                 
             }
             
-           // print ("mouseDOWN now touchedNode is \(touchedNode)")
+            //print ("mouseDOWN now touchedNode is \(touchedNode)")
 
             if(touchedNode.name == "bnNode"){
                 
@@ -116,11 +116,15 @@ class PlexusBNScene: SKScene {
                 let idArray : [BNNode] = [idNode.node]
 
                 nodesController.setSelectedObjects(idArray)
+                
+                
+
 
                 
                 if(theEvent.clickCount > 1){ //double-clicks open single node view
-                    NSNotificationCenter.defaultCenter().postNotificationName("edu.scu.Plexus.toggleSingleNode", object: self)
-                    
+
+                   // var contextMenu = NSMenu.init(title: "whut")
+                   // NSMenu.popUpContextMenu(contextMenu, withEvent: theEvent, forView: self.view!)
                 }
                 
             }
@@ -143,6 +147,9 @@ class PlexusBNScene: SKScene {
     }
     
     
+    override func rightMouseDown(theEvent: NSEvent) {
+        print("right mouse down")
+    }
     
     override func mouseDragged(theEvent: NSEvent) {
         
@@ -238,21 +245,32 @@ class PlexusBNScene: SKScene {
             let releasedIDNode : PlexusBNNode = releasedNode as! PlexusBNNode
             
 
-            
-    
 
             self.physicsWorld.addJoint(theJoint)
             
 
             startIDNode.node.addInfluencesObject(releasedIDNode.node)
             releasedIDNode.node.addInfluencedByObject(startIDNode.node)
+
+            
+            if(startIDNode.node.DFTcyclechk([startIDNode.node]) || releasedIDNode.node.DFTcyclechk([releasedIDNode.node])){
+                //print("Cycle detected! Not an allowable influence")
+                
+                let startinfluences = startIDNode.node.mutableSetValueForKey("influences");
+                startinfluences.removeObject(releasedIDNode.node)
+                
+                let releasedinfluences = releasedIDNode.node.mutableSetValueForKey("influencedBy");
+                releasedinfluences.removeObject(startIDNode.node)
+                
+            }
+            
             do {
                 try moc.save()
             } catch let error as NSError {
                 print(error)
             }
 
-
+            
         }
         
 
@@ -656,6 +674,9 @@ class PlexusBNScene: SKScene {
         shape.physicsBody = SKPhysicsBody(rectangleOfSize: CGRectMake(-(nodeWidth/2), -(nodeHeight/2), nodeWidth, nodeHeight).size)
         shape.physicsBody?.mass = 1.0
         shape.physicsBody?.restitution = 0.3
+        //shape.physicsBody?.friction = 0.9
+        shape.physicsBody?.linearDamping = 0.9
+        //shape.physicsBody?.angularDamping = 0.9
         shape.name = "bnNode"
         shape.physicsBody?.affectedByGravity = false
         shape.physicsBody?.dynamic = true
