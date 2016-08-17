@@ -68,8 +68,21 @@ class PlexusBNScene: SKScene {
     }
 */
     
+    override func keyDown(theEvent: NSEvent) {
+        interpretKeyEvents([theEvent])
+    }
+    
+    override func deleteBackward(sender: AnyObject?) {
+        let selNodes : [BNNode]  = nodesController.selectedObjects as! [BNNode]
+        for selNode : BNNode in selNodes{
+            nodesController.removeObject(selNode)
+        }
+        self.reloadData()
+    }
+    
     override func mouseDown(theEvent: NSEvent) {
 
+        //print ("event: \(theEvent)")
         
         let loc = theEvent.locationInNode(self)
         dragStart = loc
@@ -148,7 +161,20 @@ class PlexusBNScene: SKScene {
     
     
     override func rightMouseDown(theEvent: NSEvent) {
-        print("right mouse down")
+       
+        let loc = theEvent.locationInNode(self)
+
+        
+        var touchedNode : SKNode = self.nodeAtPoint(loc)
+        
+        print("scene right mouse down")
+        if(touchedNode.name == "bnNode"){
+            print("on node")
+        }
+        /*
+         let contextMenu = NSMenu.init(title: "whut")
+        NSMenu.popUpContextMenu(contextMenu, withEvent: theEvent, forView: self.view!)
+ */
     }
     
     override func mouseDragged(theEvent: NSEvent) {

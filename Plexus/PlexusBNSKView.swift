@@ -41,6 +41,19 @@ class PlexusBNSKView: SKView {
         
     }
     
+    
+    internal override func rightMouseDown(theEvent: NSEvent) {
+            self.scene?.rightMouseDown(theEvent)
+    }
+ 
+    /*
+    override func rightMouseDown(theEvent: NSEvent) {
+        print("view rmd")
+        let contextMenu = NSMenu.init(title: "whut")
+        NSMenu.popUpContextMenu(contextMenu, withEvent: theEvent, forView: self)
+    }
+    */
+    
     override func prepareForDragOperation(sender: NSDraggingInfo) -> Bool {
         
         
@@ -76,6 +89,7 @@ class PlexusBNSKView: SKView {
         return false
     }
     
+
 
     
     @IBAction func removeNode(sender: AnyObject) {
