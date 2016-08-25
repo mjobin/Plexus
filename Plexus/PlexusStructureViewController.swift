@@ -13,6 +13,7 @@ class PlexusStructureViewController: NSViewController, NSTableViewDelegate, NSTa
     
     var moc : NSManagedObjectContext!
     dynamic var datasetController : NSArrayController!
+    dynamic var modelTreeController : NSTreeController!
     @IBOutlet var structurePopup : NSPopUpButton!
     @IBOutlet var structureEntriesController : NSArrayController!
     @IBOutlet var structureController : NSArrayController!
@@ -42,6 +43,23 @@ class PlexusStructureViewController: NSViewController, NSTableViewDelegate, NSTa
         structureEntriesTableView.registerForDraggedTypes(registeredTypes)
         structureTableView.setDraggingSourceOperationMask(NSDragOperation.None, forLocal: true)
         structureTableView.setDraggingSourceOperationMask(NSDragOperation.None, forLocal: false)
+    }
+    
+    
+    @IBAction func setScopeStructrure(sender : AnyObject) {
+        print("setting scope structire")
+        
+        let curModels : [Model] = modelTreeController.selectedObjects as! [Model]
+        let curModel : Model = curModels[0]
+        
+        let curStructures : [Structure] = structureController.selectedObjects as! [Structure]
+        let curStructure : Structure = curStructures[0]
+        
+        curStructure.addScopeObject(curModel)
+        curModel.scope = curStructure
+        
+
+        
     }
     
     //NSTableView Delegate for dragging

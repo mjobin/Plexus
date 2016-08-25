@@ -14,6 +14,7 @@ class PlexusEntryViewController: NSViewController, NSOutlineViewDelegate, NSOutl
 
     var moc : NSManagedObjectContext!
    dynamic var datasetController : NSArrayController!
+    dynamic var modelTreeController : NSTreeController!
     @IBOutlet dynamic var entryTreeController : NSTreeController!
     @IBOutlet weak var entryOutlineView : NSOutlineView!
 
@@ -51,7 +52,33 @@ class PlexusEntryViewController: NSViewController, NSOutlineViewDelegate, NSOutl
     }
     
     
-
+    @IBAction func setScopeEntry(sender : AnyObject) {
+        print("setting scope entry")
+        
+        let curModels : [Model] = modelTreeController.selectedObjects as! [Model]
+        let curModel : Model = curModels[0]
+        
+        let curEntries : [Entry] = entryTreeController.selectedObjects as! [Entry]
+        let curEntry : Entry = curEntries[0]
+        
+        curEntry.addScopeObject(curModel)
+        curModel.scope = curEntry
+    }
+    
+    @IBAction func unScope(sender : AnyObject) {
+        print("unscope")
+        
+        let curModels : [Model] = modelTreeController.selectedObjects as! [Model]
+        let curModel : Model = curModels[0]
+        
+        let curScoped : NodeLink = curModel.scope
+        curScoped.scope = Set<Model>()
+        
+        
+       // curModel.scope = nil
+        
+        
+    }
 
     //nsoutlineview delegate methods
     func outlineView(outlineView: NSOutlineView, viewForTableColumn tableColumn: NSTableColumn?, item: AnyObject) -> NSView? {

@@ -58,6 +58,8 @@ class PlexusMainSplitViewController: NSSplitViewController {
         
         modelTreeController = modelViewController?.modelTreeController
         modelDetailViewController!.modelTreeController = self.modelTreeController
+        structureViewController!.modelTreeController = self.modelTreeController
+        entryViewController!.modelTreeController = self.modelTreeController
         
 
     }
