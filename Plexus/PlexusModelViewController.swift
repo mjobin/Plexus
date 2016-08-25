@@ -65,9 +65,6 @@ class PlexusModelViewController: NSViewController {
 
             //curNode.nodeLink.addBNNodeObject(newNode)
             newNode.setValue(curNode.cptFreq, forKey: "cptFreq")
-            newNode.setValue(curNode.dataName, forKey: "dataName")
-            newNode.setValue(curNode.dataScope, forKey: "dataScope")
-            newNode.setValue(curNode.dataSubName, forKey: "dataSubName")
             newNode.setValue(curNode.numericData, forKey: "numericData")
             newNode.setValue(curNode.priorDistType, forKey: "priorDistType")
             newNode.setValue(curNode.priorV1, forKey: "priorV1")
@@ -101,7 +98,7 @@ class PlexusModelViewController: NSViewController {
         //Copy Influences
         for curNode : BNNode in curNodes {
             var infsoned = [Int]()
-            let infs : [BNNode] = curNode.influences.allObjects as! [BNNode]
+            let infs : [BNNode] = curNode.influences.array as! [BNNode]
             for inf : BNNode in infs{
                 var chk = 0
                 for chkNode : BNNode in curNodes {

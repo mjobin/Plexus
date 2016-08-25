@@ -25,4 +25,53 @@ extension Entry {
         items.addObject(value)
     }
     
+    
+    func collectChildren(entriesArray:[Entry]) -> [Entry] {
+        var tmpEntries = entriesArray
+        
+        for childEntry in self.children {
+            tmpEntries.append(childEntry as! Entry)
+            childEntry.collectChildren(tmpEntries)
+        }
+        return tmpEntries
+    }
+    
+    func collectTraits(traitsArray:[Trait], traitName:String) -> [Trait] {
+        var tmpTraits = traitsArray
+        
+        
+        for thisTrait in self.trait{
+            let tmpTrait = thisTrait as! Trait
+            if(tmpTrait.name == traitName){
+                tmpTraits.append(tmpTrait)
+            }
+            
+        }
+        
+        for thisChild in self.children {
+            thisChild.collectTraits(tmpTraits, traitName: traitName)
+        }
+        return tmpTraits
+    }
+    
+    func collectTraitValues(traitsArray:[String], traitName:String) -> [String] {
+        var tmpTraits = traitsArray
+        
+
+        for thisTrait in self.trait{
+            let tmpTrait = thisTrait as! Trait
+            if(tmpTrait.name == traitName){
+                tmpTraits.append(tmpTrait.traitValue)
+            }
+            
+        }
+        
+        
+        
+        for thisChild in self.children {
+            thisChild.collectTraitValues(tmpTraits, traitName: traitName)
+        }
+       return tmpTraits
+    }
+    
 }

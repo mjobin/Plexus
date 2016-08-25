@@ -17,7 +17,7 @@ extension BNNode {
     
     
     func addInfluencesObject(value:BNNode) {
-        let influences = self.mutableSetValueForKey("influences");
+        let influences = self.mutableOrderedSetValueForKey("influences");
         influences.addObject(value)
     }
     
@@ -26,7 +26,7 @@ extension BNNode {
 
     
     func addInfluencedByObject(value:BNNode) {
-        let influencedBy = self.mutableSetValueForKey("influencedBy");
+        let influencedBy = self.mutableOrderedSetValueForKey("influencedBy");
         influencedBy.addObject(value)
     }
     
@@ -113,177 +113,19 @@ extension BNNode {
             
         else {
             
-            //Get MOC from App delegate
-            let appDelegate : AppDelegate = NSApplication.sharedApplication().delegate as! AppDelegate
-            let  moc = appDelegate.managedObjectContext
+
             
+           
+
             
-            let request = NSFetchRequest(entityName: "Trait")
-            request.resultType = .DictionaryResultType
-            request.returnsDistinctResults = false
-            request.propertiesToFetch = ["traitValue"]
-            var predicate = NSPredicate()
-            var tpredicate = NSPredicate()
-            var curTarget = -999.999
-            
-            
-            let curModel : Model = self.model
-            let curDataset : Dataset = curModel.dataset
-            
-            
-            switch(self.dataScope) {
-            case 0://global
-                
-                //if it's an entry, then the proportion of those trait entries in all the traits
-                // for a structure, the values of all the traits that atch the structure's name ...pretty weird, but why not include it
-                
-                if(self.nodeLink.entity.name == "Entry" || self.nodeLink.entity.name == "Structure"){
-                    predicate = NSPredicate(format: "entry.dataset == %@ AND name == %@", curDataset, self.nodeLink.name)
-                    tpredicate = NSPredicate(format: "entry.dataset == %@", curDataset)
-                    
-                    if(self.numericData == true){
-                        return "Node: \(self.nodeLink.name). Numeric mode not supported for Global Entries and Structures."
-                    }
-                    
-                }
-                    
-                    //if its a trait, the the proportion of those trait values in all the traits
-                    
-                    
-                else if (self.nodeLink.entity.name == "Trait"){ //so this trait's value
-                    
-                    let thisTrait = self.nodeLink as! Trait
-                    predicate = NSPredicate(format: "entry.dataset == %@ AND name == %@", curDataset, thisTrait.name)
-                    tpredicate = NSPredicate(format: "entry.dataset == %@ AND name == %@ AND traitValue == %@", curDataset, thisTrait.name, thisTrait.traitValue)
-                    if let curVal = Double(thisTrait.traitValue) {
-                        curTarget = curVal
-                    }
-                    
-                    
-                }
-                    
-                else {
-                    return "Node: \(self.nodeLink.name). Must be an Entry, Trait or Structure."
-                }
-                
-                
-            case 1: //se;f
-                
-                if(self.nodeLink.entity.name == "Entry"){
-                    let thisEntry = self.nodeLink as! Entry
-                    predicate = NSPredicate(format: "entry == %@ AND name == %@", thisEntry, self.dataName)
-                    tpredicate = NSPredicate(format: "entry == %@ AND name == %@ AND traitValue == %@", thisEntry, self.dataName, self.dataSubName)
-                    if let curVal = Double(self.dataSubName) {
-                        curTarget = curVal
-                    }
-                    
-                }
-                else if (self.nodeLink.entity.name == "Trait"){//if you select trait here, you can only mean this trait, and so freq of it's value in itself must be 1
-                    let thisTrait = self.nodeLink as! Trait
-                    predicate = NSPredicate(format: "SELF == %@", self.nodeLink)
-                    tpredicate = NSPredicate(format: "SELF == %@", self.nodeLink)
-                    if let curVal = Double(thisTrait.traitValue) {
-                        curTarget = curVal
-                    }
-                    
-                }
-                    
-                else if (self.nodeLink.entity.name == "Structure"){ //The traits whose entries are part of this structure
-                    let thisStructure = self.nodeLink as! Structure
-                    predicate = NSPredicate(format: "entry.structure == %@ AND name == %@", thisStructure, self.dataName)
-                    tpredicate = NSPredicate(format: "entry.structure == %@ AND name == %@ AND traitValue == %@", thisStructure, self.dataName, self.dataSubName)
-                    if let curVal = Double(self.dataSubName) {
-                        curTarget = curVal
-                    }
-                    
-                }
-                else {
-                    return "Node: \(self.nodeLink.name). Must be an Entry, Trait or Structure."
-                }
-                
-                
-            case 2: //children
-                if(self.nodeLink.entity.name == "Entry"){
-                    let thisEntry = self.nodeLink as! Entry
-                    predicate = NSPredicate(format: "entry.parent == %@ AND name == %@", thisEntry, self.dataName)
-                    tpredicate = NSPredicate(format: "entry.parent == %@ AND name == %@ AND traitValue == %@", thisEntry, self.dataName, self.dataSubName)
-                    if let curVal = Double(self.dataSubName) {
-                        curTarget = curVal
-                    }
-                    
-                }
-                else {
-                    return "Node: \(self.nodeLink.name). Must be an Entry to be in Children mode."
-                }
-                
-            default:
-                self.dataScope = 0
-                return "Node: \(self.nodeLink.name) was not in any known mode. Resetting to Global."
-            }
-            
-            request.predicate = predicate
-            
-            do {
-                let fetch = try moc.executeFetchRequest(request)
-                
-                if(fetch.count < 1){
-                    return "Node: \(self.nodeLink.name). No traits match the selected criterion."
-                }
-                
-                if(self.numericData == true){
-                    
-                    if (curTarget < 0 || curTarget > 1){
-                        self.cptFreq = cl_float.NaN
-                        return "Node: \(self.nodeLink.name). \(curTarget) must be between 0 and 1."
-                    }
-                    else {
-                        
-                        var theValues = [Double]()
-                        for obj in fetch {
-                            theValues.append(Double(obj.valueForKey("traitValue") as! String)!)
-                        }
-                        
-                        let lowT = curTarget * (1.0 - (self.tolerance.doubleValue/2.0))
-                        let highT = curTarget * (1.0 + (self.tolerance.doubleValue/2.0))
-                        var inside = 0
-                        for thisValue in theValues {
-                            if(Double(thisValue) > lowT && Double(thisValue) < highT){
-                                inside += 1
-                            }
-                        }
-                        
-                        self.cptFreq = cl_float(inside)/cl_float(fetch.count)
-                    }
-                    
-                }
-                else {
-                    let trequest = NSFetchRequest(entityName: "Trait")
-                    trequest.resultType = .DictionaryResultType
-                    trequest.predicate = tpredicate
-                    trequest.returnsDistinctResults = false
-                    trequest.propertiesToFetch = ["traitValue"]
-                    
-                    do {
-                        let tfetch = try moc.executeFetchRequest(trequest)
-                        
-                        let tresult = (cl_float(tfetch.count)/cl_float(fetch.count))
-                        
-                        self.cptFreq =  tresult
-                    } catch let error as NSError {
-                        return "Node: \(self.nodeLink.name). Unble to fetch due to \(error) ."
-                    }
-                    
-                }
-                
-            } catch let error as NSError {
-                return "Node: \(self.nodeLink.name). Unble to fetch due to \(error) ."
-            }
+
             
         }
         
         return "No Error"
     }
     
+
     
     func DFTcyclechk(nodeStack:[BNNode]) -> Bool {
         
@@ -306,7 +148,7 @@ extension BNNode {
         }
         //
 
-        let theInfluences : [BNNode] = self.influences.allObjects as! [BNNode]
+        let theInfluences : [BNNode] = self.influences.array as! [BNNode]
 
         for thisInfluences in theInfluences {
            // print("influences \(thisInfluences.nodeLink.name)")
@@ -320,6 +162,141 @@ extension BNNode {
         return false;
     }
     
+    func CPT(){
+        
+       // print ("**********\nCPT for \(self.nodeLink.name)")
+        
+        
+        let curModel : Model = self.model
+        let curDataset : Dataset = curModel.dataset
+        
+        //First collect all the scoped ENTRIES
+        
+        var theEntries = [Entry]()
+        if(curModel.scope.entity.name == "Entry"){
+          //  print("entry scope")
+            let thisEntry = curModel.scope as! Entry
+            theEntries = thisEntry.collectChildren([Entry]())
+        }
+        else if (curModel.scope.entity.name == "Structure"){
+           // print("structure scope")
+            let thisStructure = curModel.scope as! Structure
+            theEntries = thisStructure.entry.allObjects as! [Entry]
+        }
+        else{
+          //  print("dataset scope")
+            theEntries = curDataset.entry.allObjects as! [Entry]
+            
+        }
+
+        
+        
+    
+        let theInfluencedBy = self.infBy(self)
+        //print("infby count: \(theInfluencedBy.count)")
+        let nInfBy = theInfluencedBy.count
+        let cptarraysize = Int(pow(2.0,Double(nInfBy)))
+        var cptarray = [Double](count: cptarraysize, repeatedValue: 0.0)
+        
+
+        
+        var total = 0.0
+        var missing = 0.0
+        
+        for thisEntry in theEntries {
+            var binbin = String()
+            for thisInfluencedBy in theInfluencedBy {
+                let thisthisInfluencedBy = thisInfluencedBy as! BNNode
+                let curInfluencedBy = thisInfluencedBy.nodeLink as! Trait
+                //print("infleucned by \(curInfluencedBy.name)")
+                 //get traits matching this name from this entry
+                
+                var infTraits = [Trait]()
+                for thisTrait in thisEntry.trait {
+                    let curTrait = thisTrait as! Trait
+                    if(curTrait.name == curInfluencedBy.name){
+                        infTraits.append(curTrait)
+                    }
+                    
+                }
+                
+                if(infTraits.count == 1){ //FIXME only looking at a single instance of a trait
+                    if(thisthisInfluencedBy.numericData == true){
+                        let lowT = Double(curInfluencedBy.traitValue)! * (1.0 - (thisthisInfluencedBy.tolerance.doubleValue/2.0))
+                        let highT = Double(curInfluencedBy.traitValue)! * (1.0 + (thisthisInfluencedBy.tolerance.doubleValue/2.0))
+                        if(Double(infTraits[0].traitValue)! >= lowT && Double(infTraits[0].traitValue)! <= highT){
+                            binbin += "1"
+                        }
+                        else{
+                            binbin += "0"
+                        }
+                    }
+                    else{
+                        if(infTraits[0].traitValue == curInfluencedBy.traitValue){
+                            binbin += "1"
+                            
+                        }
+                        else {
+                            binbin += "0"
+                            
+                        }
+
+                    }
+                }
+                
+            }
+            
+            if(binbin.characters.count == theInfluencedBy.count){ //ONLY include in part of the total if ALL influences have an associated trait in this entry
+                
+                if let number = Int(binbin, radix: 2) {
+                    cptarray[number] += 1.0
+                }
+                
+                total += 1
+                
+            }
+            else{ //add as ppart of the missing
+                missing += 1
+            }
+
+        }
+
+        
+        for i in 0 ..< cptarray.count {
+            cptarray[i] = cptarray[i]/total
+        }
+        
+/*
+        print("--")
+        print(cptarray)
+        print("--")
+        print("total entries usable \(total)")
+        print("total entries missing \(missing)")
+        */
+        
+
+        let archivedCPTArray = NSKeyedArchiver.archivedDataWithRootObject(cptarray)
+        self.setValue(archivedCPTArray, forKey: "cptArray")
+
+          //  print(" ")
+
+
+    }
+    
+    func getCPTArray(sender:AnyObject) -> [cl_float] {
+        self.CPT()
+        let cptarray = NSKeyedUnarchiver.unarchiveObjectWithData(self.valueForKey("cptArray") as! NSData) as! [cl_float]
+        return  cptarray
+        /*
+        let cptnsarray : NSMutableArray = NSMutableArray()
+        for cptelem in cptarray {
+            cptnsarray.addObject(cptelem)
+        }
+        
+        return  cptnsarray
+        */
+    }
+    /*
     func CPT(sender:AnyObject, infBy:[BNNode], ftft:[NSNumber] , depth:Int) -> cl_float{
         var cpt : cl_float = 1.0
         
@@ -362,6 +339,7 @@ extension BNNode {
         
         return cpt //should only reach this if it's an independent node
     }
+    */
     
     func recursiveInfBy(sender:AnyObject, infBy:NSMutableOrderedSet , depth:Int) -> NSMutableOrderedSet {
         
@@ -370,7 +348,7 @@ extension BNNode {
         }
         
         
-        let theInfluencedBy : [BNNode] = self.influencedBy.allObjects as! [BNNode]
+        let theInfluencedBy : [BNNode] = self.influencedBy.array as! [BNNode]
         
         for thisInfluencedBy in theInfluencedBy {
             //skip any acciedntal self influences
@@ -384,7 +362,7 @@ extension BNNode {
     }
     
     func infBy(sender:AnyObject) -> NSArray {
-        return self.influencedBy.allObjects as! [BNNode]
+        return self.influencedBy.array as! [BNNode]
     }
     
     func recursiveInfs(sender:AnyObject, infs:NSMutableOrderedSet , depth:Int) -> NSMutableOrderedSet {
@@ -394,7 +372,7 @@ extension BNNode {
         }
         
         
-        let theInfluences : [BNNode] = self.influences.allObjects as! [BNNode]
+        let theInfluences : [BNNode] = self.influences.array as! [BNNode]
         
         for thisInfluences in theInfluences {
             //skip any acciedntal self influences
@@ -409,218 +387,13 @@ extension BNNode {
     
     
     func infs(sender:AnyObject) -> NSArray {
-        return self.influences.allObjects as! [BNNode]
+        return self.influences.array as! [BNNode]
     }
     
     
     
-    func getDataNames() -> [String] {
-        var dataNames = [String]()
-        
-        
-        switch(self.dataScope) {
-            
-        case 0://global // ALL entities matching this one's name
-            dataNames.append(self.nodeLink.name)
-            if(self.dataName != self.nodeLink.name){
-                self.dataName = self.nodeLink.name
-            }
-            
-        case 1:// self
-            
-            //from that object, select only the names of what is directly connected to it
-            if(self.nodeLink.entity.name == "Entry"){
-                let curEntry = self.nodeLink as! Entry
-                let theTraits = curEntry.trait
-                for thisTrait in theTraits {
-                    dataNames.append(thisTrait.name)
-                }
-                
-            }
-            else if (self.nodeLink.entity.name == "Trait"){//if you select trait here, you can only mean this trait
-                dataNames.append(self.nodeLink.name)
-                if(self.dataName != self.nodeLink.name){
-                    self.dataName = self.nodeLink.name
-                }
-                
-            }
-                
-            else if (self.nodeLink.entity.name == "Structure"){    //The traits whose entries are part of this structure
-                let curStructure = self.nodeLink as! Structure
-                let curEntries = curStructure.entry.allObjects as! [Entry]
-                for curEntry  in curEntries {
-                    let curTraits = curEntry.trait
-                    for curTrait in curTraits{
-                        dataNames.append(curTrait.name)
-                    }
-                }
-                
-            }
-            else {
-                dataNames = [String]()
-            }
-            
-        case 2: //children of current entry
-            
-            
-            if(self.nodeLink.entity.name == "Entry"){ //take this entry's children and look at it's traits
-                
-                
-                //If it is connected to this entry, then it is autmatically in that entry's only possible dataset
-                
-                let curEntry = self.nodeLink as! Entry
-                let curKids = curEntry.children.allObjects as! [Entry]
-                if (curKids.count < 1){
-                    self.dataScope = 0
-                    dataNames = [String]()
-                }
-                else {
-                    for curKid in curKids {
-                        let curTraits = curKid.trait.allObjects as! [Trait]
-                        for curTrait in curTraits{
-                            dataNames.append(curTrait.name)
-                        }
-                    }
-                }
-                
-                
-                
-            }
-            else if (self.nodeLink.entity.name == "Trait" || self.nodeLink.entity.name == "Structure"){ //traits and structures have no children
-                self.dataScope = 0
-                dataNames = [String]()
-                
-                
-            }
-            else {
-                dataNames = [String]()
-                
-            }
-            
-            
-            
-        default:
-            dataNames = [String]()
-            
-        }
-        
-        //select first option if current dataName not availble
-        if(dataNames.count > 0){
-            if !dataNames.contains(dataName){
-                dataName = dataNames[0]
-            }
-        }
-        
-        return dataNames
-    }
     
-    func getDataSubNames() -> [String] {
 
-        var dataSubNames = [String]()
-        
-        let appDelegate : AppDelegate = NSApplication.sharedApplication().delegate as! AppDelegate
-        let moc : NSManagedObjectContext = appDelegate.managedObjectContext
-        
-        let curModel : Model = self.model
-        let curDataset : Dataset = curModel.dataset
-        
-        
-        let request = NSFetchRequest(entityName: "Trait")
-        var predicate = NSPredicate()
-
-        
-        switch(self.dataScope) {
-        case 0:
-            if(self.nodeLink.entity.name == "Entry"){//Traits whose names match the name of this entry
-                
-                predicate = NSPredicate(format: "entry.dataset == %@ AND name == %@", curDataset, self.nodeLink.name)
-                
-            }
-            else if (self.nodeLink.entity.name == "Trait"){ //you obviously want this trait's own value, then
-                
-                predicate = NSPredicate(format: "entry.dataset == %@ AND name == %@", curDataset, self.nodeLink.name)
-            }
-            
-            else if (self.nodeLink.entity.name == "Structure"){ //Traits whose names match the name of this structure
-                
-                predicate = NSPredicate(format: "entry.dataset == %@ AND name == %@", curDataset, self.nodeLink.name)
-            }
-            
-            else {
-                return dataSubNames
-            }
-            
-            
-        case 1:
-            
-            if(self.nodeLink.entity.name == "Entry"){
-                
-                predicate = NSPredicate(format: "entry == %@ AND name == %@", self.nodeLink, self.dataName)
-                
-            }
-                
-            else if (self.nodeLink.entity.name == "Trait"){ //you obviously want this trait's own value, then
-                
-                predicate = NSPredicate(format: "entry == %@", self.nodeLink)
-                
-            }
-            
-            else if (self.nodeLink.entity.name == "Structure"){ 
-                
-                predicate = NSPredicate(format: "entry.structure == %@ AND name == %@", self.nodeLink, self.dataName)
-            }
-                
-            else {
-                return dataSubNames
-            }
-            
-        case 2:
-            
-            if(self.nodeLink.entity.name == "Entry"){ //take this entry's children and look at it's children
-                
-                predicate = NSPredicate(format: "entry.parent == %@ AND name == %@", self.nodeLink, self.dataName)
-                
-            }
-                
-            else { //traits and structures cannot have children
-
-                return dataSubNames
-            }
-            
-            
-        default:
-
-            return dataSubNames
-            
-        }
-        
-        
-        request.resultType = .DictionaryResultType
-        request.predicate = predicate
-        request.returnsDistinctResults = true
-        request.propertiesToFetch = ["traitValue"]
-        
-        do {
-            let fetch = try moc.executeFetchRequest(request)
-            // print("sub fetch \(fetch)")
-            for obj  in fetch {
-                //     print(obj.valueForKey("traitValue"))
-                dataSubNames.append(obj.valueForKey("traitValue") as! String)
-                
-            }
-        } catch let error as NSError {
-            print(error)
-        }
-        
-        //select first option if current dataName not availble
-        if(dataSubNames.count > 0){
-            if !dataSubNames.contains(dataSubName){
-                dataSubName = dataSubNames[0]
-            }
-        }
-        
-        return dataSubNames
-    }
     
     
 }

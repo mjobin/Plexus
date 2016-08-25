@@ -22,6 +22,7 @@ class Model: NSManagedObject {
     @NSManaged var complete: NSNumber
     @NSManaged var dateModded: NSDate
     @NSManaged var dateCreated: NSDate
+    @NSManaged var scope: NodeLink
     
     
 

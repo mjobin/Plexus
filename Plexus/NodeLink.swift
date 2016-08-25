@@ -13,6 +13,7 @@ class NodeLink: NSManagedObject {
 
     @NSManaged var name: String
     @NSManaged var bnNode: NSSet
+    @NSManaged var scope: NSSet
     
 
 }

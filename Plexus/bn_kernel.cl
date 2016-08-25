@@ -658,8 +658,11 @@ __kernel void BNGibbs(__constant int* offsets, __constant int* params, __constan
         //END loop of runs with count variable g
     }
     
+   // printf("main loop ended. runstattionary %i, g %i, sampletot %i\n", runstationary, g, sampletot);
     
     for(int l=0; l<params[0]; l++){
+        
+       // printf("bnresults %f, sampletot %i\n", bnresults[l+boffset], sampletot);
         bnresults[l+boffset] /= sampletot; //To obtain posterior point, divide the compiled results through by number of samples taken
     }
     

@@ -474,7 +474,7 @@ class PlexusBNScene: SKScene {
                 
 
                 
-                let theInfluenced : [BNNode] = curNode.influences.allObjects as! [BNNode]
+                let theInfluenced : [BNNode] = curNode.influences.array as! [BNNode]
 
                 for thisInfluenced : BNNode in theInfluenced as [BNNode] {
 
@@ -593,9 +593,8 @@ class PlexusBNScene: SKScene {
             
             let curNodes : [BNNode]  = nodesController.arrangedObjects as! [BNNode]
             if(curNodes.count < 1) {
-                let nnl1 = SKLabelNode(text: "Drag from Structures,")
-                let nnl2 = SKLabelNode(text: "Entries or Traits to")
-                let nnl3 = SKLabelNode(text: "create a node.")
+                let nnl1 = SKLabelNode(text: "Drag from  Traits to")
+                let nnl2 = SKLabelNode(text: "create a node.")
                 nnl1.fontSize = 18
                 nnl1.fontName = "SanFrancisco"
                 nnl1.name = "noNodesName"
@@ -606,18 +605,15 @@ class PlexusBNScene: SKScene {
                 nnl2.name = "noNodesName"
                 nnl2.zPosition = 1
                 
-                nnl3.fontSize = 18
-                nnl3.fontName = "SanFrancisco"
-                nnl3.name = "noNodesName"
-                nnl3.zPosition = 1
+
                 
                 nnl1.position = CGPointMake(self.frame.width*0.5, self.frame.height*0.5+30)
                 nnl2.position = CGPointMake(self.frame.width*0.5, self.frame.height*0.5)
-                nnl3.position = CGPointMake(self.frame.width*0.5, self.frame.height*0.5-30)
+
                 
                 self.addChild(nnl1)
                 self.addChild(nnl2)
-                self.addChild(nnl3)
+
             }
         }
 
@@ -672,7 +668,7 @@ class PlexusBNScene: SKScene {
         
         let myLabel = SKLabelNode(text: inNode.nodeLink.name)
         myLabel.fontName = "SanFrancisco"
-        myLabel.fontSize = 18
+        myLabel.fontSize = 14
         myLabel.zPosition = 1
         myLabel.name = "nodeName"
         myLabel.verticalAlignmentMode = SKLabelVerticalAlignmentMode.Center

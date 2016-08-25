@@ -18,7 +18,6 @@ static void *ProgressObserverContext = &ProgressObserverContext;
     self = [super init];
 
 
-    NSLog(@"PlexusCalcOp init");
     if(self) {
         
         
@@ -84,7 +83,6 @@ static void *ProgressObserverContext = &ProgressObserverContext;
 
 {
 
-    NSLog(@"clCompile");
     
     NSError * calcerr = nil;
     
@@ -199,13 +197,14 @@ static void *ProgressObserverContext = &ProgressObserverContext;
         NSLog(@"Double FP config %llu.", fpconfig);
     }
     
-    
+    /*
     char device_extensions[2000];
     err = clGetDeviceInfo(the_device, CL_DEVICE_EXTENSIONS, sizeof(device_extensions), device_extensions, NULL);
     if(err == CL_SUCCESS)
     {
         NSLog(@"Extensions: %s.", device_extensions);
     }
+    */
         
         
         
@@ -369,13 +368,13 @@ static void *ProgressObserverContext = &ProgressObserverContext;
     //get maximum size of inputs and outputs
     
     
-    for (BNNode * fNode in initialNodes) {
-        NSMutableOrderedSet * allInSet = [fNode recursiveInfBy:self infBy:[[NSMutableOrderedSet alloc] init] depth:0];
+    for (BNNode * fNode in initialNodes) {//FIXME no longer recursive
+        NSArray * allInSet = [fNode infBy:self];
         if([allInSet count] > maxCPTSize) maxCPTSize = [allInSet count];
     }
     
     for (BNNode * fNode in initialNodes) {
-        NSMutableOrderedSet * allOutSet = [fNode recursiveInfs:self infs:[[NSMutableOrderedSet alloc] init] depth:0];
+        NSArray * allOutSet = [fNode infs:self];
         if([allOutSet count] > maxCPTSize) maxCPTSize = [allOutSet count];
     }
     
@@ -518,7 +517,16 @@ static void *ProgressObserverContext = &ProgressObserverContext;
         
         if(sparseSize > sparseCPTsize) NSLog(@"sparseSize over max!");
         
+
         
+        NSArray * curcptnet = [fNode getCPTArray:self];
+        for(i=0; i<curcptnet.count; i++){
+            cptnet[(cptoffset+i)] = [curcptnet[i] floatValue];
+        }
+
+        
+        //NSLog(@"infBy %i", nInfBy);
+        /*
         for(i=0; i<sparseSize; i++){
             
             NSMutableArray *ftft = [[NSMutableArray alloc]init];
@@ -526,9 +534,11 @@ static void *ProgressObserverContext = &ProgressObserverContext;
             //get a binary representation of i, with F's meaning zeroes and T's meaning ones
             int num = i;
             int n = (log(num)/log(2)+1)-1;          //Figure out the maximum power of 2 needed
+           // NSLog(@"i: %i  n %i num %i", i, n, num);
             for (int j=n; j>=0; j--)            //Iterate down through the powers of 2
             {
                 long long curPOW = powl(2,j);
+               // NSLog(@"curPOW %lli", curPOW);
                 if (curPOW <= num)          //If the number is greater than current power of 2
                 {
                     num -= curPOW;                                  //Subtract the power of 2
@@ -542,9 +552,9 @@ static void *ProgressObserverContext = &ProgressObserverContext;
                 [ftft insertObject:[NSNumber numberWithBool:FALSE] atIndex:0];
             }
             
-            //cl_float thisCPT = [fNode CPT:self infBy:theInfluencedBy.array ftft:[NSArray arrayWithArray:ftft] depth:0];
-            cl_float thisCPT = [fNode CPT:self infBy:theInfluencedBy ftft:[NSArray arrayWithArray:ftft] depth:0];
-            //NSLog(@"i: %i  ftft: %@  thisCPT %f", i, ftft, thisCPT);
+
+           // cl_float thisCPT = [fNode CPT:self infBy:theInfluencedBy ftft:[NSArray arrayWithArray:ftft] depth:0];
+           // NSLog(@"END i: %i  ftft: %@  n %i num %i", i, ftft, n, num);
             
             if(thisCPT == NAN){
                 NSString * cptInfFailNodeMesg = [[fNode nodeLink] name];
@@ -561,10 +571,12 @@ static void *ProgressObserverContext = &ProgressObserverContext;
             
             
         }
-        
+        */
+        //pad out if needed
         for(i=i; i<sparseCPTsize; i++){
             cptnet[(cptoffset+i)] = -1.0f;
         }
+        
         
         
         cptoffset += sparseCPTsize;

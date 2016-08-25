@@ -16,4 +16,23 @@ extension Structure {
         items.addObject(value)
     }
     
+    
+    
+    func collectTraits(traitsArray:[Trait], traitName:String) -> [Trait] {
+        var tmpTraits = traitsArray
+        for thisEntry in self.entry{
+            let tmpEntry = thisEntry as! Entry
+            tmpTraits += tmpEntry.collectTraits(tmpTraits, traitName: traitName)
+        }
+        return tmpTraits
+    }
+    
+    func collectTraitValues(traitsArray:[String], traitName:String) -> [String] {
+        var tmpTraits = traitsArray
+        for thisEntry in self.entry{
+            let tmpEntry = thisEntry as! Entry
+            tmpTraits += tmpEntry.collectTraitValues(tmpTraits, traitName: traitName)
+        }
+        return tmpTraits
+    }
 }

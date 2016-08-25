@@ -29,7 +29,7 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, CP
     @IBOutlet var graphView : CPTGraphHostingView!
     
     @IBOutlet weak var priorControlsView : NSView!
-    @IBOutlet weak var cptControlsView : NSView!
+
     
     
     @IBOutlet var priorTypePopup : NSPopUpButton!
@@ -261,17 +261,17 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, CP
             
             if(curNode.influencedBy.count > 0) {
                 priorControlsView.hidden = true
-                cptControlsView.hidden = false
+
                 
                 graph.addPlot(priorPlot)
                 graph.removePlot(priorPlot)
                 
                 //collect data for the CPT controls
-                self.collectData()
+                //self.collectData()
             }
             else {
                 priorControlsView.hidden = false
-                cptControlsView.hidden = true
+
                 
                 
                 switch priorDist{
@@ -494,7 +494,7 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, CP
         else { //no node, just move graph off view
             
             priorControlsView.hidden = false
-            cptControlsView.hidden = true
+
             
             /*
             priorTypePopup.hidden = true
@@ -620,7 +620,7 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, CP
     //******
     
     
-    
+    /*
     func collectData() {
     //    let errorPtr : NSErrorPointer = nil
         
@@ -884,6 +884,7 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, CP
         
         
     }
+    */
     
     
     //****** distn fxns
@@ -937,7 +938,7 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, CP
     
     
     //NSTableView delegate methods
-    
+    /*
     func tableView(tableView: NSTableView, dataCellForTableColumn tableColumn: NSTableColumn?, row: Int) -> NSCell? {
         
         
@@ -1030,4 +1031,5 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, CP
         }
         return nil
     }
+    */
 }

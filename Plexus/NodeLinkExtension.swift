@@ -16,6 +16,12 @@ extension NodeLink {
         items.addObject(value)
     }
     
+    func addScopeObject(value:Model) {
+        let items = self.mutableSetValueForKey("scope");
+        items.addObject(value)
+    }
+    
+    
     func writableTypesForPasteboard(pasteboard: NSPasteboard!) -> [AnyObject] {
         let kString : String = kUTTypeURL as String
         let registeredTypes:[String] = [kString]

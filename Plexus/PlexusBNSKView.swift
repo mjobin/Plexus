@@ -82,7 +82,22 @@ class PlexusBNSKView: SKView {
         
 
         for object : AnyObject in draggedArray{
-            self.addNode(object as! NSURL)
+            
+            let mourl : NSURL = object as! NSURL
+            
+            if let id : NSManagedObjectID? = moc.persistentStoreCoordinator?.managedObjectIDForURIRepresentation(mourl){
+                
+                let mo : NodeLink = moc.objectWithID(id!) as! NodeLink
+                
+                if (mo.entity.name == "Trait"){
+                    
+                    self.addNode(object as! NSURL)
+                    
+                }
+                
+            }
+            
+            
            
         }
 
