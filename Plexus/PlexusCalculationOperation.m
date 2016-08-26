@@ -409,25 +409,9 @@ static void *ProgressObserverContext = &ProgressObserverContext;
     int thisCPT =0;
     NSUInteger leftOver = 0;
     
-    cl_float* nodeFreqs = (cl_float *)malloc(sizeof(cl_float)*INSize); //one for the type of distn, and two for its parameters
-    int freqOffset =0;
+
     
-    //make sure all nodes have their CPT freq set
-    for (BNNode * fNode in initialNodes) {
-        
-        NSString * errMesg = [fNode calcCPT:self];
-        //  NSLog(@"***************Node: %@  cptFreq %f", [[fNode nodeLink] name], [fNode getCPTFreq:self]);
-        
-        if(![errMesg  isEqual: @"No Error"]){
-            
-            [cptCalcFail setObject:errMesg forKey:NSLocalizedFailureReasonErrorKey];
-            calcerr = [NSError errorWithDomain:@"plexusCalc" code:1006 userInfo:cptCalcFail];
-            return calcerr;
-            
-        }
-        
-    }
-    
+
     
     //copy in prior parameters, one for the type of distn, and two for its parameters
     cl_int* priorDistType = (cl_int *)malloc(sizeof(cl_int)*INSize);
@@ -450,9 +434,6 @@ static void *ProgressObserverContext = &ProgressObserverContext;
     for (BNNode * fNode in initialNodes) {
         // NSLog(@"***************Node: %@", [[fNode nodeLink] name]);
         
-        
-        //add freq
-        nodeFreqs[freqOffset] = [fNode getCPTFreq:self];
 
         
         //------------- influenced by
@@ -524,54 +505,7 @@ static void *ProgressObserverContext = &ProgressObserverContext;
             cptnet[(cptoffset+i)] = [curcptnet[i] floatValue];
         }
 
-        
-        //NSLog(@"infBy %i", nInfBy);
-        /*
-        for(i=0; i<sparseSize; i++){
-            
-            NSMutableArray *ftft = [[NSMutableArray alloc]init];
-            
-            //get a binary representation of i, with F's meaning zeroes and T's meaning ones
-            int num = i;
-            int n = (log(num)/log(2)+1)-1;          //Figure out the maximum power of 2 needed
-           // NSLog(@"i: %i  n %i num %i", i, n, num);
-            for (int j=n; j>=0; j--)            //Iterate down through the powers of 2
-            {
-                long long curPOW = powl(2,j);
-               // NSLog(@"curPOW %lli", curPOW);
-                if (curPOW <= num)          //If the number is greater than current power of 2
-                {
-                    num -= curPOW;                                  //Subtract the power of 2
-                    [ftft addObject:[NSNumber numberWithBool:TRUE]];
-                }
-                else [ftft addObject:[NSNumber numberWithBool:FALSE]];
-            }
-            
-            //pad out with F's
-            for(int k=(int)[ftft count]; k<nInfBy; k++){
-                [ftft insertObject:[NSNumber numberWithBool:FALSE] atIndex:0];
-            }
-            
-
-           // cl_float thisCPT = [fNode CPT:self infBy:theInfluencedBy ftft:[NSArray arrayWithArray:ftft] depth:0];
-           // NSLog(@"END i: %i  ftft: %@  n %i num %i", i, ftft, n, num);
-            
-            if(thisCPT == NAN){
-                NSString * cptInfFailNodeMesg = [[fNode nodeLink] name];
-                NSString * cptInfFailMesg = [cptInfFailNodeMesg stringByAppendingString:@" cannot find denoted influence in CPT function."];
-                [cptInfFail setObject:cptInfFailMesg forKey:NSLocalizedFailureReasonErrorKey];
-                calcerr = [NSError errorWithDomain:@"plexusCalc" code:1007 userInfo:cptCalcFail];
-                return calcerr;
-            }
-            else{
-                cptnet[(cptoffset+i)] = thisCPT;            }
-            
-            
-            
-            
-            
-        }
-        */
+  
         //pad out if needed
         for(i=i; i<sparseCPTsize; i++){
             cptnet[(cptoffset+i)] = -1.0f;
@@ -581,7 +515,6 @@ static void *ProgressObserverContext = &ProgressObserverContext;
         
         cptoffset += sparseCPTsize;
         
-        freqOffset++;
         
     }
     
@@ -741,7 +674,7 @@ static void *ProgressObserverContext = &ProgressObserverContext;
 
     
     //********************************
-    // MAPPED BUFFER CREATION - ARG 1
+    // MAPPED BUFFER CREATION - ARG 1 - PARAMS
     //********************************
     
     int * mappedParams = clEnqueueMapBuffer(cl_queue, paramsbuf, CL_TRUE, CL_MAP_READ, 0, 4*sizeof(cl_int), 0, NULL, NULL, NULL);
@@ -753,23 +686,9 @@ static void *ProgressObserverContext = &ProgressObserverContext;
     //********************************
     //********************************
     
-    //********************************
-    // MAPPED BUFFER CREATION - ARG 2
-    //********************************
-    //create the buffer for the freqs
-    // clEnqueueWriteBuffer(cl_queues[dev], freqbuf, CL_TRUE, 0, sizeof(cl_float)*INSize, (void*)nodeFreqs, 0, 0, 0);
-    // freqbufs[dev]=freqbuf;
-    
-    float * mappedFreqs = clEnqueueMapBuffer(cl_queue, freqbuf, CL_TRUE, CL_MAP_READ, 0, INSize*sizeof(cl_int), 0, NULL, NULL, NULL);
-    
-    for(i=0;i<INSize;i++){
-        mappedFreqs[i] = nodeFreqs[i];
-      //  NSLog(@"freq %f", mappedFreqs[i]);
-    }
-    
     
     //********************************
-    // MAPPED BUFFER CREATION - ARG 3
+    // MAPPED BUFFER CREATION - ARG 2 - INFNET
     //********************************
     
     // clEnqueueWriteBuffer(cl_queues[dev], infnetbuf, CL_TRUE, 0, INSize*(maxCPTSize*2)*sizeof(cl_int), (void*)infnet, 0, 0, 0);
@@ -789,7 +708,7 @@ static void *ProgressObserverContext = &ProgressObserverContext;
     
     
     //********************************
-    // MAPPED BUFFER CREATION - ARG 4 - CPTNET
+    // MAPPED BUFFER CREATION - ARG 3 - CPTNET
     //********************************
     //  clEnqueueWriteBuffer(cl_queues[dev], cptnetbuf, CL_TRUE, 0, sizeof(cl_float)*INSize*sparseCPTsize, (void*)cptnet, 0, 0, 0);
     // cptnetbufs[dev] = cptnetbuf;
@@ -807,7 +726,7 @@ static void *ProgressObserverContext = &ProgressObserverContext;
 
     
     //********************************
-    // MAPPED BUFFER CREATION - ARG 9 - PRIORDISTTYPE
+    // MAPPED BUFFER CREATION - ARG 8 - PRIORDISTTYPE
     //********************************
     
     //clEnqueueWriteBuffer(cl_queues[dev], priordisttypebuf, CL_TRUE, 0, sizeof(cl_int)*INSize, (void*)priorDistType, 0, 0, 0);
@@ -825,7 +744,7 @@ static void *ProgressObserverContext = &ProgressObserverContext;
     
     
     //********************************
-    // MAPPED BUFFER CREATION - ARG 10 - PRIORV1s
+    // MAPPED BUFFER CREATION - ARG 9 - PRIORV1s
     //********************************
     
     //  clEnqueueWriteBuffer(cl_queues[dev], priorv1buf, CL_TRUE, 0, sizeof(cl_float)*INSize, (void*)priorV1, 0, 0, 0);
@@ -842,7 +761,7 @@ static void *ProgressObserverContext = &ProgressObserverContext;
     //********************************
     
     //********************************
-    // MAPPED BUFFER CREATION - ARG 11 - PRIORV2s
+    // MAPPED BUFFER CREATION - ARG 10 - PRIORV2s
     //********************************
     
     //clEnqueueWriteBuffer(cl_queues[dev], priorv2buf, CL_TRUE, 0, sizeof(cl_float)*INSize, (void*)priorV2, 0, 0, 0);
@@ -962,7 +881,7 @@ static void *ProgressObserverContext = &ProgressObserverContext;
         
         
         //********************************
-        // MAPPED BUFFER CREATION - ARG 0
+        // MAPPED BUFFER CREATION - ARG 0 - OFFSET
         //********************************
         
         //create the buffer for RNG seeds
@@ -996,7 +915,7 @@ static void *ProgressObserverContext = &ProgressObserverContext;
       //  NSLog(@"Before results enqueue %f since starting calc fxn", timer);
         
         //********************************
-        // MAPPED BUFFER CREATION - ARG 6
+        // MAPPED BUFFER CREATION - ARG 5 - BNRESULTS
         //********************************
         
         
@@ -1044,8 +963,28 @@ static void *ProgressObserverContext = &ProgressObserverContext;
             return calcerr;
         }
         
+        err = clSetKernelArg(bncalc_Kernel, 2, sizeof(cl_mem), (void*)&infnetbuf);
+        if (err != CL_SUCCESS) {
+            NSLog(@"Failure setting argument");
+            calcerr = [NSError errorWithDomain:@"plexusCalc" code:1005 userInfo:argFail];
+            return calcerr;
+        }
         
-        err = clSetKernelArg(bncalc_Kernel, 2, sizeof(cl_mem), (void*)&freqbuf);
+        err = clSetKernelArg(bncalc_Kernel, 3, sizeof(cl_mem), (void*)&cptnetbuf);
+        if (err != CL_SUCCESS) {
+            NSLog(@"Failure setting argument");
+            calcerr = [NSError errorWithDomain:@"plexusCalc" code:1005 userInfo:argFail];
+            return calcerr;
+        }
+        
+        err = clSetKernelArg(bncalc_Kernel, 4, bnreadsize*sizeof(cl_int), NULL);
+        if (err != CL_SUCCESS) {
+            NSLog(@"Failure setting argument");
+            calcerr = [NSError errorWithDomain:@"plexusCalc" code:1005 userInfo:argFail];
+            return calcerr;
+        }
+        
+        err = clSetKernelArg(bncalc_Kernel, 5, sizeof(cl_mem), (void*)&bnresultsbuf);
         if (err != CL_SUCCESS) {
             NSLog(@"Failure setting argument");
             calcerr = [NSError errorWithDomain:@"plexusCalc" code:1005 userInfo:argFail];
@@ -1053,78 +992,35 @@ static void *ProgressObserverContext = &ProgressObserverContext;
         }
         
         
-        err = clSetKernelArg(bncalc_Kernel, 3, sizeof(cl_mem), (void*)&infnetbuf);
+        err = clSetKernelArg(bncalc_Kernel, 6, thisWork * INSize * sizeof(cl_int), NULL); //this is the array size of the shuffled nodes...uses local mem
         if (err != CL_SUCCESS) {
             NSLog(@"Failure setting argument");
             calcerr = [NSError errorWithDomain:@"plexusCalc" code:1005 userInfo:argFail];
             return calcerr;
         }
         
-        err = clSetKernelArg(bncalc_Kernel, 4, sizeof(cl_mem), (void*)&cptnetbuf);
+        err = clSetKernelArg(bncalc_Kernel, 7, sizeof(cl_mem), (void*)&priordisttypebuf);
         if (err != CL_SUCCESS) {
             NSLog(@"Failure setting argument");
             calcerr = [NSError errorWithDomain:@"plexusCalc" code:1005 userInfo:argFail];
             return calcerr;
         }
         
-        err = clSetKernelArg(bncalc_Kernel, 5, bnreadsize*sizeof(cl_int), NULL);
-        if (err != CL_SUCCESS) {
-            NSLog(@"Failure setting argument 6");
-            calcerr = [NSError errorWithDomain:@"plexusCalc" code:1005 userInfo:argFail];
-            return calcerr;
-        }
-        
-        err = clSetKernelArg(bncalc_Kernel, 6, sizeof(cl_mem), (void*)&bnresultsbuf);
-        if (err != CL_SUCCESS) {
-            NSLog(@"Failure setting argument 7");
-            calcerr = [NSError errorWithDomain:@"plexusCalc" code:1005 userInfo:argFail];
-            return calcerr;
-        }
-        
-        
-        err = clSetKernelArg(bncalc_Kernel, 7, thisWork * INSize * sizeof(cl_int), NULL); //this is the array size of the shuffled nodes...uses local mem
-        if (err != CL_SUCCESS) {
-            NSLog(@"Failure setting argument 8");
-            calcerr = [NSError errorWithDomain:@"plexusCalc" code:1005 userInfo:argFail];
-            return calcerr;
-        }
-        
-        err = clSetKernelArg(bncalc_Kernel, 8, sizeof(cl_mem), (void*)&priordisttypebuf);
+        err = clSetKernelArg(bncalc_Kernel, 8, sizeof(cl_mem), (void*)&priorv1buf);
         if (err != CL_SUCCESS) {
             NSLog(@"Failure setting argument");
             calcerr = [NSError errorWithDomain:@"plexusCalc" code:1005 userInfo:argFail];
             return calcerr;
         }
         
-        err = clSetKernelArg(bncalc_Kernel, 9, sizeof(cl_mem), (void*)&priorv1buf);
+        err = clSetKernelArg(bncalc_Kernel, 9, sizeof(cl_mem), (void*)&priorv2buf);
         if (err != CL_SUCCESS) {
             NSLog(@"Failure setting argument");
             calcerr = [NSError errorWithDomain:@"plexusCalc" code:1005 userInfo:argFail];
             return calcerr;
         }
         
-        err = clSetKernelArg(bncalc_Kernel, 10, sizeof(cl_mem), (void*)&priorv2buf);
-        if (err != CL_SUCCESS) {
-            NSLog(@"Failure setting argument");
-            calcerr = [NSError errorWithDomain:@"plexusCalc" code:1005 userInfo:argFail];
-            return calcerr;
-        }
         
-        err = clSetKernelArg(bncalc_Kernel, 11, thisWork * INSize * sizeof(cl_int), NULL); //this is the array size of the parent nodes...uses local mem
-        if (err != CL_SUCCESS) {
-            NSLog(@"Failure setting argument 14");
-            calcerr = [NSError errorWithDomain:@"plexusCalc" code:1005 userInfo:argFail];
-            return calcerr;
-        }
-        
-        err = clSetKernelArg(bncalc_Kernel, 12, thisWork * INSize * sizeof(cl_int), NULL); //this is the array size of the lvc nodes...uses local mem
-        if (err != CL_SUCCESS) {
-            NSLog(@"Failure setting argument 15");
-            calcerr = [NSError errorWithDomain:@"plexusCalc" code:1005 userInfo:argFail];
-            return calcerr;
-        }
-        
-
         
         timer = [startcalc timeIntervalSinceNow] * -1000.0;
         //NSLog(@"Before kernel enqueue %f since starting calc fxn", timer);
@@ -1218,7 +1114,7 @@ static void *ProgressObserverContext = &ProgressObserverContext;
     timer = [startcalc timeIntervalSinceNow] * -1000.0;
      NSLog(@"After clFinish %f since starting calc fxn", timer);
     
-    
+    /*
     for(int dev = 0; dev < numpasses; dev++){
         cl_ulong ev_start_time=(cl_ulong)0;
         cl_ulong ev_end_time=(cl_ulong)0;
@@ -1232,15 +1128,16 @@ static void *ProgressObserverContext = &ProgressObserverContext;
         float que_time_gpu = (float)(ev_submit_time - ev_queued_time)/1000; // in usec
         float sub_time_gpu = (float)(ev_start_time - ev_submit_time)/1000; // in usec
         float run_time_gpu = (float)(ev_end_time - ev_start_time)/1000; // in usec
-       // NSLog(@"Pass %i: Queued until submitted %f. Submitted until start %f. Start until finished %f", dev, que_time_gpu, sub_time_gpu, run_time_gpu);
+        NSLog(@"Pass %i: Queued until submitted %f. Submitted until start %f. Start until finished %f", dev, que_time_gpu, sub_time_gpu, run_time_gpu);
     }
+    */
     
     int totcount = 0;
     for(int dev = 0; dev < numpasses; dev++) {
 
         int nodecount = 0;
         for(i=0;i<bnreadsize;i++){
-          //   NSLog(@"Pass %i run %i: %@ goes into node %i" ,dev, i, [NSNumber numberWithFloat:bnresultsarrays[dev][i]], nodecount);
+            // NSLog(@"Pass %i run %i: %@ goes into node %i" ,dev, i, [NSNumber numberWithFloat:bnresultsarrays[dev][i]], nodecount);
             
             if(firsttime){
                 NSMutableArray *newPA = [[NSMutableArray alloc] initWithObjects:[NSNumber numberWithFloat:bnresultsarrays[dev][i]], nil];
@@ -1281,7 +1178,6 @@ static void *ProgressObserverContext = &ProgressObserverContext;
 
         
     clEnqueueUnmapMemObject(cl_queue, paramsbuf, mappedParams,  0, NULL, NULL);
-    clEnqueueUnmapMemObject(cl_queue, freqbuf, mappedFreqs,  0, NULL, NULL);
     clEnqueueUnmapMemObject(cl_queue, infnetbuf, mappedInfnet,  0, NULL, NULL);
     clEnqueueUnmapMemObject(cl_queue, cptnetbuf, mappedCptnet,  0, NULL, NULL);
     clEnqueueUnmapMemObject(cl_queue, cptnetbuf, mappedCptnet,  0, NULL, NULL);
@@ -1299,7 +1195,6 @@ static void *ProgressObserverContext = &ProgressObserverContext;
     
     free(infnet);
     free(cptnet);
-    free(nodeFreqs);
     
     //if end is reached safely, no error
     

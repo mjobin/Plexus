@@ -234,7 +234,7 @@ double beta_dev(double a, double b, tinymt32j_t *r) {
 //****************************************************************
 
 //Monte Carlo Gibbs Sampler
-__kernel void BNGibbs(__constant int* offsets, __constant int* params, __constant float* nodeFreqs, __constant int* infnet, __constant float* cptnet, __local int* bnstates, __global float *bnresults, __local int* shufflenodes, __constant int* priordisttypes, __constant float* priorv1s, __constant float* priorv2s, __local int* parentnodes, __local int* lastvisitedchild)
+__kernel void BNGibbs(__constant int* offsets, __constant int* params, __constant int* infnet, __constant float* cptnet, __local int* bnstates, __global float *bnresults, __local int* shufflenodes, __constant int* priordisttypes, __constant float* priorv1s, __constant float* priorv2s)
 {
     
     
@@ -283,8 +283,9 @@ __kernel void BNGibbs(__constant int* offsets, __constant int* params, __constan
     k = 0;
     
     
-    //int binsum = 0; //Binary sum of the states of all the nodes that influence the current node
-   // float binx = 0; //Float coutn variable, needed because will be using 2.0^binx
+    __local int binsum; //Binary sum of the states of all the nodes that influence the current node
+    __local float binx; //Float coutn variable, needed because will be using 2.0^binx
+    __local double flip;
     
     __local infoffset;
     infoffset = 0; //Offset variale for influences array
@@ -313,12 +314,6 @@ __kernel void BNGibbs(__constant int* offsets, __constant int* params, __constan
     
      printf("------------INPUT CHECK--------------\n");
     printf("Work id is %i, offset is %i, bnsize is %i, maxCPTsize is %i, number of runs %i and burn-in %i\n", gid, offsets[gid], params[0],params[1], params[2],params[3]);
-    
-    printf("------------NodeFreqs--------------\n");
-    for(i=0; i<params[0];i++){
-        printf("%f, ", nodeFreqs[i]);
-    }
-    printf("\n\n");
     
     
     printf("------------Infnet--------------\n");
@@ -398,7 +393,7 @@ __kernel void BNGibbs(__constant int* offsets, __constant int* params, __constan
     //****************************************************************
     
     for(i=0; i<(params[0]);i++){
-        bnstates[i+boffset] = pointroll(&tinymt, nodeFreqs[i]); //Randomly set an initial state for each variable
+        bnstates[i+boffset] = pointroll(&tinymt, 0.5); //Randomly set an initial state for each variable
         shufflenodes[i+shuffleoffset] = i; //Initialize the nodes array in sequential order
     }
     /*
@@ -453,24 +448,6 @@ __kernel void BNGibbs(__constant int* offsets, __constant int* params, __constan
             
          //   printf("node %i*************\n\n", sn);
             
-            for(i=0; i<(params[0]);i++){
-                parentnodes[i+shuffleoffset] = -1;
-                lastvisitedchild[i+shuffleoffset] = -1;
-            }
-            
-            /*
-            printf("------------Parentnodes--------------\n");
-            for(i=0; i<(params[0]);i++){
-                printf("%i ", parentnodes[i+shuffleoffset]);
-            }
-            printf("\n\n");
-            
-            printf("------------LastVisitedChild--------------\n");
-            for(i=0; i<(params[0]);i++){
-                printf("%i ", lastvisitedchild[i+shuffleoffset]);
-            }
-            printf("\n\n");
-            */
             
             laststate = bnstates[sn+boffset]; //Save what the state of the current node was, to check for approach to stationary distribution
             
@@ -482,157 +459,51 @@ __kernel void BNGibbs(__constant int* offsets, __constant int* params, __constan
             
             
             
-
-            
-            
-            //
-            //****************************************************************
-            //****************************************************************
-            //Morris Traversal
-            //****************************************************************
-            //****************************************************************
-            __local int cur_node;
-            cur_node = sn; //root of tree
-            __local bool run_visit;
-            run_visit = true;
-            __local int oldparent;
-            oldparent = -1;
-            __local int next_child;
-            next_child = -1;
-            __local int parentholder;
-            parentholder = -1;
-            __local float product;
-            product = 1.0;
-            __local double flip;
-            flip = -999.00;
-            __local int curoffset;
-            __local int parentoffset;
-            
-              //  printf("state of %i WAS %i\n", sn, bnstates[sn+boffset]);
-            while (cur_node >=0){
-                curoffset = (params[1]*2) * cur_node; //Location in input array
-                
-               //    printf("\ncur_node %i  parent %i lvc %i\n", cur_node, parentnodes[cur_node+shuffleoffset], lastvisitedchild[cur_node+shuffleoffset]);
-                if(run_visit == true){
-                    // printf("VISIT  node %i\n", cur_node);
-
-                    if(infnet[curoffset] >= 0) {//the first infBy not -1 means this node has children
-                        //      printf("has children, dependent node. State currenbtly %i\n", bnstates[cur_node+curoffset]);
-                        next_child = 0;//next child is the first one
-                        
-                        if(bnstates[cur_node+curoffset] == 1){
-                            product *= nodeFreqs[cur_node+curoffset];
-                        }
-                        else{
-                            product *= (1.0-nodeFreqs[cur_node+curoffset]);
-                        }
-                        
-                    }
-                    else{
-                         //   printf("has NO children. independent node\n");
-                        
-                        
-                        
-                        while(flip < 0 || flip > 1){
-                            switch(priordisttypes[sn]) {
-                                case 0: //point
-                                    flip = priorv1s[sn];
-                                    break;
-                                case 1: // uniform
-                                    flip = unidev(&tinymt, priorv1s[sn], priorv2s[sn]);
-                                    break;
-                                case 2: //gaussian
-                                    flip = priorv2s[sn] * gasdev(&tinymt) + priorv1s[sn];
-                                    break;
-                                case 3: //beta
-                                    flip = beta_dev(priorv1s[sn], priorv2s[sn], &tinymt);
-                                    break;
-                                case 4: // gamma
-                                    flip = gamma_dev(priorv1s[sn]/priorv2s[sn], &tinymt);
-                                    break;
-                                case 5: //priorpost FIXME
-                                    flip = -5;
-                                    break;
-                                default:
-                                    flip = -999;
-                            }
-                        }
-                          //  printf("disttype: %i  flip: %g\n", priordisttypes[sn], flip);
-                        product *= flip;
-                        next_child = -1; //no childen
-                    }
-                }
-                
-                else{
-                     // printf("get next sibling\n");
-                    next_child = lastvisitedchild[cur_node+shuffleoffset] + 1;
-                }
-                
-                   // printf("position of next_child is %i  which is a %i \n", next_child, infnet[curoffset+next_child]);
-                
-                if(next_child >=0 && infnet[curoffset+next_child] >=0){ //if we are NOT at end of children
-                    oldparent = cur_node;
-                    parentoffset = (params[1]*2) * cur_node; //Location in input array
-                    cur_node = infnet[parentoffset+next_child];
-                    parentnodes[cur_node+shuffleoffset] = oldparent;
-                     // printf("not at end. going to child %i whose parent is %i\n", cur_node, parentnodes[cur_node+shuffleoffset]);
-                    run_visit = true;
-                    
-                }
-                else{ //if we ARE at end of children
-                    
-                    
-                    parentholder = cur_node;
-                    cur_node = parentnodes[cur_node+shuffleoffset];
-                    
-                    lastvisitedchild[cur_node+shuffleoffset]++;
-                    lastvisitedchild[parentholder+shuffleoffset]= -1;
-                    
-                    parentnodes[parentholder+shuffleoffset] = -1;
-                    parentholder = -1;
-                     //  printf("at end. going up to parent %i lvc %i whose own parent is %i\n", cur_node, lastvisitedchild[cur_node+shuffleoffset], parentnodes[cur_node+shuffleoffset]);
-                    run_visit = false;
-                    
-                }
-            }
-            
-            //****************************************************************
-            //****************************************************************
-            
-            //  printf("PRODUCT %f\n", product);
-            bnstates[sn+boffset] = pointroll(&tinymt, product);
-           //  printf("state of %i is now %i\n", sn, bnstates[sn+boffset]);
-            
-            
-            //****************************************************************
-            
-            
-            
             //Iterate through the nodes that influence this node to create the binary sum of the influences
-         //   binsum = 0;
-           // binx =0;
-            /*
+            binsum = 0;
+            binx =0;
+            
              for (i=infoffset; i<(infoffset+params[1]); i++){
-             if(infnet[i] < 0) break;
-             binsum += bnstates[(infnet[i]+boffset)] * pow(2.0f, binx);
-             binx++;
+                 if(infnet[i] < 0) break;
+                 binsum += bnstates[(infnet[i]+boffset)] * pow(2.0f, binx);
+                 binx++;
              }
              
              
              if(cptnet[(cptoffset+binsum)] < 0) { //If a -1 was passed to the cptnet, there is no CPT for this node because it is a
-             bnstates[sn+boffset] = pointroll(&tinymt, nodeFreqs[sn]);
+
+                 while(flip < 0 || flip > 1){
+                     switch(priordisttypes[sn]) {
+                         case 0: //point
+                             flip = priorv1s[sn];
+                             break;
+                         case 1: // uniform
+                             flip = unidev(&tinymt, priorv1s[sn], priorv2s[sn]);
+                             break;
+                         case 2: //gaussian
+                             flip = priorv2s[sn] * gasdev(&tinymt) + priorv1s[sn];
+                             break;
+                         case 3: //beta
+                             flip = beta_dev(priorv1s[sn], priorv2s[sn], &tinymt);
+                             break;
+                         case 4: // gamma
+                             flip = gamma_dev(priorv1s[sn]/priorv2s[sn], &tinymt);
+                             break;
+                         case 5: //priorpost FIXME
+                             flip = -5;
+                             break;
+                         default:
+                             flip = -999;
+                     }
+                 }
+                 bnstates[sn+boffset] = pointroll(&tinymt, flip);
              }
              else { //There is a CPT for this node, so the chance for the node to be true comes from the probablities of its influencdes
-             bnstates[sn+boffset] = pointroll(&tinymt, (cptnet[(cptoffset+binsum)]*nodeFreqs[sn]));  //FIXME is this right? times nodefreqs
-             
-             
-             
+                 bnstates[sn+boffset] = pointroll(&tinymt, cptnet[(cptoffset+binsum)]);
              
              }
              
-             */
-            
-            
+
             infoffset +=params[1]; //Advance the influence offset by the size of a CPT
             if(bnstates[sn+boffset] == laststate) runstationary++; //If the state is not changing, take note, and check to exit early
             
@@ -661,7 +532,6 @@ __kernel void BNGibbs(__constant int* offsets, __constant int* params, __constan
    // printf("main loop ended. runstattionary %i, g %i, sampletot %i\n", runstationary, g, sampletot);
     
     for(int l=0; l<params[0]; l++){
-        
        // printf("bnresults %f, sampletot %i\n", bnresults[l+boffset], sampletot);
         bnresults[l+boffset] /= sampletot; //To obtain posterior point, divide the compiled results through by number of samples taken
     }
