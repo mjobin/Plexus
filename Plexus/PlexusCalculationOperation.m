@@ -368,7 +368,7 @@ static void *ProgressObserverContext = &ProgressObserverContext;
     //get maximum size of inputs and outputs
     
     
-    for (BNNode * fNode in initialNodes) {//FIXME no longer recursive
+    for (BNNode * fNode in initialNodes) {
         NSArray * allInSet = [fNode infBy:self];
         if([allInSet count] > maxCPTSize) maxCPTSize = [allInSet count];
     }
