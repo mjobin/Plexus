@@ -47,7 +47,7 @@ class PlexusStructureViewController: NSViewController, NSTableViewDelegate, NSTa
     
     
     @IBAction func setScopeStructrure(sender : AnyObject) {
-        print("setting scope structire")
+
         
         let curModels : [Model] = modelTreeController.selectedObjects as! [Model]
         let curModel : Model = curModels[0]
@@ -70,13 +70,10 @@ class PlexusStructureViewController: NSViewController, NSTableViewDelegate, NSTa
         if(tableView == structureEntriesTableView){
             let secArray : NSArray = structureEntriesController.arrangedObjects as! NSArray
             return secArray.objectAtIndex(row)
-            //return structureEntriesController.arrangedObjects.objectAtIndex(row)  FIXME beta compiler was complaing so i used the above clumsiness. replace?
         }
         else if(tableView == structureTableView){
             let secArray : NSArray = structureController.arrangedObjects as! NSArray
             return secArray.objectAtIndex(row)
-            
-           // return structureController.arrangedObjects.objectAtIndex(row) FIXME beta compiler was complaing so i used the above clumsiness. replace?
         }
         
         return nil
@@ -95,7 +92,6 @@ class PlexusStructureViewController: NSViewController, NSTableViewDelegate, NSTa
             let selectedRow = rowIndexes.firstIndex
             let secArray : NSArray = structureController.arrangedObjects as! NSArray
             let selectedObject: AnyObject = secArray.objectAtIndex(selectedRow)
-            //            let selectedObject: AnyObject = structureController.arrangedObjects.objectAtIndex(selectedRow) FIXME beta compiler was complaing so i used the above clumsiness. replace?
 
             
             let mutableArray : NSMutableArray = NSMutableArray()

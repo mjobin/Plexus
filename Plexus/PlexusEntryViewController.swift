@@ -53,7 +53,7 @@ class PlexusEntryViewController: NSViewController, NSOutlineViewDelegate, NSOutl
     
     
     @IBAction func setScopeEntry(sender : AnyObject) {
-        print("setting scope entry")
+
         
         let curModels : [Model] = modelTreeController.selectedObjects as! [Model]
         let curModel : Model = curModels[0]
@@ -66,7 +66,7 @@ class PlexusEntryViewController: NSViewController, NSOutlineViewDelegate, NSOutl
     }
     
     @IBAction func unScope(sender : AnyObject) {
-        print("unscope")
+
         
         let curModels : [Model] = modelTreeController.selectedObjects as! [Model]
         let curModel : Model = curModels[0]
@@ -75,7 +75,6 @@ class PlexusEntryViewController: NSViewController, NSOutlineViewDelegate, NSOutl
         curScoped.scope = Set<Model>()
         
         
-       // curModel.scope = nil
         
         
     }
