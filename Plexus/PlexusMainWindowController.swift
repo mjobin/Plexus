@@ -160,11 +160,6 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         let nodes : [BNNode] = mainSplitViewController.modelDetailViewController?.nodesController.arrangedObjects as! [BNNode]
         
         
-        for fNode in nodes {
-            if(fNode.influencedBy.count > 0){
-                fNode.calcCPT(self)
-            }
-        }
         
         for fNode in nodes {
             let blankArray = [NSNumber]()
@@ -969,9 +964,6 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                         outText += node.nodeLink.name
                         outText += "\n"
 
-                        outText += "CPT Frequency,"
-                        outText += String(node.cptFreq)
-                        outText += "\n"
                         
                         let infBy = node.influencedBy.count
                         if (infBy < 1) { //independent node, print prior info

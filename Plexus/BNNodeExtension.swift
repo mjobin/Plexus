@@ -32,10 +32,7 @@ extension BNNode {
     
 
 
-    
-    func getCPTFreq(sender:AnyObject) -> cl_float {
-        return cl_float(self.cptFreq)
-    }
+
     
     
     func freqForCPT(sender:AnyObject) -> cl_float {
@@ -98,33 +95,6 @@ extension BNNode {
         
    
     }
-    
-    func calcCPT(sender:AnyObject) -> NSString {
-        
-        
-        
-        if(self.influencedBy.count < 1){//no parents, use prior to get a deviate
-            self.cptFreq = self.freqForCPT(self)
-            if(self.cptFreq == cl_float.NaN){
-                return "Node: \(self.nodeLink.name). NaN calculated for cptFreq. Please check that Traits list not empty for the data linked by that node."
-            }
-            
-        }
-            
-        else {
-            
-
-            
-           
-
-            
-
-            
-        }
-        
-        return "No Error"
-    }
-    
 
     
     func DFTcyclechk(nodeStack:[BNNode]) -> Bool {
@@ -195,6 +165,13 @@ extension BNNode {
         let theInfluencedBy = self.infBy(self)
         //print("infby count: \(theInfluencedBy.count)")
         let nInfBy = theInfluencedBy.count
+        if(nInfBy < 1) { //since 2^0 is 1
+            let cptarray = [Double](count: 1, repeatedValue: -1.0)
+            let archivedCPTArray = NSKeyedArchiver.archivedDataWithRootObject(cptarray)
+            self.setValue(archivedCPTArray, forKey: "cptArray")
+            return
+        }
+        
         let cptarraysize = Int(pow(2.0,Double(nInfBy)))
         var cptarray = [Double](count: cptarraysize, repeatedValue: 0.0)
         
@@ -207,9 +184,8 @@ extension BNNode {
             var binbin = String()
             for thisInfluencedBy in theInfluencedBy {
                 let thisthisInfluencedBy = thisInfluencedBy as! BNNode
-                let curInfluencedBy = thisInfluencedBy.nodeLink as! Trait
-                //print("infleucned by \(curInfluencedBy.name)")
-                 //get traits matching this name from this entry
+                let curInfluencedBy = thisthisInfluencedBy.nodeLink as! Trait
+
                 
                 var infTraits = [Trait]()
                 for thisTrait in thisEntry.trait {
@@ -219,7 +195,6 @@ extension BNNode {
                     }
                     
                 }
-                
                 if(infTraits.count == 1){ //FIXME only looking at a single instance of a trait
                     if(thisthisInfluencedBy.numericData == true){
                         let lowT = Double(curInfluencedBy.traitValue)! * (1.0 - (thisthisInfluencedBy.tolerance.doubleValue/2.0))
@@ -272,7 +247,7 @@ extension BNNode {
         print("--")
         print("total entries usable \(total)")
         print("total entries missing \(missing)")
-        */
+ */
         
 
         let archivedCPTArray = NSKeyedArchiver.archivedDataWithRootObject(cptarray)
@@ -287,59 +262,8 @@ extension BNNode {
         self.CPT()
         let cptarray = NSKeyedUnarchiver.unarchiveObjectWithData(self.valueForKey("cptArray") as! NSData) as! [cl_float]
         return  cptarray
-        /*
-        let cptnsarray : NSMutableArray = NSMutableArray()
-        for cptelem in cptarray {
-            cptnsarray.addObject(cptelem)
-        }
-        
-        return  cptnsarray
-        */
     }
-    /*
-    func CPT(sender:AnyObject, infBy:[BNNode], ftft:[NSNumber] , depth:Int) -> cl_float{
-        var cpt : cl_float = 1.0
-        
-       // print("CPT: Node name \(self.nodeLink.name) at depth \(depth)")
-        //for every input node
-        let theInfluencedBy : [BNNode] = self.influencedBy.allObjects as! [BNNode]
-        
-        
-        if(theInfluencedBy.count > 0){//continue up tree
-            
-            for thisInfluencedBy in theInfluencedBy {
-                //skip any acciedntal self influences
-                if(thisInfluencedBy != self){
-                    
-                    // println("CPT: is influenced by: \(thisInfluencedBy.name)")
-                    cpt *= thisInfluencedBy.CPT(self, infBy: infBy, ftft: ftft, depth: (depth+1))
-                }
-            }
-        }
-        else { //have reached a tip
-            if(depth>0){
-                let pos = infBy.indexOf(self)
-                if (pos == nil) {
-                    return cl_float.NaN
-                }
-                
-              //  print("fftft is \(ftft[pos!])")
-                if(ftft[pos!] == 1){//if true
-                    return Float(self.cptFreq)
-                }
-                else {
-                    return (1.0-Float(self.cptFreq))
-                }
-                
-            }
-            else {//This means that there are no parent nodes of the original search node - it's an independent node
-                cpt = -1.0
-            }
-        }
-        
-        return cpt //should only reach this if it's an independent node
-    }
-    */
+    
     
     func recursiveInfBy(sender:AnyObject, infBy:NSMutableOrderedSet , depth:Int) -> NSMutableOrderedSet {
         

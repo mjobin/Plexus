@@ -22,10 +22,8 @@ class BNNode: NSManagedObject {
     @NSManaged var postCount: NSData?
     @NSManaged var postArray: NSData?
     @NSManaged var numericData: NSNumber
-    @NSManaged var cptFreq: NSNumber
     @NSManaged var priorCount: NSData?
     @NSManaged var priorArray: NSData?
-    @NSManaged var isParent: NSNumber
     @NSManaged var tolerance: NSNumber
     @NSManaged var cptArray: NSData?
 

@@ -64,7 +64,6 @@ class PlexusModelViewController: NSViewController {
             
 
             //curNode.nodeLink.addBNNodeObject(newNode)
-            newNode.setValue(curNode.cptFreq, forKey: "cptFreq")
             newNode.setValue(curNode.numericData, forKey: "numericData")
             newNode.setValue(curNode.priorDistType, forKey: "priorDistType")
             newNode.setValue(curNode.priorV1, forKey: "priorV1")

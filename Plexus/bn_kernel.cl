@@ -310,8 +310,8 @@ __kernel void BNGibbs(__constant int* offsets, __constant int* params, __constan
     //INPUT CHECK
     //****************************************************************
     //****************************************************************
-    /*
     
+    /*
      printf("------------INPUT CHECK--------------\n");
     printf("Work id is %i, offset is %i, bnsize is %i, maxCPTsize is %i, number of runs %i and burn-in %i\n", gid, offsets[gid], params[0],params[1], params[2],params[3]);
     
@@ -375,8 +375,8 @@ __kernel void BNGibbs(__constant int* offsets, __constant int* params, __constan
     
                                   
     printf("--------------------------\n");
-    */
     
+    */
     
     //****************************************************************
     //****************************************************************
@@ -436,7 +436,8 @@ __kernel void BNGibbs(__constant int* offsets, __constant int* params, __constan
         
 
         
-       //    printf("\n\nRUN %i ************************\n", g);
+        
+        //printf("\n\nRUN %i ************************\n", g);
         
         //Cycle through each of the nodes
         for(h=0; h<params[0]; h++){ //The count var h will only be used to count through the zrray for size
@@ -446,13 +447,13 @@ __kernel void BNGibbs(__constant int* offsets, __constant int* params, __constan
             int sn = shufflenodes[h+shuffleoffset]; //The var sn will mark the location of the data for the present shuffled node
             //printf("gid %i run %i seed %i node %i becomes shuffled node %i \n", gid, g, x, h, sn);
             
-         //   printf("node %i*************\n\n", sn);
+           // printf("node %i state %i ", sn, bnstates[sn+boffset]);
             
             
             laststate = bnstates[sn+boffset]; //Save what the state of the current node was, to check for approach to stationary distribution
             
             
-            bnstates[sn+boffset] = 1;  //Set the state of the current variable to true. Thus we are asking for this node "what is the chance, given its influences, that this node is true?"
+            //bnstates[sn+boffset] = 1;  //Set the state of the current variable to true. Thus we are asking for this node "what is the chance, given its influences, that this node is true?"
             
             infoffset = (params[1]*2) * sn; //Location in input array
             cptoffset = sparseCPTsize * sn; //Location in CPT array
@@ -471,7 +472,7 @@ __kernel void BNGibbs(__constant int* offsets, __constant int* params, __constan
              
              
              if(cptnet[(cptoffset+binsum)] < 0) { //If a -1 was passed to the cptnet, there is no CPT for this node because it is a
-
+                 flip = -999;
                  while(flip < 0 || flip > 1){
                      switch(priordisttypes[sn]) {
                          case 0: //point
@@ -496,14 +497,17 @@ __kernel void BNGibbs(__constant int* offsets, __constant int* params, __constan
                              flip = -999;
                      }
                  }
+                 //printf(" parent type %i chance %f ",priordisttypes[sn], flip);
                  bnstates[sn+boffset] = pointroll(&tinymt, flip);
              }
              else { //There is a CPT for this node, so the chance for the node to be true comes from the probablities of its influencdes
                  bnstates[sn+boffset] = pointroll(&tinymt, cptnet[(cptoffset+binsum)]);
+                // printf(" child chance %f " , cptnet[(cptoffset+binsum)]);
              
              }
              
-
+          //  printf("becomes %i\n", bnstates[sn+boffset]);
+            
             infoffset +=params[1]; //Advance the influence offset by the size of a CPT
             if(bnstates[sn+boffset] == laststate) runstationary++; //If the state is not changing, take note, and check to exit early
             

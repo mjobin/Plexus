@@ -9,14 +9,12 @@
 import Cocoa
 import SpriteKit
 
-class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, CPTScatterPlotDataSource, CPTScatterPlotDelegate {
+class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NSTableViewDataSource, CPTScatterPlotDataSource, CPTScatterPlotDelegate {
     
     var moc : NSManagedObjectContext!
     dynamic var modelTreeController : NSTreeController!
     @IBOutlet dynamic var nodesController : NSArrayController!
-    @IBOutlet dynamic var childNodesController : NSArrayController!
-    @IBOutlet dynamic var parentNodesController : NSArrayController!
-    
+
     
     //Nodes View
     @IBOutlet weak var nodeVisView: NSVisualEffectView!
@@ -27,9 +25,14 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, CP
     //Single Node View
     @IBOutlet weak var singleNodeVisView: NSVisualEffectView!
     @IBOutlet var graphView : CPTGraphHostingView!
-    
-    @IBOutlet weak var priorControlsView : NSView!
 
+    //Detail View
+    @IBOutlet weak var nodeDetailView : NSView!
+    @IBOutlet weak var nodeDetailVisView: NSVisualEffectView!
+    @IBOutlet var nodeDetailGraphView : CPTGraphHostingView!
+    @IBOutlet weak var nodeDetailPriorCPTView : NSView!
+    @IBOutlet weak var nodeDetailPriorView : NSView!
+    @IBOutlet weak var nodeDetailCPTView : NSView!
     
     
     @IBOutlet var priorTypePopup : NSPopUpButton!
@@ -38,13 +41,7 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, CP
     @IBOutlet var priorV2Slider : NSSlider!
     @IBOutlet var priorV2Field : NSTextField!
     
-    @IBOutlet var scopeLabel : NSTextField!
-    @IBOutlet var scopePopup : NSPopUpButton!
-    @IBOutlet var numericButton : NSButton!
-    @IBOutlet var numericField : NSTextField!
-    @IBOutlet var dataLabel : NSTextField!
-    @IBOutlet var dataPopup : NSPopUpButton!
-    @IBOutlet var dataSubPopup : NSPopUpButton!
+
     
     var priorDist = 0
     var V1 = 0.1
@@ -54,10 +51,9 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, CP
     
     var curNode : BNNode!
     var graph : CPTXYGraph!
+    var detailGraph : CPTXYGraph!
     var priorPlot : CPTScatterPlot!
     
-    @IBOutlet var childPredicate : NSPredicate!
-        @IBOutlet weak var childTableView : NSTableView!
     
     
     required init?(coder aDecoder: NSCoder)
@@ -73,12 +69,15 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, CP
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        let  childPredicate = NSPredicate(format: "isParent = %i", 0)
-        childNodesController.filterPredicate = childPredicate
+
         
-        let  parentPredicate = NSPredicate(format: "isParent = %i", 1)
-        parentNodesController.filterPredicate = parentPredicate
         
+
+        var curNodes : [BNNode] = nodesController.selectedObjects as! [BNNode]
+        if(curNodes.count>0) {
+            curNode = curNodes[0]
+            curNode.CPT()
+        }
 
         
         nodeVisView.blendingMode = NSVisualEffectBlendingMode.BehindWindow
@@ -103,11 +102,16 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, CP
         singleNodeVisView.material = NSVisualEffectMaterial.Dark
         singleNodeVisView.state = NSVisualEffectState.Active
         
+        nodeDetailVisView.blendingMode = NSVisualEffectBlendingMode.BehindWindow
+        nodeDetailVisView.material = NSVisualEffectMaterial.Dark
+        nodeDetailVisView.state = NSVisualEffectState.Active
         
         
+
         
         graph = CPTXYGraph(frame:self.graphView.bounds)
         self.graphView.hostedGraph = graph
+        //self.nodeDetailGraphView.hostedGraph = graph
         
         
         let titleStyle = graph.titleTextStyle!.mutableCopy() as! CPTMutableTextStyle
@@ -223,55 +227,50 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, CP
     
     func reloadData() {
         
-        let allNodes : [BNNode] = nodesController.arrangedObjects as! [BNNode]
-
-        for chkNode : BNNode in allNodes {
-            // print("chknode \(chkNode.nodeLink.name) isParent \(chkNode.isParent)")
-            if(chkNode.influencedBy.count > 0) { //child
-                if(chkNode.isParent != 0){
-                    chkNode.setValue(0, forKey: "isParent")
-
-
-                }
-                
-            }
-            else {
-                if(chkNode.isParent != 1){
-                    chkNode.setValue(1, forKey: "isParent")
-
-                }
-            }
-            
-            parentNodesController.rearrangeObjects()
-            childNodesController.rearrangeObjects()
-            
-        }
-
-        
-        
         
         //Get selected node
+        let cptTableContainer = NSScrollView(frame:nodeDetailCPTView.frame)
+        let cptTableView = NSTableView(frame:nodeDetailCPTView.frame)
+        for curColumn in cptTableView.tableColumns{
+            cptTableView.removeTableColumn(curColumn)
+        }
         var curNodes : [BNNode] = nodesController.selectedObjects as! [BNNode]
         if(curNodes.count>0) {
             curNode = curNodes[0]
+            
+
 
             priorDist = Int(curNode.priorDistType)
             V1 = Double(curNode.priorV1)
             V2 = Double(curNode.priorV2)
             
             if(curNode.influencedBy.count > 0) {
-                priorControlsView.hidden = true
+                nodeDetailPriorView.hidden = true
+                nodeDetailCPTView.hidden = false
 
                 
                 graph.addPlot(priorPlot)
                 graph.removePlot(priorPlot)
                 
-                //collect data for the CPT controls
-                //self.collectData()
+                //Construct CPT tree
+                
+
+                let theInfBy : [BNNode] = curNode.infBy(self) as! [BNNode]
+                for thisInfBy in theInfBy {
+                    let cptcolumn = NSTableColumn(identifier: thisInfBy.nodeLink.name)
+                    cptcolumn.headerCell.stringValue = thisInfBy.nodeLink.name
+                    cptTableView.addTableColumn(cptcolumn)
+
+                }
+                let datacolumn = NSTableColumn(identifier: "Data")
+                datacolumn.headerCell.stringValue = "CP"
+                cptTableView.addTableColumn(datacolumn)
+
+                
             }
             else {
-                priorControlsView.hidden = false
-
+                nodeDetailCPTView.hidden = true
+                nodeDetailPriorView.hidden = false
                 
                 
                 switch priorDist{
@@ -357,90 +356,8 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, CP
                 graph.addPlot(priorPlot)
                 
             }
-            /*
-            if(curNode.influencedBy.count > 0) {
-                
-                
-                priorTypePopup.hidden = true
-                priorV1Slider.hidden = true
-                priorV2Slider.hidden = true
-                priorV1Field.hidden = true
-                priorV2Field.hidden = true
-                
-                
-                scopeLabel.hidden = false
-                scopePopup.hidden = false
-                numericButton.hidden = false
-                dataLabel.hidden = false
-                
-                dataPopup.hidden = false
-                dataSubPopup.hidden = false
-                
-                graph.addPlot(priorPlot)
-                graph.removePlot(priorPlot)
-                
-                //     println("in reloadData datanames: \(curNode.dataName) \(curNode.dataSubName)")
-                
-                //collect data for the CPT controls
-                self.collectData()
-                
-            }
-            else {
-                
-                
-                priorTypePopup.hidden = false
-                switch priorDist{
-                case 0: //point/expert
-                    priorV2Slider.hidden = true
-                    priorV2Field.hidden = true
-                    priorV1Slider.minValue = 0.0
-                    priorV1Slider.maxValue = 1.0
-                    priorV2Slider.minValue = 0.0
-                    priorV2Slider.maxValue = 1.0
-                    
-                case 3: //beta
-                    
-                    priorV2Slider.hidden = false
-                    priorV2Field.hidden = false
-                    priorV1Slider.minValue = 0.0
-                    priorV1Slider.maxValue = 10.0
-                    priorV2Slider.minValue = 0.0
-                    priorV2Slider.maxValue = 10.0
-                    
-                case 4: //gamma
-                    
-                    priorV2Slider.hidden = false
-                    priorV2Field.hidden = false
-                    priorV1Slider.minValue = 0.0
-                    priorV1Slider.maxValue = 10.0
-                    priorV2Slider.minValue = 0.0
-                    priorV2Slider.maxValue = 10.0
-                default:
-                    priorV2Slider.hidden = false
-                    priorV2Field.hidden = false
-                    priorV1Slider.minValue = 0.0
-                    priorV1Slider.maxValue = 1.0
-                    priorV2Slider.minValue = 0.0
-                    priorV2Slider.maxValue = 1.0
-                }
-                priorV1Slider.hidden = false
-                priorV1Field.hidden = false
-                
-                
-                
-                scopeLabel.hidden = true
-                scopePopup.hidden = true
-                numericButton.hidden = true
-                dataLabel.hidden = true
-                
-                dataPopup.hidden = true
-                dataSubPopup.hidden = true
-                
-                graph.addPlot(priorPlot)
-                
-            }
-            */
             
+
             
             if curNode.postCount != nil {
                 
@@ -488,29 +405,13 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, CP
                 self.priorDataForChart = [Double](count: 100, repeatedValue: 0.0)
             }
             
+
             
         }
             
         else { //no node, just move graph off view
             
-            priorControlsView.hidden = false
 
-            
-            /*
-            priorTypePopup.hidden = true
-            priorV1Slider.hidden = true
-            priorV2Slider.hidden = true
-            priorV1Field.hidden = true
-            priorV2Field.hidden = true
-            
-            scopeLabel.hidden = true
-            scopePopup.hidden = true
-            numericButton.hidden = true
-            dataLabel.hidden = true
-            
-            dataPopup.hidden = true
-            dataSubPopup.hidden = true
-            */
             
             
             priorDist = 0
@@ -519,7 +420,19 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, CP
             self.dataForChart = [Double](count: 100, repeatedValue: -10000.0)
         }
         
+        cptTableView.setDelegate(self)
+        cptTableView.setDataSource(self)
+        cptTableView.reloadData()
+        cptTableContainer.documentView = cptTableView
+        cptTableContainer.hasVerticalScroller = true
+        cptTableContainer.translatesAutoresizingMaskIntoConstraints = false
+        nodeDetailCPTView.addSubview(cptTableContainer)
+        let topc = NSLayoutConstraint(item: cptTableContainer, attribute: .Top, relatedBy: .Equal, toItem: nodeDetailCPTView, attribute: .Top, multiplier: 1.0, constant: 0.0)
+        let botc = NSLayoutConstraint(item: cptTableContainer, attribute: .Bottom, relatedBy: .Equal, toItem: nodeDetailCPTView, attribute: .Bottom, multiplier: 1.0, constant: 0.0)
+        let trailc = NSLayoutConstraint(item: cptTableContainer, attribute: .Trailing, relatedBy: .Equal, toItem: nodeDetailCPTView, attribute: .Trailing, multiplier: 1.0, constant: 0.0)
+        let leadc = NSLayoutConstraint(item: cptTableContainer, attribute: .Leading, relatedBy: .Equal, toItem: nodeDetailCPTView, attribute: .Leading, multiplier: 1.0, constant: 0.0)
         
+        nodeDetailCPTView.addConstraints([trailc, leadc, topc, botc])
         
         graph.reloadData()
         
@@ -617,274 +530,7 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, CP
     
     
     
-    //******
-    
-    
-    /*
-    func collectData() {
-    //    let errorPtr : NSErrorPointer = nil
-        
-        self.dataPopup.removeAllItems()
-        self.dataSubPopup.removeAllItems()
-        self.dataPopup.enabled = true
-        self.dataSubPopup.enabled = true
-        self.dataPopup.hidden = false
-        self.dataSubPopup.hidden = false
-        var dataNames = [String]()
-        var dataSubNames = [String]()
-
-        
-
-        
-        
-      //  let curModels : [Model] = modelTreeController.selectedObjects as! [Model]
-       // let curModel : Model = curModels[0]
-      //  let curDataset : Dataset = curModel.dataset
-        
-        var curNodes : [BNNode] = nodesController.selectedObjects as! [BNNode]
-        if(curNodes.count>0) {
-            curNode = curNodes[0]
-            
-        //    let request = NSFetchRequest(entityName: "Trait")
-       //     var predicate = NSPredicate()
-            
-
-            
-            dataNames = curNode.getDataNames()
-            
-
-            
-            
-            switch(curNode.dataScope) {
-            case 0://global // ALL entities matching this one's name
-                
-                //   println("global \(curNode.nodeLink.name)")
-                //dataNames.append(curNode.nodeLink.name)
-                self.dataPopup.enabled = false
-                self.dataPopup.hidden = true
-                self.dataSubPopup.enabled = false
-                self.dataSubPopup.hidden = true
-                
-                
-            case 1:// self
-                //    println("self \(curNode.nodeLink.name)")
-                
-                //from that object, select only the names of what is directly connected to it
-                if(curNode.nodeLink.entity.name == "Entry"){
-                    //  println("entry")
-                    /*
-                    let curEntry = curNode.nodeLink as! Entry
-                    let theTraits = curEntry.trait
-                    for thisTrait in theTraits {
-                        dataNames.append(thisTrait.name)
-                    }
-*/
-                    
-                }
-                else if (curNode.nodeLink.entity.name == "Trait"){//if you select trait here, you can only mean this trait
-                 //   dataNames.append(curNode.nodeLink.name)
-                    self.dataPopup.enabled = false
-                    self.dataPopup.hidden = true
-                    self.dataSubPopup.enabled = false
-                    self.dataSubPopup.hidden = true
-                }
-                    
-                else if (curNode.nodeLink.entity.name == "Structure"){    //The traits whose entries are part of this structure
-                    /*
-                    let curStructure = curNode.nodeLink as! Structure
-                    let curEntries = curStructure.entry
-                    for curEntry in curEntries {
-                        let curTraits = curEntry.trait
-                        for curTrait in curTraits{
-                            dataNames.append(curTrait.name)
-                        }
-                    }
-*/
-                    
-                }
-                else {
-                    //dataNames = [String]()
-                }
-                
-             /*
-            case 2: //children
-                //   println("children \(curNode.nodeLink.name)")
-                
-                
-                if(curNode.nodeLink.entity.name == "Entry"){ //take this entry's children and look at it's children
-                    
-                    
-                    //If it is connected to this entry, then it is autmatically in that entry's only possible dataset
-                    predicate = NSPredicate(format: "entry.parent == %@", curNode.nodeLink)
-                    
-                    
-                    request.resultType = .DictionaryResultType
-                    request.predicate = predicate
-                    request.returnsDistinctResults = true
-                    request.propertiesToFetch = ["name"]
-                    
-                    do {
-                        let fetch = try moc.executeFetchRequest(request)
-                        //  println("in entry to trait children fetch \(fetch)")
-                        for obj  in fetch {
-                            //println(obj.valueForKey("name"))
-                            dataNames.append(obj.valueForKey("name") as! String)
-                            
-                        }
-                    } catch let error as NSError {
-                        errorPtr.memory = error
-                    }
-                    
-                }
-                else if (curNode.nodeLink.entity.name == "Trait" || curNode.nodeLink.entity.name == "Structure"){ //traits and structures have no children
-                    curNode.dataScope = 0
-                    dataNames = [String]()
-                    return
-                    
-                    
-                    
-                }
-                else {
-                    dataNames = [String]()
-                    
-                }
-                */
-                
-                
-            default:
-                
-                print("collectData out of bounds")
-                dataNames = [String]()
-                
-            }
-            
-            //  println("dataNames \(dataNames)")
-            
-            self.dataPopup.addItemsWithTitles(dataNames)
-            
-            
-            if(self.dataPopup.itemArray.count > 0){
-                self.dataPopup.selectItemWithTitle(curNode.dataName)
-            }
-            
-            
-            // println("curNode.dataName \(curNode.dataName)")
-            
-            dataSubNames = curNode.getDataSubNames()
-            self.dataSubPopup.addItemsWithTitles(dataSubNames)
-            
-
-            
-            /*
-
-            //if the currentdataName can be found in the list, it is selected and them subNames can be found, otherwise just return
-            if dataNames.contains(curNode.dataName){
-                predicate = NSPredicate()
-                
-                //now create pickable list of trait values
-                switch(curNode.dataScope) {
-                case 0://global list of all possible values of all traits with this name
-                    
-                    // println("dataSubNames global")
-                    
-                    if(curNode.nodeLink.entity.name == "Entry"){//Traits whose names match the name of this entry
-                        //  println("entry")
-                        predicate = NSPredicate(format: "entry.dataset == %@ AND name == %@", curDataset, curNode.nodeLink.name)
-                        
-                        
-                    }
-                    else if (curNode.nodeLink.entity.name == "Trait"){ //you obviously want this trait's own value, then
-                        //  println("trait")
-                        predicate = NSPredicate(format: "entry.dataset == %@ AND name == %@", curDataset, curNode.nodeLink.name)
-                    }
-                    
-                case 1: //self
-                    //  println("dataSubNames self")
-                    
-                    if(curNode.nodeLink.entity.name == "Entry"){
-                        //     println("entry")
-                        predicate = NSPredicate(format: "entry == %@ AND name == %@", curNode.nodeLink, curNode.dataName)
-                        
-                        
-                    }
-                        
-                    else if (curNode.nodeLink.entity.name == "Trait"){ //you obviously want this trait's own value, then
-                        //  println("trait")
-                        predicate = NSPredicate(format: "entry == %@", curNode.nodeLink)
-                        
-                        
-                        
-                    }
-                    
-                case 2: //children
-                    //   println("dataSubNames children")
-                    if(curNode.nodeLink.entity.name == "Entry"){ //take this entry's children and look at it's children
-                        //     println("entry")
-                        predicate = NSPredicate(format: "entry.parent == %@ AND name == %@", curNode.nodeLink, curNode.dataName)
-                        
-                    }
-                        
-                    else if (curNode.nodeLink.entity.name == "Trait"){ //traits cannot have children
-                        //   println("trait")
-                    }
-                    
-                default:
-                    print("out of bounds")
-                    
-                }
-                
-                request.resultType = .DictionaryResultType
-                request.predicate = predicate
-                request.returnsDistinctResults = true
-                request.propertiesToFetch = ["traitValue"]
-                
-                do {
-                    let fetch = try moc.executeFetchRequest(request)
-                    // println("sub fetch \(fetch)")
-                    for obj  in fetch {
-                        //   println(obj.valueForKey("traitValue"))
-                        dataSubNames.append(obj.valueForKey("traitValue") as! String)
-                        
-                    }
-                } catch let error as NSError {
-                    errorPtr.memory = error
-                }
-                
-                
-                self.dataSubPopup.addItemsWithTitles(dataSubNames)
-                if(self.dataSubPopup.itemArray.count > 0){
-                    self.dataSubPopup.selectItemWithTitle(curNode.dataSubName)
-                }
-                
-                
-                
-                
-            }
-                
-                //because we are sleetcing froma  live list, ok to select first option if exisitng is not found
-                
-            else {
-                dataSubNames = [String]()
-                //                println("no contains")
-                
-                
-                
-            }
-            
-            */
-            
-            //          println("and after \(curNode.dataName) \(curNode.dataSubName)")
-            
-        }
-            
-        else {
-            self.dataPopup.hidden = true
-            self.dataSubPopup.hidden = true
-        }
-        
-        
-    }
-    */
+   
     
     
     //****** distn fxns
@@ -928,16 +574,116 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, CP
     
     func mocDidChange(notification: NSNotification){
         
-          //println("model detail moc changed")
         self.reloadData()
-        
-        
     }
     
     
+//tableview data source 
+    
+    func numberOfRowsInTableView(tableView: NSTableView) -> Int {
+        var curNodes : [BNNode] = nodesController.selectedObjects as! [BNNode]
+        if(curNodes.count>0) {
+            curNode = curNodes[0]
+            if (curNode.valueForKey("cptArray")) == nil {
+                curNode.CPT()
+            }
+            let cptarray = NSKeyedUnarchiver.unarchiveObjectWithData(curNode.valueForKey("cptArray") as! NSData) as! [cl_float]
+            return cptarray.count
+        }
+        return 0
+    }
     
     
-    //NSTableView delegate methods
+    func tableView(tableView: NSTableView, objectValueForTableColumn tableColumn: NSTableColumn?, row: Int) -> AnyObject? {
+        
+        
+        if (curNode.valueForKey("cptArray")) == nil {
+            var curNodes : [BNNode] = nodesController.selectedObjects as! [BNNode]
+            if(curNodes.count>0) {
+                curNode = curNodes[0]
+                curNode.CPT()
+            }
+        }
+
+        
+        var curNodes : [BNNode] = nodesController.selectedObjects as! [BNNode]
+        if(curNodes.count>0) {
+            curNode = curNodes[0]
+            if(tableColumn?.identifier == "Data" ){
+                let cptarray = NSKeyedUnarchiver.unarchiveObjectWithData(curNode.valueForKey("cptArray") as! NSData) as! [cl_float]
+                return cptarray[row]
+            }
+            else{
+                let poststr = String(row, radix: 2)
+                //add chars to pad out
+                let theInfBy = curNode.infBy(self)
+                var prestr = String()
+                for _ in poststr.characters.count..<theInfBy.count {
+                    prestr += "0"
+                }
+                let str = prestr + poststr
+                let revstr = String(str.characters.reverse())
+                //and revrse
+                
+                let index = tableView.tableColumns.indexOf(tableColumn!)
+                //print ("\(index): \(revstr)")
+                let index2 = revstr.startIndex.advancedBy(index!)
+                if(revstr[index2] == "1"){
+                    return "T"
+                }
+                else if (revstr[index2] == "0"){
+                    return "F"
+                }
+            }
+        }
+
+        return nil
+    }
+ 
+    
+    
+    /*
+     func tableView(tableView: NSTableView, viewForTableColumn tableColumn: NSTableColumn?, row: Int) -> NSView? {
+        let result : NSTableCellView = tableView.makeViewWithIdentifier(tableColumn!.identifier, owner: self) as! NSTableCellView
+        var curNodes : [BNNode] = nodesController.selectedObjects as! [BNNode]
+        if(curNodes.count>0) {
+            curNode = curNodes[0]
+            
+            if(tableColumn?.identifier == "Data" ){
+                let cptarray = NSKeyedUnarchiver.unarchiveObjectWithData(curNode.valueForKey("cptArray") as! NSData) as! [cl_float]
+                result.textField?.stringValue = String(cptarray[row])
+            }
+            else {
+                let poststr = String(row, radix: 2)
+                //add chars to pad out
+                let theInfBy = curNode.infBy(self)
+                var prestr = String()
+                for _ in poststr.characters.count..<theInfBy.count {
+                    prestr += "0"
+                }
+                let str = prestr + poststr
+                let revstr = String(str.characters.reverse())
+                //and revrse
+                
+                let index = tableView.tableColumns.indexOf(tableColumn!)
+                //print ("\(index): \(revstr)")
+                let index2 = revstr.startIndex.advancedBy(index!)
+                if(revstr[index2] == "1"){
+                    result.textField?.stringValue = "T"
+                }
+                else if (revstr[index2] == "0"){
+                    result.textField?.stringValue = "F"
+                }
+                
+            }
+            
+        }
+        return result
+    }
+    
+   
+ */
+    
     /*
     func tableView(tableView: NSTableView, dataCellForTableColumn tableColumn: NSTableColumn?, row: Int) -> NSCell? {
         

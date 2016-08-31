@@ -2,8 +2,6 @@
 <model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="10174" systemVersion="15G31" minimumToolsVersion="Automatic">
     <entity name="BNNode" representedClassName="Plexus.BNNode" syncable="YES">
         <attribute name="cptArray" optional="YES" attributeType="Binary" syncable="YES"/>
-        <attribute name="cptFreq" optional="YES" attributeType="Double" minValueString="0" maxValueString="1" defaultValueString="0.0" syncable="YES"/>
-        <attribute name="isParent" optional="YES" attributeType="Integer 16" defaultValueString="YES" syncable="YES"/>
         <attribute name="numericData" optional="YES" attributeType="Boolean" defaultValueString="NO" syncable="YES"/>
         <attribute name="postArray" optional="YES" attributeType="Binary" syncable="YES"/>
         <attribute name="postCount" optional="YES" attributeType="Binary" valueTransformerName="PlexusBNNodePostArrayTransformer" syncable="YES"/>
@@ -67,7 +65,7 @@
         <relationship name="entry" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Entry" inverseName="trait" inverseEntity="Entry" syncable="YES"/>
     </entity>
     <elements>
-        <element name="BNNode" positionX="54" positionY="18" width="128" height="285"/>
+        <element name="BNNode" positionX="54" positionY="18" width="128" height="255"/>
         <element name="Dataset" positionX="63" positionY="-157" width="128" height="150"/>
         <element name="Entry" positionX="-468" positionY="-36" width="128" height="165"/>
         <element name="Model" positionX="349" positionY="-9" width="128" height="240"/>
