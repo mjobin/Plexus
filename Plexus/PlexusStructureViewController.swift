@@ -155,9 +155,7 @@ class PlexusStructureViewController: NSViewController, NSTableViewDelegate, NSTa
                 curStructure = curStructures[0]
             }
             
-            
-            
-            
+
             
             for object : AnyObject in draggedArray{
                 

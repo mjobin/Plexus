@@ -238,7 +238,7 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
         if(curNodes.count>0) {
             curNode = curNodes[0]
             
-
+           // curNode.CPT() //FIXME thus called every time MOC changes?
 
             priorDist = Int(curNode.priorDistType)
             V1 = Double(curNode.priorV1)

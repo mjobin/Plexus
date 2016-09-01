@@ -65,9 +65,12 @@ class PlexusModelViewController: NSViewController {
 
             //curNode.nodeLink.addBNNodeObject(newNode)
             newNode.setValue(curNode.numericData, forKey: "numericData")
+            newNode.setValue(curNode.tolerance, forKey: "tolerance")
             newNode.setValue(curNode.priorDistType, forKey: "priorDistType")
             newNode.setValue(curNode.priorV1, forKey: "priorV1")
             newNode.setValue(curNode.priorV2, forKey: "priorV2")
+            newNode.setValue(curNode.cptArray, forKey: "cptArray")
+            
             
             //Move postArray and post Count to new nodes' priorArray and priorCount, so that new sims can be run on previous results
             newNode.setValue(curNode.postArray, forKey: "priorArray")

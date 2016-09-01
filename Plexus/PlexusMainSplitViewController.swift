@@ -28,20 +28,12 @@ class PlexusMainSplitViewController: NSSplitViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do view setup here.
-        
-        //splitView.setPosition(splitView.frame.width/2, ofDividerAtIndex: 1) //initial set up leave it 50/50 for now
-        //splitView.adjustSubviews()
-        
 
         structureViewController = childViewControllers[0] as? PlexusStructureViewController
         entryViewController = childViewControllers[1] as? PlexusEntryViewController
         entryDetailViewController = childViewControllers[2] as? PlexusEntryDetailViewController
         modelDetailViewController = childViewControllers[3] as? PlexusModelDetailViewController
         modelViewController = childViewControllers[4] as? PlexusModelViewController
-        
-        
-
         
 
         
