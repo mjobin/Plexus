@@ -11,7 +11,7 @@ import CoreData
 
 class Structure: NodeLink {
 
-    @NSManaged var dataset: Dataset
+
     @NSManaged var entry: NSSet
 
 }

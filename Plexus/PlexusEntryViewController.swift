@@ -13,7 +13,6 @@ import CoreServices
 class PlexusEntryViewController: NSViewController, NSOutlineViewDelegate, NSOutlineViewDataSource {
 
     var moc : NSManagedObjectContext!
-   dynamic var datasetController : NSArrayController!
     dynamic var modelTreeController : NSTreeController!
     @IBOutlet dynamic var entryTreeController : NSTreeController!
     @IBOutlet weak var entryOutlineView : NSOutlineView!
@@ -78,6 +77,8 @@ class PlexusEntryViewController: NSViewController, NSOutlineViewDelegate, NSOutl
         
         
     }
+    
+
 
     //nsoutlineview delegate methods
     func outlineView(outlineView: NSOutlineView, viewForTableColumn tableColumn: NSTableColumn?, item: AnyObject) -> NSView? {

@@ -12,7 +12,6 @@ import CoreData
 class PlexusStructureViewController: NSViewController, NSTableViewDelegate, NSTableViewDataSource {
     
     var moc : NSManagedObjectContext!
-    dynamic var datasetController : NSArrayController!
     dynamic var modelTreeController : NSTreeController!
     @IBOutlet var structurePopup : NSPopUpButton!
     @IBOutlet var structureEntriesController : NSArrayController!
@@ -144,12 +143,11 @@ class PlexusStructureViewController: NSViewController, NSTableViewDelegate, NSTa
             var curStructure : Structure!
             
             if(curStructures.count < 1){
-                let curDatasets : [Dataset] = self.datasetController.selectedObjects as! [Dataset]
-                let curDataset = curDatasets[0]
+
                 curStructure = Structure(entity: NSEntityDescription.entityForName("Structure", inManagedObjectContext: self.moc)!, insertIntoManagedObjectContext: self.moc)
-                curStructure.setValue(curDataset, forKey: "dataset")
+
                 curStructure.setValue("newzero", forKey: "name")
-                curDataset.addStructureObject(curStructure)
+
             }
             else {
                 curStructure = curStructures[0]

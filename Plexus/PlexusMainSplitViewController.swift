@@ -21,7 +21,6 @@ class PlexusMainSplitViewController: NSSplitViewController {
     var entryDetailViewController : PlexusEntryDetailViewController? = nil
     var modelDetailViewController :  PlexusModelDetailViewController? = nil
     
-    dynamic var datasetController : NSArrayController!
     dynamic var entryTreeController : NSTreeController!
     dynamic var modelTreeController : NSTreeController!
     
@@ -41,9 +40,7 @@ class PlexusMainSplitViewController: NSSplitViewController {
     
     override func viewDidAppear() {
         super.viewDidAppear()
-        structureViewController!.datasetController = self.datasetController
-        entryViewController!.datasetController = self.datasetController
-        modelViewController!.datasetController = self.datasetController
+
         
         entryTreeController = entryViewController?.entryTreeController
         entryDetailViewController!.entryTreeController = self.entryTreeController

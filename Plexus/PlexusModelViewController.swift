@@ -11,7 +11,6 @@ import Cocoa
 class PlexusModelViewController: NSViewController {
 
     var moc : NSManagedObjectContext!
-    dynamic var datasetController : NSArrayController!
     @IBOutlet dynamic var modelTreeController : NSTreeController!
     
     
@@ -32,13 +31,13 @@ class PlexusModelViewController: NSViewController {
    @IBAction func childModel(sender : AnyObject){
 
     
-    //    let curDatasets : [Dataset] = datasetController.selectedObjects as! [Dataset]
-      //  let curDataset : Dataset = curDatasets[0]
+
     
         let curModels : [Model] = modelTreeController.selectedObjects as! [Model]
         let curModel : Model = curModels[0]
 
 
+        //print ("curmodel \(curModel)")
     
     
     if let curPath : NSIndexPath = modelTreeController.selectionIndexPath {
@@ -47,6 +46,10 @@ class PlexusModelViewController: NSViewController {
 
 
         let newModel : Model = Model(entity: NSEntityDescription.entityForName("Model", inManagedObjectContext: self.moc)!, insertIntoManagedObjectContext: self.moc)
+        
+
+        
+        
        // curModel.addChildObject(newModel)
        // newModel.setValue(curModel, forKey: "parent")
         modelTreeController.insertObject(newModel, atArrangedObjectIndexPath: newPath)

@@ -20,7 +20,6 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
     var moc : NSManagedObjectContext!
     var mainSplitViewController = PlexusMainSplitViewController()
     @IBOutlet var mainToolbar : NSToolbar!
-    @IBOutlet var datasetController : NSArrayController!
     @IBOutlet var testprog : NSProgressIndicator!
 
     
@@ -39,7 +38,8 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
     
     var breakloop = false
     
-
+    dynamic var entryTreeController : NSTreeController!
+    
 
     
     override func windowWillLoad() {
@@ -51,32 +51,32 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         moc = appDelegate.managedObjectContext
 
         
-
         
-        //create a dataset if there are none
-        let request = NSFetchRequest(entityName: "Dataset")
-        let fetchedDatasets: [AnyObject]?
+    //    NSNotificationCenter.defaultCenter().addObserver(self, selector: "mocDidChange:", name: NSManagedObjectContextDidSaveNotification, object: nil)
+        
+
+        let request = NSFetchRequest(entityName: "Model")
+        let fetchedModels: [AnyObject]?
         do {
-            fetchedDatasets = try moc.executeFetchRequest(request)
+            fetchedModels = try moc.executeFetchRequest(request)
         } catch let error as NSError {
             print(error)
-            fetchedDatasets = nil
+            fetchedModels = nil
         }
         
-        if fetchedDatasets == nil {
+        if fetchedModels == nil {
             print("error")
 
         }
         
-        let initDatasets = fetchedDatasets as! [NSManagedObject]
-        if(initDatasets.count == 0){
-            print("no datasets")
+        let initModels = fetchedModels as! [NSManagedObject]
+        if(initModels.count == 0){
+
             //so make an initial one
-            let newDataset = NSEntityDescription.insertNewObjectForEntityForName("Dataset", inManagedObjectContext: moc) 
+
 
             let newModel = NSEntityDescription.insertNewObjectForEntityForName("Model", inManagedObjectContext: moc) 
             newModel.setValue("newmodel", forKey: "name")
-            newModel.setValue(newDataset, forKey: "dataset")
             newModel.setValue(NSDate(), forKey: "dateCreated")
             newModel.setValue(NSDate(), forKey: "dateModded")
             do {
@@ -99,20 +99,10 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         
         mainSplitViewController = contentViewController as! PlexusMainSplitViewController
 
-        mainSplitViewController.datasetController = self.datasetController
-       // println(self.datasetController)
-        //println(mainSplitViewController.datasetController)
-        
-        
-     //   println(datasetController!.selectionIndexes)
-        
-      //  datasetController!.setSelectionIndex(1)
 
         
     
-        
-        
-      //  NSNotificationCenter.defaultCenter().addObserver(self, selector: "mocDidChange:", name: NSManagedObjectContextDidSaveNotification, object: nil)
+
         
         dispatch_async(dispatch_get_global_queue(priority, 0)) {
             let operr = self.calcop.clCompile();
@@ -134,10 +124,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         
     }
     
-    @IBAction func  copyDataset(x:NSToolbarItem){
-        print("copy dataset Tapped: \(x)")
-        
-    }
+
     
     @IBAction func  toggleModels(x:NSToolbarItem){
         //println("Toggle models Tapped: \(x)")
@@ -269,7 +256,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
     @IBAction func  importCSV(x:NSToolbarItem){
 
 
-        
+        self.mainSplitViewController.entryTreeController.fetch(self)
         
         
         //Open panel for .csv files only
@@ -279,11 +266,17 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         op.canChooseFiles = true
         op.allowedFileTypes = ["csv"]
         
-        //accessory view to allow addition to current dataset
+        //accessory view to allow addition to current locaiton
         let av:NSButton = NSButton(frame: NSMakeRect(0.0, 0.0, 324.0, 22.0))
         av.setButtonType(NSButtonType.SwitchButton)
-        av.title = "Add to Current Dataset"
+        av.title = "Add as child of current selection"
+        av.state = 0
         op.accessoryView = av
+        if #available(OSX 10.11, *) {
+            op.accessoryViewDisclosed = true
+        } else {
+            op.accessoryView?.hidden = false
+        }
         
         let result = op.runModal()
         
@@ -297,54 +290,53 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
             var i = 1
             var firstLine = true
             let inFile  = op.URL
+            let inFileBase = inFile?.URLByDeletingPathExtension
+
+            
+            var curEntry : Entry!
+            
+            if(av.state == 0){//New entires will be added as a child of an entry given the name of the input file
+                curEntry = Entry(entity: NSEntityDescription.entityForName("Entry", inManagedObjectContext: self.moc)!, insertIntoManagedObjectContext: self.moc)
+                curEntry.setValue(inFileBase?.lastPathComponent, forKey: "name")
+            }
+            
+            else { //New Entries will be added as children of current entry.
+                let curEntries : [Entry] = self.mainSplitViewController.entryTreeController.selectedObjects as! [Entry]
+                if(curEntries.count > 0){
+                    curEntry  = curEntries[0]
+                }
+                else {
+                    curEntry = Entry(entity: NSEntityDescription.entityForName("Entry", inManagedObjectContext: self.moc)!, insertIntoManagedObjectContext: self.moc)
+                   curEntry.setValue(inFileBase?.lastPathComponent, forKey: "name")
+                }
+                
+            }
+            
             
 
+            do {
+                try self.moc.save()
+            } catch let error as NSError {
+                print(error)
+            } catch {
+                fatalError()
+            }
+            
+            
+            let curEntryID = curEntry.objectID
             
             dispatch_async(dispatch_get_global_queue(priority, 0)) {
                 
                 
                 //create moc
+
                 let inMOC = NSManagedObjectContext(concurrencyType: .PrivateQueueConcurrencyType)
                 inMOC.undoManager = nil
                 inMOC.persistentStoreCoordinator = self.moc.persistentStoreCoordinator
 
-            
-            
-            
-                var inDataset : Dataset!
-                if(av.state == 0){//new dataset
-                    inDataset = Dataset(entity: NSEntityDescription.entityForName("Dataset", inManagedObjectContext: inMOC)!, insertIntoManagedObjectContext: inMOC)
-                    inDataset.setValue(inFile!.URLByDeletingPathExtension?.lastPathComponent, forKey: "name")
-                }
-                else {// the
-                    let curDatasets : [Dataset] = self.datasetController.selectedObjects as! [Dataset]
-                    inDataset = curDatasets[0]
-                }
-                
-                do {
-                    try inMOC.save()
-                } catch let error as NSError {
-                    print(error)
-                } catch {
-                    fatalError()
-                }
-                
-                
+                let parentEntry : Entry = inMOC.objectWithID(curEntryID) as! Entry
 
-                
-                let datasetID = inDataset.objectID
 
-                
-
-               
-                
-                
-                //give it an initial model
-                let newModel : Model = Model(entity: NSEntityDescription.entityForName("Model", inManagedObjectContext: inMOC)!, insertIntoManagedObjectContext: inMOC)
-                newModel.setValue("First Model", forKey: "name")
-                newModel.setValue(inDataset, forKey: "dataset")
-                inDataset.addModelObject(newModel)
-                
                 
                 let fileContents : String = (try! NSString(contentsOfFile: inFile!.path!, encoding: NSUTF8StringEncoding)) as String
                 let fileLines : [String] = fileContents.componentsSeparatedByString("\n")
@@ -365,8 +357,6 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                 
                 
                 let request = NSFetchRequest(entityName: "Structure")
-                let predicate = NSPredicate(format: "dataset == %@", inDataset)
-                request.predicate = predicate
                 do{
                     existingStructures = try self.moc.executeFetchRequest(request) as! [Structure]
 
@@ -385,7 +375,6 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                 self.progInd.indeterminate = false
                 self.progInd.doubleValue = 0
                 self.workLabel.stringValue = "Importing..."
-
                 self.progInd.startAnimation(self)
                 
 
@@ -428,7 +417,11 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                         if(thisLine.stringByTrimmingCharactersInSet(delimiterCharacterSet) != "" ){ //ignore lines that are blank and/or only contain commas
                             
                             let newEntry : Entry = Entry(entity: NSEntityDescription.entityForName("Entry", inManagedObjectContext: inMOC)!, insertIntoManagedObjectContext: inMOC)
+                            
+ 
                             var theTraits : [String] = thisLine.componentsSeparatedByString(",")
+                            
+                            
                             
                             if(theTraits.count != columnCount){
                                 
@@ -490,9 +483,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                                     else{ // a new stuetcure must be made, and added to exisitngStructures and existingStructureNames
                                         let newStructure : Structure = Structure(entity: NSEntityDescription.entityForName("Structure", inManagedObjectContext: inMOC)!, insertIntoManagedObjectContext: inMOC)
                                         newStructure.setValue(thisSubStructure, forKey: "name")
-                                        newStructure.setValue(inDataset, forKey: "dataset")
                                         newStructure.addEntryObject(newEntry)
-                                        inDataset.addStructureObject(newStructure)
                                         existingStructures.append(newStructure)
                                         existingStructureNames.append(newStructure.name)
                                     }
@@ -503,9 +494,15 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                             
                             
                             newEntry.setValue("Entry", forKey: "type")
-                            newEntry.setValue(inDataset, forKey: "dataset")
-                            inDataset.addEntryObject(newEntry)
                             
+                          //  if(av.state == 1){
+                                newEntry.setValue(parentEntry, forKey: "parent")
+                                parentEntry.addChildObject(newEntry)
+                          //  }
+
+                            
+
+
                             
                             columnCount = 0
                             for thisTrait in theTraits {
@@ -535,6 +532,9 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                                 columnCount += 1
                                 
                             }
+                            
+
+ 
 
                             
                         }
@@ -558,6 +558,11 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                     
                     batchCount += 1
                     if(batchCount > 100){
+                        
+
+                        
+                        
+                        
                         do {
                             try inMOC.save()
                         } catch let error as NSError {
@@ -568,18 +573,22 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                         batchCount = 0
                         inMOC.reset()
      
-                       inDataset = inMOC.objectWithID(datasetID) as! Dataset
-                        inMOC.refreshObject(inDataset, mergeChanges: true)
                         
 
                         
                     }
+ 
 
 
                     
                 }
                 
-                    
+                
+                
+
+ 
+                
+                
                     do {
                         try inMOC.save()
                     } catch let error as NSError {
@@ -588,12 +597,14 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                         fatalError()
                     }
                 
+                
 
                     inMOC.reset()
                 
-
+                
 
                 
+
                     dispatch_async(dispatch_get_main_queue()) {
                         
                         self.progInd.indeterminate = true
@@ -601,21 +612,27 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                         self.window!.endSheet(self.progSheet)
                         self.progSheet.orderOut(self)
                         
+                        
+                        self.moc.reset()
 
-                        let datafetch = NSFetchRequest(entityName: "Dataset")
-                        let datasets : [Dataset] = try! self.moc.executeFetchRequest(datafetch) as! [Dataset]
-                        self.datasetController.content = nil
-                        self.datasetController.addObjects(datasets)
-                        let mocDataset = self.moc.objectWithID(datasetID) as! Dataset
-                        let nDarray : [Dataset] = [mocDataset]
-                        self.datasetController.setSelectedObjects(nDarray)
+
+
+                        
+                        
+                        self.mainSplitViewController.entryTreeController.fetch(self)
                         
 
                         
                     }
                 
                 
+                
             }
+            
+            
+
+            
+            
             
         }
         
@@ -650,11 +667,10 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
 
             
         
-            //let op = PlexusCalculationOperation(nodes: nodesForCalc, withRuns: curModel.runsper, withBurnin: curModel.burnins, withComputes: curModel.runstot)
 
             var operr: NSError?
             
-            operr = self.calcop.calc(self.progInd, withCurLabel: self.curLabel, withNodes: nodesForCalc, withRuns: curModel.runsper, withBurnin: curModel.burnins, withComputes: curModel.runstot)
+            operr = self.calcop.calc(self.progInd, withCurLabel: self.curLabel, withWorkLabel: self.workLabel, withNodes: nodesForCalc, withRuns: curModel.runsper, withBurnin: curModel.burnins, withComputes: curModel.runstot)
             
             self.progInd.indeterminate = true
             self.progInd.startAnimation(self)
@@ -797,9 +813,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         let err : NSErrorPointer = nil
         let priority = DISPATCH_QUEUE_PRIORITY_DEFAULT
         
-        //Exporting current dataset only
-        let curDatasets : [Dataset] = self.datasetController.selectedObjects as! [Dataset]
-        let curDataset : Dataset = curDatasets[0]
+
         
         let curModels : [Model] = self.mainSplitViewController.modelTreeController?.selectedObjects as! [Model]
         let curModel : Model = curModels[0]
@@ -808,7 +822,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         let pTypes = defaults.arrayForKey("PriorTypes") as! [String]
         
         let sv:NSSavePanel = NSSavePanel()
-        sv.nameFieldStringValue = curDataset.name + "-" + curModel.name
+        sv.nameFieldStringValue = curModel.name
         
         
         let result = sv.runModal()
@@ -823,121 +837,130 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
             
 
             dispatch_async(dispatch_get_global_queue(priority, 0)) {
-            
-                let entries : [Entry] = curDataset.entry.allObjects as! [Entry]
-            
                 
-                self.progSheet = self.progSetup(self)
-                self.maxLabel.stringValue = String(entries.count)
-                self.window!.beginSheet(self.progSheet, completionHandler: nil)
-                self.progSheet.makeKeyAndOrderFront(self)
-                self.progInd.indeterminate = true
-                self.workLabel.stringValue = "Exporting Entries..."
-                self.progInd.doubleValue = 0
-                
-                self.progInd.startAnimation(self)
-                
-                
-                self.progInd.maxValue =  Double(entries.count)
-
-                
-                self.progInd.startAnimation(self)
-                
-                var outText = "Name,"
-                
-
-                let trequest = NSFetchRequest(entityName: "Trait")
-
-                let tpredicate = NSPredicate(format: "entry.dataset == %@", curDataset)
-                trequest.predicate = tpredicate
-                
-                var i = 0
-                
+                let request = NSFetchRequest(entityName: "Entry")
                 do {
-                    let headerTraits : [Trait] = try self.moc!.executeFetchRequest(trequest) as! [Trait]
+                    let entries : [Entry] = try self.moc!.executeFetchRequest(request) as! [Entry]
                     
-                    let distinctHeaderTraits = NSSet(array: headerTraits.map { $0.name })
+                    self.progSheet = self.progSetup(self)
+                    self.maxLabel.stringValue = String(entries.count)
+                    self.window!.beginSheet(self.progSheet, completionHandler: nil)
+                    self.progSheet.makeKeyAndOrderFront(self)
+                    self.progInd.indeterminate = true
+                    self.workLabel.stringValue = "Exporting Entries..."
+                    self.progInd.doubleValue = 0
                     
-
-                    for headerTrait in distinctHeaderTraits {
-                        outText += headerTrait as! String
-                      
-                       
-                        outText += ","
-
-                    }
-                    outText += "\n"
-        
-                    self.progInd.indeterminate = false
+                    self.progInd.startAnimation(self)
                     
-                    for entry : Entry in entries {
-                        outText += entry.name
-                        outText += ","
-                        
-                        let tTraits = entry.trait
-                        for headerTrait in distinctHeaderTraits {
-                            let hKey = headerTrait as! String
-                            
-                            
-                            
-                            var traitString = [String]()
-                            for tTrait in tTraits{
-                                let tKey = tTrait.valueForKey("name") as! String
-                                if hKey == tKey{
-                                    //outText += tTrait.valueForKey("traitValue") as! String
-                                    //outText += "\t"
-                                   traitString.append(tTrait.valueForKey("traitValue") as! String)
-                                }
-                                
-                                
-                            }
-                            if(traitString.count > 1){
-                                outText += "\""
-                            }
-                            var k = 1
-                            for thisTraitString in traitString {
-                                outText += thisTraitString
-                                if(traitString.count > 1 && k < traitString.count){
-                                    outText += "\r"
-                                }
-                                k += 1
-                            }
-                            
-                            if(traitString.count > 1){
-                                outText += "\""
-                            }
-
-
-                            outText += ","
-                        }
-
-
-                        outText += "\n"
-                        
-                        dispatch_async(dispatch_get_main_queue()) {
-                            
-                            self.progInd.incrementBy(1)
-                            self.curLabel.stringValue = String(i)
-                            
-                        }
-                        i += 1
-
-                    }
                     
-
+                    self.progInd.maxValue =  Double(entries.count)
+                    
+                    
+                    self.progInd.startAnimation(self)
+                    
+                    var outText = "Name,"
+                    
+                    
+                    let trequest = NSFetchRequest(entityName: "Trait")
+                    
+                    
+                    var i = 0
                     
                     do {
-                        try outText.writeToURL(outURL!, atomically: true, encoding: NSUTF8StringEncoding)
-                    } catch _ {
+                        let headerTraits : [Trait] = try self.moc!.executeFetchRequest(trequest) as! [Trait]
+                        
+                        let distinctHeaderTraits = NSSet(array: headerTraits.map { $0.name })
+                        
+                        
+                        for headerTrait in distinctHeaderTraits {
+                            outText += headerTrait as! String
+                            
+                            
+                            outText += ","
+                            
+                        }
+                        outText += "\n"
+                        
+                        self.progInd.indeterminate = false
+                        
+                        for entry : Entry in entries {
+                            outText += entry.name
+                            outText += ","
+                            
+                            let tTraits = entry.trait
+                            for headerTrait in distinctHeaderTraits {
+                                let hKey = headerTrait as! String
+                                
+                                
+                                
+                                var traitString = [String]()
+                                for tTrait in tTraits{
+                                    let tKey = tTrait.valueForKey("name") as! String
+                                    if hKey == tKey{
+                                        //outText += tTrait.valueForKey("traitValue") as! String
+                                        //outText += "\t"
+                                        traitString.append(tTrait.valueForKey("traitValue") as! String)
+                                    }
+                                    
+                                    
+                                }
+                                if(traitString.count > 1){
+                                    outText += "\""
+                                }
+                                var k = 1
+                                for thisTraitString in traitString {
+                                    outText += thisTraitString
+                                    if(traitString.count > 1 && k < traitString.count){
+                                        outText += "\r"
+                                    }
+                                    k += 1
+                                }
+                                
+                                if(traitString.count > 1){
+                                    outText += "\""
+                                }
+                                
+                                
+                                outText += ","
+                            }
+                            
+                            
+                            outText += "\n"
+                            
+                            dispatch_async(dispatch_get_main_queue()) {
+                                
+                                self.progInd.incrementBy(1)
+                                self.curLabel.stringValue = String(i)
+                                
+                            }
+                            i += 1
+                            
+                        }
+                        
+                        
+                        
+                        do {
+                            try outText.writeToURL(outURL!, atomically: true, encoding: NSUTF8StringEncoding)
+                        } catch _ {
+                        }
+                    } catch let error as NSError {
+                        err.memory = error
+                        return
+                    } catch {
+                        fatalError()
                     }
-                } catch let error as NSError {
-                    err.memory = error
-                    return
-                } catch {
-                    fatalError()
-                }
+                    
+                    
+                }catch let error as NSError {
+                        err.memory = error
+                        return
+                    } catch {
+                        fatalError()
+                    }
                 
-                
+            
+
+
                 
                 //now print nodes
                // let outDir = sv.directoryURL?.absoluteString
@@ -948,7 +971,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                     self.progInd.startAnimation(self)
                     self.workLabel.stringValue = "Exporting Nodes..."
                     
-                    i = 0
+                    var i = 0
                     
                     let nodeTXTFileName = baseFile! + "-nodes.csv"
                     let nodeTXTURL = NSURL(string: nodeTXTFileName)
@@ -1142,26 +1165,21 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
    
 
     
-    override func prepareForSegue(segue: NSStoryboardSegue, sender: AnyObject!) {
 
-        if (segue.identifier == "DatasetPopover") {
-
-            let datasetViewController = segue.destinationController as! PlexusDatasetViewController
-            datasetViewController.datasetController = self.datasetController
-            
-        }
-    }
     
-
+/*
     func mocDidChange(notification: NSNotification){
         
-        print("MVC moc changed \(notification.object)")
 
-
-        
+    
+        dispatch_async(dispatch_get_main_queue()) {
+            self.moc.mergeChangesFromContextDidSaveNotification(notification)
+        }
+ 
         
     }
 
+*/
 
 
 

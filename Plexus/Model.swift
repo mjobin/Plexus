@@ -13,7 +13,6 @@ class Model: NSManagedObject {
 
     @NSManaged var name: String
     @NSManaged var children: NSOrderedSet
-    @NSManaged var dataset: Dataset
     @NSManaged var parent: NSSet
     @NSManaged var bnnode: NSSet
     @NSManaged var burnins: NSNumber

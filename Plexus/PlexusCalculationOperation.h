@@ -49,7 +49,7 @@
 
 //- (id)initWithNodes:(NSArray *) inNodes withRuns:(NSNumber *) inRuns withBurnin:(NSNumber *) inBurnins withComputes:(NSNumber*) inComputes;
 - (NSError *) clCompile;
-- (NSError *)calc:(NSProgressIndicator *)progInd withCurLabel:(NSTextField *)curLabel withNodes:(NSArray *) inNodes withRuns:(NSNumber *) inRuns withBurnin:(NSNumber *) inBurnins withComputes:(NSNumber*) inComputes;
+- (NSError *)calc:(NSProgressIndicator *)progInd withCurLabel:(NSTextField *)curLabel withWorkLabel:(NSTextField *)workLabel withNodes:(NSArray *) inNodes withRuns:(NSNumber *) inRuns withBurnin:(NSNumber *) inBurnins withComputes:(NSNumber*) inComputes;
 - (NSMutableArray *)getResults:(id)sender;
 
 

@@ -32,12 +32,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         let devTypes: [String] = ["CPU", "GPU"]
         let defaultValues = ["PriorTypes": pTypes, "DataScopeTypes": dTypes, "OperationTypes": oTypes, "DeviceTypes": devTypes]
         defaults.registerDefaults(defaultValues)
-      //  let wtf = defaults.objectForKey("selectedDataset")
-       // print(wtf)
-       // println(defaults.dictionaryForKey("selectedDataset"))
-        
 
-        
         
     }
 

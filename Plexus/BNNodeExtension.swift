@@ -134,28 +134,32 @@ extension BNNode {
     
     func CPT(){
         
-       // print ("**********\nCPT for \(self.nodeLink.name)")
+        //print ("**********\nCPT for \(self.nodeLink.name)")
         
         
         let curModel : Model = self.model
-        let curDataset : Dataset = curModel.dataset
-        
+               
         //First collect all the scoped ENTRIES
         
         var theEntries = [Entry]()
         if(curModel.scope.entity.name == "Entry"){
-          //  print("entry scope")
             let thisEntry = curModel.scope as! Entry
             theEntries = thisEntry.collectChildren([Entry]())
         }
         else if (curModel.scope.entity.name == "Structure"){
-           // print("structure scope")
             let thisStructure = curModel.scope as! Structure
             theEntries = thisStructure.entry.allObjects as! [Entry]
         }
         else{
-          //  print("dataset scope")
-            theEntries = curDataset.entry.allObjects as! [Entry]
+            let appDelegate : AppDelegate = NSApplication.sharedApplication().delegate as! AppDelegate
+            let moc = appDelegate.managedObjectContext
+            let request = NSFetchRequest(entityName: "Entry")
+            do {
+                theEntries = try moc.executeFetchRequest(request) as! [Entry]
+            } catch let error as NSError {
+                print (error)
+                return
+            }
             
         }
 
@@ -163,7 +167,6 @@ extension BNNode {
         
     
         let theInfluencedBy = self.infBy(self)
-        //print("infby count: \(theInfluencedBy.count)")
         let nInfBy = theInfluencedBy.count
         if(nInfBy < 1) { //since 2^0 is 1
             let cptarray = [Double](count: 1, repeatedValue: -1.0)
@@ -241,19 +244,19 @@ extension BNNode {
             cptarray[i] = cptarray[i]/total
         }
         
-/*
-        print("--")
-        print(cptarray)
-        print("--")
-        print("total entries usable \(total)")
-        print("total entries missing \(missing)")
- */
+
+        //print("--")
+        //print(cptarray)
+        //print("--")
+        //print("total entries usable \(total)")
+        //print("total entries missing \(missing)")
+ 
         
 
         let archivedCPTArray = NSKeyedArchiver.archivedDataWithRootObject(cptarray)
         self.setValue(archivedCPTArray, forKey: "cptArray")
 
-          //  print(" ")
+        print(" ")
 
 
     }

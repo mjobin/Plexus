@@ -311,7 +311,7 @@ static void *ProgressObserverContext = &ProgressObserverContext;
     return calcerr;
 }
 
-- (NSError *)calc:(NSProgressIndicator *)progInd withCurLabel:(NSTextField *)curLabel withNodes:(NSArray *) inNodes withRuns:(NSNumber *) inRuns withBurnin:(NSNumber *) inBurnins withComputes:(NSNumber*) inComputes
+- (NSError *)calc:(NSProgressIndicator *)progInd withCurLabel:(NSTextField *)curLabel withWorkLabel:(NSTextField *)workLabel withNodes:(NSArray *) inNodes withRuns:(NSNumber *) inRuns withBurnin:(NSNumber *) inBurnins withComputes:(NSNumber*) inComputes
 {
     NSError * calcerr = nil;
     
@@ -428,6 +428,9 @@ static void *ProgressObserverContext = &ProgressObserverContext;
     
 
     
+    dispatch_async(dispatch_get_main_queue(), ^{
+        workLabel.stringValue = [NSString stringWithFormat:@"Calculating CPTs"];
+    });
     
     //Construct influences, CPT, fequencies
     //NSLog(@"construct influences");
@@ -841,6 +844,11 @@ static void *ProgressObserverContext = &ProgressObserverContext;
    // NSLog(@"Before main queueing loop %f since starting calc fxn", timer);
     
     
+    
+    dispatch_async(dispatch_get_main_queue(), ^{
+        workLabel.stringValue = [NSString stringWithFormat:@"Calculating Posteriors"];
+    });
+    
     BOOL firsttime = TRUE;
     //********************************
     // MAIN QUEUEING LOOP
@@ -1082,6 +1090,7 @@ static void *ProgressObserverContext = &ProgressObserverContext;
     }
     cl_int info;
   
+    int cct = 0;
     while([passchk count]>0){
         NSMutableArray *tmppasschk = [NSMutableArray arrayWithCapacity:numpasses];
        // NSLog(@"***************************");
@@ -1090,9 +1099,10 @@ static void *ProgressObserverContext = &ProgressObserverContext;
             clGetEventInfo(prof_events[[chknum intValue]], CL_EVENT_COMMAND_EXECUTION_STATUS, sizeof(cl_int), (void *)&info, NULL);
             if ( info == CL_COMPLETE ){
               //  NSLog(@"*****Event %i complete", [chknum intValue]);
+                cct += worksize;
                 dispatch_async(dispatch_get_main_queue(), ^{
                     [progInd incrementBy:worksize];
-                    curLabel.stringValue = [NSString stringWithFormat:@"%i", ct];
+                    curLabel.stringValue = [NSString stringWithFormat:@"%i", cct];
                     //FIXME can only advance if first time completing this one
                 });
      

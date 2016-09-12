@@ -13,7 +13,6 @@ import CoreData
 class Entry: NodeLink  {
 
     @NSManaged var children: NSSet
-    @NSManaged var dataset: Dataset
     @NSManaged var parent: NSSet
     @NSManaged var trait: NSSet
     @NSManaged var latitude: Double
