@@ -8,31 +8,31 @@
 
 import Cocoa
 
-class PlexusRunMaxTransformer: NSValueTransformer {
+class PlexusRunMaxTransformer: ValueTransformer {
     
     
     override class func transformedValueClass() -> AnyClass {
         return NSNumber.self
     }
     
-    override func  transformedValue(value: AnyObject?) -> AnyObject? {
+    override func  transformedValue(_ value: Any?) -> Any? {
         
         
         if(value == nil){
-            return NSNumber(int: 1)
+            return NSNumber(value: 1 as Int32)
         }
         
         
         
         let outVal : NSNumber = value as! NSNumber
         
-        if(outVal.integerValue < 1) {
+        if(outVal.intValue < 1) {
             return 1
         }
             
             
         else {
-            return (outVal.integerValue-1)
+            return (outVal.intValue-1)
         }
         
         

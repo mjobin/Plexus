@@ -19,7 +19,7 @@ class PlexusModelTableViewController: NSViewController {
     required init?(coder aDecoder: NSCoder)
     {
         
-        let appDelegate : AppDelegate = NSApplication.sharedApplication().delegate as! AppDelegate
+        let appDelegate : AppDelegate = NSApplication.shared().delegate as! AppDelegate
         moc = appDelegate.managedObjectContext
         
         super.init(coder: aDecoder)

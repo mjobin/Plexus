@@ -17,7 +17,7 @@ class PlexusModelViewController: NSViewController {
     required init?(coder aDecoder: NSCoder)
     {
         
-        let appDelegate : AppDelegate = NSApplication.sharedApplication().delegate as! AppDelegate
+        let appDelegate : AppDelegate = NSApplication.shared().delegate as! AppDelegate
         moc = appDelegate.managedObjectContext
         
         super.init(coder: aDecoder)
@@ -28,7 +28,7 @@ class PlexusModelViewController: NSViewController {
         // Do view setup here.
     }
     
-   @IBAction func childModel(sender : AnyObject){
+   @IBAction func childModel(_ sender : AnyObject){
 
     
 
@@ -40,19 +40,19 @@ class PlexusModelViewController: NSViewController {
         //print ("curmodel \(curModel)")
     
     
-    if let curPath : NSIndexPath = modelTreeController.selectionIndexPath {
-        let newPath : NSIndexPath = curPath.indexPathByAddingIndex(curModel.children.count)
+    if let curPath : IndexPath = modelTreeController.selectionIndexPath {
+        let newPath :IndexPath = curPath.appending(curModel.children.count)
+        
         
 
-
-        let newModel : Model = Model(entity: NSEntityDescription.entityForName("Model", inManagedObjectContext: self.moc)!, insertIntoManagedObjectContext: self.moc)
+        let newModel : Model = Model(entity: NSEntityDescription.entity(forEntityName: "Model", in: self.moc)!, insertInto: self.moc)
         
 
         
         
        // curModel.addChildObject(newModel)
        // newModel.setValue(curModel, forKey: "parent")
-        modelTreeController.insertObject(newModel, atArrangedObjectIndexPath: newPath)
+        modelTreeController.insert(newModel, atArrangedObjectIndexPath: newPath)
         let copyName : String = curModel.name + " copy"
         newModel.setValue(copyName, forKey: "name")
 
@@ -60,7 +60,7 @@ class PlexusModelViewController: NSViewController {
         
         let curNodes  = curModel.bnnode.allObjects as! [BNNode]
         for curNode : BNNode in curNodes {
-            let newNode : BNNode = BNNode(entity: NSEntityDescription.entityForName("BNNode", inManagedObjectContext: self.moc)!, insertIntoManagedObjectContext: self.moc)
+            let newNode : BNNode = BNNode(entity: NSEntityDescription.entity(forEntityName: "BNNode", in: self.moc)!, insertInto: self.moc)
 
 
             newNode.setValue(curNode.nodeLink, forKey: "nodeLink")
@@ -81,7 +81,7 @@ class PlexusModelViewController: NSViewController {
             
             
             let blankArray = [NSNumber]()
-            let blankData = NSKeyedArchiver.archivedDataWithRootObject(blankArray)
+            let blankData = NSKeyedArchiver.archivedData(withRootObject: blankArray)
             newNode.setValue(blankData, forKey: "postCount")
             newNode.setValue(blankData, forKey: "postArray")
             

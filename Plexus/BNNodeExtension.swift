@@ -16,18 +16,18 @@ extension BNNode {
     
     
     
-    func addInfluencesObject(value:BNNode) {
-        let influences = self.mutableOrderedSetValueForKey("influences");
-        influences.addObject(value)
+    func addInfluencesObject(_ value:BNNode) {
+        let influences = self.mutableOrderedSetValue(forKey: "influences");
+        influences.add(value)
     }
     
 
 
 
     
-    func addInfluencedByObject(value:BNNode) {
-        let influencedBy = self.mutableOrderedSetValueForKey("influencedBy");
-        influencedBy.addObject(value)
+    func addInfluencedByObject(_ value:BNNode) {
+        let influencedBy = self.mutableOrderedSetValue(forKey: "influencedBy");
+        influencedBy.add(value)
     }
     
 
@@ -35,7 +35,7 @@ extension BNNode {
 
     
     
-    func freqForCPT(sender:AnyObject) -> cl_float {
+    func freqForCPT(_ sender:AnyObject) -> cl_float {
         
         var lidum : CLong = 1
 
@@ -74,20 +74,20 @@ extension BNNode {
                 pVal = gd
                 //                return gd
             case 5: //sample from the prioarray
-                let priorArray = NSKeyedUnarchiver.unarchiveObjectWithData(self.valueForKey("priorArray") as! NSData) as! [cl_float]
+                let priorArray = NSKeyedUnarchiver.unarchiveObject(with: self.value(forKey: "priorArray") as! Data) as! [cl_float]
                 let randomIndex = Int(arc4random_uniform(UInt32(priorArray.count)))
                 
                 pVal = priorArray[randomIndex]
                 
                 
             default:
-                return cl_float.NaN //uh oh
+                return cl_float.nan //uh oh
             }
             
             
             chk += 1
             if(chk > 1000){
-                return cl_float.NaN
+                return cl_float.nan
             }
         }
         
@@ -97,7 +97,7 @@ extension BNNode {
     }
 
     
-    func DFTcyclechk(nodeStack:[BNNode]) -> Bool {
+    func DFTcyclechk(_ nodeStack:[BNNode]) -> Bool {
         
        // print("checking \(self.nodeLink.name)")
         var tmpnodeStack = nodeStack
@@ -151,11 +151,12 @@ extension BNNode {
             theEntries = thisStructure.entry.allObjects as! [Entry]
         }
         else{
-            let appDelegate : AppDelegate = NSApplication.sharedApplication().delegate as! AppDelegate
+            let appDelegate : AppDelegate = NSApplication.shared().delegate as! AppDelegate
             let moc = appDelegate.managedObjectContext
-            let request = NSFetchRequest(entityName: "Entry")
+            
+            let request = NSFetchRequest<Entry>(entityName: "Entry")
             do {
-                theEntries = try moc.executeFetchRequest(request) as! [Entry]
+                theEntries = try moc.fetch(request) 
             } catch let error as NSError {
                 print (error)
                 return
@@ -169,14 +170,14 @@ extension BNNode {
         let theInfluencedBy = self.infBy(self)
         let nInfBy = theInfluencedBy.count
         if(nInfBy < 1) { //since 2^0 is 1
-            let cptarray = [Double](count: 1, repeatedValue: -1.0)
-            let archivedCPTArray = NSKeyedArchiver.archivedDataWithRootObject(cptarray)
+            let cptarray = [Double](repeating: -1.0, count: 1)
+            let archivedCPTArray = NSKeyedArchiver.archivedData(withRootObject: cptarray)
             self.setValue(archivedCPTArray, forKey: "cptArray")
             return
         }
         
         let cptarraysize = Int(pow(2.0,Double(nInfBy)))
-        var cptarray = [Double](count: cptarraysize, repeatedValue: 0.0)
+        var cptarray = [Double](repeating: 0.0, count: cptarraysize)
         
 
         
@@ -253,7 +254,7 @@ extension BNNode {
  
         
 
-        let archivedCPTArray = NSKeyedArchiver.archivedDataWithRootObject(cptarray)
+        let archivedCPTArray = NSKeyedArchiver.archivedData(withRootObject: cptarray)
         self.setValue(archivedCPTArray, forKey: "cptArray")
 
         print(" ")
@@ -261,17 +262,17 @@ extension BNNode {
 
     }
     
-    func getCPTArray(sender:AnyObject) -> [cl_float] {
+    func getCPTArray(_ sender:AnyObject) -> [cl_float] {
         self.CPT()
-        let cptarray = NSKeyedUnarchiver.unarchiveObjectWithData(self.valueForKey("cptArray") as! NSData) as! [cl_float]
+        let cptarray = NSKeyedUnarchiver.unarchiveObject(with: self.value(forKey: "cptArray") as! Data) as! [cl_float]
         return  cptarray
     }
     
     
-    func recursiveInfBy(sender:AnyObject, infBy:NSMutableOrderedSet , depth:Int) -> NSMutableOrderedSet {
+    func recursiveInfBy(_ sender:AnyObject, infBy:NSMutableOrderedSet , depth:Int) -> NSMutableOrderedSet {
         
         if(depth > 0){
-            infBy.addObject(self) //ignore first call, dpeth 0
+            infBy.add(self) //ignore first call, dpeth 0
         }
         
         
@@ -288,14 +289,14 @@ extension BNNode {
         return infBy
     }
     
-    func infBy(sender:AnyObject) -> NSArray {
-        return self.influencedBy.array as! [BNNode]
+    func infBy(_ sender:AnyObject) -> NSArray {
+        return self.influencedBy.array as! [BNNode] as NSArray
     }
     
-    func recursiveInfs(sender:AnyObject, infs:NSMutableOrderedSet , depth:Int) -> NSMutableOrderedSet {
+    func recursiveInfs(_ sender:AnyObject, infs:NSMutableOrderedSet , depth:Int) -> NSMutableOrderedSet {
         
         if(depth > 0){
-            infs.addObject(self) //ignore first call, dpeth 0
+            infs.add(self) //ignore first call, dpeth 0
         }
         
         
@@ -313,8 +314,8 @@ extension BNNode {
     }
     
     
-    func infs(sender:AnyObject) -> NSArray {
-        return self.influences.array as! [BNNode]
+    func infs(_ sender:AnyObject) -> NSArray {
+        return self.influences.array as! [BNNode] as NSArray
     }
     
     

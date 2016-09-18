@@ -11,14 +11,14 @@ import CoreData
 
 
 extension Structure {
-    func addEntryObject(value:Entry) {
-        let items = self.mutableSetValueForKey("entry");
-        items.addObject(value)
+    func addEntryObject(_ value:Entry) {
+        let items = self.mutableSetValue(forKey: "entry");
+        items.add(value)
     }
     
     
     
-    func collectTraits(traitsArray:[Trait], traitName:String) -> [Trait] {
+    func collectTraits(_ traitsArray:[Trait], traitName:String) -> [Trait] {
         var tmpTraits = traitsArray
         for thisEntry in self.entry{
             let tmpEntry = thisEntry as! Entry
@@ -27,7 +27,7 @@ extension Structure {
         return tmpTraits
     }
     
-    func collectTraitValues(traitsArray:[String], traitName:String) -> [String] {
+    func collectTraitValues(_ traitsArray:[String], traitName:String) -> [String] {
         var tmpTraits = traitsArray
         for thisEntry in self.entry{
             let tmpEntry = thisEntry as! Entry

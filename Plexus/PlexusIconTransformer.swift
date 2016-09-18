@@ -8,14 +8,14 @@
 
 import Cocoa
 
-class PlexusIconTransformer: NSValueTransformer {
+class PlexusIconTransformer: ValueTransformer {
     
 
     override class func transformedValueClass() -> AnyClass {
         return NSImage.self
     }
     
-    override func transformedValue(value: AnyObject!) -> (AnyObject!) {
+    override func transformedValue(_ value: Any!) -> (Any) {
         
       //  println("pit value \(value)")
         

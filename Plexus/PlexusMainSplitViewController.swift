@@ -54,20 +54,20 @@ class PlexusMainSplitViewController: NSSplitViewController {
     }
     
     
-    func  toggleStructures(x:NSToolbarItem){
+    func  toggleStructures(_ x:NSToolbarItem){
         print("Toggle sctructures Tapped: \(x)")
         
         // println(self.splitViewItems.count)
         
         
         let structureListViewItem = self.splitViewItems[0] // 0 is left pane
-        structureListViewItem.animator().collapsed = !structureListViewItem.collapsed
+        structureListViewItem.animator().isCollapsed = !structureListViewItem.isCollapsed
         
         
         
     }
     
-    func  toggleModels(x:NSToolbarItem){
+    func  toggleModels(_ x:NSToolbarItem){
         print("Toggle models Tapped: \(x)")
         
        // println(self.splitViewItems.count)
@@ -75,7 +75,7 @@ class PlexusMainSplitViewController: NSSplitViewController {
         
         let modelListViewItem = self.splitViewItems[4] // 4 is right pane
         
-        modelListViewItem.animator().collapsed = !modelListViewItem.collapsed
+        modelListViewItem.animator().isCollapsed = !modelListViewItem.isCollapsed
         
 
         
@@ -84,11 +84,11 @@ class PlexusMainSplitViewController: NSSplitViewController {
 
     
   
-    override func splitViewWillResizeSubviews(aNotification: NSNotification){
+    override func splitViewWillResizeSubviews(_ aNotification: Notification){
      //   println(aNotification)
     }
 
-    override func splitViewDidResizeSubviews(aNotification: NSNotification){
+    override func splitViewDidResizeSubviews(_ aNotification: Notification){
        // println(aNotification)
     }
     

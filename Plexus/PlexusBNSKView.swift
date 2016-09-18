@@ -22,28 +22,28 @@ class PlexusBNSKView: SKView {
         super.init(coder: aDecoder)
         let kString : String = kUTTypeURL as String
         let registeredTypes:[String] = [kString]
-        self.registerForDraggedTypes(registeredTypes)
+        self.register(forDraggedTypes: registeredTypes)
         
-        let appDelegate : AppDelegate = NSApplication.sharedApplication().delegate as! AppDelegate
+        let appDelegate : AppDelegate = NSApplication.shared().delegate as! AppDelegate
         moc = appDelegate.managedObjectContext
     }
 
 
     
-    override func drawRect(dirtyRect: NSRect) {
-        super.drawRect(dirtyRect)
+    override func draw(_ dirtyRect: NSRect) {
+        super.draw(dirtyRect)
 
         // Drawing code here.
     }
     
-    override func draggingEntered(sender: NSDraggingInfo) -> NSDragOperation {
-               return NSDragOperation.Copy
+    override func draggingEntered(_ sender: NSDraggingInfo) -> NSDragOperation {
+               return NSDragOperation.copy
         
     }
     
     
-    internal override func rightMouseDown(theEvent: NSEvent) {
-            self.scene?.rightMouseDown(theEvent)
+    internal override func rightMouseDown(with theEvent: NSEvent) {
+            self.scene?.rightMouseDown(with: theEvent)
     }
  
     /*
@@ -54,7 +54,7 @@ class PlexusBNSKView: SKView {
     }
     */
     
-    override func prepareForDragOperation(sender: NSDraggingInfo) -> Bool {
+    override func prepareForDragOperation(_ sender: NSDraggingInfo) -> Bool {
         
         
         let curModels : [Model] = modelTreeController.selectedObjects as! [Model]
@@ -69,7 +69,7 @@ class PlexusBNSKView: SKView {
         return true
     }
     
-    override func performDragOperation(sender: NSDraggingInfo) -> Bool {
+    override func performDragOperation(_ sender: NSDraggingInfo) -> Bool {
         
               
         let pboard : NSPasteboard = sender.draggingPasteboard()
@@ -77,21 +77,21 @@ class PlexusBNSKView: SKView {
         
         
         let kString : String = kUTTypeURL as String
-        let data : NSData = pboard.dataForType(kString)!
-        let draggedArray : NSArray = NSKeyedUnarchiver.unarchiveObjectWithData(data) as! NSArray
+        let data : Data = pboard.data(forType: kString)!
+        let draggedArray : NSArray = NSKeyedUnarchiver.unarchiveObject(with: data) as! NSArray
         
 
-        for object : AnyObject in draggedArray{
+        for object : AnyObject in draggedArray as [AnyObject] {
             
-            let mourl : NSURL = object as! NSURL
+            let mourl : URL = object as! URL
             
-            if let id : NSManagedObjectID? = moc.persistentStoreCoordinator?.managedObjectIDForURIRepresentation(mourl){
+            if let id : NSManagedObjectID? = moc.persistentStoreCoordinator?.managedObjectID(forURIRepresentation: mourl){
                 
-                let mo : NodeLink = moc.objectWithID(id!) as! NodeLink
+                let mo : NodeLink = moc.object(with: id!) as! NodeLink
                 
                 if (mo.entity.name == "Trait"){
                     
-                    self.addNode(object as! NSURL)
+                    self.addNode(object as! URL)
                     
                 }
                 
@@ -107,7 +107,7 @@ class PlexusBNSKView: SKView {
 
 
     
-    @IBAction func removeNode(sender: AnyObject) {
+    @IBAction func removeNode(_ sender: AnyObject) {
        // let errorPtr : NSErrorPointer = nil
         
         
@@ -115,7 +115,7 @@ class PlexusBNSKView: SKView {
         if(curNodes.count>0) {
             let curNode : BNNode = curNodes[0]
             
-             moc.deleteObject(curNode)
+             moc.delete(curNode)
         }
 
         
@@ -130,11 +130,11 @@ class PlexusBNSKView: SKView {
     
 
     
-    func addNode(mourl: NSURL){
+    func addNode(_ mourl: URL){
        // let errorPtr : NSErrorPointer = nil
-        if let id : NSManagedObjectID? = moc.persistentStoreCoordinator?.managedObjectIDForURIRepresentation(mourl){
+        if let id : NSManagedObjectID? = moc.persistentStoreCoordinator?.managedObjectID(forURIRepresentation: mourl){
             
-            let mo : NodeLink = moc.objectWithID(id!) as! NodeLink
+            let mo : NodeLink = moc.object(with: id!) as! NodeLink
             
             let curNodes : [BNNode] = nodesController.arrangedObjects as! [BNNode]
             for curNode : BNNode in curNodes {
@@ -144,7 +144,7 @@ class PlexusBNSKView: SKView {
             }
             
             
-            let newNode : BNNode = BNNode(entity: NSEntityDescription.entityForName("BNNode", inManagedObjectContext: moc)!, insertIntoManagedObjectContext: moc)
+            let newNode : BNNode = BNNode(entity: NSEntityDescription.entity(forEntityName: "BNNode", in: moc)!, insertInto: moc)
             newNode.setValue(mo, forKey: "nodeLink")
           // mo.addBNNodeObject(newNode)
             

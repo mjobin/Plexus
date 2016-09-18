@@ -11,14 +11,14 @@ import CoreData
 
 extension Model {
     
-    func addChildObject(value:Model) {
-        let items = self.mutableSetValueForKey("children");
-        items.addObject(value)
+    func addChildObject(_ value:Model) {
+        let items = self.mutableSetValue(forKey: "children");
+        items.add(value)
     }
 
-    func addBNNodeObject(value:BNNode) {
-        let items = self.mutableSetValueForKey("bnnode");
-        items.addObject(value)
+    func addBNNodeObject(_ value:BNNode) {
+        let items = self.mutableSetValue(forKey: "bnnode");
+        items.add(value)
     }
 
 }

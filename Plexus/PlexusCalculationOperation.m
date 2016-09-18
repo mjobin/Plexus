@@ -83,7 +83,7 @@ static void *ProgressObserverContext = &ProgressObserverContext;
 
 {
 
-    
+
     NSError * calcerr = nil;
     
 
@@ -1232,6 +1232,13 @@ static void *ProgressObserverContext = &ProgressObserverContext;
 {
 
     [self clCompile];
+}
+
+- (BOOL *) isBNProgram:(id)sender{
+    if(bn_program == nil){
+        return FALSE;
+    }
+    return TRUE;
 }
 
 

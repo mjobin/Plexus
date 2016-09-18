@@ -19,8 +19,8 @@ class Model: NSManagedObject {
     @NSManaged var runsper: NSNumber
     @NSManaged var runstot: NSNumber
     @NSManaged var complete: NSNumber
-    @NSManaged var dateModded: NSDate
-    @NSManaged var dateCreated: NSDate
+    @NSManaged var dateModded: Date
+    @NSManaged var dateCreated: Date
     @NSManaged var scope: NodeLink
     
     

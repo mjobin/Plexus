@@ -22,7 +22,7 @@ class PlexusEntryViewController: NSViewController, NSOutlineViewDelegate, NSOutl
     required init?(coder aDecoder: NSCoder)
     {
 
-        let appDelegate : AppDelegate = NSApplication.sharedApplication().delegate as! AppDelegate
+        let appDelegate : AppDelegate = NSApplication.shared().delegate as! AppDelegate
         moc = appDelegate.managedObjectContext
 
         super.init(coder: aDecoder)
@@ -31,15 +31,15 @@ class PlexusEntryViewController: NSViewController, NSOutlineViewDelegate, NSOutl
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        let appDelegate : AppDelegate = NSApplication.sharedApplication().delegate as! AppDelegate
+        let appDelegate : AppDelegate = NSApplication.shared().delegate as! AppDelegate
         moc = appDelegate.managedObjectContext
         
     
         let kString : String = kUTTypeURL as String
         let registeredTypes:[String] = [kString]
-        entryOutlineView.registerForDraggedTypes(registeredTypes)
-        entryOutlineView.setDraggingSourceOperationMask(NSDragOperation.Every, forLocal: true)
-        entryOutlineView.setDraggingSourceOperationMask(NSDragOperation.Every, forLocal: false)
+        entryOutlineView.register(forDraggedTypes: registeredTypes)
+        entryOutlineView.setDraggingSourceOperationMask(NSDragOperation.every, forLocal: true)
+        entryOutlineView.setDraggingSourceOperationMask(NSDragOperation.every, forLocal: false)
         entryOutlineView.verticalMotionCanBeginDrag = true
         
         
@@ -51,7 +51,7 @@ class PlexusEntryViewController: NSViewController, NSOutlineViewDelegate, NSOutl
     }
     
     
-    @IBAction func setScopeEntry(sender : AnyObject) {
+    @IBAction func setScopeEntry(_ sender : AnyObject) {
 
         
         let curModels : [Model] = modelTreeController.selectedObjects as! [Model]
@@ -64,14 +64,14 @@ class PlexusEntryViewController: NSViewController, NSOutlineViewDelegate, NSOutl
         curModel.scope = curEntry
     }
     
-    @IBAction func unScope(sender : AnyObject) {
+    @IBAction func unScope(_ sender : AnyObject) {
 
         
         let curModels : [Model] = modelTreeController.selectedObjects as! [Model]
         let curModel : Model = curModels[0]
         
         let curScoped : NodeLink = curModel.scope
-        curScoped.scope = Set<Model>()
+        curScoped.scope = Set<Model>() as NSSet
         
         
         
@@ -81,15 +81,15 @@ class PlexusEntryViewController: NSViewController, NSOutlineViewDelegate, NSOutl
 
 
     //nsoutlineview delegate methods
-    func outlineView(outlineView: NSOutlineView, viewForTableColumn tableColumn: NSTableColumn?, item: AnyObject) -> NSView? {
+    func outlineView(_ outlineView: NSOutlineView, viewFor tableColumn: NSTableColumn?, item: Any) -> NSView? {
 
-        let thisView : NSTableCellView = outlineView.makeViewWithIdentifier("Entry Cell", owner: self) as! NSTableCellView
+        let thisView : NSTableCellView = outlineView.make(withIdentifier: "Entry Cell", owner: self) as! NSTableCellView
 
         return thisView
     }
     
     
-    func outlineView(outlineView: NSOutlineView, mouseDownInHeaderOfTableColumn tableColumn: NSTableColumn) {
+    func outlineView(_ outlineView: NSOutlineView, mouseDownInHeaderOf tableColumn: NSTableColumn) {
         
         let sds = entryTreeController.sortDescriptors
         if(sds.count > 0){
@@ -114,17 +114,17 @@ class PlexusEntryViewController: NSViewController, NSOutlineViewDelegate, NSOutl
     
     
     
-    func outlineView(outlineView: NSOutlineView, writeItems items: [AnyObject], toPasteboard pasteboard: NSPasteboard) -> Bool {
+    func outlineView(_ outlineView: NSOutlineView, writeItems items: [Any], to pasteboard: NSPasteboard) -> Bool {
 
         let mutableArray : NSMutableArray = NSMutableArray()
         
-        for object : AnyObject in items{
-            if let treeItem : AnyObject? = object.representedObject!{
-                mutableArray.addObject(treeItem!.objectID.URIRepresentation())
+        for object in items{
+            if let treeItem : AnyObject? = (object as AnyObject).representedObject!{
+                mutableArray.add(treeItem!.objectID.uriRepresentation())
             }
         }
         
-        let data : NSData = NSKeyedArchiver.archivedDataWithRootObject(mutableArray)
+        let data : Data = NSKeyedArchiver.archivedData(withRootObject: mutableArray)
         let kString : String = kUTTypeURL as String
         pasteboard.setData(data, forType: kString)
         

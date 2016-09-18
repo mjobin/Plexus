@@ -29,7 +29,7 @@ class PlexusEntryDetailViewController: NSViewController, NSTableViewDelegate, NS
     required init?(coder aDecoder: NSCoder)
     {
         
-        let appDelegate : AppDelegate = NSApplication.sharedApplication().delegate as! AppDelegate
+        let appDelegate : AppDelegate = NSApplication.shared().delegate as! AppDelegate
         moc = appDelegate.managedObjectContext
         super.init(coder: aDecoder)
         
@@ -40,9 +40,9 @@ class PlexusEntryDetailViewController: NSViewController, NSTableViewDelegate, NS
         
         let kString : String = kUTTypeURL as String
         let registeredTypes:[String] = [kString]
-        traitsTableView.registerForDraggedTypes(registeredTypes)
-        traitsTableView.setDraggingSourceOperationMask(NSDragOperation.Every, forLocal: true)
-        traitsTableView.setDraggingSourceOperationMask(NSDragOperation.Every, forLocal: false)
+        traitsTableView.register(forDraggedTypes: registeredTypes)
+        traitsTableView.setDraggingSourceOperationMask(NSDragOperation.every, forLocal: true)
+        traitsTableView.setDraggingSourceOperationMask(NSDragOperation.every, forLocal: false)
         traitsTableView.verticalMotionCanBeginDrag = true
     }
     
@@ -57,35 +57,35 @@ class PlexusEntryDetailViewController: NSViewController, NSTableViewDelegate, NS
     
     
     //TableView Delegate fxns
-    func tableView(tableView: NSTableView, objectValueForTableColumn tableColumn: NSTableColumn?, row: Int) -> AnyObject? {
+    func tableView(_ tableView: NSTableView, objectValueFor tableColumn: NSTableColumn?, row: Int) -> Any? {
         let traitsArray : NSArray = traitsController.arrangedObjects as! NSArray
-        return traitsArray.objectAtIndex(row)
+        return traitsArray.object(at: row)
  
        // return traitsController.arrangedObjects.objectAtIndex(row) FIXME beta compiler was complaing so i used the above clumsiness. replace?
 
     }
     
-    func tableView(aTableView: NSTableView,
-        writeRowsWithIndexes rowIndexes: NSIndexSet,
-        toPasteboard pboard: NSPasteboard) -> Bool
+    func tableView(_ aTableView: NSTableView,
+        writeRowsWith rowIndexes: IndexSet,
+        to pboard: NSPasteboard) -> Bool
     {
         
         if ((aTableView == traitsTableView))
         {
             
             
-            let selectedRow = rowIndexes.firstIndex
+            let selectedRow = rowIndexes.first
             
             let traitsArray : NSArray = traitsController.arrangedObjects as! NSArray
-            let selectedObject : AnyObject = traitsArray.objectAtIndex(selectedRow)
+            let selectedObject : AnyObject = traitsArray.object(at: selectedRow!) as AnyObject
             // let selectedObject: AnyObject = traitsController.arrangedObjects.objectAtIndex(selectedRow) FIXME beta compiler was complaing so i used the above clumsiness. replace?
 
             
             let mutableArray : NSMutableArray = NSMutableArray()
-            mutableArray.addObject(selectedObject.objectID.URIRepresentation())
+            mutableArray.add(selectedObject.objectID.uriRepresentation())
             
             
-            let data : NSData = NSKeyedArchiver.archivedDataWithRootObject(mutableArray)
+            let data : Data = NSKeyedArchiver.archivedData(withRootObject: mutableArray)
             
             let kString : String = kUTTypeURL as String
             pboard.setData(data, forType: kString)
@@ -102,7 +102,7 @@ class PlexusEntryDetailViewController: NSViewController, NSTableViewDelegate, NS
     
     
     //Tab View Delegate
-    func tabView(tabView: NSTabView, didSelectTabViewItem tabViewItem: NSTabViewItem?) {
+    func tabView(_ tabView: NSTabView, didSelect tabViewItem: NSTabViewItem?) {
         self.markMap()
     }
     
@@ -130,7 +130,7 @@ class PlexusEntryDetailViewController: NSViewController, NSTableViewDelegate, NS
         
     }
     
-    func mocDidChange(notification: NSNotification){
+    func mocDidChange(_ notification: Notification){
         //  println("moc changed in map view")
         //  markMap()
         

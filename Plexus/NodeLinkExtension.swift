@@ -11,29 +11,29 @@ import CoreServices
 
 extension NodeLink {
 
-    func addBNNodeObject(value:BNNode) {
-        let items = self.mutableSetValueForKey("bnNode");
-        items.addObject(value)
+    func addBNNodeObject(_ value:BNNode) {
+        let items = self.mutableSetValue(forKey: "bnNode");
+        items.add(value)
     }
     
-    func addScopeObject(value:Model) {
-        let items = self.mutableSetValueForKey("scope");
-        items.addObject(value)
+    func addScopeObject(_ value:Model) {
+        let items = self.mutableSetValue(forKey: "scope");
+        items.add(value)
     }
     
     
-    func writableTypesForPasteboard(pasteboard: NSPasteboard!) -> [AnyObject] {
+    func writableTypesForPasteboard(_ pasteboard: NSPasteboard!) -> [AnyObject] {
         let kString : String = kUTTypeURL as String
         let registeredTypes:[String] = [kString]
-        return registeredTypes
+        return registeredTypes as [AnyObject]
     }
 
 
-    func pasteboardPropertyListForType(type: String!) -> AnyObject! {
+    func pasteboardPropertyListForType(_ type: String!) -> AnyObject! {
         let kString : String = kUTTypeURL as String
         if(type == kString){
-            let moURI : NSURL = self.objectID.URIRepresentation()
-            return moURI.pasteboardPropertyListForType(kString)
+            let moURI : NSURL = self.objectID.uriRepresentation() as NSURL
+            return moURI.pasteboardPropertyList(forType: kString) as AnyObject!
         }
         return nil
     }

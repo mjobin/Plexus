@@ -11,70 +11,70 @@ import Cocoa
 
 extension CGPath {
     
-    class func getAxisAlignedArrowPoints(inout points: Array<CGPoint>, forLength: CGFloat, tailWidth: CGFloat, headWidth: CGFloat, headLength: CGFloat ) {
+    class func getAxisAlignedArrowPoints(_ points: inout Array<CGPoint>, forLength: CGFloat, tailWidth: CGFloat, headWidth: CGFloat, headLength: CGFloat ) {
         
         let tailLength = forLength - headLength
         print(tailLength)
-        points.append(CGPointMake(0, tailWidth/2))
-        points.append(CGPointMake(tailLength, tailWidth/2))
-        points.append(CGPointMake(tailLength, headWidth/2))
-        points.append(CGPointMake(forLength, 0))
-        points.append(CGPointMake(tailLength, -headWidth/2))
-        points.append(CGPointMake(tailLength, -tailWidth/2))
-        points.append(CGPointMake(0, -tailWidth/2))
+        points.append(CGPoint(x: 0, y: tailWidth/2))
+        points.append(CGPoint(x: tailLength, y: tailWidth/2))
+        points.append(CGPoint(x: tailLength, y: headWidth/2))
+        points.append(CGPoint(x: forLength, y: 0))
+        points.append(CGPoint(x: tailLength, y: -headWidth/2))
+        points.append(CGPoint(x: tailLength, y: -tailWidth/2))
+        points.append(CGPoint(x: 0, y: -tailWidth/2))
         
     }
     
     
-    class func getShiftedAxisAlignedArrowPoints(inout points: Array<CGPoint>, forLength: CGFloat, tailWidth: CGFloat, headWidth: CGFloat, headLength: CGFloat, distanceAlong: CGFloat ) {
+    class func getShiftedAxisAlignedArrowPoints(_ points: inout Array<CGPoint>, forLength: CGFloat, tailWidth: CGFloat, headWidth: CGFloat, headLength: CGFloat, distanceAlong: CGFloat ) {
         
         let tailLength = forLength*distanceAlong
 
-        points.append(CGPointMake(0, tailWidth/2))
-        points.append(CGPointMake(tailLength, tailWidth/2))
-        points.append(CGPointMake(tailLength, headWidth/2))
-        points.append(CGPointMake((tailLength+headLength), tailWidth/2))
-        points.append(CGPointMake(forLength, tailWidth/2))
-        points.append(CGPointMake(forLength, -tailWidth/2))
-        points.append(CGPointMake((tailLength+headLength), -tailWidth/2))
-        points.append(CGPointMake(tailLength, -headWidth/2))
-        points.append(CGPointMake(tailLength, -tailWidth/2))
-        points.append(CGPointMake(0, -tailWidth/2))
+        points.append(CGPoint(x: 0, y: tailWidth/2))
+        points.append(CGPoint(x: tailLength, y: tailWidth/2))
+        points.append(CGPoint(x: tailLength, y: headWidth/2))
+        points.append(CGPoint(x: (tailLength+headLength), y: tailWidth/2))
+        points.append(CGPoint(x: forLength, y: tailWidth/2))
+        points.append(CGPoint(x: forLength, y: -tailWidth/2))
+        points.append(CGPoint(x: (tailLength+headLength), y: -tailWidth/2))
+        points.append(CGPoint(x: tailLength, y: -headWidth/2))
+        points.append(CGPoint(x: tailLength, y: -tailWidth/2))
+        points.append(CGPoint(x: 0, y: -tailWidth/2))
     }
     
-    class func getAxisAlignedDoubleArrowPoints(inout points: Array<CGPoint>, forLength: CGFloat, tailWidth: CGFloat, headWidth: CGFloat, headLength: CGFloat, distance1: CGFloat, distance2: CGFloat ) {
+    class func getAxisAlignedDoubleArrowPoints(_ points: inout Array<CGPoint>, forLength: CGFloat, tailWidth: CGFloat, headWidth: CGFloat, headLength: CGFloat, distance1: CGFloat, distance2: CGFloat ) {
         
         let tailLength = forLength*distance1
         let middleLength = forLength*distance2
         
-        points.append(CGPointMake(0, tailWidth/2))
-        points.append(CGPointMake(tailLength, tailWidth/2))
-        points.append(CGPointMake(tailLength, headWidth/2))
-        points.append(CGPointMake((tailLength+headLength), tailWidth/2))
-        points.append(CGPointMake(middleLength, tailWidth/2))
-        points.append(CGPointMake(middleLength, headWidth/2))
-        points.append(CGPointMake((middleLength+headLength), tailWidth/2))
-        points.append(CGPointMake(forLength, tailWidth/2))
-        points.append(CGPointMake(forLength, -tailWidth/2))
-        points.append(CGPointMake((middleLength+headLength), -tailWidth/2))
-        points.append(CGPointMake(middleLength, -headWidth/2))
-        points.append(CGPointMake(middleLength, -tailWidth/2))
-        points.append(CGPointMake((tailLength+headLength), -tailWidth/2))
-        points.append(CGPointMake(tailLength, -headWidth/2))
-        points.append(CGPointMake(tailLength, -tailWidth/2))
-        points.append(CGPointMake(0, -tailWidth/2))
+        points.append(CGPoint(x: 0, y: tailWidth/2))
+        points.append(CGPoint(x: tailLength, y: tailWidth/2))
+        points.append(CGPoint(x: tailLength, y: headWidth/2))
+        points.append(CGPoint(x: (tailLength+headLength), y: tailWidth/2))
+        points.append(CGPoint(x: middleLength, y: tailWidth/2))
+        points.append(CGPoint(x: middleLength, y: headWidth/2))
+        points.append(CGPoint(x: (middleLength+headLength), y: tailWidth/2))
+        points.append(CGPoint(x: forLength, y: tailWidth/2))
+        points.append(CGPoint(x: forLength, y: -tailWidth/2))
+        points.append(CGPoint(x: (middleLength+headLength), y: -tailWidth/2))
+        points.append(CGPoint(x: middleLength, y: -headWidth/2))
+        points.append(CGPoint(x: middleLength, y: -tailWidth/2))
+        points.append(CGPoint(x: (tailLength+headLength), y: -tailWidth/2))
+        points.append(CGPoint(x: tailLength, y: -headWidth/2))
+        points.append(CGPoint(x: tailLength, y: -tailWidth/2))
+        points.append(CGPoint(x: 0, y: -tailWidth/2))
     }
     
     
-    class func transformForStartPoint(startPoint: CGPoint, endPoint: CGPoint, length: CGFloat) -> CGAffineTransform{
+    class func transformForStartPoint(_ startPoint: CGPoint, endPoint: CGPoint, length: CGFloat) -> CGAffineTransform{
         let cosine: CGFloat = (endPoint.x - startPoint.x)/length
         let sine: CGFloat = (endPoint.y - startPoint.y)/length
         
-        return CGAffineTransformMake(cosine, sine, -sine, cosine, startPoint.x, startPoint.y)
+        return CGAffineTransform(a: cosine, b: sine, c: -sine, d: cosine, tx: startPoint.x, ty: startPoint.y)
     }
     
     
-    class func bezierPathWithArrowFromPoint(startPoint:CGPoint, endPoint: CGPoint, tailWidth: CGFloat, headWidth: CGFloat, headLength: CGFloat, d1: CGFloat, d2: CGFloat) -> CGPath {
+    class func bezierPathWithArrowFromPoint(_ startPoint:CGPoint, endPoint: CGPoint, tailWidth: CGFloat, headWidth: CGFloat, headLength: CGFloat, d1: CGFloat, d2: CGFloat) -> CGPath {
         
         let xdiff: Float = Float(endPoint.x) - Float(startPoint.x)
         let ydiff: Float = Float(endPoint.y) - Float(startPoint.y)
@@ -84,12 +84,13 @@ extension CGPath {
        // self.getAxisAlignedArrowPoints(&points, forLength: CGFloat(length), tailWidth: tailWidth, headWidth: headWidth, headLength: headLength)
         self.getAxisAlignedDoubleArrowPoints(&points, forLength: CGFloat(length), tailWidth: tailWidth, headWidth: headWidth, headLength: headLength, distance1: d1, distance2: d2)
         
-        var transform: CGAffineTransform = self.transformForStartPoint(startPoint, endPoint: endPoint, length:  CGFloat(length))
+        let transform: CGAffineTransform = self.transformForStartPoint(startPoint, endPoint: endPoint, length:  CGFloat(length))
         
-        let cgPath: CGMutablePathRef = CGPathCreateMutable()
+        let cgPath: CGMutablePath = CGMutablePath()
         //CGPathAddLines(cgPath, &transform, points, 7)
-        CGPathAddLines(cgPath, &transform, points, 16)
-        CGPathCloseSubpath(cgPath)
+        cgPath.addLines(between: points, transform: transform)
+        //CGPathAddLines(cgPath, &transform, points, 16)
+        cgPath.closeSubpath()
         
         // var uiPath: NSBezierPath = NSBezierPath(CGPath: cgPath)
         

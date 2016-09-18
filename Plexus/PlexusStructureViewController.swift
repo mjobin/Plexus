@@ -23,7 +23,7 @@ class PlexusStructureViewController: NSViewController, NSTableViewDelegate, NSTa
     required init?(coder aDecoder: NSCoder)
     {
         
-        let appDelegate : AppDelegate = NSApplication.sharedApplication().delegate as! AppDelegate
+        let appDelegate : AppDelegate = NSApplication.shared().delegate as! AppDelegate
         moc = appDelegate.managedObjectContext
         
         super.init(coder: aDecoder)
@@ -34,18 +34,18 @@ class PlexusStructureViewController: NSViewController, NSTableViewDelegate, NSTa
         super.viewDidLoad()
         let kString : String = kUTTypeURL as String
         let registeredTypes:[String] = [kString]
-        structureTableView.registerForDraggedTypes(registeredTypes)
-        structureTableView.setDraggingSourceOperationMask(NSDragOperation.Every, forLocal: true)
-        structureTableView.setDraggingSourceOperationMask(NSDragOperation.Every, forLocal: false)
+        structureTableView.register(forDraggedTypes: registeredTypes)
+        structureTableView.setDraggingSourceOperationMask(NSDragOperation.every, forLocal: true)
+        structureTableView.setDraggingSourceOperationMask(NSDragOperation.every, forLocal: false)
         structureTableView.verticalMotionCanBeginDrag = true
         
-        structureEntriesTableView.registerForDraggedTypes(registeredTypes)
-        structureTableView.setDraggingSourceOperationMask(NSDragOperation.None, forLocal: true)
-        structureTableView.setDraggingSourceOperationMask(NSDragOperation.None, forLocal: false)
+        structureEntriesTableView.register(forDraggedTypes: registeredTypes)
+        structureTableView.setDraggingSourceOperationMask(NSDragOperation(), forLocal: true)
+        structureTableView.setDraggingSourceOperationMask(NSDragOperation(), forLocal: false)
     }
     
     
-    @IBAction func setScopeStructrure(sender : AnyObject) {
+    @IBAction func setScopeStructrure(_ sender : AnyObject) {
 
         
         let curModels : [Model] = modelTreeController.selectedObjects as! [Model]
@@ -62,25 +62,25 @@ class PlexusStructureViewController: NSViewController, NSTableViewDelegate, NSTa
     }
     
     //NSTableView Delegate for dragging
-    func tableView(tableView: NSTableView, objectValueForTableColumn tableColumn: NSTableColumn?, row: Int) -> AnyObject? {
+    func tableView(_ tableView: NSTableView, objectValueFor tableColumn: NSTableColumn?, row: Int) -> Any? {
         
        // println("object value from \(tableView)")
         
         if(tableView == structureEntriesTableView){
             let secArray : NSArray = structureEntriesController.arrangedObjects as! NSArray
-            return secArray.objectAtIndex(row)
+            return secArray.object(at: row)
         }
         else if(tableView == structureTableView){
             let secArray : NSArray = structureController.arrangedObjects as! NSArray
-            return secArray.objectAtIndex(row)
+            return secArray.object(at: row)
         }
         
         return nil
     }
     
-    func tableView(aTableView: NSTableView,
-        writeRowsWithIndexes rowIndexes: NSIndexSet,
-        toPasteboard pboard: NSPasteboard) -> Bool
+    func tableView(_ aTableView: NSTableView,
+        writeRowsWith rowIndexes: IndexSet,
+        to pboard: NSPasteboard) -> Bool
     {
 
         
@@ -88,16 +88,16 @@ class PlexusStructureViewController: NSViewController, NSTableViewDelegate, NSTa
         {
             
             
-            let selectedRow = rowIndexes.firstIndex
+            let selectedRow = rowIndexes.first
             let secArray : NSArray = structureController.arrangedObjects as! NSArray
-            let selectedObject: AnyObject = secArray.objectAtIndex(selectedRow)
+            let selectedObject: AnyObject = secArray.object(at: selectedRow!) as AnyObject
 
             
             let mutableArray : NSMutableArray = NSMutableArray()
-            mutableArray.addObject(selectedObject.objectID.URIRepresentation())
+            mutableArray.add(selectedObject.objectID.uriRepresentation())
             
             
-            let data : NSData = NSKeyedArchiver.archivedDataWithRootObject(mutableArray)
+            let data : Data = NSKeyedArchiver.archivedData(withRootObject: mutableArray)
             
             let kString : String = kUTTypeURL as String
             pboard.setData(data, forType: kString)
@@ -113,21 +113,21 @@ class PlexusStructureViewController: NSViewController, NSTableViewDelegate, NSTa
     }
     
     
-    func tableView(tableView: NSTableView, validateDrop info: NSDraggingInfo, proposedRow row: Int, proposedDropOperation dropOperation: NSTableViewDropOperation) -> NSDragOperation {
+    func tableView(_ tableView: NSTableView, validateDrop info: NSDraggingInfo, proposedRow row: Int, proposedDropOperation dropOperation: NSTableViewDropOperation) -> NSDragOperation {
        // println("valiudate \(tableView)")
         if(tableView == structureEntriesTableView){
 
-            return .Copy
+            return .copy
         }
         else if(tableView == structureTableView){
 
-            return .None
+            return NSDragOperation()
         }
-        return .None
+        return NSDragOperation()
     }
 
     
-    func tableView(tableView: NSTableView, acceptDrop info: NSDraggingInfo, row: Int, dropOperation: NSTableViewDropOperation) -> Bool {
+    func tableView(_ tableView: NSTableView, acceptDrop info: NSDraggingInfo, row: Int, dropOperation: NSTableViewDropOperation) -> Bool {
 
         
         if(tableView == structureEntriesTableView){
@@ -136,15 +136,15 @@ class PlexusStructureViewController: NSViewController, NSTableViewDelegate, NSTa
             
             
             let kString : String = kUTTypeURL as String
-            let data : NSData = pboard.dataForType(kString)!
-            let draggedArray : NSArray = NSKeyedUnarchiver.unarchiveObjectWithData(data) as! NSArray
+            let data : Data = pboard.data(forType: kString)!
+            let draggedArray : NSArray = NSKeyedUnarchiver.unarchiveObject(with: data) as! NSArray
             
             let curStructures : [Structure] = structureController.selectedObjects as! [Structure]
             var curStructure : Structure!
             
             if(curStructures.count < 1){
 
-                curStructure = Structure(entity: NSEntityDescription.entityForName("Structure", inManagedObjectContext: self.moc)!, insertIntoManagedObjectContext: self.moc)
+                curStructure = Structure(entity: NSEntityDescription.entity(forEntityName: "Structure", in: self.moc)!, insertInto: self.moc)
 
                 curStructure.setValue("newzero", forKey: "name")
 
@@ -155,13 +155,13 @@ class PlexusStructureViewController: NSViewController, NSTableViewDelegate, NSTa
             
 
             
-            for object : AnyObject in draggedArray{
+            for object : AnyObject in draggedArray as [AnyObject] {
                 
-                let mourl : NSURL = object as! NSURL
+                let mourl : URL = object as! URL
                 
-                if let id : NSManagedObjectID? = moc.persistentStoreCoordinator?.managedObjectIDForURIRepresentation(mourl){
+                if let id : NSManagedObjectID? = moc.persistentStoreCoordinator?.managedObjectID(forURIRepresentation: mourl){
                     
-                    let mo : NodeLink = moc.objectWithID(id!) as! NodeLink
+                    let mo : NodeLink = moc.object(with: id!) as! NodeLink
                     
                     if (mo.entity.name == "Entry"){
                         let curEntry = mo as! Entry
