@@ -680,11 +680,12 @@ static void *ProgressObserverContext = &ProgressObserverContext;
     // MAPPED BUFFER CREATION - ARG 1 - PARAMS
     //********************************
     
-    int * mappedParams = clEnqueueMapBuffer(cl_queue, paramsbuf, CL_TRUE, CL_MAP_READ, 0, 4*sizeof(cl_int), 0, NULL, NULL, NULL);
+    int * mappedParams = clEnqueueMapBuffer(cl_queue, paramsbuf, CL_TRUE, CL_MAP_READ, 0, 5*sizeof(cl_int), 0, NULL, NULL, NULL);
     mappedParams[0] = (int)INSize;
     mappedParams[1] = (int)maxCPTSize;
     mappedParams[2] = (int)clRuns;
     mappedParams[3] = (int)clBurnins;
+    mappedParams[4] = (int)sparseCPTsize;
     
     //********************************
     //********************************
@@ -818,7 +819,7 @@ static void *ProgressObserverContext = &ProgressObserverContext;
     worksize = gWorkItems;
     bnreadsize = worksize * [initialNodes count]; //All the memory needed to read one work units data
 
-   // NSLog(@"computes %i  worksize %zu remainder %lu", [computes intValue], worksize, [computes intValue]%worksize);
+    NSLog(@"computes %i  worksize %zu remainder %lu", [computes intValue], worksize, [computes intValue]%worksize);
     int numpasses = ([computes intValue] / worksize); //The number of passes with this device needed to
 
     if([computes intValue]%worksize != 0){
@@ -834,6 +835,18 @@ static void *ProgressObserverContext = &ProgressObserverContext;
      NSLog(@"bnreadsize: %zu worksize %zu computes %i numpasses %i", bnreadsize, worksize, [computes intValue], numpasses);
     
 
+    size_t privmem = 0;
+    err = clGetKernelWorkGroupInfo(
+                                   bncalc_Kernel,                      // the kernel object being queried
+                                   the_device, // a device associated with the kernel object
+                                   CL_KERNEL_PRIVATE_MEM_SIZE,    // requests the private mem size
+                                   sizeof(privmem),             // size in bytes of return buffer
+                                   &privmem,                    // on return, points to requested information
+                                   &returned_size);
+    
+    NSLog(@"Kernel private mem size for bn_kernel %lu", (long unsigned)privmem);
+    
+    
     NSMutableArray *passchk = [NSMutableArray arrayWithCapacity:numpasses];
     for(i=0; i<numpasses; i++){
         [passchk addObject:[NSNumber numberWithInt:i]];
@@ -853,35 +866,42 @@ static void *ProgressObserverContext = &ProgressObserverContext;
     //********************************
     // MAIN QUEUEING LOOP
     //********************************
-    int ct =0;
-    int tt = 0;
+    int ct = 0; //Count of compute runs
+    int tt = 0; //Count of number of times kernel queued
 
     
-      cl_mem * bnresultsbufs = malloc(sizeof(cl_mem)*numpasses);
-      cl_mem * offsetbufs = malloc(sizeof(cl_mem)*numpasses);
-        cl_event * prof_events = malloc(sizeof(cl_event)*numpasses);
+    cl_mem * bnresultsbufs = malloc(sizeof(cl_mem)*numpasses);
+    cl_mem * offsetbufs = malloc(sizeof(cl_mem)*numpasses);
+    cl_event * prof_events = malloc(sizeof(cl_event)*numpasses);
 
+    NSMutableArray * thisWork = [NSMutableArray array];
     
-    while(ct < [computes intValue]){
+    while(ct < [computes intValue]) {
         
         timer = [startcalc timeIntervalSinceNow] * -1000.0;
        // NSLog(@"Top of ct loop %f since starting calc fxn", timer);
     
             
-    //    NSLog(@"******  tt is %i", tt);
+        //NSLog(@"******  tt is %i", tt);
         
+        size_t curWork = worksize;
         
-        size_t thisWork = worksize;
-        
-        //    NSLog(@"worksize for this dev %lu", thisWork);
+      //  NSLog(@"worksize for this dev %lu", curWork);
         
         size_t workRemaining = [computes intValue] - ct;
         
-        //      NSLog(@"remaining work %lu", workRemaining);
+     //   NSLog(@"remaining work %lu", workRemaining);
         
-        if (thisWork > workRemaining) thisWork = workRemaining;
+        if (curWork > workRemaining) curWork = workRemaining;
         
-        //   NSLog(@"worksize should now be %lu", thisWork);
+      //  NSLog(@"worksize should now be %lu", curWork);
+        
+        [thisWork addObject:[NSNumber numberWithInteger:curWork]];
+        
+        
+     //   NSLog(@"this work % i set to %i", tt, [[thisWork objectAtIndex:tt] intValue]);
+        
+        
         
         
         timer = [startcalc timeIntervalSinceNow] * -1000.0;
@@ -909,7 +929,7 @@ static void *ProgressObserverContext = &ProgressObserverContext;
        // NSLog(@"Before offsets arcrandopm  %f since starting calc fxn", timer);
         for(i=0;i<worksize;i++){
             mappedOffsets[i] = arc4random();
-            //  NSLog(@"offset %i", mappedOffsets[i]);
+             // NSLog(@"offset %i", mappedOffsets[i]);
         }
         
         offsetbufs[tt] = offsetbuf;
@@ -985,7 +1005,8 @@ static void *ProgressObserverContext = &ProgressObserverContext;
             return calcerr;
         }
         
-        err = clSetKernelArg(bncalc_Kernel, 4, bnreadsize*sizeof(cl_int), NULL);
+        err = clSetKernelArg(bncalc_Kernel, 4, bnreadsize*sizeof(cl_int), NULL); //bnstates array
+
         if (err != CL_SUCCESS) {
             NSLog(@"Failure setting argument");
             calcerr = [NSError errorWithDomain:@"plexusCalc" code:1005 userInfo:argFail];
@@ -1000,7 +1021,7 @@ static void *ProgressObserverContext = &ProgressObserverContext;
         }
         
         
-        err = clSetKernelArg(bncalc_Kernel, 6, thisWork * INSize * sizeof(cl_int), NULL); //this is the array size of the shuffled nodes...uses local mem
+        err = clSetKernelArg(bncalc_Kernel, 6, worksize * INSize * sizeof(cl_int), NULL); //this is the array size of the shuffled nodes...uses local mem
         if (err != CL_SUCCESS) {
             NSLog(@"Failure setting argument");
             calcerr = [NSError errorWithDomain:@"plexusCalc" code:1005 userInfo:argFail];
@@ -1028,6 +1049,8 @@ static void *ProgressObserverContext = &ProgressObserverContext;
             return calcerr;
         }
         
+
+        
         
         
         timer = [startcalc timeIntervalSinceNow] * -1000.0;
@@ -1040,13 +1063,12 @@ static void *ProgressObserverContext = &ProgressObserverContext;
                                      bncalc_Kernel,           // a valid kernel object
                                      1,                       // the data dimensions                   [4]
                                      NULL,                    // reserved; must be NULL
-                                     &worksize,                  // work sizes for each dimension         [5]
+                                     &curWork,                  // work sizes for each dimension         [5]
                                      NULL,                   // work-group sizes for each dimension   [6]
                                      0,                       // num entires in event wait list        [7]
                                      NULL,                    // event wait list                       [8]
                                      &prof_events[tt]);                   // on return, points to new event object [9]
-        
-        
+
         if (err != CL_SUCCESS){
             NSLog(@"Failure enqueueing kernel. Error %i", err);
             
@@ -1065,16 +1087,14 @@ static void *ProgressObserverContext = &ProgressObserverContext;
             
             
 
-            //add completed
+            //Add completed work to ct
             
-            ct += thisWork;
-            
+            ct += [[thisWork objectAtIndex:tt] integerValue];
 
-                
-            
-            
-            //end device loop
+            //Advance to next queuing event
             tt++;
+        
+           // NSLog(@"Bottom of queueing loop. ct %i tt %i", ct, tt);
             if(ct >= [computes intValue]) break; //in case we do not need all the devices
             timer = [startcalc timeIntervalSinceNow] * -1000.0;
           //  NSLog(@"Bottom of ct loop %f since starting calc fxn", timer);
@@ -1098,12 +1118,11 @@ static void *ProgressObserverContext = &ProgressObserverContext;
            // NSLog(@"checking on %@", chknum);
             clGetEventInfo(prof_events[[chknum intValue]], CL_EVENT_COMMAND_EXECUTION_STATUS, sizeof(cl_int), (void *)&info, NULL);
             if ( info == CL_COMPLETE ){
-              //  NSLog(@"*****Event %i complete", [chknum intValue]);
-                cct += worksize;
+               // NSLog(@"*****Event %i complete", [chknum intValue]);
+                cct += [[thisWork objectAtIndex:[chknum integerValue]] integerValue];
                 dispatch_async(dispatch_get_main_queue(), ^{
-                    [progInd incrementBy:worksize];
+                    [progInd incrementBy:[[thisWork objectAtIndex:[chknum integerValue]] integerValue]];
                     curLabel.stringValue = [NSString stringWithFormat:@"%i", cct];
-                    //FIXME can only advance if first time completing this one
                 });
      
             }
@@ -1124,6 +1143,7 @@ static void *ProgressObserverContext = &ProgressObserverContext;
     timer = [startcalc timeIntervalSinceNow] * -1000.0;
      NSLog(@"After clFinish %f since starting calc fxn", timer);
     
+    //PROFILING CODE
     /*
     for(int dev = 0; dev < numpasses; dev++){
         cl_ulong ev_start_time=(cl_ulong)0;

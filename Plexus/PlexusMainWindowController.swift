@@ -718,17 +718,20 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
 
 
                     var gi = 0
+                    var flinetot = 0.0
+                    var flinecount = 0.0
                     for gNode : Double in fline {
-
+                        
                        
                         if(gNode == gNode && gNode >= 0.0 && gNode <= 1.0) {//fails if nan
                             
                             let x = (Int)(floor(gNode/binQuotient))
                             //print ("result: \(gNode)  bin:\(x)")
                             postCount[x] += 1
+                            flinetot += gNode
+                            flinecount += 1.0
 
                         }
-                        
                         
                         else{
                            // println("problem detected in reloadData. gNode is \(gNode)")
@@ -739,6 +742,36 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                     
                     let archivedPostCount = NSKeyedArchiver.archivedData(withRootObject: postCount)
                     inNode.setValue(archivedPostCount, forKey: "postCount")
+                    
+                    
+                    //Stats on post Array
+                    //Mean
+                    let flinemean = flinetot / flinecount
+                   // print ("Mean \(flinemean)")
+                    
+                    //Sample Standard Deviation
+                    var sumsquares = 0.0
+                    flinecount = 0.0
+                    for gNode : Double in fline {
+                        
+                        if(gNode == gNode && gNode >= 0.0 && gNode <= 1.0) {//fails if nan
+                            sumsquares +=  pow(gNode - flinemean, 2.0)
+                            flinecount += 1.0
+                        }
+                    }
+                    
+                    let ssd = sumsquares / (flinecount - 1.0)
+                  //  print ("Standard Dev \(ssd)")
+                    
+                    let sortfline = fline.sorted()
+                    let lowTail = sortfline[Int(Double(sortfline.count)*0.05)]
+                    let highTail = sortfline[Int(Double(sortfline.count)*0.95)]
+                    
+                   // print ("Equal tail low \(lowTail) high \(highTail)")
+                    for gNode : Double in sortfline {
+                     //   print (gNode)
+                    }
+                    
                     
                     
                     let defaults = UserDefaults.standard
@@ -809,6 +842,10 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         }
         
        // print("End calcuilate fxn reached")
+    }
+    
+    func posteriorStats(_ sender:AnyObject){
+        
     }
 
     

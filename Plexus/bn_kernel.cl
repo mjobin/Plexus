@@ -10,7 +10,6 @@
 
 #include "tinymt32_jump.clh"
 
-
 #ifdef cl_khr_fp64
 #pragma OPENCL EXTENSION cl_khr_fp64 : enable
 //#define DOUBLE_SUPPORT_AVAILABLE
@@ -231,6 +230,8 @@ double beta_dev(double a, double b, tinymt32j_t *r) {
 
 
 
+
+
 //****************************************************************
 
 //Monte Carlo Gibbs Sampler
@@ -242,66 +243,69 @@ __kernel void BNGibbs(__constant int* offsets, __constant int* params, __constan
     // params[1] = maxCPTSize; == maxCPTSize
     // params[2] = clRuns; ==runs
     // params[3] = clBurnins; == burnins
+    //params[4] = sparseCPTsize = pow(2.0f, params[1]);
+    
+
+   
+    int id = get_local_id(0);
+    
+
+    
+
     
     
+    int boffset;
+    boffset = id*params[0]; //offset to part of bnstates buffer used by this work-item
+    
+
+
     
     
-    __local int gid;
-    gid = get_global_id(0); //A global identifier for this work-item. Used to access its part of the offset, bnstates and results
+   // printf("--------------------------\n");
+    //printf("work id is %i, bnsize is %i, maxCPTsize is %i, number of runs %i and burn-in %i \n", id,  params[0],params[1], params[2],params[3]);
     
-    __local int boffset;
-    boffset = gid*params[0]; //offset to part of bnstates buffer used by this work-item
-    
-    __local int sparseCPTsize;
-    sparseCPTsize = pow(2.0f, params[1]);
-    
-    
-     // printf("--------------------------\n");
-   // printf("work id is %i, bnsize is %i, maxCPTsize is %i, number of runs %i and burn-in %i \n", gid, params[0],params[1], params[2],params[3]);
-    
-    //Seed variable for random number generator
-    __local int x;
-    x = offsets[gid]*get_global_size(0);
+
     
     
 
     
     //TinyMT seed and test
     tinymt32j_t tinymt;
-    tinymt32j_init_jump(&tinymt, (x)); //init the rng to to something somewhat random within each thread
+    tinymt32j_init_jump(&tinymt, (offsets[id])); //init the rng to to something somewhat random within each thread
     
+
     
     
     //Count variables
-    __local int g;
-    __local int h;
-    __local int i;
-    __local int k;
+     int g;
+     int h;
+     int i;
+     int k;
     g = 0;
     h = 0;
     i = 0;
     k = 0;
     
     
-    __local int binsum; //Binary sum of the states of all the nodes that influence the current node
-    __local float binx; //Float coutn variable, needed because will be using 2.0^binx
-    __local double flip;
+     int binsum; //Binary sum of the states of all the nodes that influence the current node
+     float binx; //Float coutn variable, needed because will be using 2.0^binx
+     double flip;
     
-    __local infoffset;
+     int infoffset;
     infoffset = 0; //Offset variale for influences array
-    __local int cptoffset;
+     int cptoffset;
     cptoffset = 0; //Offset variale for CPT array
     
     
-    __local int sampletot;
+     int sampletot;
     sampletot = 0; //Number of sampled results
-    __local int laststate;
+     int laststate;
     laststate = -1; //Previous state of a node, used to check for a stationary distribution
-    __local int runstationary;
+     int runstationary;
     runstationary = 0; //Number of times in a row the chosen state is the same as before. Used to see if we are converging on a stationary distritbution.
     
-    __local int shuffleoffset;
-    shuffleoffset = gid * params[0];
+     int shuffleoffset;
+    shuffleoffset = id * params[0];
     
     
     
@@ -310,10 +314,10 @@ __kernel void BNGibbs(__constant int* offsets, __constant int* params, __constan
     //INPUT CHECK
     //****************************************************************
     //****************************************************************
-    
     /*
+    
      printf("------------INPUT CHECK--------------\n");
-    printf("Work id is %i, offset is %i, bnsize is %i, maxCPTsize is %i, number of runs %i and burn-in %i\n", gid, offsets[gid], params[0],params[1], params[2],params[3]);
+    printf("Work id is %i, offset is %i, bnsize is %i, maxCPTsize is %i, number of runs %i and burn-in %i\n", id, offsets[id], params[0],params[1], params[2],params[3]);
     
     
     printf("------------Infnet--------------\n");
@@ -337,10 +341,10 @@ __kernel void BNGibbs(__constant int* offsets, __constant int* params, __constan
     for(i=0; i<(params[0]);i++){
         printf("Node, %i\n", i);
         printf("CPT\n");
-        for(int j=0; j<sparseCPTsize; j++){
+        for(int j=0; j<params[4]; j++){
             printf("%f ", cptnet[(j+cptoffset)]);
         }
-        cptoffset = cptoffset + sparseCPTsize;
+        cptoffset = cptoffset + params[4];
         printf("\n\n");
     }
                                   
@@ -423,9 +427,9 @@ __kernel void BNGibbs(__constant int* offsets, __constant int* params, __constan
         
         
         //Fisher-Yates shuffle: randomly sort the node array
-        __local int j;
+         int j;
         j = 0;
-        __local int tmp;
+         int tmp;
         tmp = 0;
         for (i = params[0] - 1; i > 0; i--) {
             j = randomx(&tinymt, i + 1);
@@ -437,7 +441,7 @@ __kernel void BNGibbs(__constant int* offsets, __constant int* params, __constan
 
         
         
-        //printf("\n\nRUN %i ************************\n", g);
+      //  printf("\n\nRUN %i ************************\n", g);
         
         //Cycle through each of the nodes
         for(h=0; h<params[0]; h++){ //The count var h will only be used to count through the zrray for size
@@ -445,9 +449,9 @@ __kernel void BNGibbs(__constant int* offsets, __constant int* params, __constan
             
             
             int sn = shufflenodes[h+shuffleoffset]; //The var sn will mark the location of the data for the present shuffled node
-            //printf("gid %i run %i seed %i node %i becomes shuffled node %i \n", gid, g, x, h, sn);
+            //printf("id %i run %i seed %i node %i becomes shuffled node %i \n", id, g, x, h, sn);
             
-           // printf("node %i state %i ", sn, bnstates[sn+boffset]);
+            //printf("node %i state %i ", sn, bnstates[sn+boffset]);
             
             
             laststate = bnstates[sn+boffset]; //Save what the state of the current node was, to check for approach to stationary distribution
@@ -456,7 +460,7 @@ __kernel void BNGibbs(__constant int* offsets, __constant int* params, __constan
             //bnstates[sn+boffset] = 1;  //Set the state of the current variable to true. Thus we are asking for this node "what is the chance, given its influences, that this node is true?"
             
             infoffset = (params[1]*2) * sn; //Location in input array
-            cptoffset = sparseCPTsize * sn; //Location in CPT array
+            cptoffset = params[4] * sn; //Location in CPT array
             
             
             
@@ -497,19 +501,23 @@ __kernel void BNGibbs(__constant int* offsets, __constant int* params, __constan
                              flip = -999;
                      }
                  }
-                 //printf(" parent type %i chance %f ",priordisttypes[sn], flip);
+                 
+                 
+                 
+             //   printf("Work id is %i, run is %i, offset is %i, flip is %f\n", id, g, offsets[id], flip);
+                // printf(" parent type %i chance %f ",priordisttypes[sn], flip);
                  bnstates[sn+boffset] = pointroll(&tinymt, flip);
              }
              else { //There is a CPT for this node, so the chance for the node to be true comes from the probablities of its influencdes
                  bnstates[sn+boffset] = pointroll(&tinymt, cptnet[(cptoffset+binsum)]);
-                // printf(" child chance %f " , cptnet[(cptoffset+binsum)]);
+                 //printf(" child chance %f " , cptnet[(cptoffset+binsum)]);
              
              }
              
-          //  printf("becomes %i\n", bnstates[sn+boffset]);
+           // printf("becomes %i\n", bnstates[sn+boffset]);
             
             infoffset +=params[1]; //Advance the influence offset by the size of a CPT
-            if(bnstates[sn+boffset] == laststate) runstationary++; //If the state is not changing, take note, and check to exit early
+            if(bnstates[sn+boffset] == laststate) runstationary++; //If the state is not changing, take note, and check to exit earlyFIXME this is counting all nodes at once
             
             
            // printf("end nodes loop using h\n");
@@ -536,7 +544,7 @@ __kernel void BNGibbs(__constant int* offsets, __constant int* params, __constan
    // printf("main loop ended. runstattionary %i, g %i, sampletot %i\n", runstationary, g, sampletot);
     
     for(int l=0; l<params[0]; l++){
-       // printf("bnresults %f, sampletot %i\n", bnresults[l+boffset], sampletot);
+        //printf("bnresults %f, sampletot %i\n", bnresults[l+boffset], sampletot);
         bnresults[l+boffset] /= sampletot; //To obtain posterior point, divide the compiled results through by number of samples taken
     }
     
