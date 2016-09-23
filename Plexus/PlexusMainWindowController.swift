@@ -747,7 +747,8 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                     //Stats on post Array
                     //Mean
                     let flinemean = flinetot / flinecount
-                   // print ("Mean \(flinemean)")
+                    print ("Mean \(flinemean)")
+                    inNode.setValue(flinemean, forKey: "postMean")
                     
                     //Sample Standard Deviation
                     var sumsquares = 0.0
@@ -761,16 +762,43 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                     }
                     
                     let ssd = sumsquares / (flinecount - 1.0)
-                  //  print ("Standard Dev \(ssd)")
+                    print ("Standard Dev \(ssd)")
                     
                     let sortfline = fline.sorted()
+                    //print ("sortfline count \(sortfline.count)")
                     let lowTail = sortfline[Int(Double(sortfline.count)*0.05)]
                     let highTail = sortfline[Int(Double(sortfline.count)*0.95)]
                     
-                   // print ("Equal tail low \(lowTail) high \(highTail)")
-                    for gNode : Double in sortfline {
-                     //   print (gNode)
+                    print ("Equal tail low \(lowTail) high \(highTail)")
+                    
+                    //Highest Posterior Density Interval. Alpha = 0.05
+                    //Where n = sortfline.count (i.e. last entry)
+                    
+                    //Compute credible intervals for j = 0 to j = n - ((1-0.05)n)
+                    //Say n = 200, then 200 - 0.95*200 = 190
+                    let alpha = 0.05
+                    let jmax = Int(Double(sortfline.count) - ((1.0-alpha) * Double(sortfline.count)))
+                    //print ("jmax \(jmax)")
+                    
+                   var firsthpd = true
+                    var interval = -999.99
+                    var low = 0
+                    var high = sortfline.count
+                    for hpdi in 0..<jmax {
+                        let highpos = hpdi + Int(((1.0-alpha)*Double(sortfline.count)))
+                        //print ("\(hpdi): \(sortfline[hpdi])  <= \(sortfline[highpos])")
+                        if(firsthpd || (sortfline[highpos] - sortfline[hpdi]) < interval){
+                            firsthpd = false
+                            interval = sortfline[highpos] - sortfline[hpdi]
+                            low = hpdi
+                            high = highpos
+                        }
+
                     }
+                print ("HPD: \(sortfline[low])  to \(sortfline[high])")
+
+                    
+
                     
                     
                     

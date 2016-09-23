@@ -1,24 +1,25 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="10174" systemVersion="15G31" minimumToolsVersion="Automatic">
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="11232" systemVersion="15G1004" minimumToolsVersion="Xcode 7.3" sourceLanguage="Objective-C" userDefinedModelVersionIdentifier="">
     <entity name="BNNode" representedClassName="Plexus.BNNode" syncable="YES">
         <attribute name="cptArray" optional="YES" attributeType="Binary" syncable="YES"/>
-        <attribute name="numericData" optional="YES" attributeType="Boolean" defaultValueString="NO" syncable="YES"/>
+        <attribute name="numericData" optional="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="postArray" optional="YES" attributeType="Binary" syncable="YES"/>
         <attribute name="postCount" optional="YES" attributeType="Binary" valueTransformerName="PlexusBNNodePostArrayTransformer" syncable="YES"/>
+        <attribute name="postMean" optional="YES" attributeType="Double" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="priorArray" optional="YES" attributeType="Binary" syncable="YES"/>
         <attribute name="priorCount" optional="YES" attributeType="Binary" syncable="YES"/>
-        <attribute name="priorDistType" optional="YES" attributeType="Integer 32" minValueString="0" defaultValueString="0" syncable="YES"/>
-        <attribute name="priorV1" optional="YES" attributeType="Double" defaultValueString="0.5" syncable="YES"/>
-        <attribute name="priorV2" optional="YES" attributeType="Double" defaultValueString="0.5" syncable="YES"/>
-        <attribute name="tolerance" optional="YES" attributeType="Double" minValueString="0" maxValueString="1" defaultValueString="0.05" syncable="YES"/>
+        <attribute name="priorDistType" optional="YES" attributeType="Integer 32" minValueString="0" defaultValueString="0" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="priorV1" optional="YES" attributeType="Double" defaultValueString="0.5" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="priorV2" optional="YES" attributeType="Double" defaultValueString="0.5" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="tolerance" optional="YES" attributeType="Double" minValueString="0" maxValueString="1" defaultValueString="0.05" usesScalarValueType="NO" syncable="YES"/>
         <relationship name="influencedBy" optional="YES" toMany="YES" deletionRule="Nullify" ordered="YES" destinationEntity="BNNode" inverseName="influences" inverseEntity="BNNode" syncable="YES"/>
         <relationship name="influences" optional="YES" toMany="YES" deletionRule="Nullify" ordered="YES" destinationEntity="BNNode" inverseName="influencedBy" inverseEntity="BNNode" syncable="YES"/>
         <relationship name="model" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Model" inverseName="bnnode" inverseEntity="Model" syncable="YES"/>
         <relationship name="nodeLink" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="NodeLink" inverseName="bnNode" inverseEntity="NodeLink" syncable="YES"/>
     </entity>
     <entity name="Entry" representedClassName="Plexus.Entry" parentEntity="NodeLink" syncable="YES">
-        <attribute name="latitude" optional="YES" attributeType="Double" defaultValueString="0.0" syncable="YES"/>
-        <attribute name="longitude" optional="YES" attributeType="Double" defaultValueString="0.0" syncable="YES"/>
+        <attribute name="latitude" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="longitude" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="notes" optional="YES" attributeType="Binary" syncable="YES"/>
         <relationship name="children" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="Entry" inverseName="parent" inverseEntity="Entry" syncable="YES"/>
         <relationship name="parent" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Entry" inverseName="children" inverseEntity="Entry" syncable="YES"/>
@@ -26,14 +27,14 @@
         <relationship name="trait" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="Trait" inverseName="entry" inverseEntity="Trait" syncable="YES"/>
     </entity>
     <entity name="Model" representedClassName="Plexus.Model" syncable="YES">
-        <attribute name="burnins" optional="YES" attributeType="Integer 32" minValueString="0" defaultValueString="100" syncable="YES"/>
-        <attribute name="complete" optional="YES" attributeType="Boolean" defaultValueString="NO" syncable="YES"/>
-        <attribute name="dateCreated" optional="YES" attributeType="Date" syncable="YES"/>
-        <attribute name="dateModded" optional="YES" attributeType="Date" syncable="YES"/>
+        <attribute name="burnins" optional="YES" attributeType="Integer 32" minValueString="0" defaultValueString="100" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="complete" optional="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="dateCreated" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="dateModded" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="image" optional="YES" attributeType="Binary" allowsExternalBinaryDataStorage="YES" syncable="YES"/>
         <attribute name="name" optional="YES" attributeType="String" defaultValueString="New Model" syncable="YES"/>
-        <attribute name="runsper" optional="YES" attributeType="Integer 32" minValueString="0" defaultValueString="1000" syncable="YES"/>
-        <attribute name="runstot" optional="YES" attributeType="Integer 32" minValueString="0" defaultValueString="10000" syncable="YES"/>
+        <attribute name="runsper" optional="YES" attributeType="Integer 32" minValueString="0" defaultValueString="1000" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="runstot" optional="YES" attributeType="Integer 32" minValueString="0" defaultValueString="10000" usesScalarValueType="NO" syncable="YES"/>
         <relationship name="bnnode" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="BNNode" inverseName="model" inverseEntity="BNNode" syncable="YES"/>
         <relationship name="children" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="Model" inverseName="parent" inverseEntity="Model" syncable="YES"/>
         <relationship name="parent" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Model" inverseName="children" inverseEntity="Model" syncable="YES"/>
@@ -53,7 +54,7 @@
         <relationship name="entry" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Entry" inverseName="trait" inverseEntity="Entry" syncable="YES"/>
     </entity>
     <elements>
-        <element name="BNNode" positionX="54" positionY="18" width="128" height="255"/>
+        <element name="BNNode" positionX="54" positionY="18" width="128" height="270"/>
         <element name="Entry" positionX="-468" positionY="-36" width="128" height="150"/>
         <element name="Model" positionX="349" positionY="-9" width="128" height="225"/>
         <element name="NodeLink" positionX="-297" positionY="-126" width="128" height="105"/>

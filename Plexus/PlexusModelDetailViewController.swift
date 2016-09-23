@@ -27,9 +27,6 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
     @IBOutlet var graphView : CPTGraphHostingView!
 
     //Detail View
-    @IBOutlet weak var nodeDetailView : NSView!
-    @IBOutlet weak var nodeDetailVisView: NSVisualEffectView!
-    @IBOutlet var nodeDetailGraphView : CPTGraphHostingView!
     @IBOutlet weak var nodeDetailPriorCPTView : NSView!
     @IBOutlet weak var nodeDetailPriorView : NSView!
     @IBOutlet weak var nodeDetailCPTView : NSView!
@@ -102,12 +99,7 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
         singleNodeVisView.material = NSVisualEffectMaterial.dark
         singleNodeVisView.state = NSVisualEffectState.active
         
-        nodeDetailVisView.blendingMode = NSVisualEffectBlendingMode.behindWindow
-        nodeDetailVisView.material = NSVisualEffectMaterial.dark
-        nodeDetailVisView.state = NSVisualEffectState.active
         
-        
-
         
         graph = CPTXYGraph(frame:self.graphView.bounds)
         self.graphView.hostedGraph = graph

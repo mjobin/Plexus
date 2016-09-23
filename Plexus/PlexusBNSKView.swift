@@ -58,6 +58,9 @@ class PlexusBNSKView: SKView {
         
         
         let curModels : [Model] = modelTreeController.selectedObjects as! [Model]
+        if (curModels.count < 1){
+            return false
+        }
         let curModel : Model = curModels[0]
         if (curModel.complete == true){
             return false

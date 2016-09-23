@@ -26,5 +26,6 @@ class BNNode: NSManagedObject {
     @NSManaged var priorArray: Data?
     @NSManaged var tolerance: NSNumber
     @NSManaged var cptArray: Data?
+    @NSManaged var postMean: NSNumber
 
 }
