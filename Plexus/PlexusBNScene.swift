@@ -295,6 +295,9 @@ class PlexusBNScene: SKScene {
             } catch let error as NSError {
                 print(error)
             }
+            
+
+           self.reloadData()
 
             
         }
