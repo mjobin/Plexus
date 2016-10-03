@@ -27,5 +27,10 @@ class BNNode: NSManagedObject {
     @NSManaged var tolerance: NSNumber
     @NSManaged var cptArray: Data?
     @NSManaged var postMean: NSNumber
+    @NSManaged var postSSD: NSNumber
+    @NSManaged var postETLow: NSNumber
+    @NSManaged var postETHigh: NSNumber
+    @NSManaged var postHPDLow: NSNumber
+    @NSManaged var postHPDHigh: NSNumber
 
 }
