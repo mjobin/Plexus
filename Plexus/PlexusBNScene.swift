@@ -674,12 +674,25 @@ class PlexusBNScene: SKScene {
         myLabel.fontSize = 14
         myLabel.zPosition = 1
         myLabel.name = "nodeName"
-        myLabel.verticalAlignmentMode = SKLabelVerticalAlignmentMode.center
+        myLabel.verticalAlignmentMode = SKLabelVerticalAlignmentMode.bottom
        // myLabel.userInteractionEnabled = true
         
+        let inTrait = inNode.nodeLink as! Trait
         
-        let nodeWidth = (myLabel.frame.size.width)+10
-        let nodeHeight = (myLabel.frame.size.height)+10
+        let valLabel = SKLabelNode(text: inTrait.traitValue)
+        valLabel.fontName = "SanFrancisco"
+        valLabel.fontSize = 14
+        valLabel.zPosition = 1
+        valLabel.name = "nodeName"
+        valLabel.verticalAlignmentMode = SKLabelVerticalAlignmentMode.top
+        
+        
+        
+        var nodeWidth = (myLabel.frame.size.width)+10
+        if(valLabel.frame.size.width > myLabel.frame.size.width) {
+            nodeWidth = (valLabel.frame.size.width)+10
+        }
+        let nodeHeight = myLabel.frame.size.height + valLabel.frame.size.height + 10
 
         
         
@@ -721,9 +734,21 @@ class PlexusBNScene: SKScene {
         
         self.addChild(myLabel)
         
+        
+        valLabel.physicsBody = SKPhysicsBody(rectangleOf: CGRect(x: -(nodeWidth/2), y: -(nodeHeight/2), width: nodeWidth, height: nodeHeight).size)
+        valLabel.position = shape.position
+        
+        
+        self.addChild(valLabel)
+        
+        
         let labelJoint = SKPhysicsJointFixed.joint(withBodyA: myLabel.physicsBody!, bodyB: shape.physicsBody!, anchor: shape.position)
         
         self.physicsWorld.add(labelJoint)
+        
+        let vallabelJoint = SKPhysicsJointFixed.joint(withBodyA: valLabel.physicsBody!, bodyB: shape.physicsBody!, anchor: shape.position)
+        
+        self.physicsWorld.add(vallabelJoint)
         
         
     }

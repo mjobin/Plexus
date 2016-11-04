@@ -27,6 +27,9 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
     @IBOutlet var graphView : CPTGraphHostingView!
 
     //Detail View
+    @IBOutlet weak var nodeDetailView : NSView!
+    @IBOutlet weak var nodeDetailVisView: NSVisualEffectView!
+    @IBOutlet var nodeDetailGraphView : CPTGraphHostingView!
     @IBOutlet weak var nodeDetailPriorCPTView : NSView!
     @IBOutlet weak var nodeDetailPriorView : NSView!
     @IBOutlet weak var nodeDetailCPTView : NSView!
@@ -37,6 +40,7 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
     @IBOutlet var priorV1Field : NSTextField!
     @IBOutlet var priorV2Slider : NSSlider!
     @IBOutlet var priorV2Field : NSTextField!
+    @IBOutlet var priorV2Label : NSTextField!
     
 
     
@@ -50,8 +54,9 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
     var graph : CPTXYGraph!
     var detailGraph : CPTXYGraph!
     var priorPlot : CPTScatterPlot!
+    var dpriorPlot : CPTScatterPlot!
     
-    
+    var calcCPT = true
     
     required init?(coder aDecoder: NSCoder)
     {
@@ -93,51 +98,66 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
         
         NotificationCenter.default.addObserver(self, selector: #selector(PlexusModelDetailViewController.mocDidChange(_:)), name: NSNotification.Name.NSManagedObjectContextObjectsDidChange, object: moc)
         
-        
+        _ = Timer.scheduledTimer(timeInterval: 3.0, target: self, selector: #selector(PlexusModelDetailViewController.cptCheck), userInfo: nil, repeats: true)
+
         
         singleNodeVisView.blendingMode = NSVisualEffectBlendingMode.behindWindow
         singleNodeVisView.material = NSVisualEffectMaterial.dark
         singleNodeVisView.state = NSVisualEffectState.active
         
+        nodeDetailVisView.blendingMode = NSVisualEffectBlendingMode.behindWindow
+        nodeDetailVisView.material = NSVisualEffectMaterial.dark
+        nodeDetailVisView.state = NSVisualEffectState.active
+        
         
         
         graph = CPTXYGraph(frame:self.graphView.bounds)
         self.graphView.hostedGraph = graph
-        //self.nodeDetailGraphView.hostedGraph = graph
         
+        detailGraph = CPTXYGraph(frame:self.graphView.bounds)
+        self.nodeDetailGraphView.hostedGraph = detailGraph
         
-        let titleStyle = graph.titleTextStyle!.mutableCopy() as! CPTMutableTextStyle
-        titleStyle.fontName = "SanFrancisco"
-        titleStyle.fontSize = 18.0
-        titleStyle.color = CPTColor.white()
-        graph.titleTextStyle = titleStyle
+        //Plot space and frame
+        graph.plotAreaFrame?.paddingTop = 10.0
+        graph.plotAreaFrame?.paddingBottom = 10.0
+        graph.plotAreaFrame?.paddingLeft = 10.0
+        graph.plotAreaFrame?.paddingRight = 10.0
+        graph.paddingTop = 5.0
+        graph.paddingBottom = 5.0
+        graph.paddingLeft = 5.0
+        graph.paddingRight = 5.0
         
-        graph.title = ""
-        
-        graph.paddingTop = 10.0
-        graph.paddingBottom = 10.0
-        graph.paddingLeft = 10.0
-        graph.paddingRight = 10.0
+        detailGraph.plotAreaFrame?.paddingTop = 10.0
+        detailGraph.plotAreaFrame?.paddingBottom = 10.0
+        detailGraph.plotAreaFrame?.paddingLeft = 10.0
+        detailGraph.plotAreaFrame?.paddingRight = 10.0
+        detailGraph.paddingTop = 5.0
+        detailGraph.paddingBottom = 5.0
+        detailGraph.paddingLeft = 5.0
+        detailGraph.paddingRight = 5.0
         
         let plotSpace : CPTXYPlotSpace = graph.defaultPlotSpace as! CPTXYPlotSpace
         plotSpace.allowsUserInteraction = false
-        
-        
         let xRange = plotSpace.xRange.mutableCopy() as! CPTMutablePlotRange
         let yRange = plotSpace.yRange.mutableCopy() as! CPTMutablePlotRange
-        
         xRange.length = 1.1
         yRange.length = 1.1
-        
-        
         plotSpace.xRange = xRange
         plotSpace.yRange = yRange
         
+        let detailPlotSpace : CPTXYPlotSpace = detailGraph.defaultPlotSpace as! CPTXYPlotSpace
+        detailPlotSpace.allowsUserInteraction = false
+        let detailXRange = detailPlotSpace.xRange.mutableCopy() as! CPTMutablePlotRange
+        let detailYRange = detailPlotSpace.yRange.mutableCopy() as! CPTMutablePlotRange
+        detailXRange.length = 1.1
+        detailYRange.length = 1.1
+        detailPlotSpace.xRange = xRange
+        detailPlotSpace.yRange = yRange
         
         
         // Axes
-        
-        // var axisSet = CPTXYAxisSet(frame:self.graphView.bounds)
+        let axisLineStyle = CPTMutableLineStyle.init()
+        axisLineStyle.lineColor = CPTColor.white()
         let axisSet = graph.axisSet as! CPTXYAxisSet
         axisSet.xAxis!.axisConstraints = CPTConstraints.constraint(withUpperOffset: 1.0)
         axisSet.yAxis!.axisConstraints = CPTConstraints.constraint(withUpperOffset: 1.0)
@@ -145,49 +165,93 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
         axisSet.xAxis!.axisConstraints = CPTConstraints.constraint(withLowerOffset: 0.0)
         axisSet.xAxis!.tickDirection = CPTSign.positive
         axisSet.yAxis!.tickDirection = CPTSign.positive
+        axisSet.xAxis?.axisLineStyle = axisLineStyle
+        axisSet.yAxis?.axisLineStyle = axisLineStyle
         
+        let daxisSet = detailGraph.axisSet as! CPTXYAxisSet
+        daxisSet.xAxis!.axisConstraints = CPTConstraints.constraint(withUpperOffset: 1.0)
+        daxisSet.yAxis!.axisConstraints = CPTConstraints.constraint(withUpperOffset: 1.0)
+        daxisSet.yAxis!.axisConstraints = CPTConstraints.constraint(withLowerOffset: 0.0)
+        daxisSet.xAxis!.axisConstraints = CPTConstraints.constraint(withLowerOffset: 0.0)
+        daxisSet.xAxis!.tickDirection = CPTSign.positive
+        daxisSet.yAxis!.tickDirection = CPTSign.positive
         
-        
-        axisSet.xAxis!.majorTickLength = 0.5
-        axisSet.xAxis!.minorTicksPerInterval = 3
-        axisSet.yAxis!.majorTickLength = 0.5
-        axisSet.yAxis!.minorTicksPerInterval = 3
+        axisSet.xAxis!.labelingPolicy = .automatic
+        axisSet.yAxis!.labelingPolicy = .automatic
+        axisSet.xAxis!.preferredNumberOfMajorTicks = 3
+        axisSet.yAxis!.preferredNumberOfMajorTicks = 3
+        axisSet.xAxis!.minorTicksPerInterval = 4
+        axisSet.yAxis!.minorTicksPerInterval = 4
         graph.axisSet = axisSet
+        
+        daxisSet.xAxis!.labelingPolicy = .automatic
+        daxisSet.yAxis!.labelingPolicy = .automatic
+        daxisSet.xAxis!.preferredNumberOfMajorTicks = 3
+        daxisSet.yAxis!.preferredNumberOfMajorTicks = 3
+        daxisSet.xAxis!.minorTicksPerInterval = 4
+        daxisSet.yAxis!.minorTicksPerInterval = 4
+        detailGraph.axisSet = daxisSet
         
         
         priorPlot = CPTScatterPlot(frame:graph.bounds)
         priorPlot.identifier = "PriorPlot" as (NSCoding & NSCopying & NSObjectProtocol)?
+        priorPlot.title = "Prior"
         let priorLineStyle = CPTMutableLineStyle()
         priorLineStyle.miterLimit = 1.0
         priorLineStyle.lineWidth = 2.0
         priorLineStyle.lineColor = CPTColor.lightGray()
         priorPlot.dataLineStyle = priorLineStyle
-        
-        //priorPlot.interpolation = CPTScatterPlotInterpolation.Linear
         priorPlot.interpolation = CPTScatterPlotInterpolation.stepped
-        
         priorPlot.dataSource = self
         priorPlot.delegate = self
-        
-        
         graph.add(priorPlot)
+        
+        
+        dpriorPlot = CPTScatterPlot(frame:graph.bounds)
+        dpriorPlot.identifier = "PriorPlot" as (NSCoding & NSCopying & NSObjectProtocol)?
+        dpriorPlot.title = "Prior"
+        let dpriorLineStyle = CPTMutableLineStyle()
+        dpriorLineStyle.miterLimit = 1.0
+        dpriorLineStyle.lineWidth = 2.0
+        dpriorLineStyle.lineColor = CPTColor.lightGray()
+        dpriorPlot.dataLineStyle = dpriorLineStyle
+        dpriorPlot.interpolation = CPTScatterPlotInterpolation.stepped
+        dpriorPlot.dataSource = self
+        dpriorPlot.delegate = self
+        detailGraph.add(dpriorPlot)
         
         
         
         let postPlot = CPTScatterPlot(frame:graph.bounds)
         postPlot.identifier = "PostPlot" as (NSCoding & NSCopying & NSObjectProtocol)?
+        postPlot.title = "Posterior"
         let postLineStyle = CPTMutableLineStyle()
         postLineStyle.miterLimit = 1.0
         postLineStyle.lineWidth = 2.0
         postLineStyle.lineColor = CPTColor.blue()
         postPlot.dataLineStyle = postLineStyle
-        
         postPlot.dataSource = self
         postPlot.delegate = self
-        
-        
         graph.add(postPlot)
         
+        
+        let dpostPlot = CPTScatterPlot(frame:graph.bounds)
+        dpostPlot.identifier = "PostPlot" as (NSCoding & NSCopying & NSObjectProtocol)?
+        dpostPlot.title = "Posterior"
+        let dpostLineStyle = CPTMutableLineStyle()
+        dpostLineStyle.miterLimit = 1.0
+        dpostLineStyle.lineWidth = 2.0
+        dpostLineStyle.lineColor = CPTColor.blue()
+        dpostPlot.dataLineStyle = postLineStyle
+        dpostPlot.dataSource = self
+        dpostPlot.delegate = self
+        detailGraph.add(dpostPlot)
+        
+        graph.legend = CPTLegend(graph: graph)
+        graph.legendAnchor = .topRight
+        
+        detailGraph.legend = CPTLegend(graph: detailGraph)
+        detailGraph.legendAnchor = .topRight
         
     }
     
@@ -218,20 +282,18 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
     //******CPTScatterPlotDataSource fxns
     
     func reloadData() {
+      //  print ("reload data")
         
-        
+        for view in nodeDetailCPTView.subviews{
+            view.removeFromSuperview()
+        }
         //Get selected node
         let cptTableContainer = NSScrollView(frame:nodeDetailCPTView.frame)
-        let cptTableView = NSTableView(frame:nodeDetailCPTView.frame)
-        for curColumn in cptTableView.tableColumns{
-            cptTableView.removeTableColumn(curColumn)
-        }
+
         var curNodes : [BNNode] = nodesController.selectedObjects as! [BNNode]
         if(curNodes.count>0) {
             curNode = curNodes[0]
-            
-           // curNode.CPT() //FIXME thus called every time MOC changes?
-
+   
             priorDist = Int(curNode.priorDistType)
             V1 = Double(curNode.priorV1)
             V2 = Double(curNode.priorV2)
@@ -244,19 +306,65 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
                 graph.add(priorPlot)
                 graph.remove(priorPlot)
                 
-                //Construct CPT tree
+                //Construct CPT table
+                
+                
+            
+                if(curNode.cptReady == 2){
+                   // print ("ready")
+                    let cptTableView = NSTableView(frame:nodeDetailCPTView.frame)
+                    for curColumn in cptTableView.tableColumns{
+                        cptTableView.removeTableColumn(curColumn)
+                    }
+                    let theInfBy : [BNNode] = curNode.infBy(self) as! [BNNode]
+                    for thisInfBy in theInfBy {
+                        let cptcolumn = NSTableColumn(identifier: thisInfBy.nodeLink.name)
+                        cptcolumn.headerCell.stringValue = thisInfBy.nodeLink.name
+                        cptTableView.addTableColumn(cptcolumn)
+                        
+                    }
+                    let datacolumn = NSTableColumn(identifier: "Data")
+                    datacolumn.headerCell.stringValue = "CP"
+                    cptTableView.addTableColumn(datacolumn)
+                    
+                    cptTableView.delegate = self
+                    cptTableView.dataSource = self
+                    cptTableView.reloadData()
+                    cptTableContainer.documentView = cptTableView
+                }
+                
+                else {
+                    print ("not ready")
+                    let cptProgInd = NSProgressIndicator()
+                    cptProgInd.usesThreadedAnimation = true
+                    cptProgInd.isIndeterminate = true
+                    cptProgInd.style = .spinningStyle
+                    cptTableContainer.documentView = cptProgInd
+                    
+                   // cptTableContainer.addSubview(cptProgInd)
+                    cptProgInd.sizeToFit()
+                    cptProgInd.startAnimation(self)
+                    if(curNode.cptReady == 0){//neither ready nor being processed
+                        DispatchQueue.global().async {
+                           self.curNode.CPT()
+                        }
+                    }
+                    
+                    calcCPT = false
+ 
+                }
                 
 
-                let theInfBy : [BNNode] = curNode.infBy(self) as! [BNNode]
-                for thisInfBy in theInfBy {
-                    let cptcolumn = NSTableColumn(identifier: thisInfBy.nodeLink.name)
-                    cptcolumn.headerCell.stringValue = thisInfBy.nodeLink.name
-                    cptTableView.addTableColumn(cptcolumn)
-
-                }
-                let datacolumn = NSTableColumn(identifier: "Data")
-                datacolumn.headerCell.stringValue = "CP"
-                cptTableView.addTableColumn(datacolumn)
+                cptTableContainer.hasVerticalScroller = true
+                cptTableContainer.translatesAutoresizingMaskIntoConstraints = false
+                nodeDetailCPTView.addSubview(cptTableContainer)
+                let topc = NSLayoutConstraint(item: cptTableContainer, attribute: .top, relatedBy: .equal, toItem: nodeDetailCPTView, attribute: .top, multiplier: 1.0, constant: 0.0)
+                let botc = NSLayoutConstraint(item: cptTableContainer, attribute: .bottom, relatedBy: .equal, toItem: nodeDetailCPTView, attribute: .bottom, multiplier: 1.0, constant: 0.0)
+                let trailc = NSLayoutConstraint(item: cptTableContainer, attribute: .trailing, relatedBy: .equal, toItem: nodeDetailCPTView, attribute: .trailing, multiplier: 1.0, constant: 0.0)
+                let leadc = NSLayoutConstraint(item: cptTableContainer, attribute: .leading, relatedBy: .equal, toItem: nodeDetailCPTView, attribute: .leading, multiplier: 1.0, constant: 0.0)
+                
+                nodeDetailCPTView.addConstraints([trailc, leadc, topc, botc])
+                
 
                 
             }
@@ -271,6 +379,7 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
                     priorV1Field.isHidden = false
                     priorV2Slider.isHidden = true
                     priorV2Field.isHidden = true
+                    priorV2Label.isHidden = true
                     priorV1Slider.minValue = 0.0
                     priorV1Slider.maxValue = 1.0
                     priorV2Slider.minValue = 0.0
@@ -284,6 +393,7 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
                     priorV1Field.isHidden = false
                     priorV2Slider.isHidden = false
                     priorV2Field.isHidden = false
+                    priorV2Label.isHidden = false
                     priorV1Slider.minValue = 0.0
                     priorV1Slider.maxValue = 1.0
                     priorV2Slider.minValue = 0.0
@@ -297,6 +407,7 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
                     priorV1Field.isHidden = false
                     priorV2Slider.isHidden = false
                     priorV2Field.isHidden = false
+                    priorV2Label.isHidden = false
                     priorV1Slider.minValue = 0.0
                     priorV1Slider.maxValue = 10.0
                     priorV2Slider.minValue = 0.0
@@ -312,6 +423,7 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
                     priorV1Field.isHidden = false
                     priorV2Slider.isHidden = false
                     priorV2Field.isHidden = false
+                    priorV2Label.isHidden = false
                     priorV1Slider.minValue = 0.0
                     priorV1Slider.maxValue = 10.0
                     priorV2Slider.minValue = 0.0
@@ -320,21 +432,14 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
                     priorPlot.interpolation = CPTScatterPlotInterpolation.curved
                     
                     
-                case 5: //priorpost
-                    priorV1Slider.isHidden = true
-                    priorV1Field.isHidden = true
-                    priorV2Slider.isHidden = true
-                    priorV2Field.isHidden = true
-                    priorV1Slider.minValue = 0.0
-                    priorV1Slider.maxValue = 1.0
-                    priorV2Slider.minValue = 0.0
-                    priorV2Slider.maxValue = 1.0
+
                     
                 default:
                     priorV1Slider.isHidden = false
                     priorV1Field.isHidden = false
                     priorV2Slider.isHidden = false
                     priorV2Field.isHidden = false
+                    priorV2Label.isHidden = false
                     priorV1Slider.minValue = 0.0
                     priorV1Slider.maxValue = 1.0
                     priorV2Slider.minValue = 0.0
@@ -375,27 +480,10 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
                 self.dataForChart = [Double](repeating: 0.0, count: 100) as [NSNumber]
             }
             
-            if curNode.priorCount != nil {
-                let priorCount = NSKeyedUnarchiver.unarchiveObject(with: curNode.value(forKey: "priorCount") as! Data) as! [Int]
-              //   println("priorCount \(priorCount)")
-                var priorData = [NSNumber]()
-                var curtop = 0
-                for thisPost in priorCount {
-                    if (curtop < thisPost) {
-                        curtop = thisPost
-                    }
-                }
-                for thisPrior : Int in priorCount {
-                    priorData.append((Double(thisPrior)/Double(curtop)) as NSNumber)
-                }
-                
-            
-                self.priorDataForChart = priorData
-            }
-            else {
+
                 
                 self.priorDataForChart = [Double](repeating: 0.0, count: 100) as [NSNumber]
-            }
+            
             
 
             
@@ -412,21 +500,10 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
             self.dataForChart = [Double](repeating: -10000.0, count: 100) as [NSNumber]
         }
         
-        cptTableView.delegate = self
-        cptTableView.dataSource = self
-        cptTableView.reloadData()
-        cptTableContainer.documentView = cptTableView
-        cptTableContainer.hasVerticalScroller = true
-        cptTableContainer.translatesAutoresizingMaskIntoConstraints = false
-        nodeDetailCPTView.addSubview(cptTableContainer)
-        let topc = NSLayoutConstraint(item: cptTableContainer, attribute: .top, relatedBy: .equal, toItem: nodeDetailCPTView, attribute: .top, multiplier: 1.0, constant: 0.0)
-        let botc = NSLayoutConstraint(item: cptTableContainer, attribute: .bottom, relatedBy: .equal, toItem: nodeDetailCPTView, attribute: .bottom, multiplier: 1.0, constant: 0.0)
-        let trailc = NSLayoutConstraint(item: cptTableContainer, attribute: .trailing, relatedBy: .equal, toItem: nodeDetailCPTView, attribute: .trailing, multiplier: 1.0, constant: 0.0)
-        let leadc = NSLayoutConstraint(item: cptTableContainer, attribute: .leading, relatedBy: .equal, toItem: nodeDetailCPTView, attribute: .leading, multiplier: 1.0, constant: 0.0)
-        
-        nodeDetailCPTView.addConstraints([trailc, leadc, topc, botc])
+
         
         graph.reloadData()
+        detailGraph.reloadData()
         
         
         
@@ -440,8 +517,7 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
         if(plot.identifier!.isEqual("PriorPlot")){
             switch priorDist {
 
-            case 5: //priorPost
-                return UInt(self.priorDataForChart.count)
+
                 
             default:
                 return UInt(self.dataForChart.count)
@@ -495,9 +571,7 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
                     
                     return gamma(V1, b:V2, x:nidx) as AnyObject?
                     
-                case 5: //priorPost
-                    // println(self.priorDataForChart[Int(idx)] as NSNumber)
-                    return self.priorDataForChart[Int(idx)] as NSNumber
+
                     
                 default:
                     return 0 as AnyObject?
@@ -549,7 +623,6 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
 
     
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
-      //  println("observed \(object) \(change) \(context)")
         let keyPathStr : String = keyPath! //FIXME this was added becaiuse in swift 2.0 the fxn was changed so that keyPath was a String?
         switch (keyPathStr) {
             case("selectionIndexPath"): //modelTreeController
@@ -564,8 +637,74 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
     }
     
     func mocDidChange(_ notification: Notification){
+        let info = notification.userInfo
+        var relD = false
+       // print (info)
         
-        self.reloadData()
+        if let objs = info?[NSUpdatedObjectsKey] as? Set<NSManagedObject> {
+            for obj :NSManagedObject in objs {
+              // print (obj)
+                
+                let changes = obj.changedValues()
+                for (key, value) in changes {
+                  //print (key)
+                    if(key == "cptReady"){
+                        if(value as? String == "2"){
+                            calcCPT = true
+                            self.reloadData()
+                        }
+                        return
+                    }
+                    if(key == "cptArray"){
+                        return
+                    }
+                    relD = true
+                }
+
+            }
+        }
+
+        if let objs = info?[NSDeletedObjectsKey] as? Set<NSManagedObject> {
+            for obj :NSManagedObject in objs {
+                print (obj)
+                let changes = obj.changedValues()
+                for (key) in changes {
+                   // print (key)
+                    
+                    let curNodes : [BNNode] = nodesController.arrangedObjects as! [BNNode]
+                    for curNode in curNodes {
+                    curNode.setValue(0, forKey: "cptReady")
+                    }
+                    calcCPT = true
+                    relD = true
+                    
+                }
+                
+            }
+        }
+        
+        if let objs = info?[NSInsertedObjectsKey] as? Set<NSManagedObject> {
+            for obj :NSManagedObject in objs {
+               // print (obj)
+                let changes = obj.changedValues()
+                for (key) in changes {
+                  //  print (key)
+                    let curNodes : [BNNode] = nodesController.arrangedObjects as! [BNNode]
+                    for curNode in curNodes {
+                        curNode.setValue(0, forKey: "cptReady")
+                    }
+                    calcCPT = true
+                    relD = true
+                }
+                
+            }
+        }
+        
+        if (relD == true){
+            self.reloadData()
+        }
+
+
     }
     
     
@@ -576,10 +715,17 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
         if(curNodes.count>0) {
             curNode = curNodes[0]
             if (curNode.value(forKey: "cptArray")) == nil {
-                curNode.CPT()
+                calcCPT = true
+                curNode.setValue(0, forKey: "cptReady")
+                return 0
             }
-            let cptarray = NSKeyedUnarchiver.unarchiveObject(with: curNode.value(forKey: "cptArray") as! Data) as! [cl_float]
-            return cptarray.count
+            if(curNode.cptReady == 2){
+                let cptarray = NSKeyedUnarchiver.unarchiveObject(with: curNode.value(forKey: "cptArray") as! Data) as! [cl_float]
+                return cptarray.count
+            }
+            else {
+                return 0
+            }
         }
         return 0
     }
@@ -588,18 +734,22 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
     func tableView(_ tableView: NSTableView, objectValueFor tableColumn: NSTableColumn?, row: Int) -> Any? {
         
         
-        if (curNode.value(forKey: "cptArray")) == nil {
-            var curNodes : [BNNode] = nodesController.selectedObjects as! [BNNode]
-            if(curNodes.count>0) {
-                curNode = curNodes[0]
-                curNode.CPT()
-            }
-        }
+//        if (curNode.value(forKey: "cptArray")) == nil {
+//            var curNodes : [BNNode] = nodesController.selectedObjects as! [BNNode]
+//            if(curNodes.count>0) {
+//                curNode = curNodes[0]
+//                DispatchQueue.global().async {
+//                    self.curNode.CPT()
+//                }
+//                return nil
+//            }
+//        }
 
         
         var curNodes : [BNNode] = nodesController.selectedObjects as! [BNNode]
         if(curNodes.count>0) {
             curNode = curNodes[0]
+           // print(curNode.nodeLink.name)
             if(tableColumn?.identifier == "Data" ){
                 let cptarray = NSKeyedUnarchiver.unarchiveObject(with: curNode.value(forKey: "cptArray") as! Data) as! [cl_float]
                 return cptarray[row]
@@ -613,11 +763,14 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
                     prestr += "0"
                 }
                 let str = prestr + poststr
+                //print("str \(str)")
                 let revstr = String(str.characters.reversed())
                 //and revrse
-                
                 let index = tableView.tableColumns.index(of: tableColumn!)
-                //print ("\(index): \(revstr)")
+                //print ("index \(index): revstr \(revstr)")
+                if ( index! > revstr.characters.count) {
+                    print ("oops. curNode \(curNode.nodeLink.name) infBy \(theInfBy) index \(index): revstr \(revstr)")
+                }
                 let index2 = revstr.characters.index(revstr.startIndex, offsetBy: index!)
                 if(revstr[index2] == "1"){
                     return "T"
@@ -631,5 +784,35 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
         return nil
     }
  
+    func cptCheck()
+    {
+        let curNodes : [BNNode] = nodesController.arrangedObjects as! [BNNode]
+        for curNode in curNodes {
+            if(curNode.cptReady == 0){
+               // print ("recalculaing \(curNode.nodeLink.name)")
+                DispatchQueue.global().async {
+                    self.curNode.CPT()
+                }
+                break //one at a time, please
+            }
+        }
+        
+        var selNodes : [BNNode] = nodesController.selectedObjects as! [BNNode]
+        if(selNodes.count>0) {
+            let selNode = selNodes[0]
+            if(selNode.cptReady == 2){
+                self.reloadData()
+            }
+            
+        }
+        
+    }
 
+    @IBAction func calcCPTs(sender : AnyObject) {
+        var curNodes : [BNNode] = nodesController.arrangedObjects as! [BNNode]
+        for curNode in curNodes {
+            curNode.CPT()
+        }
+        
+    }
 }

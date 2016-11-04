@@ -1,18 +1,29 @@
 {
   "images" : [
     {
+      "resizing" : {
+        "mode" : "3-part-vertical",
+        "center" : {
+          "mode" : "tile",
+          "height" : 1
+        },
+        "cap-insets" : {
+          "top" : 0,
+          "bottom" : 599
+        }
+      },
       "idiom" : "universal",
-      "filename" : "PlexusAddChildTemplate.png",
+      "filename" : "PlexusAddChildTemplate.pdf",
       "scale" : "1x"
     },
     {
       "idiom" : "universal",
-      "filename" : "PlexusAddChildTemplate-1.png",
+      "filename" : "PlexusAddChildTemplate-1.pdf",
       "scale" : "2x"
     },
     {
       "idiom" : "universal",
-      "filename" : "PlexusAddChildTemplate-2.png",
+      "filename" : "PlexusAddChildTemplate-2.pdf",
       "scale" : "3x"
     }
   ],

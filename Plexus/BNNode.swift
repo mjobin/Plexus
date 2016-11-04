@@ -22,8 +22,7 @@ class BNNode: NSManagedObject {
     @NSManaged var postCount: Data?
     @NSManaged var postArray: Data?
     @NSManaged var numericData: NSNumber
-    @NSManaged var priorCount: Data?
-    @NSManaged var priorArray: Data?
+
     @NSManaged var tolerance: NSNumber
     @NSManaged var cptArray: Data?
     @NSManaged var postMean: NSNumber
@@ -32,5 +31,6 @@ class BNNode: NSManagedObject {
     @NSManaged var postETHigh: NSNumber
     @NSManaged var postHPDLow: NSNumber
     @NSManaged var postHPDHigh: NSNumber
+    @NSManaged var cptReady: NSNumber
 
 }

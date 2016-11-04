@@ -73,11 +73,7 @@ extension BNNode {
                 //  println("gammadev \(gd)")
                 pVal = gd
                 //                return gd
-            case 5: //sample from the prioarray
-                let priorArray = NSKeyedUnarchiver.unarchiveObject(with: self.value(forKey: "priorArray") as! Data) as! [cl_float]
-                let randomIndex = Int(arc4random_uniform(UInt32(priorArray.count)))
-                
-                pVal = priorArray[randomIndex]
+
                 
                 
             default:
@@ -132,9 +128,11 @@ extension BNNode {
         return false;
     }
     
-    func CPT(){
-        
-        //print ("**********\nCPT for \(self.nodeLink.name)")
+    func CPT() {
+
+        let startcalc = NSDate()
+        self.setValue(1, forKey: "cptReady") //processing, not ready
+       // print ("**********\nCPT for \(self.nodeLink.name) cptReady \(self.cptReady)")
         
         
         let curModel : Model = self.model
@@ -185,58 +183,101 @@ extension BNNode {
         var missing = 0.0
         
         for thisEntry in theEntries {
-            var binbin = String()
+           // print(thisEntry.name)
+            var binbins = [String]()
+            
+            
+
             for thisInfluencedBy in theInfluencedBy {
+                var addbins = [String]()
                 let thisthisInfluencedBy = thisInfluencedBy as! BNNode
                 let curInfluencedBy = thisthisInfluencedBy.nodeLink as! Trait
+                //print ("CURRENT: \(curInfluencedBy.name) \(curInfluencedBy.traitValue)")
+                
+               // var binbin = String()
 
                 
                 var infTraits = [Trait]()
                 for thisTrait in thisEntry.trait {
                     let curTrait = thisTrait as! Trait
+
                     if(curTrait.name == curInfluencedBy.name){
+                        var bin = "0"
+                        //print ("INF: \(curTrait.name) \(curTrait.traitValue)")
                         infTraits.append(curTrait)
+                        if(thisthisInfluencedBy.numericData == true){
+                            let lowT = Double(curInfluencedBy.traitValue)! * (1.0 - (thisthisInfluencedBy.tolerance.doubleValue/2.0))
+                            let highT = Double(curInfluencedBy.traitValue)! * (1.0 + (thisthisInfluencedBy.tolerance.doubleValue/2.0))
+                            if(Double(curTrait.traitValue)! >= lowT && Double(curTrait.traitValue)! <= highT){
+                                //binbin += "1"
+                                bin = "1"
+                            }
+                            else{
+                                //binbin += "0"
+                            }
+                        }
+                        else{
+                            if(curTrait.traitValue == curInfluencedBy.traitValue){
+                               // binbin += "1"
+                                bin = "1"
+                                
+                            }
+                            else {
+                                //binbin += "0"
+                                
+                            }
+                            
+                        }
+                        
+                        addbins.append(bin)
+                        
+                       // binbins.append(binbin)
+
                     }
                     
                 }
-                if(infTraits.count == 1){ //FIXME only looking at a single instance of a trait
-                    if(thisthisInfluencedBy.numericData == true){
-                        let lowT = Double(curInfluencedBy.traitValue)! * (1.0 - (thisthisInfluencedBy.tolerance.doubleValue/2.0))
-                        let highT = Double(curInfluencedBy.traitValue)! * (1.0 + (thisthisInfluencedBy.tolerance.doubleValue/2.0))
-                        if(Double(infTraits[0].traitValue)! >= lowT && Double(infTraits[0].traitValue)! <= highT){
-                            binbin += "1"
-                        }
-                        else{
-                            binbin += "0"
-                        }
-                    }
-                    else{
-                        if(infTraits[0].traitValue == curInfluencedBy.traitValue){
-                            binbin += "1"
-                            
-                        }
-                        else {
-                            binbin += "0"
-                            
-                        }
 
+                
+                if (binbins.isEmpty){
+                    for bin in addbins{
+                        binbins.append(bin)
                     }
                 }
-                
-            }
-            
-            if(binbin.characters.count == theInfluencedBy.count){ //ONLY include in part of the total if ALL influences have an associated trait in this entry
-                
-                if let number = Int(binbin, radix: 2) {
-                    cptarray[number] += 1.0
+                else{
+                    var workbins = [String]()
+                    for bin in addbins {
+                        for oldbin in binbins {
+                            let newbin = oldbin + bin
+                            workbins.append(newbin)
+                        }
+                    }
+                    binbins = workbins
                 }
-                
-                total += 1
+
                 
             }
-            else{ //add as ppart of the missing
-                missing += 1
+
+            
+
+           // print(binbins)
+            
+            
+            for binbin in binbins {
+                if(binbin.characters.count == theInfluencedBy.count){ //ONLY include in part of the total if ALL influences have an associated trait in this entry
+                    
+                    if let number = Int(binbin, radix: 2) {
+                        cptarray[number] += 1.0
+                    }
+                    
+                    total += 1
+                    
+                }
+                else{ //add as ppart of the missing
+                    missing += 1
+                }
             }
+ 
+            
 
         }
 
@@ -245,25 +286,32 @@ extension BNNode {
             cptarray[i] = cptarray[i]/total
         }
         
-
-        //print("--")
-        //print(cptarray)
-        //print("--")
-        //print("total entries usable \(total)")
-        //print("total entries missing \(missing)")
- 
+/*
+        print("--")
+        print(cptarray)
+        print("--")
+        print("total usable \(total)")
+        print("total entries missing \(missing)")
+ */
         
 
         let archivedCPTArray = NSKeyedArchiver.archivedData(withRootObject: cptarray)
         self.setValue(archivedCPTArray, forKey: "cptArray")
+        self.setValue(2, forKey: "cptReady") //processed, ready
 
-        print(" ")
+        let timetaken = startcalc.timeIntervalSinceNow
+        
+//        print ("CPT calc took \(timetaken) cptReady set to \(self.cptReady)")
 
-
+        return
     }
     
+
+    
     func getCPTArray(_ sender:AnyObject) -> [cl_float] {
-        self.CPT()
+        if(self.cptReady != 2){
+            self.CPT()
+        }
         let cptarray = NSKeyedUnarchiver.unarchiveObject(with: self.value(forKey: "cptArray") as! Data) as! [cl_float]
         return  cptarray
     }

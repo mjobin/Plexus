@@ -21,10 +21,6 @@ static void *ProgressObserverContext = &ProgressObserverContext;
     if(self) {
         
         
-        [[NSUserDefaults standardUserDefaults] addObserver:self
-                                                forKeyPath:@"hardwareDevice" options:NSKeyValueObservingOptionNew
-                                                   context:NULL];
-        
         noOpenCL = @{//1000
                      NSLocalizedDescriptionKey: NSLocalizedString(@"No available OpenCL devices", nil),
                      NSLocalizedFailureReasonErrorKey: NSLocalizedString(@"No available OpenCL devices", nil),
@@ -89,8 +85,7 @@ static void *ProgressObserverContext = &ProgressObserverContext;
 
      
      NSUInteger devPref = [[[[NSUserDefaultsController sharedUserDefaultsController] values] valueForKey:@"hardwareDevice"] integerValue];
-     //    NSLog(@"hw pref pref %lu", (unsigned long)devPref);
-     
+
      
      if (devPref == 0) { //CPU
      err = clGetDeviceIDs(NULL, CL_DEVICE_TYPE_CPU, sizeof(device_ids), device_ids, &num_devices);
@@ -346,6 +341,7 @@ static void *ProgressObserverContext = &ProgressObserverContext;
     
     NSUInteger maxCPTSize = 0;
     
+    NSUInteger clComputes = [computes integerValue];
     NSUInteger clRuns = [runs integerValue]; // to tranfer to buffer
     NSUInteger clBurnins = [burnins integerValue];
     
@@ -429,7 +425,7 @@ static void *ProgressObserverContext = &ProgressObserverContext;
 
     
     dispatch_async(dispatch_get_main_queue(), ^{
-        workLabel.stringValue = [NSString stringWithFormat:@"Calculating CPTs"];
+        workLabel.stringValue = [NSString stringWithFormat:@"CPTs"];
     });
     
     //Construct influences, CPT, fequencies
@@ -563,7 +559,7 @@ static void *ProgressObserverContext = &ProgressObserverContext;
     // MAPPED BUFFER CREATION - ARG 1
     //********************************
     
-    cl_mem paramsbuf = clCreateBuffer(context, CL_MEM_READ_ONLY | CL_MEM_ALLOC_HOST_PTR, 4*sizeof(cl_int), 0, &err);
+    cl_mem paramsbuf = clCreateBuffer(context, CL_MEM_READ_ONLY | CL_MEM_ALLOC_HOST_PTR, 5*sizeof(cl_int), 0, &err);
     if (!paramsbuf || err != CL_SUCCESS) {
         NSLog(@"BN calc: Failed to create params buffer!");
         calcerr = [NSError errorWithDomain:@"plexusCalc" code:1004 userInfo:bufferFail];
@@ -619,7 +615,7 @@ static void *ProgressObserverContext = &ProgressObserverContext;
     
     
     //********************************
-    // MAPPED BUFFER CREATION - ARG 9 - PRIORDISTTYPE
+    // MAPPED BUFFER CREATION - ARG 7 - PRIORDISTTYPE
     //********************************
     
     //create the buffer for priodisttype
@@ -634,7 +630,7 @@ static void *ProgressObserverContext = &ProgressObserverContext;
     //********************************
     
     //********************************
-    // MAPPED BUFFER CREATION - ARG 10 - PRIORV1s
+    // MAPPED BUFFER CREATION - ARG 8 - PRIORV1s
     //********************************
     
     cl_mem priorv1buf = clCreateBuffer(context, CL_MEM_READ_ONLY | CL_MEM_ALLOC_HOST_PTR, sizeof(cl_float)*INSize, 0, &err);
@@ -648,7 +644,7 @@ static void *ProgressObserverContext = &ProgressObserverContext;
     //********************************
     
     //********************************
-    // MAPPED BUFFER CREATION - ARG 11 - PRIORV2s
+    // MAPPED BUFFER CREATION - ARG 9 - PRIORV2s
     //********************************
     
     cl_mem priorv2buf = clCreateBuffer(context, CL_MEM_READ_ONLY | CL_MEM_ALLOC_HOST_PTR, sizeof(cl_float)*INSize, 0, &err);
@@ -730,7 +726,7 @@ static void *ProgressObserverContext = &ProgressObserverContext;
 
     
     //********************************
-    // MAPPED BUFFER CREATION - ARG 8 - PRIORDISTTYPE
+    // MAPPED BUFFER CREATION - ARG 7 - PRIORDISTTYPE
     //********************************
     
     //clEnqueueWriteBuffer(cl_queues[dev], priordisttypebuf, CL_TRUE, 0, sizeof(cl_int)*INSize, (void*)priorDistType, 0, 0, 0);
@@ -748,7 +744,7 @@ static void *ProgressObserverContext = &ProgressObserverContext;
     
     
     //********************************
-    // MAPPED BUFFER CREATION - ARG 9 - PRIORV1s
+    // MAPPED BUFFER CREATION - ARG 8 - PRIORV1s
     //********************************
     
     //  clEnqueueWriteBuffer(cl_queues[dev], priorv1buf, CL_TRUE, 0, sizeof(cl_float)*INSize, (void*)priorV1, 0, 0, 0);
@@ -765,7 +761,7 @@ static void *ProgressObserverContext = &ProgressObserverContext;
     //********************************
     
     //********************************
-    // MAPPED BUFFER CREATION - ARG 10 - PRIORV2s
+    // MAPPED BUFFER CREATION - ARG 9 - PRIORV2s
     //********************************
     
     //clEnqueueWriteBuffer(cl_queues[dev], priorv2buf, CL_TRUE, 0, sizeof(cl_float)*INSize, (void*)priorV2, 0, 0, 0);
@@ -859,7 +855,7 @@ static void *ProgressObserverContext = &ProgressObserverContext;
     
     
     dispatch_async(dispatch_get_main_queue(), ^{
-        workLabel.stringValue = [NSString stringWithFormat:@"Calculating Posteriors"];
+        workLabel.stringValue = [NSString stringWithFormat:@"Calculating"];
     });
     
     BOOL firsttime = TRUE;
@@ -1247,12 +1243,7 @@ static void *ProgressObserverContext = &ProgressObserverContext;
 
 
 
--(void)observeValueForKeyPath:(NSString *)aKeyPath ofObject:(id)anObject
-                       change:(NSDictionary *)aChange context:(void *)aContext
-{
 
-    [self clCompile];
-}
 
 - (BOOL *) isBNProgram:(id)sender{
     if(bn_program == nil){

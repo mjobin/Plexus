@@ -22,6 +22,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
     @IBOutlet var mainToolbar : NSToolbar!
     @IBOutlet var testprog : NSProgressIndicator!
 
+
     
     
     let calcop = PlexusCalculationOperation()
@@ -37,6 +38,8 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
     
     var breakloop = false
     
+
+    
     dynamic var entryTreeController : NSTreeController!
     
 
@@ -48,10 +51,6 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         //Get MOC from App delegate
         let appDelegate : AppDelegate = NSApplication.shared().delegate as! AppDelegate
         moc = appDelegate.managedObjectContext
-
-        
-        
-    //    NSNotificationCenter.defaultCenter().addObserver(self, selector: "mocDidChange:", name: NSManagedObjectContextDidSaveNotification, object: nil)
         
         let request = NSFetchRequest<Model>(entityName: "Model")
         let fetchedModels: [AnyObject]?
@@ -84,9 +83,6 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
             }
 
         }
-
-
-
         
         
     }
@@ -94,38 +90,14 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
     override func windowDidLoad() {
         super.windowDidLoad()
 
-        
         mainSplitViewController = contentViewController as! PlexusMainSplitViewController
-
-
-        
-    
-
         if((calcop.isBNProgram(self) == nil)){
-            print ("nil")
-        
             DispatchQueue.global().async {
                 self.calcop.clCompile()
-            /*
-            let operr : NSError = self.calcop.clCompile() as NSError
-            
-           if(operr != nil){
-                
-                let calcAlert : NSAlert = NSAlert()
-                calcAlert.alertStyle = NSAlertStyle.warning
-                calcAlert.messageText = (operr.localizedFailureReason)!
-                calcAlert.informativeText = (operr.localizedRecoverySuggestion)!
-                calcAlert.addButton(withTitle: "OK")
-                
-                let _ = calcAlert.runModal()
-
             }
-                */
-            
         }
-        }
-        
-        
+        UserDefaults.standard.addObserver(self, forKeyPath: "hardwareDevice", options: NSKeyValueObservingOptions.new, context: nil)
+ 
     }
     
 
@@ -145,7 +117,6 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
     }
     
 
-    
     @IBAction func testRandom(_ x:NSToolbarItem){
         
         let nodes : [BNNode] = mainSplitViewController.modelDetailViewController?.nodesController.arrangedObjects as! [BNNode]
@@ -206,7 +177,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         self.progInd.isIndeterminate = false
         self.progInd.usesThreadedAnimation = true
         
-        self.workLabel = NSTextField(frame: NSRect(x: 10, y: 52, width: 64, height: 20))
+        self.workLabel = NSTextField(frame: NSRect(x: 10, y: 52, width: 72, height: 20))
         workLabel.isEditable = false
         workLabel.drawsBackground = false
         workLabel.isSelectable = false
@@ -371,18 +342,18 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                     existingStructureNames.append(curStructure.name)
                 }
             
-                self.progSheet = self.progSetup(self)
-                self.maxLabel.stringValue = String(fileLines.count)
-                self.window!.beginSheet(self.progSheet, completionHandler: nil)
-                self.progSheet.makeKeyAndOrderFront(self)
-                self.progInd.isIndeterminate = false
-                self.progInd.doubleValue = 0
-                self.workLabel.stringValue = "Importing..."
-                self.progInd.startAnimation(self)
+                DispatchQueue.main.async {
+                    self.progSheet = self.progSetup(self)
+                    self.maxLabel.stringValue = String(fileLines.count)
+                    self.window!.beginSheet(self.progSheet, completionHandler: nil)
+                    self.progSheet.makeKeyAndOrderFront(self)
+                    self.progInd.isIndeterminate = false
+                    self.progInd.doubleValue = 0
+                    self.workLabel.stringValue = "Importing..."
+                    self.progInd.startAnimation(self)
+                    self.progInd.maxValue =  Double(fileLines.count)
+                }
                 
-
-                self.progInd.maxValue =  Double(fileLines.count)
-                    
 
                 for thisLine : String in fileLines {
 
@@ -574,7 +545,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                             fatalError()
                         }
                         batchCount = 0
-                        inMOC.reset()
+                       // inMOC.reset()
      
                         
 
@@ -656,28 +627,32 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         let curModels : [Model] = mainSplitViewController.modelTreeController?.selectedObjects as! [Model]
         let curModel : Model = curModels[0]
         
+        
+        self.progSheet = self.progSetup(self)
+        self.maxLabel.stringValue = String(describing: curModel.runstot)
+        self.window!.beginSheet(self.progSheet, completionHandler: nil)
+        self.progInd.isIndeterminate = false
+        self.progInd.doubleValue = 0
+        self.progInd.maxValue =  Double(curModel.runstot)
+        self.progSheet.makeKeyAndOrderFront(self)
+        
+        
         DispatchQueue.global().async {
             
             let starttime = Date.timeIntervalSinceReferenceDate;
             
-            self.progSheet = self.progSetup(self)
-            self.maxLabel.stringValue = String(describing: curModel.runstot)
-            self.window!.beginSheet(self.progSheet, completionHandler: nil)
-            self.progInd.isIndeterminate = false
-            self.progInd.doubleValue = 0
-            self.progInd.maxValue =  Double(curModel.runstot)
-            self.progSheet.makeKeyAndOrderFront(self)
 
-            
-        
+
 
             var operr: NSError?
             
             operr = self.calcop.calc(self.progInd, withCurLabel: self.curLabel, withWorkLabel: self.workLabel, withNodes: nodesForCalc, withRuns: curModel.runsper, withBurnin: curModel.burnins, withComputes: curModel.runstot) as NSError?
             
-            self.progInd.isIndeterminate = true
-            self.progInd.startAnimation(self)
-            self.workLabel.stringValue = "Saving..."
+            DispatchQueue.main.async {
+                self.progInd.isIndeterminate = true
+                self.progInd.startAnimation(self)
+                self.workLabel.stringValue = "Saving..."
+            }
 
     
             if(operr == nil){
@@ -747,7 +722,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                     //Stats on post Array
                     //Mean
                     let flinemean = flinetot / flinecount
-                    print ("Mean \(flinemean)")
+                    //print ("Mean \(flinemean)")
                     inNode.setValue(flinemean, forKey: "postMean")
                     
                     //Sample Standard Deviation
@@ -755,30 +730,27 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                     flinecount = 0.0
                     for gNode : Double in fline {
                         
-                        if(gNode == gNode && gNode >= 0.0 && gNode <= 1.0) {//fails if nan
+                        if(gNode == gNode && gNode >= 0.0 && gNode <= 1.0) {//ignores if nan
                             sumsquares +=  pow(gNode - flinemean, 2.0)
                             flinecount += 1.0
                         }
                     }
                     
                     let ssd = sumsquares / (flinecount - 1.0)
-                    print ("Standard Dev \(ssd)")
+                    inNode.setValue(ssd, forKey: "postSSD")
                     
                     let sortfline = fline.sorted()
-                    //print ("sortfline count \(sortfline.count)")
                     let lowTail = sortfline[Int(Double(sortfline.count)*0.05)]
                     let highTail = sortfline[Int(Double(sortfline.count)*0.95)]
                     
-                    print ("Equal tail low \(lowTail) high \(highTail)")
+                    inNode.setValue(lowTail, forKey: "postETLow")
+                    inNode.setValue(highTail, forKey: "postETHigh")
                     
                     //Highest Posterior Density Interval. Alpha = 0.05
                     //Where n = sortfline.count (i.e. last entry)
-                    
                     //Compute credible intervals for j = 0 to j = n - ((1-0.05)n)
-                    //Say n = 200, then 200 - 0.95*200 = 190
                     let alpha = 0.05
                     let jmax = Int(Double(sortfline.count) - ((1.0-alpha) * Double(sortfline.count)))
-                    //print ("jmax \(jmax)")
                     
                    var firsthpd = true
                     var interval = -999.99
@@ -786,7 +758,6 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                     var high = sortfline.count
                     for hpdi in 0..<jmax {
                         let highpos = hpdi + Int(((1.0-alpha)*Double(sortfline.count)))
-                        //print ("\(hpdi): \(sortfline[hpdi])  <= \(sortfline[highpos])")
                         if(firsthpd || (sortfline[highpos] - sortfline[hpdi]) < interval){
                             firsthpd = false
                             interval = sortfline[highpos] - sortfline[hpdi]
@@ -795,20 +766,23 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                         }
 
                     }
-                print ("HPD: \(sortfline[low])  to \(sortfline[high])")
+                    inNode.setValue(sortfline[low], forKey: "postHPDLow")
+                    inNode.setValue(sortfline[high], forKey: "postHPDHigh")
 
-                    
 
-                    
-                    
-                    
+    
+                    let startatime = Date.timeIntervalSinceReferenceDate;
                     let defaults = UserDefaults.standard
-                    let preserveRO = defaults.value(forKey: "preserveRawOutput") as! Int
-
-                    if(preserveRO == 1){
+                    //var preserveRO = defaults.value(forKey: "preserveRawOutput") as! Int
+                   // assert(preserveRO == 1)
+                    //if(preserveRO == 1){
                         let archivedPostArray = NSKeyedArchiver.archivedData(withRootObject: fline)
                         inNode.setValue(archivedPostArray, forKey: "postArray")
-                    }
+                  //  }
+                    
+                    let endatime = Date.timeIntervalSinceReferenceDate;
+                    let ainterval = endatime-startatime
+                    print("Saving postarray took \(ainterval) seconds");
 
                     fi += 1
                     
@@ -829,13 +803,16 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
             }
             else{
                 
-                let calcAlert : NSAlert = NSAlert()
-                calcAlert.alertStyle = NSAlertStyle.warning
-                calcAlert.messageText = (operr?.localizedFailureReason)!
-                calcAlert.informativeText = (operr?.localizedRecoverySuggestion)!
-                calcAlert.addButton(withTitle: "OK")
-                
-                let _ = calcAlert.runModal()
+                DispatchQueue.main.async {
+                    let calcAlert : NSAlert = NSAlert()
+                    calcAlert.alertStyle = NSAlertStyle.warning
+                    calcAlert.messageText = (operr?.localizedFailureReason)!
+                    calcAlert.informativeText = (operr?.localizedRecoverySuggestion)!
+                    calcAlert.addButton(withTitle: "OK")
+                    
+                    let _ = calcAlert.runModal()
+                    
+                }
 
                 
 
@@ -872,9 +849,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
        // print("End calcuilate fxn reached")
     }
     
-    func posteriorStats(_ sender:AnyObject){
-        
-    }
+
 
     
     @IBAction func exportCSV(_ x:NSToolbarItem){
@@ -1068,18 +1043,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                             outText += String(describing: node.priorV2)
                             outText += "\n"
                             
-                            if node.priorArray != nil {
-                                outText += "Prior Distribution,"
-                                let priorArray = NSKeyedUnarchiver.unarchiveObject(with: node.value(forKey: "priorArray") as! Data) as! [Int]
-                                
-                                
-                                for thisPrior in priorArray {
-                                    outText += String(thisPrior)
-                                    outText += ","
-                                }
-                                outText += "\n"
-                                
-                            }
+
                             
                         }
                         
@@ -1227,11 +1191,10 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
     }
     
 
-   
-
-    
-
-    
+   @IBAction func  setScope(_ x:NSToolbarItem){
+        print("scope")
+    }
+ 
 /*
     func mocDidChange(notification: NSNotification){
         
@@ -1247,5 +1210,10 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
 */
 
 
+    override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
+        if(keyPath == "hardwareDevice"){
+            calcop.clCompile()
+        }
+    }
 
 }
