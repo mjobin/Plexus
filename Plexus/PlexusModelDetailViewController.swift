@@ -14,7 +14,7 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
     var moc : NSManagedObjectContext!
     dynamic var modelTreeController : NSTreeController!
     @IBOutlet dynamic var nodesController : NSArrayController!
-
+    @IBOutlet dynamic var allNodesController : NSArrayController!
     
     //Nodes View
     @IBOutlet weak var nodeVisView: NSVisualEffectView!
@@ -56,7 +56,7 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
     var priorPlot : CPTScatterPlot!
     var dpriorPlot : CPTScatterPlot!
     
-    var calcCPT = true
+    var calcCPT = false
     
     required init?(coder aDecoder: NSCoder)
     {
@@ -98,7 +98,7 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
         
         NotificationCenter.default.addObserver(self, selector: #selector(PlexusModelDetailViewController.mocDidChange(_:)), name: NSNotification.Name.NSManagedObjectContextObjectsDidChange, object: moc)
         
-        _ = Timer.scheduledTimer(timeInterval: 3.0, target: self, selector: #selector(PlexusModelDetailViewController.cptCheck), userInfo: nil, repeats: true)
+        _ = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(PlexusModelDetailViewController.cptCheck), userInfo: nil, repeats: true)
 
         
         singleNodeVisView.blendingMode = NSVisualEffectBlendingMode.behindWindow
@@ -310,8 +310,7 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
                 
                 
             
-                if(curNode.cptReady == 2){
-                   // print ("ready")
+                if(curNode.cptReady == 2 && calcCPT == false){
                     let cptTableView = NSTableView(frame:nodeDetailCPTView.frame)
                     for curColumn in cptTableView.tableColumns{
                         cptTableView.removeTableColumn(curColumn)
@@ -334,7 +333,6 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
                 }
                 
                 else {
-                    print ("not ready")
                     let cptProgInd = NSProgressIndicator()
                     cptProgInd.usesThreadedAnimation = true
                     cptProgInd.isIndeterminate = true
@@ -639,12 +637,11 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
     func mocDidChange(_ notification: Notification){
         let info = notification.userInfo
         var relD = false
-       // print (info)
+        //print (info)
         
         if let objs = info?[NSUpdatedObjectsKey] as? Set<NSManagedObject> {
             for obj :NSManagedObject in objs {
-              // print (obj)
-                
+               //print (obj)
                 let changes = obj.changedValues()
                 for (key, value) in changes {
                   //print (key)
@@ -655,10 +652,14 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
                         }
                         return
                     }
-                    if(key == "cptArray"){
+                    else if(key == "cptArray"){
                         return
                     }
-                    relD = true
+                    else {
+                       // curNode.setValue(0, forKey: "cptReady")
+                        calcCPT = true
+                        relD = true
+                    }
                 }
 
             }
@@ -670,11 +671,7 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
                 let changes = obj.changedValues()
                 for (key) in changes {
                    // print (key)
-                    
-                    let curNodes : [BNNode] = nodesController.arrangedObjects as! [BNNode]
-                    for curNode in curNodes {
-                    curNode.setValue(0, forKey: "cptReady")
-                    }
+
                     calcCPT = true
                     relD = true
                     
@@ -689,10 +686,7 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
                 let changes = obj.changedValues()
                 for (key) in changes {
                   //  print (key)
-                    let curNodes : [BNNode] = nodesController.arrangedObjects as! [BNNode]
-                    for curNode in curNodes {
-                        curNode.setValue(0, forKey: "cptReady")
-                    }
+
                     calcCPT = true
                     relD = true
                 }
@@ -701,6 +695,13 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
         }
         
         if (relD == true){
+            
+            let curNodes : [BNNode] = allNodesController.arrangedObjects as! [BNNode]
+            for curNode in curNodes {
+                curNode.setValue(0, forKey: "cptReady")
+
+            }
+            
             self.reloadData()
         }
 

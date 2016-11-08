@@ -41,6 +41,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
 
     
     dynamic var entryTreeController : NSTreeController!
+    dynamic var modelTreeController : NSTreeController!
     
 
     
@@ -91,19 +92,24 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         super.windowDidLoad()
 
         mainSplitViewController = contentViewController as! PlexusMainSplitViewController
+        
         if((calcop.isBNProgram(self) == nil)){
             DispatchQueue.global().async {
                 self.calcop.clCompile()
             }
         }
-        UserDefaults.standard.addObserver(self, forKeyPath: "hardwareDevice", options: NSKeyValueObservingOptions.new, context: nil)
  
+
+        UserDefaults.standard.addObserver(self, forKeyPath: "hardwareDevice", options: NSKeyValueObservingOptions.new, context: nil)
+        
+        modelTreeController = mainSplitViewController.modelViewController?.modelTreeController
+        
     }
     
 
     
     @IBAction func  toggleModels(_ x:NSToolbarItem){
-        //println("Toggle models Tapped: \(x)")
+
 
         mainSplitViewController.toggleModels(x)
         
@@ -113,6 +119,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
 
         
         mainSplitViewController.toggleStructures(x)
+
         
     }
     
@@ -1191,9 +1198,6 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
     }
     
 
-   @IBAction func  setScope(_ x:NSToolbarItem){
-        print("scope")
-    }
  
 /*
     func mocDidChange(notification: NSNotification){
@@ -1212,7 +1216,9 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
 
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
         if(keyPath == "hardwareDevice"){
-            calcop.clCompile()
+            DispatchQueue.global().async {
+                self.calcop.clCompile()
+            }
         }
     }
 

@@ -681,7 +681,8 @@ class PlexusBNScene: SKScene {
         
         let valLabel = SKLabelNode(text: inTrait.traitValue)
         valLabel.fontName = "SanFrancisco"
-        valLabel.fontSize = 14
+        valLabel.fontSize = 12
+        //valLabel.fontColor = SKColor.lightGray
         valLabel.zPosition = 1
         valLabel.name = "nodeName"
         valLabel.verticalAlignmentMode = SKLabelVerticalAlignmentMode.top
@@ -722,7 +723,7 @@ class PlexusBNScene: SKScene {
         shape.physicsBody?.categoryBitMask = ColliderType.node.rawValue
         shape.physicsBody?.collisionBitMask = ColliderType.node.rawValue
         shape.strokeColor = NSColor.blue
-        shape.fillColor = NSColor.gray
+        shape.fillColor = NSColor.darkGray
 
         shape.node = inNode
         

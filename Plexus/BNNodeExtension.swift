@@ -132,7 +132,7 @@ extension BNNode {
 
         let startcalc = NSDate()
         self.setValue(1, forKey: "cptReady") //processing, not ready
-       // print ("**********\nCPT for \(self.nodeLink.name) cptReady \(self.cptReady)")
+        //print ("**********\nCPT for \(self.nodeLink.name) cptReady \(self.cptReady)")
         
         
         let curModel : Model = self.model

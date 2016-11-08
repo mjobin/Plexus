@@ -2,17 +2,17 @@
   "images" : [
     {
       "idiom" : "universal",
-      "filename" : "Plexus Unscope Button.png",
+      "filename" : "PlexusUnScope1x.png",
       "scale" : "1x"
     },
     {
       "idiom" : "universal",
-      "filename" : "Plexus Unscope Button-1.png",
+      "filename" : "PlexusUnScope2x.png",
       "scale" : "2x"
     },
     {
       "idiom" : "universal",
-      "filename" : "Plexus Unscope Button-2.png",
+      "filename" : "PlexusUnScope3x.png",
       "scale" : "3x"
     }
   ],

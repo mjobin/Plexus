@@ -54,30 +54,17 @@ class PlexusMainSplitViewController: NSSplitViewController {
     }
     
     
-    func  toggleStructures(_ x:NSToolbarItem){
-        print("Toggle sctructures Tapped: \(x)")
-        
-        // println(self.splitViewItems.count)
-        
-        
+    func  toggleStructures(_ x:NSToolbarItem) {
+ 
         let structureListViewItem = self.splitViewItems[0] // 0 is left pane
         structureListViewItem.animator().isCollapsed = !structureListViewItem.isCollapsed
-        
-        
         
     }
     
     func  toggleModels(_ x:NSToolbarItem){
-        print("Toggle models Tapped: \(x)")
-        
-       // println(self.splitViewItems.count)
-        
         
         let modelListViewItem = self.splitViewItems[4] // 4 is right pane
-        
         modelListViewItem.animator().isCollapsed = !modelListViewItem.isCollapsed
-        
-
         
     }
     

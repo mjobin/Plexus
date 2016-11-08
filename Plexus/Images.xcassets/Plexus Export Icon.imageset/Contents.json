@@ -2,17 +2,15 @@
   "images" : [
     {
       "idiom" : "universal",
-      "filename" : "PlexusAddChild1x.png",
+      "filename" : "Plexus Export Icon.pdf",
       "scale" : "1x"
     },
     {
       "idiom" : "universal",
-      "filename" : "PlexusAddChild2x.png",
       "scale" : "2x"
     },
     {
       "idiom" : "universal",
-      "filename" : "PlexusAddChild3x.png",
       "scale" : "3x"
     }
   ],
