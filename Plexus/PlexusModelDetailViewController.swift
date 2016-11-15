@@ -57,6 +57,8 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
     var dpriorPlot : CPTScatterPlot!
     
     var calcCPT = false
+    var calcThisCPT = false
+    var firstrun = true
     
     required init?(coder aDecoder: NSCoder)
     {
@@ -81,6 +83,8 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
             curNode.CPT()
         }
 
+
+        
         
         nodeVisView.blendingMode = NSVisualEffectBlendingMode.behindWindow
         nodeVisView.material = NSVisualEffectMaterial.dark
@@ -97,6 +101,7 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
         //Single Node View
         
         NotificationCenter.default.addObserver(self, selector: #selector(PlexusModelDetailViewController.mocDidChange(_:)), name: NSNotification.Name.NSManagedObjectContextObjectsDidChange, object: moc)
+       // NotificationCenter.default.addObserver(self, selector: #selector(PlexusModelDetailViewController.mocDidSave(_:)), name: NSNotification.Name.NSManagedObjectContextDidSave, object: moc)
         
         _ = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(PlexusModelDetailViewController.cptCheck), userInfo: nil, repeats: true)
 
@@ -310,7 +315,7 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
                 
                 
             
-                if(curNode.cptReady == 2 && calcCPT == false){
+                if(curNode.cptReady == 2 && calcCPT == false && calcThisCPT == false){
                     let cptTableView = NSTableView(frame:nodeDetailCPTView.frame)
                     for curColumn in cptTableView.tableColumns{
                         cptTableView.removeTableColumn(curColumn)
@@ -348,7 +353,6 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
                         }
                     }
                     
-                    calcCPT = false
  
                 }
                 
@@ -635,30 +639,33 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
     }
     
     func mocDidChange(_ notification: Notification){
+
         let info = notification.userInfo
-        var relD = false
+
         //print (info)
+       
         
         if let objs = info?[NSUpdatedObjectsKey] as? Set<NSManagedObject> {
             for obj :NSManagedObject in objs {
-               //print (obj)
+              // print ("UPD \(obj)")
                 let changes = obj.changedValues()
                 for (key, value) in changes {
-                  //print (key)
+                  //print ("UPD \(obj.objectID) \(key)")
                     if(key == "cptReady"){
                         if(value as? String == "2"){
-                            calcCPT = true
                             self.reloadData()
                         }
                         return
                     }
-                    else if(key == "cptArray"){
+                    else if(key == "influences" || key == "influencedBy"){
+                        calcThisCPT = true
+                    }
+                    else if(key == "cptArray" || key == "postArray" || key == "postCount" || key == "postETHigh" || key == "postETLow" || key == "postHPDHigh" || key == "postHPDLow" || key == "postMean" || key == "postSSD"){
+                        
                         return
                     }
                     else {
-                       // curNode.setValue(0, forKey: "cptReady")
                         calcCPT = true
-                        relD = true
                     }
                 }
 
@@ -667,13 +674,13 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
 
         if let objs = info?[NSDeletedObjectsKey] as? Set<NSManagedObject> {
             for obj :NSManagedObject in objs {
-                print (obj)
+              //  print ("DEL \(obj)")
                 let changes = obj.changedValues()
-                for (key) in changes {
-                   // print (key)
+                for (key, value) in changes {
+                 //  print ("DEL \(obj.objectID) \(key)")
 
                     calcCPT = true
-                    relD = true
+
                     
                 }
                 
@@ -682,42 +689,34 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
         
         if let objs = info?[NSInsertedObjectsKey] as? Set<NSManagedObject> {
             for obj :NSManagedObject in objs {
-               // print (obj)
+             //  print ("INS \(obj)")
                 let changes = obj.changedValues()
-                for (key) in changes {
-                  //  print (key)
+                for (key, value) in changes {
+                 // print ("INS \(obj.objectID) \(key)")
 
                     calcCPT = true
-                    relD = true
                 }
                 
             }
         }
         
-        if (relD == true){
-            
-            let curNodes : [BNNode] = allNodesController.arrangedObjects as! [BNNode]
-            for curNode in curNodes {
-                curNode.setValue(0, forKey: "cptReady")
 
-            }
-            
-            self.reloadData()
-        }
-
+         //print ("mdc moc change calcCPT \(calcCPT)")
 
     }
     
+    func mocDidSave(_ notification: Notification){
+    //      print ("mdc moc saved")
+    }
+ 
     
-//tableview data source 
+//tableview data source
     
     func numberOfRows(in tableView: NSTableView) -> Int {
         var curNodes : [BNNode] = nodesController.selectedObjects as! [BNNode]
         if(curNodes.count>0) {
             curNode = curNodes[0]
             if (curNode.value(forKey: "cptArray")) == nil {
-                calcCPT = true
-                curNode.setValue(0, forKey: "cptReady")
                 return 0
             }
             if(curNode.cptReady == 2){
@@ -787,12 +786,27 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
  
     func cptCheck()
     {
+        
+        if (firstrun){
+           // print ("firstrun")
+            let firstNodes : [BNNode] = allNodesController.arrangedObjects as! [BNNode]
+            for firstNode in firstNodes {
+               // print ("FIRSTRUN \(firstNode.nodeLink.name) \(firstNode.cptReady)")
+                if(firstNode.cptReady == 1){
+                    firstNode.cptReady = 0
+                }
+            }
+            firstrun = false
+            return
+        }
+        
         let curNodes : [BNNode] = nodesController.arrangedObjects as! [BNNode]
         for curNode in curNodes {
+            //print ("checking \(curNode.nodeLink.name) \(curNode.cptReady)")
             if(curNode.cptReady == 0){
-               // print ("recalculaing \(curNode.nodeLink.name)")
+               // print("cpting \(curNode.nodeLink.name)")
                 DispatchQueue.global().async {
-                    self.curNode.CPT()
+                    curNode.CPT()
                 }
                 break //one at a time, please
             }
@@ -805,6 +819,26 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
                 self.reloadData()
             }
             
+        }
+        if(calcThisCPT == true){
+           // print ("calcThisCPT true")
+            let chkNodes : [BNNode] = nodesController.arrangedObjects as! [BNNode]
+            for chkNode in chkNodes {
+               // print("resetting \(chkNode.nodeLink.name)")
+                chkNode.setValue(0, forKey: "cptReady")
+                
+            }
+            calcThisCPT = false
+        }
+        if(calcCPT == true){
+          //  print ("calcCPT true")
+            let chkNodes : [BNNode] = allNodesController.arrangedObjects as! [BNNode]
+            for chkNode in chkNodes {
+              //  print("resetting \(chkNode.nodeLink.name)")
+                chkNode.setValue(0, forKey: "cptReady")
+                
+            }
+            calcCPT = false
         }
         
     }

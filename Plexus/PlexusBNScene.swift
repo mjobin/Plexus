@@ -99,12 +99,13 @@ class PlexusBNScene: SKScene {
         else {//touched existing node, can draw line between
             
             if(touchedNode.name == "nodeName"){//passing mouseDown to node beenath
-                let allNodes : [SKNode] = self.nodes(at: touchedNode.position) 
+                let allNodes : [SKNode] = self.nodes(at: touchedNode.position)
+               // print (allNodes)
                 for theNode : SKNode in allNodes {
                     
-                //   print("mouseDOWN sknode \(theNode)")
+                //   print("mouseDOWN sknode \(theNode) pos: \(theNode.position)")
 
-                    if(theNode.name == "bnNode" && theNode.position == touchedNode.position)
+                    if(theNode.name == "bnNode")
                     {
                         touchedNode = theNode //switch to the bnNode in the position of the label
                     }
@@ -112,7 +113,7 @@ class PlexusBNScene: SKScene {
                 
             }
             
-            //print ("mouseDOWN now touchedNode is \(touchedNode)")
+         //   print ("mouseDOWN now touchedNode is \(touchedNode)")
 
             if(touchedNode.name == "bnNode"){
                 
@@ -245,9 +246,10 @@ class PlexusBNScene: SKScene {
         
         if(releasedNode.name == "nodeName"){//passing mouseDown to node beenath
             let allNodes : [SKNode] = self.nodes(at: releasedNode.position)
+
             for theNode : SKNode in allNodes {
                 //print("mouseup sknode \(theNode)")
-                if(theNode.name == "bnNode" && theNode.position == releasedNode.position)
+                if(theNode.name == "bnNode")
                 {
                     releasedNode = theNode //switch to the bnNode in the position of the label
                 }
@@ -255,6 +257,8 @@ class PlexusBNScene: SKScene {
             
         }
         
+
+//        print("mouseup startnode \(startNode) rleasednode \(releasedNode)")
 
 
         
@@ -779,7 +783,7 @@ class PlexusBNScene: SKScene {
         
       //  var justUpdate = true
         
-       // println("bn scene MOC DID CHANGE")
+     //   print("bn scene MOC DID CHANGE")
         /*
         NB: don't chamnge the following unless you know what will happen when you delete a node
         if let updatedObjects = notification.userInfo?[NSUpdatedObjectsKey] as? NSSet {

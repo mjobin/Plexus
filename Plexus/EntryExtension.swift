@@ -27,8 +27,7 @@ extension Entry {
     
     
     func collectChildren(_ entriesArray:[Entry]) -> [Entry] {
-        var tmpEntries = entriesArray
-        
+        var tmpEntries = entriesArray        
         for childEntry in self.children {
             tmpEntries.append(childEntry as! Entry)
             (childEntry as AnyObject).collectChildren(tmpEntries)

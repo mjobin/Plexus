@@ -593,14 +593,12 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                         self.window!.endSheet(self.progSheet)
                         self.progSheet.orderOut(self)
                         
-                        
+                        let mSelPath = self.mainSplitViewController.modelTreeController.selectionIndexPath
                         self.moc.reset()
-
-
-
-                        
-                        
                         self.mainSplitViewController.entryTreeController.fetch(self)
+                        self.mainSplitViewController.modelTreeController.fetch(self)
+                        self.mainSplitViewController.modelTreeController.setSelectionIndexPath(mSelPath)
+ 
                         
 
                         

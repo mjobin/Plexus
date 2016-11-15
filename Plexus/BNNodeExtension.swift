@@ -132,7 +132,7 @@ extension BNNode {
 
         let startcalc = NSDate()
         self.setValue(1, forKey: "cptReady") //processing, not ready
-        //print ("**********\nCPT for \(self.nodeLink.name) cptReady \(self.cptReady)")
+       // print ("**********\nCPT for \(self.nodeLink.name) cptReady \(self.cptReady)")
         
         
         let curModel : Model = self.model
@@ -171,6 +171,7 @@ extension BNNode {
             let cptarray = [Double](repeating: -1.0, count: 1)
             let archivedCPTArray = NSKeyedArchiver.archivedData(withRootObject: cptarray)
             self.setValue(archivedCPTArray, forKey: "cptArray")
+            self.setValue(2, forKey: "cptReady") //processed, ready
             return
         }
         
@@ -300,8 +301,7 @@ extension BNNode {
         self.setValue(2, forKey: "cptReady") //processed, ready
 
         let timetaken = startcalc.timeIntervalSinceNow
-        
-//        print ("CPT calc took \(timetaken) cptReady set to \(self.cptReady)")
+       // print ("CPT calc took \(timetaken) cptReady set to \(self.cptReady)")
 
         return
     }
@@ -309,6 +309,7 @@ extension BNNode {
 
     
     func getCPTArray(_ sender:AnyObject) -> [cl_float] {
+       // print ("****getCPTArray \(self.nodeLink.name) currently \(self.cptReady)")
         if(self.cptReady != 2){
             self.CPT()
         }
