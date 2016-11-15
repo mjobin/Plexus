@@ -877,7 +877,25 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         
         if (result == NSFileHandlingPanelOKButton) {
            
-            let baseFile  = sv.url?.absoluteString
+            var baseFile  = sv.url?.absoluteString
+            let baseDir = sv.directoryURL
+            
+            do {
+                try FileManager.default.removeItem(at: sv.url!)
+            }  catch let error as NSError {
+                //print(error.description)
+            }
+            
+            
+            do {
+                try FileManager.default.createDirectory(at: baseDir!.appendingPathComponent(sv.nameFieldStringValue), withIntermediateDirectories: false, attributes: nil)
+            } catch let error as NSError {
+                print(error.description)
+                return
+            }
+ 
+            baseFile = baseFile! + sv.nameFieldStringValue
+            
             let outFileName = baseFile! + "-data.csv"
 
             let outURL = URL(string: outFileName)
