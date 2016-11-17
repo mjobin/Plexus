@@ -494,11 +494,9 @@ __kernel void BNGibbs(__constant int* offsets, __constant int* params, __constan
                          case 4: // gamma
                              flip = gamma_dev(priorv1s[sn]/priorv2s[sn], &tinymt);
                              break;
-                         case 5: //priorpost FIXME
-                             flip = -5;
-                             break;
                          default:
-                             flip = -999;
+                             flip = priorv1s[sn];
+                             break;
                      }
                  }
                  
