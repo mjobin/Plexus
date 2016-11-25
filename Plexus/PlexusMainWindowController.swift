@@ -39,7 +39,6 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
     var breakloop = false
     
 
-    
     dynamic var entryTreeController : NSTreeController!
     dynamic var modelTreeController : NSTreeController!
     
@@ -92,13 +91,13 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         super.windowDidLoad()
 
         mainSplitViewController = contentViewController as! PlexusMainSplitViewController
-        
+        /*
         if((calcop.isBNProgram(self) == nil)){
             DispatchQueue.global().async {
                 self.calcop.clCompile()
             }
         }
- 
+ */
 
         UserDefaults.standard.addObserver(self, forKeyPath: "hardwareDevice", options: NSKeyValueObservingOptions.new, context: nil)
         
@@ -124,52 +123,6 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
     }
     
 
-    @IBAction func testRandom(_ x:NSToolbarItem){
-        
-        let nodes : [BNNode] = mainSplitViewController.modelDetailViewController?.nodesController.arrangedObjects as! [BNNode]
-        
-        
-        
-        for fNode in nodes {
-            let blankArray = [NSNumber]()
-            let blankData = NSKeyedArchiver.archivedData(withRootObject: blankArray)
-            
-            var postCount = [Int](repeating: 0, count: 101)
-            
-            fNode.setValue(blankData, forKey: "postCount")
-            fNode.setValue(blankData, forKey: "postArray")
-            
-            
-            var testranarray = [Double]()
-            for _ in 1 ... 10000 {
-                testranarray.append(Double(fNode.freqForCPT(self)))
-            }
-            
-            var gi = 0
-            for gNode : Double in testranarray {
-                
-                print(gNode)
-                
-                
-                if(gNode == gNode && gNode >= 0.0 && gNode <= 1.0) {//fails if nan
-                    let x = (Int)(floor(gNode/0.01))
-                    postCount[x] += 1
-                }
-                    
-                    
-                else{
-                    // println("problem detected in reloadData. gNode is \(gNode)")
-                }
-                
-                gi += 1
-            }
-            
-            let archivedPostCount = NSKeyedArchiver.archivedData(withRootObject: postCount)
-            fNode.setValue(archivedPostCount, forKey: "postCount")
-            let archivedPostArray = NSKeyedArchiver.archivedData(withRootObject: testranarray)
-            fNode.setValue(archivedPostArray, forKey: "postArray")
-        }
-    }
 
     
     func progSetup(_ sender: AnyObject) -> NSWindow {
@@ -248,12 +201,26 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         op.canChooseFiles = true
         op.allowedFileTypes = ["csv"]
         
+        let aView : NSView = NSView(frame: NSMakeRect(0.0, 0.0, 324.0, 22.0))
+        
         //accessory view to allow addition to current locaiton
-        let av:NSButton = NSButton(frame: NSMakeRect(0.0, 0.0, 324.0, 22.0))
+        let av:NSButton = NSButton(frame: NSMakeRect(0.0, 0.0, 130.0, 22.0))
         av.setButtonType(NSButtonType.switch)
         av.title = "Add as child of current selection"
         av.state = 0
-        op.accessoryView = av
+        aView.addSubview(av)
+        op.accessoryView = aView
+        
+        let sc:NSButton = NSButton(frame: NSMakeRect(170.0, 0.0, 150.0, 22.0))
+        sc.setButtonType(NSButtonType.switch)
+        sc.title = "Set scope of model to parent"
+        sc.state = 1
+        aView.addSubview(sc)
+        
+        op.accessoryView = aView
+        
+        
+       //
         if #available(OSX 10.11, *) {
             op.isAccessoryViewDisclosed = true
         } else {
@@ -588,10 +555,10 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
 
                     DispatchQueue.main.async {
                         
-                        self.progInd.isIndeterminate = true
-                        self.progInd.startAnimation(self)
-                        self.window!.endSheet(self.progSheet)
-                        self.progSheet.orderOut(self)
+                       // self.progInd.isIndeterminate = true
+                       // self.progInd.startAnimation(self)
+                       // self.window!.endSheet(self.progSheet)
+                       // self.progSheet.orderOut(self)
                         
                         let mSelPath = self.mainSplitViewController.modelTreeController.selectionIndexPath
                         self.moc.reset()
@@ -603,6 +570,9 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
 
                         
                     }
+                
+                self.performSelector(onMainThread: #selector(PlexusMainWindowController.endProgInd), with: nil, waitUntilDone: true)
+                
                 
                 
                 
@@ -827,21 +797,15 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
             
             DispatchQueue.main.async {
                 
-
-                /*
-                
-                do {
-                    //FIXME remove when ready curModel.setValue(true, forKey: "complete")
-                    try self.moc.save()
-                } catch let error as NSError {
-                    print(error)
-                }
-                */
-                
-                self.window!.endSheet(self.progSheet)
-                self.progSheet.orderOut(self)
+                curModel.setValue(true, forKey: "complete")
+    
+                //self.window!.endSheet(self.progSheet)
+                //self.progSheet.orderOut(self)
 
             }
+            
+            self.performSelector(onMainThread: #selector(PlexusMainWindowController.endProgInd), with: nil, waitUntilDone: true)
+            
             
 
         
@@ -855,8 +819,6 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
     }
     
 
-
-    
     @IBAction func exportCSV(_ x:NSToolbarItem){
         let err : NSErrorPointer? = nil
         
@@ -864,6 +826,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         
         let curModels : [Model] = self.mainSplitViewController.modelTreeController?.selectedObjects as! [Model]
         let curModel : Model = curModels[0]
+        
         
         let defaults = UserDefaults.standard
         let pTypes = defaults.array(forKey: "PriorTypes") as! [String]
@@ -894,7 +857,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                 return
             }
  
-            baseFile = baseFile! + sv.nameFieldStringValue
+            baseFile = baseFile! + "/" + sv.nameFieldStringValue
             
             let outFileName = baseFile! + "-data.csv"
 
@@ -902,127 +865,140 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
             
 
             DispatchQueue.global().async {
-                let request = NSFetchRequest<Entry>(entityName: "Entry")
-                do {
-                    let entries : [Entry] = try self.moc!.fetch(request)
+
+
                     
-                    self.progSheet = self.progSetup(self)
-                    self.maxLabel.stringValue = String(entries.count)
-                    self.window!.beginSheet(self.progSheet, completionHandler: nil)
-                    self.progSheet.makeKeyAndOrderFront(self)
-                    self.progInd.isIndeterminate = true
-                    self.workLabel.stringValue = "Exporting Entries..."
-                    self.progInd.doubleValue = 0
+                var theEntries = [Entry]()
+                if(curModel.scope.entity.name == "Entry"){
+                    let thisEntry = curModel.scope as! Entry
+                    theEntries = thisEntry.collectChildren([Entry]())
+                }
+                else if (curModel.scope.entity.name == "Structure"){
+                    let thisStructure = curModel.scope as! Structure
+                    theEntries = thisStructure.entry.allObjects as! [Entry]
+                }
+                else{
+                    let appDelegate : AppDelegate = NSApplication.shared().delegate as! AppDelegate
+                    let moc = appDelegate.managedObjectContext
                     
-                    self.progInd.startAnimation(self)
-                    
-                    
-                    self.progInd.maxValue =  Double(entries.count)
-                    
-                    
-                    self.progInd.startAnimation(self)
-                    
-                    var outText = "Name,"
-                    
-                    let trequest = NSFetchRequest<Trait>(entityName: "Trait")
-                    
-                    
-                    var i = 0
-                    
+                    let request = NSFetchRequest<Entry>(entityName: "Entry")
                     do {
-                        let headerTraits : [Trait] = try self.moc!.fetch(trequest) 
+                        theEntries = try moc.fetch(request)
+                    } catch let error as NSError {
+                        print (error)
+                        return
+                    }
+                    
+                }
+                
+                var allScopedTraits  = [Trait]()
+                for thisEntry in theEntries {
+                    for thisTrait in thisEntry.trait {
+                        let curTrait = thisTrait as! Trait
+                        allScopedTraits.append(curTrait)
+                    }
+                }
+                
+                let distinctHeaderTraits = NSSet(array: allScopedTraits.map { $0.name })
+                
+
+                
+                // #
+              //  let entries : [Entry] = try self.moc!.fetch(request)
+                
+                self.progSheet = self.progSetup(self)
+                self.maxLabel.stringValue = String(theEntries.count)
+                self.window!.beginSheet(self.progSheet, completionHandler: nil)
+                self.progSheet.makeKeyAndOrderFront(self)
+                self.progInd.isIndeterminate = true
+                self.workLabel.stringValue = "Exporting Entries..."
+                self.progInd.doubleValue = 0
+                
+                self.progInd.startAnimation(self)
+                
+                
+                self.progInd.maxValue =  Double(theEntries.count)
+                
+                
+                self.progInd.startAnimation(self)
+                
+                var outText = "Name,"
+                
+                
+                var i = 0
+
+                for headerTrait in distinctHeaderTraits {
+                    outText += headerTrait as! String
+                    
+                    outText += ","
+                    
+                }
+                outText += "\n"
+                
+                self.progInd.isIndeterminate = false
+                
+                for entry : Entry in theEntries {
+                    outText += entry.name
+                    outText += ","
+                    
+                    let tTraits = entry.trait
+                    for headerTrait in distinctHeaderTraits {
+                        let hKey = headerTrait as! String
                         
-                        let distinctHeaderTraits = NSSet(array: headerTraits.map { $0.name })
                         
                         
-                        for headerTrait in distinctHeaderTraits {
-                            outText += headerTrait as! String
+                        var traitString = [String]()
+                        for tTrait in tTraits{
+                            let tKey = (tTrait as AnyObject).value(forKey: "name") as! String
+                            if hKey == tKey{
+                                //outText += tTrait.valueForKey("traitValue") as! String
+                                //outText += "\t"
+                                traitString.append((tTrait as AnyObject).value(forKey: "traitValue") as! String)
+                            }
                             
-                            
-                            outText += ","
                             
                         }
-                        outText += "\n"
-                        
-                        self.progInd.isIndeterminate = false
-                        
-                        for entry : Entry in entries {
-                            outText += entry.name
-                            outText += ","
-                            
-                            let tTraits = entry.trait
-                            for headerTrait in distinctHeaderTraits {
-                                let hKey = headerTrait as! String
-                                
-                                
-                                
-                                var traitString = [String]()
-                                for tTrait in tTraits{
-                                    let tKey = (tTrait as AnyObject).value(forKey: "name") as! String
-                                    if hKey == tKey{
-                                        //outText += tTrait.valueForKey("traitValue") as! String
-                                        //outText += "\t"
-                                        traitString.append((tTrait as AnyObject).value(forKey: "traitValue") as! String)
-                                    }
-                                    
-                                    
-                                }
-                                if(traitString.count > 1){
-                                    outText += "\""
-                                }
-                                var k = 1
-                                for thisTraitString in traitString {
-                                    outText += thisTraitString
-                                    if(traitString.count > 1 && k < traitString.count){
-                                        outText += "\r"
-                                    }
-                                    k += 1
-                                }
-                                
-                                if(traitString.count > 1){
-                                    outText += "\""
-                                }
-                                
-                                
+                        if(traitString.count > 1){
+                            outText += "\""
+                        }
+                        var k = 1
+                        for thisTraitString in traitString {
+                            outText += thisTraitString
+                            if(traitString.count > 1 && k < traitString.count){
                                 outText += ","
                             }
-                            
-                            
-                            outText += "\n"
-                            
-                            DispatchQueue.main.async {
-                                
-                                self.progInd.increment(by: 1)
-                                self.curLabel.stringValue = String(i)
-                                
-                            }
-                            i += 1
-                            
+                            k += 1
+                        }
+                        
+                        if(traitString.count > 1){
+                            outText += "\""
                         }
                         
                         
+                        outText += ","
+                    }
+                    
+                    
+                    outText += "\n"
+                    
+                    DispatchQueue.main.async {
                         
-                        do {
-                            try outText.write(to: outURL!, atomically: true, encoding: String.Encoding.utf8)
-                        } catch _ {
-                        }
-                    } catch let error as NSError {
-                        err??.pointee = error
-                        return
-                    } catch {
-                        fatalError()
+                        self.progInd.increment(by: 1)
+                        self.curLabel.stringValue = String(i)
+                        
                     }
+                    i += 1
                     
-                    
-                }catch let error as NSError {
-                        err??.pointee = error
-                        return
-                    } catch {
-                        fatalError()
-                    }
+                }
                 
-            
-
+                
+                
+                do {
+                    try outText.write(to: outURL!, atomically: true, encoding: String.Encoding.utf8)
+                } catch _ {
+                }
+                    
+                    
 
                 
                 //now print nodes
@@ -1039,84 +1015,123 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                     let nodeTXTFileName = baseFile! + "-nodes.csv"
                     let nodeTXTURL = URL(string: nodeTXTFileName)
                     var outText : String = String()
+                    
+                    var longestColumn = 0
+                    
+                    var postBins = [[Double]]()
+                    var postCounts = [[Int]]()
+                    var postArrays = [[Double]]()
+                    
+                    for node in self.mainSplitViewController.modelDetailViewController?.nodesController.arrangedObjects as! [BNNode] {
+                        self.mainSplitViewController.modelDetailViewController?.nodesController.setSelectionIndex(i)
+                        
+                        outText += node.nodeLink.name
+                        outText += "-PriorType,"
+                        
+                        outText += node.nodeLink.name
+                        outText += "-PriorV1,"
+                        
+                        outText += node.nodeLink.name
+                        outText += "-PriorV2,"
+                        
+
+
+                        
+                        outText += node.nodeLink.name
+                        outText += "-PostCount,"
+                        
+                         let postCount = NSKeyedUnarchiver.unarchiveObject(with: node.value(forKey: "postCount") as! Data) as! [Int]
+                        if (postCount.count > longestColumn){
+                            longestColumn = postCount.count
+                        }
+                        postCounts.append(postCount)
+                        
+                        let postCountDub = Double(postCount.count)
+                        
+                        var postBin = [Double]()
+                        var binc = 0.0
+                        for _ in postCount {
+                            postBin.append(binc/postCountDub)
+                            binc = binc + 1
+                        }
+                        if (postBin.count > longestColumn){
+                            longestColumn = postBin.count
+                        }
+                        postBins.append(postBin)
+                        
+                        outText += node.nodeLink.name
+                        outText += "-PostBins,"
+                        
+                        
+                        outText += node.nodeLink.name
+                        outText += "-PostDist,"
+                        let postArray = NSKeyedUnarchiver.unarchiveObject(with: node.value(forKey: "postArray") as! Data) as! [Double]
+                        if (postArray.count > longestColumn){
+                            longestColumn = postArray.count
+                        }
+                        postArrays.append(postArray)
+                        
+                        
+                        
+                    }
+                    
+                    outText += "\n"
+                    for j in 0...longestColumn{
+                        var k = 0
+                        for node in self.mainSplitViewController.modelDetailViewController?.nodesController.arrangedObjects as! [BNNode] {
+                            self.mainSplitViewController.modelDetailViewController?.nodesController.setSelectionIndex(i)
+                            if(j==0){
+                                outText += pTypes[node.priorDistType as Int]
+                                outText += ","
+                                outText += String(describing: node.priorV1)
+                                outText += ","
+                                outText += String(describing: node.priorV2)
+                                outText += ","
+                            }
+                            else {
+                                outText += ",,,"
+                            }
+                            if(j<postCounts[k].count){
+                                outText += String(postCounts[k][j])
+                            }
+                            outText += ","
+                            
+                            if(j<postBins[k].count){
+                                outText += String(postBins[k][j])
+                            }
+                            outText += ","
+                            
+                            if(j<postArrays[k].count){
+                                outText += String(postArrays[k][j])
+                            }
+                            
+                            
+                            outText += ","
+                            
+                            
+                        }
+                        
+                        k = k + 1
+                        outText += "\n"
+  
+                    }
+                    
+ 
+                    do {
+                        try outText.write(to: nodeTXTURL!, atomically: true, encoding: String.Encoding.utf8)
+                    }
+                    catch let error as NSError {
+                        print(error)
+                    } catch {
+                        fatalError()
+                    }
+                    
+                    
 
                     for node in self.mainSplitViewController.modelDetailViewController?.nodesController.arrangedObjects as! [BNNode] {
-                        self.mainSplitViewController.modelDetailViewController?.nodesController.setSelectionIndex(i) //FIXME wont work on a background thread
+                        self.mainSplitViewController.modelDetailViewController?.nodesController.setSelectionIndex(i)
 
-                        
-                        outText += "********\n"
-                        
-                        outText += "Node:,"
-                        outText += node.nodeLink.name
-                        outText += "\n"
 
-                        
-                        let infBy = node.influencedBy.count
-                        if (infBy < 1) { //independent node, print prior info
-                            
-                            outText += "Prior Type,"
-                            outText += pTypes[node.priorDistType as Int]
-                            outText += "\n"
-                            
-                            outText += "Prior V1,"
-                            outText += String(describing: node.priorV1)
-                            outText += "\n"
-                            
-                            outText += "Prior V2,"
-                            outText += String(describing: node.priorV2)
-                            outText += "\n"
-                            
-
-                            
-                        }
-                        
-                        if node.postCount != nil {
-                            outText += "Posterior Count Bin,"
-                            let postCount = NSKeyedUnarchiver.unarchiveObject(with: node.value(forKey: "postCount") as! Data) as! [Int]
-                            let postBins = Double(postCount.count)
-                            
-                            var binc = 0.0
-                            for _ in postCount {
-                                outText += String(binc/postBins)
-                                outText += ","
-                                binc = binc + 1
-                            }
-                            outText += "\n"
-                            outText += "Posterior Count,"
-                            for thisPost in postCount {
-                                outText += String(thisPost)
-                                outText += ","
-                            }
-                            outText += "\n"
-
-                        }
-                        
-                        if node.postArray != nil {
-                            
-                            
-                            outText += "Posterior Distribution,"
-                            let postArray = NSKeyedUnarchiver.unarchiveObject(with: node.value(forKey: "postArray") as! Data) as! [Double]
-
-                            
-                            for thisPost in postArray {
-                                outText += String(thisPost)
-                                outText += ","
-                            }
-                            outText += "\n"
-                            
-                        }
-                        
-                        outText += "\n"
-                        
-                        
-                        do {
-                            try outText.write(to: nodeTXTURL!, atomically: true, encoding: String.Encoding.utf8)
-                        }
-                        catch let error as NSError {
-                            print(error)
-                        } catch {
-                            fatalError()
-                        }
                         
                         //create a compound of the outFile name and node name
                         let nodePDFFileName = baseFile! + "-" + node.nodeLink.name + ".pdf"
@@ -1192,11 +1207,11 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                         i += 1
                     }
                 
-                
+ 
 
-                    
-                    self.window!.endSheet(self.progSheet)
-                    self.progSheet.orderOut(self)
+                    self.performSelector(onMainThread: #selector(PlexusMainWindowController.endProgInd), with: nil, waitUntilDone: true)
+                   // self.window!.endSheet(self.progSheet)
+                   // self.progSheet.orderOut(self)
                     
                 }
             
@@ -1213,7 +1228,11 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         
     }
     
-
+    func endProgInd(){
+        self.progSheet.orderOut(self)
+        self.window!.endSheet(self.progSheet)
+        
+    }
  
 /*
     func mocDidChange(notification: NSNotification){

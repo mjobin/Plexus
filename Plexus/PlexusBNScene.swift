@@ -69,6 +69,12 @@ class PlexusBNScene: SKScene {
 */
     
     override func keyDown(with theEvent: NSEvent) {
+        let curModels : [Model] = modelTreeController.selectedObjects as! [Model]
+        let curModel : Model = curModels[0]
+        if(curModel.complete == true){
+            return
+        }
+        
         interpretKeyEvents([theEvent])
     }
     
@@ -84,11 +90,12 @@ class PlexusBNScene: SKScene {
 
         //print ("event: \(theEvent)")
         
+        
         let loc = theEvent.location(in: self)
         dragStart = loc
        
         var touchedNode : SKNode = self.atPoint(loc)
-        //print("mouseDown touched \(touchedNode) parent: \(touchedNode.parent)")
+       // print("mouseDown touched \(touchedNode) parent: \(touchedNode.parent)")
 
         if(touchedNode.isEqual(to: self)) {
             //  print("miss")
@@ -162,6 +169,8 @@ class PlexusBNScene: SKScene {
     
     
     override func rightMouseDown(with theEvent: NSEvent) {
+        
+
        
         let loc = theEvent.location(in: self)
 
@@ -203,6 +212,14 @@ class PlexusBNScene: SKScene {
         }
         
         else {
+            
+            let curModels : [Model] = modelTreeController.selectedObjects as! [Model]
+            let curModel : Model = curModels[0]
+            if(curModel.complete == true){
+                return
+            }
+
+            
             //remove all existing lines
             self.enumerateChildNodes(withName: "joinLine", using: { thisLine, stop in
                 thisLine.removeFromParent()
@@ -234,6 +251,12 @@ class PlexusBNScene: SKScene {
     
     override func mouseUp(with theEvent: NSEvent) {
         //let errorPtr : NSErrorPointer = nil
+        
+        let curModels : [Model] = modelTreeController.selectedObjects as! [Model]
+        let curModel : Model = curModels[0]
+        if(curModel.complete == true){
+            return
+        }
         
         let loc = theEvent.location(in: self)
         
