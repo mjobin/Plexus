@@ -86,7 +86,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         var coordinator: NSPersistentStoreCoordinator? = nil
         if failError == nil {
             coordinator = NSPersistentStoreCoordinator(managedObjectModel: self.managedObjectModel)
-            let url = self.applicationDocumentsDirectory.appendingPathComponent("CocoaAppCD.storedata")
+            let url = self.applicationDocumentsDirectory.appendingPathComponent("Plexus.storedata")
             do {
                 try coordinator!.addPersistentStore(ofType: NSSQLiteStoreType, configurationName: nil, at: url, options: nil)
             } catch {

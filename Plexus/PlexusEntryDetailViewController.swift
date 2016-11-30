@@ -130,11 +130,7 @@ class PlexusEntryDetailViewController: NSViewController, NSTableViewDelegate, NS
         
     }
     
-    func mocDidChange(_ notification: Notification){
-        //  println("moc changed in map view")
-        //  markMap()
-        
-    }
+
     
     
 }

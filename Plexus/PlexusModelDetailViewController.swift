@@ -311,6 +311,9 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
                 graph.add(priorPlot)
                 graph.remove(priorPlot)
                 
+                detailGraph.add(dpriorPlot)
+                detailGraph.remove(dpriorPlot)
+                
                 //Construct CPT table
                 
                 
@@ -338,6 +341,7 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
                 }
                 
                 else {
+
                     let cptProgInd = NSProgressIndicator()
                     cptProgInd.usesThreadedAnimation = true
                     cptProgInd.isIndeterminate = true
@@ -371,6 +375,7 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
                 
             }
             else {
+
                 nodeDetailCPTView.isHidden = true
                 nodeDetailPriorView.isHidden = false
                 
@@ -453,6 +458,7 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
 
                 
                 graph.add(priorPlot)
+                detailGraph.add(dpriorPlot)
                 
             }
             

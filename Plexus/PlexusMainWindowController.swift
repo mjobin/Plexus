@@ -204,16 +204,16 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         let aView : NSView = NSView(frame: NSMakeRect(0.0, 0.0, 324.0, 22.0))
         
         //accessory view to allow addition to current locaiton
-        let av:NSButton = NSButton(frame: NSMakeRect(0.0, 0.0, 130.0, 22.0))
+        let av:NSButton = NSButton(frame: NSMakeRect(0.0, 0.0, 140.0, 22.0))
         av.setButtonType(NSButtonType.switch)
-        av.title = "Add as child of current selection"
+        av.title = "Add as child"
         av.state = 0
         aView.addSubview(av)
         op.accessoryView = aView
         
-        let sc:NSButton = NSButton(frame: NSMakeRect(170.0, 0.0, 150.0, 22.0))
+        let sc:NSButton = NSButton(frame: NSMakeRect(170.0, 0.0, 140.0, 22.0))
         sc.setButtonType(NSButtonType.switch)
-        sc.title = "Set scope of model to parent"
+        sc.title = "Create new model"
         sc.state = 1
         aView.addSubview(sc)
         
@@ -261,6 +261,16 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                 
             }
             
+            if(sc.state == 1){
+
+
+                let newModel : Model = Model(entity: NSEntityDescription.entity(forEntityName: "Model", in: self.moc)!, insertInto: self.moc)
+                newModel.setValue(curEntry.name, forKey: "name")
+                newModel.setValue(curEntry, forKey: "scope")
+
+
+                
+            }
             
 
             do {
@@ -316,11 +326,11 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                     existingStructureNames.append(curStructure.name)
                 }
             
+                
+                self.performSelector(onMainThread: #selector(PlexusMainWindowController.startProgInd), with: nil, waitUntilDone: true)
+                
                 DispatchQueue.main.async {
-                    self.progSheet = self.progSetup(self)
                     self.maxLabel.stringValue = String(fileLines.count)
-                    self.window!.beginSheet(self.progSheet, completionHandler: nil)
-                    self.progSheet.makeKeyAndOrderFront(self)
                     self.progInd.isIndeterminate = false
                     self.progInd.doubleValue = 0
                     self.workLabel.stringValue = "Importing..."
@@ -728,9 +738,9 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                     let jmax = Int(Double(sortfline.count) - ((1.0-alpha) * Double(sortfline.count)))
                     
                    var firsthpd = true
-                    var interval = -999.99
+                    var interval = 0.0
                     var low = 0
-                    var high = sortfline.count
+                    var high = (sortfline.count - 1)
                     for hpdi in 0..<jmax {
                         let highpos = hpdi + Int(((1.0-alpha)*Double(sortfline.count)))
                         if(firsthpd || (sortfline[highpos] - sortfline[hpdi]) < interval){
@@ -747,13 +757,11 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
 
     
                     let startatime = Date.timeIntervalSinceReferenceDate;
-                    let defaults = UserDefaults.standard
-                    //var preserveRO = defaults.value(forKey: "preserveRawOutput") as! Int
-                   // assert(preserveRO == 1)
-                    //if(preserveRO == 1){
-                        let archivedPostArray = NSKeyedArchiver.archivedData(withRootObject: fline)
-                        inNode.setValue(archivedPostArray, forKey: "postArray")
-                  //  }
+
+
+                    let archivedPostArray = NSKeyedArchiver.archivedData(withRootObject: fline)
+                    inNode.setValue(archivedPostArray, forKey: "postArray")
+
                     
                     let endatime = Date.timeIntervalSinceReferenceDate;
                     let ainterval = endatime-startatime
@@ -905,11 +913,9 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                 
                 // #
               //  let entries : [Entry] = try self.moc!.fetch(request)
-                
-                self.progSheet = self.progSetup(self)
+                self.performSelector(onMainThread: #selector(PlexusMainWindowController.startProgInd), with: nil, waitUntilDone: true)
+
                 self.maxLabel.stringValue = String(theEntries.count)
-                self.window!.beginSheet(self.progSheet, completionHandler: nil)
-                self.progSheet.makeKeyAndOrderFront(self)
                 self.progInd.isIndeterminate = true
                 self.workLabel.stringValue = "Exporting Entries..."
                 self.progInd.doubleValue = 0
@@ -1228,9 +1234,19 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         
     }
     
+    
+    func startProgInd(){
+        self.progSheet = self.progSetup(self)
+        self.window!.beginSheet(self.progSheet, completionHandler: nil)
+        self.progSheet.makeKeyAndOrderFront(self)
+    }
+    
     func endProgInd(){
-        self.progSheet.orderOut(self)
-        self.window!.endSheet(self.progSheet)
+
+        if(self.progSheet != nil){
+            self.progSheet.orderOut(self)
+            self.window!.endSheet(self.progSheet)
+        }
         
     }
  

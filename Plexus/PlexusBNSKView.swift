@@ -48,6 +48,15 @@ class PlexusBNSKView: SKView {
         self.scene?.mouseDown(with: theEvent)
     }
     
+    internal override func mouseDragged(with theEvent: NSEvent) {
+        self.scene?.mouseDragged(with: theEvent)
+    }
+    
+    internal override func mouseUp(with theEvent: NSEvent) {
+        
+        self.scene?.mouseUp(with: theEvent)
+    }
+    
     internal override func rightMouseDown(with theEvent: NSEvent) {
             self.scene?.rightMouseDown(with: theEvent)
     }

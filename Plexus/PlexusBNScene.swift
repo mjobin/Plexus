@@ -120,7 +120,7 @@ class PlexusBNScene: SKScene {
                 
             }
             
-         //   print ("mouseDOWN now touchedNode is \(touchedNode)")
+           // print ("mouseDown now touchedNode is \(touchedNode)")
 
             if(touchedNode.name == "bnNode"){
                 
@@ -177,7 +177,6 @@ class PlexusBNScene: SKScene {
         
         let touchedNode : SKNode = self.atPoint(loc)
         
-        print("scene right mouse down")
         if(touchedNode.name == "bnNode"){
             print("on node")
         }
@@ -189,7 +188,6 @@ class PlexusBNScene: SKScene {
     
     override func mouseDragged(with theEvent: NSEvent) {
         
-
         
         let loc : CGPoint = theEvent.location(in: self)
         var touchedNode : SKNode = self.atPoint(loc)
@@ -251,12 +249,13 @@ class PlexusBNScene: SKScene {
     
     override func mouseUp(with theEvent: NSEvent) {
         //let errorPtr : NSErrorPointer = nil
-        
+        /*
         let curModels : [Model] = modelTreeController.selectedObjects as! [Model]
         let curModel : Model = curModels[0]
         if(curModel.complete == true){
             return
         }
+        */
         
         let loc = theEvent.location(in: self)
         

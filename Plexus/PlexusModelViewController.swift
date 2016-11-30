@@ -55,6 +55,7 @@ class PlexusModelViewController: NSViewController {
         modelTreeController.insert(newModel, atArrangedObjectIndexPath: newPath)
         let copyName : String = curModel.name + " copy"
         newModel.setValue(copyName, forKey: "name")
+        newModel.setValue(curModel.scope, forKey: "scope")
 
         var tempNodeArray = [BNNode]()
         
@@ -63,16 +64,18 @@ class PlexusModelViewController: NSViewController {
             let newNode : BNNode = BNNode(entity: NSEntityDescription.entity(forEntityName: "BNNode", in: self.moc)!, insertInto: self.moc)
 
 
-            newNode.setValue(curNode.nodeLink, forKey: "nodeLink")
-            
 
-            //curNode.nodeLink.addBNNodeObject(newNode)
-            newNode.setValue(curNode.numericData, forKey: "numericData")
-            newNode.setValue(curNode.tolerance, forKey: "tolerance")
+        
+            
+            
             newNode.setValue(curNode.priorDistType, forKey: "priorDistType")
             newNode.setValue(curNode.priorV1, forKey: "priorV1")
             newNode.setValue(curNode.priorV2, forKey: "priorV2")
+            newNode.setValue(curNode.nodeLink, forKey: "nodeLink")
+            newNode.setValue(curNode.numericData, forKey: "numericData")
+            newNode.setValue(curNode.tolerance, forKey: "tolerance")
             newNode.setValue(curNode.cptArray, forKey: "cptArray")
+
             
 
             
@@ -83,6 +86,7 @@ class PlexusModelViewController: NSViewController {
             newNode.setValue(blankData, forKey: "postArray")
             
             
+            newNode.setValue(curNode.cptReady, forKey: "cptReady")
             
             
             newNode.setValue(newModel, forKey: "model")
