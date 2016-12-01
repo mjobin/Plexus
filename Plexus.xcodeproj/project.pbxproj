@@ -29,6 +29,7 @@
 		C9423AFF19E2FFC200EE109C /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C9423AFE19E2FFC200EE109C /* CoreData.framework */; };
 		C9464CE01B27B8B9005004F0 /* PlexusEntryDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9464CDF1B27B8B9005004F0 /* PlexusEntryDetailViewController.swift */; };
 		C9464CEB1B27B8F0005004F0 /* PlexusModelDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9464CEA1B27B8F0005004F0 /* PlexusModelDetailViewController.swift */; };
+		C949AE3B1DF0E5E100ECA07B /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = C949AE3A1DF0E5E100ECA07B /* Credits.rtf */; };
 		C94E80731AF03DCF0016F563 /* plexusmath.c in Sources */ = {isa = PBXBuildFile; fileRef = C94E80721AF03DCF0016F563 /* plexusmath.c */; };
 		C95A3BBE1B02DBF000825393 /* PlexusStructureViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95A3BBD1B02DBF000825393 /* PlexusStructureViewController.swift */; };
 		C96059D81A9636D80046A8C8 /* PlexusCalculationOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = C96059D51A9636D80046A8C8 /* PlexusCalculationOperation.m */; };
@@ -191,6 +192,7 @@
 		C9423AFE19E2FFC200EE109C /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		C9464CDF1B27B8B9005004F0 /* PlexusEntryDetailViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlexusEntryDetailViewController.swift; sourceTree = "<group>"; };
 		C9464CEA1B27B8F0005004F0 /* PlexusModelDetailViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlexusModelDetailViewController.swift; sourceTree = "<group>"; };
+		C949AE3A1DF0E5E100ECA07B /* Credits.rtf */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.rtf; path = Credits.rtf; sourceTree = "<group>"; };
 		C94E80721AF03DCF0016F563 /* plexusmath.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = plexusmath.c; sourceTree = "<group>"; };
 		C95937411B2101A600CCDA19 /* tinymt.clh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = tinymt.clh; path = ../../TinyMT/opencl/tinymt.clh; sourceTree = "<group>"; };
 		C95937421B2101A600CCDA19 /* tinymt32_jump_table.clh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = tinymt32_jump_table.clh; path = ../../TinyMT/opencl/tinymt32_jump_table.clh; sourceTree = "<group>"; };
@@ -240,6 +242,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		C92E917C1DF0C9B0005370A5 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				C949AE3A1DF0E5E100ECA07B /* Credits.rtf */,
+			);
+			name = Resources;
+			sourceTree = "<group>";
+		};
 		C9307BA419DCCA3B002AFF07 = {
 			isa = PBXGroup;
 			children = (
@@ -270,6 +280,7 @@
 				C96059CF1A9636A90046A8C8 /* Classes */,
 				C97EAD1719EEECEF0004FF42 /* Models */,
 				C9B4AC9219DDF02F00B95662 /* Views */,
+				C92E917C1DF0C9B0005370A5 /* Resources */,
 				C9307BB019DCCA3B002AFF07 /* Supporting Files */,
 			);
 			path = Plexus;
@@ -536,6 +547,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				C9307BBA19DCCA3B002AFF07 /* Images.xcassets in Resources */,
+				C949AE3B1DF0E5E100ECA07B /* Credits.rtf in Resources */,
 				C9307BBD19DCCA3B002AFF07 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
