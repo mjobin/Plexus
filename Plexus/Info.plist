@@ -32,5 +32,9 @@
 	<string>Main</string>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
+	<key>CFBundleHelpBookFolder</key>
+	<string>Plexus.help</string>
+	<key>CFBundleHelpBookName</key>
+	<string>edu.scu.Plexus.help</string>
 </dict>
 </plist>
