@@ -91,13 +91,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         super.windowDidLoad()
 
         mainSplitViewController = contentViewController as! PlexusMainSplitViewController
-        /*
-        if((calcop.isBNProgram(self) == nil)){
-            DispatchQueue.global().async {
-                self.calcop.clCompile()
-            }
-        }
- */
+
 
         UserDefaults.standard.addObserver(self, forKeyPath: "hardwareDevice", options: NSKeyValueObservingOptions.new, context: nil)
         
@@ -828,7 +822,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
     
 
     @IBAction func exportCSV(_ x:NSToolbarItem){
-        let err : NSErrorPointer? = nil
+
         
 
         
@@ -853,7 +847,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
             
             do {
                 try FileManager.default.removeItem(at: sv.url!)
-            }  catch let error as NSError {
+            }  catch _ as NSError {
                 //print(error.description)
             }
             

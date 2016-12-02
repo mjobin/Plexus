@@ -682,7 +682,7 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
             for obj :NSManagedObject in objs {
               //  print ("DEL \(obj)")
                 let changes = obj.changedValues()
-                for (key, value) in changes {
+                for (_, _) in changes {
                  //  print ("DEL \(obj.objectID) \(key)")
 
                     calcCPT = true
@@ -697,7 +697,7 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
             for obj :NSManagedObject in objs {
              //  print ("INS \(obj)")
                 let changes = obj.changedValues()
-                for (key, value) in changes {
+                for (_, _) in changes {
                  // print ("INS \(obj.objectID) \(key)")
 
                     calcCPT = true
@@ -850,7 +850,7 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
     }
 
     @IBAction func calcCPTs(sender : AnyObject) {
-        var curNodes : [BNNode] = nodesController.arrangedObjects as! [BNNode]
+        let curNodes : [BNNode] = nodesController.arrangedObjects as! [BNNode]
         for curNode in curNodes {
             curNode.CPT()
         }

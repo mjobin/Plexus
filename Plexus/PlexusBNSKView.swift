@@ -103,9 +103,9 @@ class PlexusBNSKView: SKView {
             
             let mourl : URL = object as! URL
             
-            if let id : NSManagedObjectID? = moc.persistentStoreCoordinator?.managedObjectID(forURIRepresentation: mourl){
+            if let id : NSManagedObjectID = moc.persistentStoreCoordinator?.managedObjectID(forURIRepresentation: mourl){
                 
-                let mo : NodeLink = moc.object(with: id!) as! NodeLink
+                let mo : NodeLink = moc.object(with: id) as! NodeLink
                 
                 if (mo.entity.name == "Trait"){
                     
@@ -150,9 +150,9 @@ class PlexusBNSKView: SKView {
     
     func addNode(_ mourl: URL){
        // let errorPtr : NSErrorPointer = nil
-        if let id : NSManagedObjectID? = moc.persistentStoreCoordinator?.managedObjectID(forURIRepresentation: mourl){
+        if let id : NSManagedObjectID = moc.persistentStoreCoordinator?.managedObjectID(forURIRepresentation: mourl){
             
-            let mo : NodeLink = moc.object(with: id!) as! NodeLink
+            let mo : NodeLink = moc.object(with: id) as! NodeLink
             
             let curNodes : [BNNode] = nodesController.arrangedObjects as! [BNNode]
             for curNode : BNNode in curNodes {

@@ -316,12 +316,7 @@ static void *ProgressObserverContext = &ProgressObserverContext;
     computes = inComputes;
     resultNodes = [NSMutableArray array];
     
-    
-    NSDate * startcalc = [NSDate date];
-    
-    
 
-    
     
     unsigned int i;
     cl_kernel bncalc_Kernel;
@@ -341,7 +336,6 @@ static void *ProgressObserverContext = &ProgressObserverContext;
     
     NSUInteger maxCPTSize = 0;
     
-    NSUInteger clComputes = [computes integerValue];
     NSUInteger clRuns = [runs integerValue]; // to tranfer to buffer
     NSUInteger clBurnins = [burnins integerValue];
     
@@ -397,8 +391,7 @@ static void *ProgressObserverContext = &ProgressObserverContext;
     
     
     
-    double timer = [startcalc timeIntervalSinceNow] * -1000.0;
-   // NSLog(@"Before getdeviceinfo %f since starting calc fxn", timer);
+
     
     int xoffset = 0;
     int cptoffset =0;
@@ -527,11 +520,7 @@ static void *ProgressObserverContext = &ProgressObserverContext;
     }
     
 
-  
-    
-    
-    timer = [startcalc timeIntervalSinceNow] * -1000.0;
-    NSLog(@"Before clCreateKernel %f since starting calc fxn", timer);
+
     
     bncalc_Kernel = clCreateKernel(bn_program, "BNGibbs", &err);
     if (!bncalc_Kernel || err != CL_SUCCESS) {
@@ -549,8 +538,7 @@ static void *ProgressObserverContext = &ProgressObserverContext;
     size_t bnreadsize;
     
     
-    timer = [startcalc timeIntervalSinceNow] * -1000.0;
-    NSLog(@"Before createbuffer %f since starting calc fxn", timer);
+
     
     
     
@@ -664,10 +652,6 @@ static void *ProgressObserverContext = &ProgressObserverContext;
     
 
 
-    
-    timer = [startcalc timeIntervalSinceNow] * -1000.0;
-   // NSLog(@"Before enqueuemapbuffers %f since starting calc fxn", timer);
-    
 
         
 
@@ -849,9 +833,7 @@ static void *ProgressObserverContext = &ProgressObserverContext;
     }
 
     
-    timer = [startcalc timeIntervalSinceNow] * -1000.0;
-   // NSLog(@"Before main queueing loop %f since starting calc fxn", timer);
-    
+
     
     
     dispatch_async(dispatch_get_main_queue(), ^{
@@ -874,8 +856,7 @@ static void *ProgressObserverContext = &ProgressObserverContext;
     
     while(ct < [computes intValue]) {
         
-        timer = [startcalc timeIntervalSinceNow] * -1000.0;
-       // NSLog(@"Top of ct loop %f since starting calc fxn", timer);
+
     
             
         //NSLog(@"******  tt is %i", tt);
@@ -900,8 +881,7 @@ static void *ProgressObserverContext = &ProgressObserverContext;
         
         
         
-        timer = [startcalc timeIntervalSinceNow] * -1000.0;
-       // NSLog(@"Before offsets enqueue %f since starting calc fxn", timer);
+
         
         
         //********************************
@@ -916,13 +896,11 @@ static void *ProgressObserverContext = &ProgressObserverContext;
             return calcerr;
         }
         
-        timer = [startcalc timeIntervalSinceNow] * -1000.0;
-      //  NSLog(@"Before offsets enqueuemapbiuffer %f since starting calc fxn", timer);
+
         
         int * mappedOffsets = clEnqueueMapBuffer(cl_queue, offsetbuf, CL_FALSE, CL_MAP_READ, 0, worksize*sizeof(cl_int), 0, NULL, NULL, NULL);
         
-        timer = [startcalc timeIntervalSinceNow] * -1000.0;
-       // NSLog(@"Before offsets arcrandopm  %f since starting calc fxn", timer);
+
         for(i=0;i<worksize;i++){
             mappedOffsets[i] = arc4random();
              // NSLog(@"offset %i", mappedOffsets[i]);
@@ -935,9 +913,7 @@ static void *ProgressObserverContext = &ProgressObserverContext;
         //********************************
         
         
-        timer = [startcalc timeIntervalSinceNow] * -1000.0;
-      //  NSLog(@"Before results enqueue %f since starting calc fxn", timer);
-        
+
         //********************************
         // MAPPED BUFFER CREATION - ARG 5 - BNRESULTS
         //********************************
@@ -959,9 +935,7 @@ static void *ProgressObserverContext = &ProgressObserverContext;
         //********************************
         
 
-        
-        timer = [startcalc timeIntervalSinceNow] * -1000.0;
-      //  NSLog(@"Before set arguments %f since starting calc fxn", timer);
+
         
         //********************************
         //********************************
@@ -1047,10 +1021,7 @@ static void *ProgressObserverContext = &ProgressObserverContext;
         
 
         
-        
-        
-        timer = [startcalc timeIntervalSinceNow] * -1000.0;
-        //NSLog(@"Before kernel enqueue %f since starting calc fxn", timer);
+
         
         //Enqueue kernel
         err = CL_SUCCESS;
@@ -1092,8 +1063,7 @@ static void *ProgressObserverContext = &ProgressObserverContext;
         
            // NSLog(@"Bottom of queueing loop. ct %i tt %i", ct, tt);
             if(ct >= [computes intValue]) break; //in case we do not need all the devices
-            timer = [startcalc timeIntervalSinceNow] * -1000.0;
-          //  NSLog(@"Bottom of ct loop %f since starting calc fxn", timer);
+
         
         
         
@@ -1133,11 +1103,6 @@ static void *ProgressObserverContext = &ProgressObserverContext;
 
 
 
-     
-    
-    
-    timer = [startcalc timeIntervalSinceNow] * -1000.0;
-     NSLog(@"After clFinish %f since starting calc fxn", timer);
     
     //PROFILING CODE
     /*
@@ -1187,8 +1152,7 @@ static void *ProgressObserverContext = &ProgressObserverContext;
         
     }
     
-    timer = [startcalc timeIntervalSinceNow] * -1000.0;
-    NSLog(@"After results read %f since starting calc fxn", timer);
+
     
     
     for(int dev = 0; dev < numpasses; dev++){
@@ -1225,8 +1189,7 @@ static void *ProgressObserverContext = &ProgressObserverContext;
     //if end is reached safely, no error
     
     
-    timer = [startcalc timeIntervalSinceNow] * -1000.0;
-    NSLog(@"At end of calc fxn %f since starting calc fxn", timer);
+
     
     return calcerr;
     
@@ -1243,14 +1206,6 @@ static void *ProgressObserverContext = &ProgressObserverContext;
 
 
 
-
-
-- (BOOL *) isBNProgram:(id)sender{
-    if(bn_program == nil){
-        return FALSE;
-    }
-    return TRUE;
-}
 
 
 @end

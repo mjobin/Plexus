@@ -130,7 +130,7 @@ extension BNNode {
     
     func CPT() {
 
-        let startcalc = NSDate()
+
         self.setValue(1, forKey: "cptReady") //processing, not ready
        // print ("**********\nCPT for \(self.nodeLink.name) cptReady \(self.cptReady)")
         
@@ -300,8 +300,6 @@ extension BNNode {
         self.setValue(archivedCPTArray, forKey: "cptArray")
         self.setValue(2, forKey: "cptReady") //processed, ready
 
-        let timetaken = startcalc.timeIntervalSinceNow
-       // print ("CPT calc took \(timetaken) cptReady set to \(self.cptReady)")
 
         return
     }
@@ -318,50 +316,12 @@ extension BNNode {
     }
     
     
-    func recursiveInfBy(_ sender:AnyObject, infBy:NSMutableOrderedSet , depth:Int) -> NSMutableOrderedSet {
-        
-        if(depth > 0){
-            infBy.add(self) //ignore first call, dpeth 0
-        }
-        
-        
-        let theInfluencedBy : [BNNode] = self.influencedBy.array as! [BNNode]
-        
-        for thisInfluencedBy in theInfluencedBy {
-            //skip any acciedntal self influences
-            if(thisInfluencedBy != self){
-                thisInfluencedBy.recursiveInfBy(self, infBy: infBy, depth: (depth+1))
-            }
-        }
-        
-        
-        return infBy
-    }
     
     func infBy(_ sender:AnyObject) -> NSArray {
         return self.influencedBy.array as! [BNNode] as NSArray
     }
     
-    func recursiveInfs(_ sender:AnyObject, infs:NSMutableOrderedSet , depth:Int) -> NSMutableOrderedSet {
-        
-        if(depth > 0){
-            infs.add(self) //ignore first call, dpeth 0
-        }
-        
-        
-        let theInfluences : [BNNode] = self.influences.array as! [BNNode]
-        
-        for thisInfluences in theInfluences {
-            //skip any acciedntal self influences
-            if(thisInfluences != self){
-                thisInfluences.recursiveInfs(self, infs: infs, depth: (depth+1))
-            }
-        }
-        
-        
-        return infs
-    }
-    
+ 
     
     func infs(_ sender:AnyObject) -> NSArray {
         return self.influences.array as! [BNNode] as NSArray

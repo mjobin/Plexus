@@ -159,9 +159,9 @@ class PlexusStructureViewController: NSViewController, NSTableViewDelegate, NSTa
                 
                 let mourl : URL = object as! URL
                 
-                if let id : NSManagedObjectID? = moc.persistentStoreCoordinator?.managedObjectID(forURIRepresentation: mourl){
+                if let id : NSManagedObjectID = moc.persistentStoreCoordinator?.managedObjectID(forURIRepresentation: mourl){
                     
-                    let mo : NodeLink = moc.object(with: id!) as! NodeLink
+                    let mo : NodeLink = moc.object(with: id) as! NodeLink
                     
                     if (mo.entity.name == "Entry"){
                         let curEntry = mo as! Entry

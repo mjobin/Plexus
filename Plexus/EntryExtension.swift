@@ -30,7 +30,7 @@ extension Entry {
         var tmpEntries = entriesArray        
         for childEntry in self.children {
             tmpEntries.append(childEntry as! Entry)
-            (childEntry as AnyObject).collectChildren(tmpEntries)
+            _ = (childEntry as! Entry).collectChildren(tmpEntries)
         }
         return tmpEntries
     }
@@ -48,7 +48,7 @@ extension Entry {
         }
         
         for thisChild in self.children {
-            (thisChild as AnyObject).collectTraits(tmpTraits, traitName: traitName)
+            _ = (thisChild as! Entry).collectTraits(tmpTraits, traitName: traitName)
         }
         return tmpTraits
     }
@@ -68,7 +68,7 @@ extension Entry {
         
         
         for thisChild in self.children {
-            (thisChild as AnyObject).collectTraitValues(tmpTraits, traitName: traitName)
+            _ = (thisChild as! Entry).collectTraitValues(tmpTraits, traitName: traitName)
         }
        return tmpTraits
     }

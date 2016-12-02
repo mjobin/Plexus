@@ -49,7 +49,6 @@
 
 
 - (NSError *) clCompile;
-- (BOOL *) isBNProgram:(id)sender;
 - (NSError *)calc:(NSProgressIndicator *)progInd withCurLabel:(NSTextField *)curLabel withWorkLabel:(NSTextField *)workLabel withNodes:(NSArray *) inNodes withRuns:(NSNumber *) inRuns withBurnin:(NSNumber *) inBurnins withComputes:(NSNumber*) inComputes;
 - (NSMutableArray *)getResults:(id)sender;
 
