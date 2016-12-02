@@ -14,6 +14,7 @@
 		C90D3EB91D4C14D70079CCCF /* tinymt32.c in Sources */ = {isa = PBXBuildFile; fileRef = C90D3EB71D4C14D70079CCCF /* tinymt32.c */; };
 		C90E0D0D1A7156D30001833E /* PlexusBNTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C90E0D0C1A7156D30001833E /* PlexusBNTabView.swift */; };
 		C913DCE21A60939D0029E90D /* BNNodeExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = C913DCE11A60939D0029E90D /* BNNodeExtension.swift */; };
+		C91DFBCF1DF0EA220006D3FD /* Plexus.help in Resources */ = {isa = PBXBuildFile; fileRef = C91DFBCE1DF0EA220006D3FD /* Plexus.help */; };
 		C9307BB319DCCA3B002AFF07 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9307BB219DCCA3B002AFF07 /* AppDelegate.swift */; };
 		C9307BB819DCCA3B002AFF07 /* Plexus.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = C9307BB619DCCA3B002AFF07 /* Plexus.xcdatamodeld */; };
 		C9307BBA19DCCA3B002AFF07 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C9307BB919DCCA3B002AFF07 /* Images.xcassets */; };
@@ -171,6 +172,7 @@
 		C90D3EB81D4C14D70079CCCF /* tinymt32.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = tinymt32.h; path = ../../TinyMT/tinymt/tinymt32.h; sourceTree = "<group>"; };
 		C90E0D0C1A7156D30001833E /* PlexusBNTabView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlexusBNTabView.swift; sourceTree = "<group>"; };
 		C913DCE11A60939D0029E90D /* BNNodeExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BNNodeExtension.swift; sourceTree = "<group>"; };
+		C91DFBCE1DF0EA220006D3FD /* Plexus.help */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Plexus.help; sourceTree = "<group>"; };
 		C92115481A01D9D7006E0183 /* bn_kernel.cl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.opencl; path = bn_kernel.cl; sourceTree = "<group>"; };
 		C9307BAD19DCCA3B002AFF07 /* Plexus.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Plexus.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C9307BB119DCCA3B002AFF07 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -245,6 +247,7 @@
 		C92E917C1DF0C9B0005370A5 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				C91DFBCE1DF0EA220006D3FD /* Plexus.help */,
 				C949AE3A1DF0E5E100ECA07B /* Credits.rtf */,
 			);
 			name = Resources;
@@ -549,6 +552,7 @@
 				C9307BBA19DCCA3B002AFF07 /* Images.xcassets in Resources */,
 				C949AE3B1DF0E5E100ECA07B /* Credits.rtf in Resources */,
 				C9307BBD19DCCA3B002AFF07 /* Main.storyboard in Resources */,
+				C91DFBCF1DF0EA220006D3FD /* Plexus.help in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
