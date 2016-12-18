@@ -324,7 +324,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                 self.performSelector(onMainThread: #selector(PlexusMainWindowController.startProgInd), with: nil, waitUntilDone: true)
                 
                 DispatchQueue.main.async {
-                    self.maxLabel.stringValue = String(fileLines.count)
+                    self.maxLabel.stringValue = String(fileLines.count-1)
                     self.progInd.isIndeterminate = false
                     self.progInd.doubleValue = 0
                     self.workLabel.stringValue = "Importing..."
@@ -1241,6 +1241,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
             self.progSheet.orderOut(self)
             self.window!.endSheet(self.progSheet)
         }
+        mainSplitViewController.modelDetailViewController?.reloadData()
         
     }
  

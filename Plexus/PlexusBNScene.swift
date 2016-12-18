@@ -625,12 +625,12 @@ class PlexusBNScene: SKScene {
                 let nnl1 = SKLabelNode(text: "Drag from  Traits to")
                 let nnl2 = SKLabelNode(text: "create a node.")
                 nnl1.fontSize = 18
-                nnl1.fontName = "SanFrancisco"
+               // nnl1.fontName = "SanFrancisco"
                 nnl1.name = "noNodesName"
                 nnl1.zPosition = 1
                 
                 nnl2.fontSize = 18
-                nnl2.fontName = "SanFrancisco"
+               // nnl2.fontName = "SanFrancisco"
                 nnl2.name = "noNodesName"
                 nnl2.zPosition = 1
                 
@@ -696,7 +696,7 @@ class PlexusBNScene: SKScene {
         //truncate
         
         let myLabel = SKLabelNode(text: inNode.nodeLink.name)
-        myLabel.fontName = "SanFrancisco"
+      //  myLabel.fontName = "SanFrancisco"
         myLabel.fontSize = 14
         myLabel.zPosition = 1
         myLabel.name = "nodeName"
@@ -706,7 +706,7 @@ class PlexusBNScene: SKScene {
         let inTrait = inNode.nodeLink as! Trait
         
         let valLabel = SKLabelNode(text: inTrait.traitValue)
-        valLabel.fontName = "SanFrancisco"
+      //  valLabel.fontName = "SanFrancisco"
         valLabel.fontSize = 12
         //valLabel.fontColor = SKColor.lightGray
         valLabel.zPosition = 1

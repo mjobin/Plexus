@@ -55,7 +55,6 @@
 		C9C9C2C11A0AECB200EF0A6A /* EntryExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9C9C2C01A0AECB200EF0A6A /* EntryExtension.swift */; };
 		C9D5B9881A714ABF00B64D5C /* PlexusBNSplitView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9D5B9871A714ABF00B64D5C /* PlexusBNSplitView.swift */; };
 		C9D80BC319E74779003A7575 /* PlexusEntryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9D80BC219E74779003A7575 /* PlexusEntryViewController.swift */; };
-		C9E374251A005D3700112F5A /* PlexusIconTransformer.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9E374241A005D3700112F5A /* PlexusIconTransformer.swift */; };
 		C9E74A7C1CA326E200A930DD /* CorePlot.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C9FC76C01BFE2CD5008CA6D0 /* CorePlot.framework */; };
 		C9E74A7D1CA3272900A930DD /* CorePlot.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = C9FC76C01BFE2CD5008CA6D0 /* CorePlot.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		C9F459041AFA636E00ADB4F4 /* PlexusRunMaxTranformer.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9F459031AFA636E00ADB4F4 /* PlexusRunMaxTranformer.swift */; };
@@ -221,7 +220,6 @@
 		C9C9C2C01A0AECB200EF0A6A /* EntryExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EntryExtension.swift; sourceTree = "<group>"; };
 		C9D5B9871A714ABF00B64D5C /* PlexusBNSplitView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlexusBNSplitView.swift; sourceTree = "<group>"; };
 		C9D80BC219E74779003A7575 /* PlexusEntryViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlexusEntryViewController.swift; sourceTree = "<group>"; };
-		C9E374241A005D3700112F5A /* PlexusIconTransformer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlexusIconTransformer.swift; sourceTree = "<group>"; };
 		C9F459031AFA636E00ADB4F4 /* PlexusRunMaxTranformer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlexusRunMaxTranformer.swift; sourceTree = "<group>"; };
 		C9FC76B21BFE2CD4008CA6D0 /* CorePlot.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = CorePlot.xcodeproj; path = "../core-plot/framework/CorePlot.xcodeproj"; sourceTree = "<group>"; };
 		C9FFB2951A561E7900DC79A2 /* Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Bridging-Header.h"; sourceTree = "<group>"; };
@@ -301,7 +299,6 @@
 				C9307BDA19DCD09E002AFF07 /* SpriteKit.framework */,
 				C9307BB119DCCA3B002AFF07 /* Info.plist */,
 				C969470319DF6DEF001CE994 /* CGPath+Arrow.swift */,
-				C9E374241A005D3700112F5A /* PlexusIconTransformer.swift */,
 				C980D6BB1AF828DF00184D66 /* PlexusRunMinTransformer.swift */,
 				C9F459031AFA636E00ADB4F4 /* PlexusRunMaxTranformer.swift */,
 				C9FFB2951A561E7900DC79A2 /* Bridging-Header.h */,
@@ -576,7 +573,6 @@
 				C9077D9E1A117AE200997C0D /* ModelExtension.swift in Sources */,
 				C913DCE21A60939D0029E90D /* BNNodeExtension.swift in Sources */,
 				C90E0D0D1A7156D30001833E /* PlexusBNTabView.swift in Sources */,
-				C9E374251A005D3700112F5A /* PlexusIconTransformer.swift in Sources */,
 				C94E80731AF03DCF0016F563 /* plexusmath.c in Sources */,
 				C9D5B9881A714ABF00B64D5C /* PlexusBNSplitView.swift in Sources */,
 				C936A70B19F1DDDA00DFB23C /* Trait.swift in Sources */,
@@ -725,7 +721,7 @@
 				);
 				INFOPLIST_FILE = Plexus/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				OPENCL_COMPILER_VERSION = CL1.2;
 				PRODUCT_BUNDLE_IDENTIFIER = "edu.scu.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -751,7 +747,7 @@
 				);
 				INFOPLIST_FILE = Plexus/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				OPENCL_COMPILER_VERSION = CL1.2;
 				PRODUCT_BUNDLE_IDENTIFIER = "edu.scu.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="11542" systemVersion="16B2555" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" initialViewController="B8D-0N-5wS">
+<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="11762" systemVersion="16C67" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" initialViewController="B8D-0N-5wS">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="11542"/>
-        <plugIn identifier="com.apple.MapKitIBPlugin" version="11542"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="11762"/>
+        <plugIn identifier="com.apple.MapKitIBPlugin" version="11762"/>
         <capability name="Alignment constraints to the first baseline" minToolsVersion="6.0"/>
         <capability name="Alignment constraints with different attributes" minToolsVersion="5.1"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -693,14 +693,14 @@
                                         </connections>
                                     </button>
                                 </toolbarItem>
-                                <toolbarItem implicitItemIdentifier="7DBB251A-F64A-427D-B561-2BB1683FD206" label="" paletteLabel="" image="616FB18C-CF5C-4762-93E5-B6DE25D0DE07" id="WkY-d0-2fX">
+                                <toolbarItem implicitItemIdentifier="7DBB251A-F64A-427D-B561-2BB1683FD206" label="" paletteLabel="" image="5CDAF8EC-086C-4FE9-A2DB-D93A8FBD0310" id="WkY-d0-2fX">
                                     <nil key="toolTip"/>
                                     <size key="minSize" width="47" height="32"/>
                                     <size key="maxSize" width="80" height="32"/>
                                     <button key="view" verticalHuggingPriority="750" id="W8k-c4-eBh">
                                         <rect key="frame" x="0.0" y="14" width="50" height="32"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="bevel" title="GPU" bezelStyle="regularSquare" image="616FB18C-CF5C-4762-93E5-B6DE25D0DE07" imagePosition="left" alignment="left" inset="2" id="rGO-yi-MFW">
+                                        <buttonCell key="cell" type="bevel" title="GPU" bezelStyle="regularSquare" image="5CDAF8EC-086C-4FE9-A2DB-D93A8FBD0310" imagePosition="left" alignment="left" inset="2" id="rGO-yi-MFW">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
@@ -1408,8 +1408,8 @@
                                                                         <sortDescriptor key="sortDescriptorPrototype" selector="compare:" sortKey="name"/>
                                                                         <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
                                                                         <prototypeCellViews>
-                                                                            <tableCellView horizontalCompressionResistancePriority="250" id="9fl-dC-bbd">
-                                                                                <rect key="frame" x="1" y="1" width="95" height="17"/>
+                                                                            <tableCellView horizontalCompressionResistancePriority="250" misplaced="YES" id="9fl-dC-bbd">
+                                                                                <rect key="frame" x="1" y="1" width="160" height="17"/>
                                                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                                 <subviews>
                                                                                     <textField horizontalHuggingPriority="750" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" allowsExpansionToolTips="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PNN-PD-9ml">
@@ -1538,7 +1538,7 @@
                                                     <rect key="frame" x="0.0" y="0.0" width="196" height="260"/>
                                                     <clipView key="contentView" id="Xhz-Nk-eWl">
                                                         <rect key="frame" x="1" y="1" width="194" height="258"/>
-                                                        <autoresizingMask key="autoresizingMask"/>
+                                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                         <subviews>
                                                             <textView usesFontPanel="YES" findStyle="panel" continuousSpellChecking="YES" allowsUndo="YES" allowsImageEditing="YES" usesRuler="YES" allowsNonContiguousLayout="YES" quoteSubstitution="YES" dashSubstitution="YES" spellingCorrection="YES" smartInsertDelete="YES" id="dkI-5s-Loh">
                                                                 <rect key="frame" x="0.0" y="0.0" width="194" height="258"/>
@@ -2645,7 +2645,7 @@
         </scene>
     </scenes>
     <resources>
-        <image name="616FB18C-CF5C-4762-93E5-B6DE25D0DE07" width="18" height="18">
+        <image name="5CDAF8EC-086C-4FE9-A2DB-D93A8FBD0310" width="18" height="18">
             <mutableData key="keyedArchiveRepresentation">
 YnBsaXN0MDDUAQIDBAUGZWZYJHZlcnNpb25YJG9iamVjdHNZJGFyY2hpdmVyVCR0b3ASAAGGoK8QGQcI
 ERYbHCo3ODk6Ozw9PkVGR0tPVFdaX2JVJG51bGzUCQoLDA0ODxBWJGNsYXNzXE5TSW1hZ2VGbGFnc1ZO

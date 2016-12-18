@@ -128,11 +128,10 @@ extension BNNode {
         return false;
     }
     
-    func CPT() {
+    func CPT() -> Int {
 
-
-        self.setValue(1, forKey: "cptReady") //processing, not ready
-       // print ("**********\nCPT for \(self.nodeLink.name) cptReady \(self.cptReady)")
+        let start = DispatchTime.now()
+//        print ("\n**********START CPT for \(self.nodeLink.name)")
         
         
         let curModel : Model = self.model
@@ -157,7 +156,7 @@ extension BNNode {
                 theEntries = try moc.fetch(request) 
             } catch let error as NSError {
                 print (error)
-                return
+                return 2 //FIXME
             }
             
         }
@@ -171,8 +170,7 @@ extension BNNode {
             let cptarray = [Double](repeating: -1.0, count: 1)
             let archivedCPTArray = NSKeyedArchiver.archivedData(withRootObject: cptarray)
             self.setValue(archivedCPTArray, forKey: "cptArray")
-            self.setValue(2, forKey: "cptReady") //processed, ready
-            return
+            return 2
         }
         
         let cptarraysize = Int(pow(2.0,Double(nInfBy)))
@@ -184,7 +182,7 @@ extension BNNode {
         var missing = 0.0
         
         for thisEntry in theEntries {
-           // print(thisEntry.name)
+//            print(thisEntry.name)
             var binbins = [String]()
             
             
@@ -193,7 +191,7 @@ extension BNNode {
                 var addbins = [String]()
                 let thisthisInfluencedBy = thisInfluencedBy as! BNNode
                 let curInfluencedBy = thisthisInfluencedBy.nodeLink as! Trait
-                //print ("CURRENT: \(curInfluencedBy.name) \(curInfluencedBy.traitValue)")
+//                print ("CURRENT: \(curInfluencedBy.name) \(curInfluencedBy.traitValue)")
                 
                // var binbin = String()
 
@@ -201,10 +199,9 @@ extension BNNode {
                 var infTraits = [Trait]()
                 for thisTrait in thisEntry.trait {
                     let curTrait = thisTrait as! Trait
-
                     if(curTrait.name == curInfluencedBy.name){
                         var bin = "0"
-                        //print ("INF: \(curTrait.name) \(curTrait.traitValue)")
+//                        print ("INF: \(curTrait.name) \(curTrait.traitValue)")
                         infTraits.append(curTrait)
                         if(thisthisInfluencedBy.numericData == true){
                             let lowT = Double(curInfluencedBy.traitValue)! * (1.0 - (thisthisInfluencedBy.tolerance.doubleValue/2.0))
@@ -287,30 +284,33 @@ extension BNNode {
             cptarray[i] = cptarray[i]/total
         }
         
-/*
-        print("--")
-        print(cptarray)
-        print("--")
-        print("total usable \(total)")
-        print("total entries missing \(missing)")
- */
+
+//        print("--")
+//        print(cptarray)
+//        print("--")
+//        print("total usable \(total)")
+//        print("total entries missing \(missing)")
+ 
         
 
         let archivedCPTArray = NSKeyedArchiver.archivedData(withRootObject: cptarray)
         self.setValue(archivedCPTArray, forKey: "cptArray")
-        self.setValue(2, forKey: "cptReady") //processed, ready
+        let end = DispatchTime.now()
+        let cptRunTime = Double(end.uptimeNanoseconds - start.uptimeNanoseconds) / 1000000000
+//        print ("**********END CPT for \(self.nodeLink.name) \(cptRunTime) seconds")
 
 
-        return
+
+        return 2
     }
     
 
     
     func getCPTArray(_ sender:AnyObject) -> [cl_float] {
-       // print ("****getCPTArray \(self.nodeLink.name) currently \(self.cptReady)")
-        if(self.cptReady != 2){
-            self.CPT()
-        }
+
+
+        self.CPT()
+        
         let cptarray = NSKeyedUnarchiver.unarchiveObject(with: self.value(forKey: "cptArray") as! Data) as! [cl_float]
         return  cptarray
     }

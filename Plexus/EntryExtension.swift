@@ -27,17 +27,22 @@ extension Entry {
     
     
     func collectChildren(_ entriesArray:[Entry]) -> [Entry] {
-        var tmpEntries = entriesArray        
+
+        var tmpEntries = entriesArray
         for childEntry in self.children {
-            tmpEntries.append(childEntry as! Entry)
-            _ = (childEntry as! Entry).collectChildren(tmpEntries)
+            tmpEntries = (childEntry as! Entry).collectChildren(tmpEntries)
         }
+        tmpEntries.append(self)
         return tmpEntries
     }
     
     func collectTraits(_ traitsArray:[Trait], traitName:String) -> [Trait] {
         var tmpTraits = traitsArray
         
+        
+        for thisChild in self.children {
+            tmpTraits = (thisChild as! Entry).collectTraits(tmpTraits, traitName: traitName)
+        }
         
         for thisTrait in self.trait{
             let tmpTrait = thisTrait as! Trait
@@ -47,9 +52,6 @@ extension Entry {
             
         }
         
-        for thisChild in self.children {
-            _ = (thisChild as! Entry).collectTraits(tmpTraits, traitName: traitName)
-        }
         return tmpTraits
     }
     
@@ -57,6 +59,10 @@ extension Entry {
         var tmpTraits = traitsArray
         
 
+        for thisChild in self.children {
+            tmpTraits = (thisChild as! Entry).collectTraitValues(tmpTraits, traitName: traitName)
+        }
+        
         for thisTrait in self.trait{
             let tmpTrait = thisTrait as! Trait
             if(tmpTrait.name == traitName){
@@ -66,10 +72,7 @@ extension Entry {
         }
         
         
-        
-        for thisChild in self.children {
-            _ = (thisChild as! Entry).collectTraitValues(tmpTraits, traitName: traitName)
-        }
+
        return tmpTraits
     }
     

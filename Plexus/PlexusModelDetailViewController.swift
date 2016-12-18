@@ -42,7 +42,7 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
     @IBOutlet var priorV2Field : NSTextField!
     @IBOutlet var priorV2Label : NSTextField!
     
-
+    var cptReady : [BNNode:Int] = [:]
     
     var priorDist = 0
     var V1 = 0.1
@@ -58,7 +58,10 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
     
     var calcCPT = false
     var calcThisCPT = false
+
     var firstrun = true
+    
+    let defaults = UserDefaults.standard
     
     required init?(coder aDecoder: NSCoder)
     {
@@ -74,17 +77,7 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        
-        
 
-        var curNodes : [BNNode] = nodesController.selectedObjects as! [BNNode]
-        if(curNodes.count>0) {
-            curNode = curNodes[0]
-            curNode.CPT()
-        }
-
-
-        
         
         nodeVisView.blendingMode = NSVisualEffectBlendingMode.behindWindow
         nodeVisView.material = NSVisualEffectMaterial.dark
@@ -100,9 +93,9 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
         
         //Single Node View
         
+
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name.NSManagedObjectContextObjectsDidChange, object: moc)
         NotificationCenter.default.addObserver(self, selector: #selector(PlexusModelDetailViewController.mocDidChange(_:)), name: NSNotification.Name.NSManagedObjectContextObjectsDidChange, object: moc)
-       // NotificationCenter.default.addObserver(self, selector: #selector(PlexusModelDetailViewController.mocDidSave(_:)), name: NSNotification.Name.NSManagedObjectContextDidSave, object: moc)
-        
         _ = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(PlexusModelDetailViewController.cptCheck), userInfo: nil, repeats: true)
 
         
@@ -274,20 +267,43 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
 
         nodesController.addObserver(self, forKeyPath: "selectionIndex", options: options, context: nil)
         
+
+
+        
         
     }
-    /*
-    override func viewDidLayout() {
-     //   println("mdvc views bounds widths: \(view.bounds.width) \(visView.bounds.width) \(skView.bounds.width)")
-        scene.redrawNodes()
+
+    
+    override func viewDidDisappear() {
+        super.viewDidDisappear()
+
         
+        let leaveOnClose = defaults.bool(forKey: "leaveOnClose")
+        if(leaveOnClose != true){
+            let curNodes : [BNNode] = allNodesController.arrangedObjects as! [BNNode]
+            for curNode in curNodes{
+                curNode.setValue(0, forKey: "cptReady")
+            }
+        }
+        else {
+            for (key, value) in cptReady{
+                key.setValue(value, forKey: "cptReady")
+            }
+        }
+        defaults.set(true, forKey: "leaveOnClose")
+        
+        do {
+            try moc.save()
+        } catch let error as NSError {
+            print(error)
+        }
     }
-    */
     
     //******CPTScatterPlotDataSource fxns
     
     func reloadData() {
-      //  print ("reload data")
+        
+
         
         for view in nodeDetailCPTView.subviews{
             view.removeFromSuperview()
@@ -302,7 +318,7 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
             priorDist = Int(curNode.priorDistType)
             V1 = Double(curNode.priorV1)
             V2 = Double(curNode.priorV2)
-            
+//            print ("\(curNode.nodeLink.name) infbys: \(curNode.influencedBy.count)")
             if(curNode.influencedBy.count > 0) {
                 nodeDetailPriorView.isHidden = true
                 nodeDetailCPTView.isHidden = false
@@ -316,9 +332,7 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
                 
                 //Construct CPT table
                 
-                
-            
-                if(curNode.cptReady == 2 && calcCPT == false && calcThisCPT == false){
+                if(cptReady[curNode] == 2 && calcCPT == false && calcThisCPT == false){
                     let cptTableView = NSTableView(frame:nodeDetailCPTView.frame)
                     for curColumn in cptTableView.tableColumns{
                         cptTableView.removeTableColumn(curColumn)
@@ -351,11 +365,7 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
                    // cptTableContainer.addSubview(cptProgInd)
                     cptProgInd.sizeToFit()
                     cptProgInd.startAnimation(self)
-                    if(curNode.cptReady == 0){//neither ready nor being processed
-                        DispatchQueue.global().async {
-                           self.curNode.CPT()
-                        }
-                    }
+
                     
  
                 }
@@ -631,12 +641,14 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
 
     
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
-        let keyPathStr : String = keyPath! //FIXME this was added becaiuse in swift 2.0 the fxn was changed so that keyPath was a String?
+        let keyPathStr : String = keyPath!
         switch (keyPathStr) {
             case("selectionIndexPath"): //modelTreeController
                 scene.reloadData()
                 
             case("selectionIndex"): //nodesController
+
+               
                 self.reloadData()
                 
             default:
@@ -648,7 +660,6 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
 
         let info = notification.userInfo
 
-        //print (info)
        
         
         if let objs = info?[NSUpdatedObjectsKey] as? Set<NSManagedObject> {
@@ -658,9 +669,6 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
                 for (key, value) in changes {
                   //print ("UPD \(obj.objectID) \(key)")
                     if(key == "cptReady"){
-                        if(value as? String == "2"){
-                            self.reloadData()
-                        }
                         return
                     }
                     else if(key == "influences" || key == "influencedBy"){
@@ -682,8 +690,8 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
             for obj :NSManagedObject in objs {
               //  print ("DEL \(obj)")
                 let changes = obj.changedValues()
-                for (_, _) in changes {
-                 //  print ("DEL \(obj.objectID) \(key)")
+                for (key, value) in changes {
+                   //print ("DEL \(obj.objectID) \(key)")
 
                     calcCPT = true
 
@@ -697,8 +705,8 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
             for obj :NSManagedObject in objs {
              //  print ("INS \(obj)")
                 let changes = obj.changedValues()
-                for (_, _) in changes {
-                 // print ("INS \(obj.objectID) \(key)")
+                for (key, value) in changes {
+                  //print ("INS \(obj.objectID) \(key)")
 
                     calcCPT = true
                 }
@@ -707,13 +715,11 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
         }
         
 
-         //print ("mdc moc change calcCPT \(calcCPT)")
+
 
     }
     
-    func mocDidSave(_ notification: Notification){
-    //      print ("mdc moc saved")
-    }
+
  
     
 //tableview data source
@@ -725,7 +731,7 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
             if (curNode.value(forKey: "cptArray")) == nil {
                 return 0
             }
-            if(curNode.cptReady == 2){
+            if(cptReady[curNode] == 2){
                 let cptarray = NSKeyedUnarchiver.unarchiveObject(with: curNode.value(forKey: "cptArray") as! Data) as! [cl_float]
                 return cptarray.count
             }
@@ -740,16 +746,6 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
     func tableView(_ tableView: NSTableView, objectValueFor tableColumn: NSTableColumn?, row: Int) -> Any? {
         
         
-//        if (curNode.value(forKey: "cptArray")) == nil {
-//            var curNodes : [BNNode] = nodesController.selectedObjects as! [BNNode]
-//            if(curNodes.count>0) {
-//                curNode = curNodes[0]
-//                DispatchQueue.global().async {
-//                    self.curNode.CPT()
-//                }
-//                return nil
-//            }
-//        }
 
         
         var curNodes : [BNNode] = nodesController.selectedObjects as! [BNNode]
@@ -792,68 +788,120 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
  
     func cptCheck()
     {
-        
+
         if (firstrun){
-           // print ("firstrun")
-            let firstNodes : [BNNode] = allNodesController.arrangedObjects as! [BNNode]
-            for firstNode in firstNodes {
-               // print ("FIRSTRUN \(firstNode.nodeLink.name) \(firstNode.cptReady)")
-                if(firstNode.cptReady == 1){
-                    firstNode.cptReady = 0
+            
+            
+            cptReady = [:]
+            
+            let curNodes : [BNNode] = allNodesController.arrangedObjects as! [BNNode]
+            if(curNodes.count>0) {
+                for curNode in curNodes{
+                    if (curNode.cptReady as Int? == 1){
+                        cptReady[curNode] = 0
+                    }
+                    else {
+                        cptReady[curNode] = curNode.cptReady as Int?
+                    }
                 }
-            }
-            firstrun = false
-            return
-        }
-        
-        let curNodes : [BNNode] = nodesController.arrangedObjects as! [BNNode]
-        for curNode in curNodes {
-            //print ("checking \(curNode.nodeLink.name) \(curNode.cptReady)")
-            if(curNode.cptReady == 0){
-               // print("cpting \(curNode.nodeLink.name)")
-                DispatchQueue.global().async {
-                    curNode.CPT()
-                }
-                break //one at a time, please
-            }
-        }
-        
-        var selNodes : [BNNode] = nodesController.selectedObjects as! [BNNode]
-        if(selNodes.count>0) {
-            let selNode = selNodes[0]
-            if(selNode.cptReady == 2){
-                self.reloadData()
+                
             }
             
-        }
-        if(calcThisCPT == true){
-           // print ("calcThisCPT true")
-            let chkNodes : [BNNode] = nodesController.arrangedObjects as! [BNNode]
-            for chkNode in chkNodes {
-               // print("resetting \(chkNode.nodeLink.name)")
-                chkNode.setValue(0, forKey: "cptReady")
+            let leaveOnOpen = defaults.bool(forKey: "leaveOnOpen")
+            if(leaveOnOpen != true){
+                let curNodes : [BNNode] = nodesController.arrangedObjects as! [BNNode]
+                for curNode in curNodes{
+                    cptReady[curNode] = 0
+                }
                 
+                defaults.set(true, forKey: "leaveOnOpen")
             }
+            
+            firstrun = false
+            defaults.set(true, forKey: "leaveOnClose")
+            return
+        }
+
+        
+        var alltwos = true
+        
+        for (key, value) in cptReady{
+//        print ("checking on \(key.nodeLink.name): \(value)")
+           if(value == 0) {
+                alltwos = false
+                self.cptReady[key] = 1 //while processing
+                DispatchQueue.global().async {
+
+                    self.cptReady[key] = key.CPT()
+                    
+                    self.performSelector(onMainThread: #selector(PlexusModelDetailViewController.reloadData), with: nil, waitUntilDone: false)
+
+                }
+                break
+            }
+            else if (value == 1){
+                alltwos = false
+            }
+
+        }
+        
+        if (alltwos) { //If everything is processed and nothing changes, no need to recalculate on startup
+            defaults.set(true, forKey: "leaveOnOpen")
+            defaults.set(true, forKey: "leaveOnClose")
+        }
+
+        
+        
+
+        
+        if(calcThisCPT == true){
+           // print ("calcThisCPT")
+            do {
+                try moc.save()
+            } catch let error as NSError {
+                print(error)
+            }
+
+            
+            let curNodes : [BNNode] = nodesController.arrangedObjects as! [BNNode]
+            if(curNodes.count>0) {
+                for curNode in curNodes{
+                    cptReady[curNode] = 0
+                }
+            }
+            
             calcThisCPT = false
         }
+        
         if(calcCPT == true){
-          //  print ("calcCPT true")
-            let chkNodes : [BNNode] = allNodesController.arrangedObjects as! [BNNode]
-            for chkNode in chkNodes {
-              //  print("resetting \(chkNode.nodeLink.name)")
-                chkNode.setValue(0, forKey: "cptReady")
-                
+            
+            do {
+                try moc.save()
+            } catch let error as NSError {
+                print(error)
             }
+            
+
+            
+            cptReady = [:]
+            
+            let curNodes : [BNNode] = allNodesController.arrangedObjects as! [BNNode]
+            if(curNodes.count>0) {
+                for curNode in curNodes{
+                    cptReady[curNode] = 0
+                }
+            }
+            
+            
+
+            
+            defaults.set(false, forKey: "leaveOnOpen")
+            defaults.set(false, forKey: "leaveOnClose")
+
             calcCPT = false
         }
         
     }
 
-    @IBAction func calcCPTs(sender : AnyObject) {
-        let curNodes : [BNNode] = nodesController.arrangedObjects as! [BNNode]
-        for curNode in curNodes {
-            curNode.CPT()
-        }
-        
-    }
+
 }

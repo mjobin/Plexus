@@ -18,5 +18,6 @@ class Entry: NodeLink  {
     @NSManaged var latitude: Double
     @NSManaged var longitude: Double
     @NSManaged var structure: NSSet
+    @NSManaged var notes: Data?
 
 }
