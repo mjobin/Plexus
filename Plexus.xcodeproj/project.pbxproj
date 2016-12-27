@@ -30,6 +30,7 @@
 		C9423AFF19E2FFC200EE109C /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C9423AFE19E2FFC200EE109C /* CoreData.framework */; };
 		C9464CE01B27B8B9005004F0 /* PlexusEntryDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9464CDF1B27B8B9005004F0 /* PlexusEntryDetailViewController.swift */; };
 		C9464CEB1B27B8F0005004F0 /* PlexusModelDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9464CEA1B27B8F0005004F0 /* PlexusModelDetailViewController.swift */; };
+		C947E6D41E0C94FD007C321D /* mt.metal in Sources */ = {isa = PBXBuildFile; fileRef = C947E6D31E0C94FD007C321D /* mt.metal */; };
 		C949AE3B1DF0E5E100ECA07B /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = C949AE3A1DF0E5E100ECA07B /* Credits.rtf */; };
 		C94E80731AF03DCF0016F563 /* plexusmath.c in Sources */ = {isa = PBXBuildFile; fileRef = C94E80721AF03DCF0016F563 /* plexusmath.c */; };
 		C95A3BBE1B02DBF000825393 /* PlexusStructureViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95A3BBD1B02DBF000825393 /* PlexusStructureViewController.swift */; };
@@ -52,6 +53,7 @@
 		C9A0F3FF1AA10CAE00A476D0 /* PlexusBNSKView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9A0F3FE1AA10CAE00A476D0 /* PlexusBNSKView.swift */; };
 		C9AB85C01A5C3DF900F77E7E /* CPTMutablePlotRange+SwiftCompat.m in Sources */ = {isa = PBXBuildFile; fileRef = C9AB85BF1A5C3DF900F77E7E /* CPTMutablePlotRange+SwiftCompat.m */; };
 		C9BFBFBB19EF12E400EF1A86 /* PlexusModelViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9BFBFBA19EF12E400EF1A86 /* PlexusModelViewController.swift */; };
+		C9C962DA1E07624800B049FD /* BNGibbs.metal in Sources */ = {isa = PBXBuildFile; fileRef = C9C962D91E07624800B049FD /* BNGibbs.metal */; };
 		C9C9C2C11A0AECB200EF0A6A /* EntryExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9C9C2C01A0AECB200EF0A6A /* EntryExtension.swift */; };
 		C9D5B9881A714ABF00B64D5C /* PlexusBNSplitView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9D5B9871A714ABF00B64D5C /* PlexusBNSplitView.swift */; };
 		C9D80BC319E74779003A7575 /* PlexusEntryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9D80BC219E74779003A7575 /* PlexusEntryViewController.swift */; };
@@ -193,6 +195,8 @@
 		C9423AFE19E2FFC200EE109C /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		C9464CDF1B27B8B9005004F0 /* PlexusEntryDetailViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlexusEntryDetailViewController.swift; sourceTree = "<group>"; };
 		C9464CEA1B27B8F0005004F0 /* PlexusModelDetailViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlexusModelDetailViewController.swift; sourceTree = "<group>"; };
+		C947E6C61E0C94D9007C321D /* mt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mt.h; sourceTree = "<group>"; };
+		C947E6D31E0C94FD007C321D /* mt.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = mt.metal; sourceTree = "<group>"; };
 		C949AE3A1DF0E5E100ECA07B /* Credits.rtf */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.rtf; path = Credits.rtf; sourceTree = "<group>"; };
 		C94E80721AF03DCF0016F563 /* plexusmath.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = plexusmath.c; sourceTree = "<group>"; };
 		C95937411B2101A600CCDA19 /* tinymt.clh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = tinymt.clh; path = ../../TinyMT/opencl/tinymt.clh; sourceTree = "<group>"; };
@@ -217,6 +221,7 @@
 		C9AB85BE1A5C3DF900F77E7E /* CPTMutablePlotRange+SwiftCompat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "CPTMutablePlotRange+SwiftCompat.h"; sourceTree = "<group>"; };
 		C9AB85BF1A5C3DF900F77E7E /* CPTMutablePlotRange+SwiftCompat.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "CPTMutablePlotRange+SwiftCompat.m"; sourceTree = "<group>"; };
 		C9BFBFBA19EF12E400EF1A86 /* PlexusModelViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlexusModelViewController.swift; sourceTree = "<group>"; };
+		C9C962D91E07624800B049FD /* BNGibbs.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = BNGibbs.metal; sourceTree = "<group>"; };
 		C9C9C2C01A0AECB200EF0A6A /* EntryExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EntryExtension.swift; sourceTree = "<group>"; };
 		C9D5B9871A714ABF00B64D5C /* PlexusBNSplitView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlexusBNSplitView.swift; sourceTree = "<group>"; };
 		C9D80BC219E74779003A7575 /* PlexusEntryViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlexusEntryViewController.swift; sourceTree = "<group>"; };
@@ -290,6 +295,9 @@
 		C9307BB019DCCA3B002AFF07 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				C9C962D91E07624800B049FD /* BNGibbs.metal */,
+				C947E6C61E0C94D9007C321D /* mt.h */,
+				C947E6D31E0C94FD007C321D /* mt.metal */,
 				C9774DA11B02A9930008CB5C /* TinyMT */,
 				C92115481A01D9D7006E0183 /* bn_kernel.cl */,
 				C9423AFE19E2FFC200EE109C /* CoreData.framework */,
@@ -573,6 +581,7 @@
 				C9077D9E1A117AE200997C0D /* ModelExtension.swift in Sources */,
 				C913DCE21A60939D0029E90D /* BNNodeExtension.swift in Sources */,
 				C90E0D0D1A7156D30001833E /* PlexusBNTabView.swift in Sources */,
+				C9C962DA1E07624800B049FD /* BNGibbs.metal in Sources */,
 				C94E80731AF03DCF0016F563 /* plexusmath.c in Sources */,
 				C9D5B9881A714ABF00B64D5C /* PlexusBNSplitView.swift in Sources */,
 				C936A70B19F1DDDA00DFB23C /* Trait.swift in Sources */,
@@ -588,6 +597,7 @@
 				C9F459041AFA636E00ADB4F4 /* PlexusRunMaxTranformer.swift in Sources */,
 				C9464CEB1B27B8F0005004F0 /* PlexusModelDetailViewController.swift in Sources */,
 				C9AB85C01A5C3DF900F77E7E /* CPTMutablePlotRange+SwiftCompat.m in Sources */,
+				C947E6D41E0C94FD007C321D /* mt.metal in Sources */,
 				C98034781AA55192008B4802 /* NodeLink.swift in Sources */,
 				C969470419DF6DEF001CE994 /* CGPath+Arrow.swift in Sources */,
 				C98034701AA550CF008B4802 /* NodeLinkExtension.swift in Sources */,
