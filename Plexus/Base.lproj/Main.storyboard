@@ -693,14 +693,14 @@
                                         </connections>
                                     </button>
                                 </toolbarItem>
-                                <toolbarItem implicitItemIdentifier="7DBB251A-F64A-427D-B561-2BB1683FD206" label="" paletteLabel="" image="5CDAF8EC-086C-4FE9-A2DB-D93A8FBD0310" id="WkY-d0-2fX">
+                                <toolbarItem implicitItemIdentifier="7DBB251A-F64A-427D-B561-2BB1683FD206" label="" paletteLabel="" image="BB47B1A7-8C13-4A38-8D12-0CDA44ACE510" id="WkY-d0-2fX">
                                     <nil key="toolTip"/>
                                     <size key="minSize" width="47" height="32"/>
                                     <size key="maxSize" width="80" height="32"/>
                                     <button key="view" verticalHuggingPriority="750" id="W8k-c4-eBh">
                                         <rect key="frame" x="0.0" y="14" width="50" height="32"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="bevel" title="GPU" bezelStyle="regularSquare" image="5CDAF8EC-086C-4FE9-A2DB-D93A8FBD0310" imagePosition="left" alignment="left" inset="2" id="rGO-yi-MFW">
+                                        <buttonCell key="cell" type="bevel" title="GPU" bezelStyle="regularSquare" image="BB47B1A7-8C13-4A38-8D12-0CDA44ACE510" imagePosition="left" alignment="left" inset="2" id="rGO-yi-MFW">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
@@ -807,21 +807,21 @@
                                         <action selector="exportCSV:" target="B8D-0N-5wS" id="ct8-Rn-Had"/>
                                     </connections>
                                 </toolbarItem>
-                                <toolbarItem implicitItemIdentifier="B4095509-1D11-46E3-A7FA-58C36AF8EA19" label="Calculate" paletteLabel="Calculate" id="ScP-Eh-rOf">
+                                <toolbarItem implicitItemIdentifier="E48DEC70-4559-474A-B0E1-11F7B8E27148" label="Calculate" paletteLabel="Calculate" id="lYj-Xm-flT">
                                     <nil key="toolTip"/>
                                     <size key="minSize" width="38" height="32"/>
                                     <size key="maxSize" width="72" height="32"/>
-                                    <button key="view" verticalHuggingPriority="750" id="7gN-sd-C4X">
+                                    <button key="view" verticalHuggingPriority="750" id="Vzm-7N-vk6">
                                         <rect key="frame" x="0.0" y="14" width="72" height="32"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="push" title="p(θ|x)=" bezelStyle="rounded" imagePosition="overlaps" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Hf3-NN-hdn">
+                                        <buttonCell key="cell" type="push" title="p(θ|x)=" bezelStyle="rounded" imagePosition="overlaps" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="j30-Zg-k8X">
                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                             <font key="font" metaFont="systemSemibold" size="13"/>
                                         </buttonCell>
                                     </button>
                                     <connections>
-                                        <action selector="calculate:" target="B8D-0N-5wS" id="29N-a6-dYb"/>
-                                        <binding destination="B8D-0N-5wS" name="enabled" keyPath="modelTreeController.selection.complete" id="FGu-Tp-L68">
+                                        <action selector="calcMetal:" target="B8D-0N-5wS" id="Mr8-FZ-YlY"/>
+                                        <binding destination="B8D-0N-5wS" name="enabled" keyPath="modelTreeController.selection.complete" id="c2Y-ia-1ea">
                                             <dictionary key="options">
                                                 <string key="NSValueTransformerName">NSNegateBoolean</string>
                                             </dictionary>
@@ -838,8 +838,7 @@
                                 <toolbarItem reference="k41-Tj-JRN"/>
                                 <toolbarItem reference="EB6-A3-dHZ"/>
                                 <toolbarItem reference="3e1-GX-aR9"/>
-                                <toolbarItem reference="WkY-d0-2fX"/>
-                                <toolbarItem reference="ScP-Eh-rOf"/>
+                                <toolbarItem reference="lYj-Xm-flT"/>
                                 <toolbarItem reference="Gm9-uc-eHS"/>
                             </defaultToolbarItems>
                         </toolbar>
@@ -1540,7 +1539,7 @@
                                                         <rect key="frame" x="1" y="1" width="194" height="258"/>
                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                         <subviews>
-                                                            <textView usesFontPanel="YES" findStyle="panel" continuousSpellChecking="YES" allowsUndo="YES" allowsImageEditing="YES" usesRuler="YES" allowsNonContiguousLayout="YES" quoteSubstitution="YES" dashSubstitution="YES" spellingCorrection="YES" smartInsertDelete="YES" id="dkI-5s-Loh">
+                                                            <textView usesFontPanel="YES" selectionGranularity="word" findStyle="panel" continuousSpellChecking="YES" allowsUndo="YES" allowsImageEditing="YES" usesRuler="YES" allowsNonContiguousLayout="YES" quoteSubstitution="YES" dashSubstitution="YES" spellingCorrection="YES" smartInsertDelete="YES" id="dkI-5s-Loh">
                                                                 <rect key="frame" x="0.0" y="0.0" width="194" height="258"/>
                                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -2279,8 +2278,10 @@
                         <outlet property="nodeDetailVisView" destination="8oN-Tb-W93" id="F1C-3B-ylX"/>
                         <outlet property="nodeVisView" destination="G5e-uy-BBg" id="qts-nC-2A4"/>
                         <outlet property="nodesController" destination="Jh7-dX-xVp" id="Ij5-nk-AeL"/>
+                        <outlet property="numericData" destination="Q8f-ny-51J" id="p3K-Aa-IZA"/>
                         <outlet property="priorTypePopup" destination="x5q-Eg-8KT" id="XFF-wf-FJM"/>
                         <outlet property="priorV1Field" destination="2ht-n7-JVP" id="R4j-Ee-N6J"/>
+                        <outlet property="priorV1Label" destination="Wpu-Dd-U1A" id="afd-dO-PEE"/>
                         <outlet property="priorV1Slider" destination="IdR-pA-0Ym" id="f6T-28-3jo"/>
                         <outlet property="priorV2Field" destination="y3V-hm-xBM" id="bQU-ev-KZV"/>
                         <outlet property="priorV2Label" destination="kxL-E3-a7c" id="5Zf-Tl-OdD"/>
@@ -2645,7 +2646,7 @@
         </scene>
     </scenes>
     <resources>
-        <image name="5CDAF8EC-086C-4FE9-A2DB-D93A8FBD0310" width="18" height="18">
+        <image name="BB47B1A7-8C13-4A38-8D12-0CDA44ACE510" width="18" height="18">
             <mutableData key="keyedArchiveRepresentation">
 YnBsaXN0MDDUAQIDBAUGZWZYJHZlcnNpb25YJG9iamVjdHNZJGFyY2hpdmVyVCR0b3ASAAGGoK8QGQcI
 ERYbHCo3ODk6Ozw9PkVGR0tPVFdaX2JVJG51bGzUCQoLDA0ODxBWJGNsYXNzXE5TSW1hZ2VGbGFnc1ZO
@@ -2674,8 +2675,8 @@ AtkC3ALuAvEC9gAAAAAAAAIBAAAAAAAAAGkAAAAAAAAAAAAAAAAAAAL4A
         <image name="NSRemoveTemplate" width="11" height="11"/>
         <image name="Plexus Export Icon" width="19" height="19"/>
         <image name="Plexus Import Icon" width="19" height="19"/>
-        <image name="PlexusAddChild" width="24" height="24"/>
-        <image name="PlexusScopeButton" width="24" height="24"/>
-        <image name="PlexusUnscopeButton" width="24" height="24"/>
+        <image name="PlexusAddChild" width="48" height="48"/>
+        <image name="PlexusScopeButton" width="48" height="48"/>
+        <image name="PlexusUnscopeButton" width="48" height="48"/>
     </resources>
 </document>

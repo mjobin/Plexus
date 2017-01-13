@@ -75,9 +75,11 @@ class PlexusModelViewController: NSViewController {
             newNode.setValue(curNode.numericData, forKey: "numericData")
             newNode.setValue(curNode.tolerance, forKey: "tolerance")
             newNode.setValue(curNode.cptArray, forKey: "cptArray")
-
             
-
+            
+            //Move postArray and post Count to new nodes' priorArray and priorCount, so that new sims can be run on previous results
+            newNode.setValue(curNode.postArray, forKey: "priorArray")
+            newNode.setValue(curNode.postCount, forKey: "priorCount")
             
             
             let blankArray = [NSNumber]()

@@ -696,7 +696,7 @@ class PlexusBNScene: SKScene {
         //truncate
         
         let myLabel = SKLabelNode(text: inNode.nodeLink.name)
-      //  myLabel.fontName = "SanFrancisco"
+        myLabel.fontName = "Helvetica-Bold"
         myLabel.fontSize = 14
         myLabel.zPosition = 1
         myLabel.name = "nodeName"
@@ -706,7 +706,7 @@ class PlexusBNScene: SKScene {
         let inTrait = inNode.nodeLink as! Trait
         
         let valLabel = SKLabelNode(text: inTrait.traitValue)
-      //  valLabel.fontName = "SanFrancisco"
+        valLabel.fontName = "Helvetica"
         valLabel.fontSize = 12
         //valLabel.fontColor = SKColor.lightGray
         valLabel.zPosition = 1

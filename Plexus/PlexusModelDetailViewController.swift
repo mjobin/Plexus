@@ -38,9 +38,11 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
     @IBOutlet var priorTypePopup : NSPopUpButton!
     @IBOutlet var priorV1Slider : NSSlider!
     @IBOutlet var priorV1Field : NSTextField!
+    @IBOutlet var priorV1Label : NSTextField!
     @IBOutlet var priorV2Slider : NSSlider!
     @IBOutlet var priorV2Field : NSTextField!
     @IBOutlet var priorV2Label : NSTextField!
+    @IBOutlet var numericData : NSButton!
     
     var cptReady : [BNNode:Int] = [:]
     
@@ -92,8 +94,6 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
         
         
         //Single Node View
-        
-
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name.NSManagedObjectContextObjectsDidChange, object: moc)
         NotificationCenter.default.addObserver(self, selector: #selector(PlexusModelDetailViewController.mocDidChange(_:)), name: NSNotification.Name.NSManagedObjectContextObjectsDidChange, object: moc)
         _ = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(PlexusModelDetailViewController.cptCheck), userInfo: nil, repeats: true)
@@ -264,11 +264,7 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
         let options: NSKeyValueObservingOptions = [NSKeyValueObservingOptions.new, NSKeyValueObservingOptions.old]
         modelTreeController.addObserver(self, forKeyPath: "selectionIndexPath", options: options, context: nil)
         
-
         nodesController.addObserver(self, forKeyPath: "selectionIndex", options: options, context: nil)
-        
-
-
         
         
     }
@@ -303,6 +299,7 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
     
     func reloadData() {
         
+//        print ("reloadData: \(NSDate())")
 
         
         for view in nodeDetailCPTView.subviews{
@@ -323,7 +320,7 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
                 nodeDetailPriorView.isHidden = true
                 nodeDetailCPTView.isHidden = false
 
-                
+                numericData.isHidden = false
                 graph.add(priorPlot)
                 graph.remove(priorPlot)
                 
@@ -389,6 +386,7 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
                 nodeDetailCPTView.isHidden = true
                 nodeDetailPriorView.isHidden = false
                 
+                numericData.isHidden = true
                 
                 switch priorDist{
                 case 0: //point/expert
@@ -402,7 +400,10 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
                     priorV2Slider.minValue = 0.0
                     priorV2Slider.maxValue = 1.0
                     
+                    
                     priorPlot.interpolation = CPTScatterPlotInterpolation.linear
+                    dpriorPlot.interpolation = CPTScatterPlotInterpolation.linear
+                    
                    
                 case 2: // gaussian
                     
@@ -417,7 +418,8 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
                     priorV2Slider.maxValue = 1.0
                     
                     priorPlot.interpolation = CPTScatterPlotInterpolation.curved
-                    
+                    dpriorPlot.interpolation = CPTScatterPlotInterpolation.curved
+
                     
                 case 3: //beta
                     priorV1Slider.isHidden = false
@@ -431,6 +433,8 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
                     priorV2Slider.maxValue = 10.0
                     
                     priorPlot.interpolation = CPTScatterPlotInterpolation.curved
+                    dpriorPlot.interpolation = CPTScatterPlotInterpolation.curved
+
                     
 
                     
@@ -447,9 +451,22 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
                     priorV2Slider.maxValue = 10.0
                     
                     priorPlot.interpolation = CPTScatterPlotInterpolation.curved
+                    dpriorPlot.interpolation = CPTScatterPlotInterpolation.curved
                     
                     
-
+                case 5: //priorpost
+                    priorV1Slider.isHidden = true
+                    priorV1Field.isHidden = true
+                    priorV2Slider.isHidden = true
+                    priorV2Field.isHidden = true
+                    priorV1Label.isHidden = true
+                    priorV2Label.isHidden = true
+                    priorV1Slider.minValue = 0.0
+                    priorV1Slider.maxValue = 1.0
+                    priorV2Slider.minValue = 0.0
+                    priorV2Slider.maxValue = 1.0
+                    priorPlot.interpolation = CPTScatterPlotInterpolation.curved
+                    dpriorPlot.interpolation = CPTScatterPlotInterpolation.curved
                     
                 default:
                     priorV1Slider.isHidden = false
@@ -463,6 +480,7 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
                     priorV2Slider.maxValue = 1.0
                     
                     priorPlot.interpolation = CPTScatterPlotInterpolation.histogram
+                    dpriorPlot.interpolation = CPTScatterPlotInterpolation.histogram
                     
                 }
 
@@ -498,19 +516,32 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
                 self.dataForChart = [Double](repeating: 0.0, count: 100) as [NSNumber]
             }
             
-
+            if curNode.priorCount != nil {
+                let priorCount = NSKeyedUnarchiver.unarchiveObject(with: curNode.value(forKey: "priorCount") as! Data) as! [Int]
+                var priorData = [NSNumber]()
+                var curtop = 0
+                for thisPost in priorCount {
+                    if (curtop < thisPost) {
+                        curtop = thisPost
+                    }
+                }
+                for thisPrior : Int in priorCount {
+                    priorData.append((Double(thisPrior)/Double(curtop)) as NSNumber)
+                }
+                
+            
+                self.priorDataForChart = priorData
+            }
+            else {
                 
                 self.priorDataForChart = [Double](repeating: 0.0, count: 100) as [NSNumber]
+            }
             
-            
-
             
         }
             
         else { //no node, just move graph off view
-            
-
-            
+        
             
             priorDist = 0
             V1 = -10000.0
@@ -518,12 +549,9 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
             self.dataForChart = [Double](repeating: -10000.0, count: 100) as [NSNumber]
         }
         
-
         
         graph.reloadData()
         detailGraph.reloadData()
-        
-        
         
         
     }
@@ -535,7 +563,8 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
         if(plot.identifier!.isEqual("PriorPlot")){
             switch priorDist {
 
-
+            case 5: //priorPost
+                return UInt(self.priorDataForChart.count)
                 
             default:
                 return UInt(self.dataForChart.count)
@@ -589,15 +618,13 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
                     
                     return gamma(V1, b:V2, x:nidx) as AnyObject?
                     
-
+                case 5: //priorPost
+                    return self.priorDataForChart[Int(idx)] as NSNumber
                     
                 default:
                     return 0 as AnyObject?
                 }
-                
-                
-                
-                
+
             }
                 
             else if(plot.identifier!.isEqual("PostPlot")){
@@ -645,12 +672,8 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
         switch (keyPathStr) {
             case("selectionIndexPath"): //modelTreeController
                 scene.reloadData()
-                
             case("selectionIndex"): //nodesController
-
-               
                 self.reloadData()
-                
             default:
                 super.observeValue(forKeyPath: keyPath, of: object, change: change, context: context)
         }
@@ -659,20 +682,25 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
     func mocDidChange(_ notification: Notification){
 
         let info = notification.userInfo
+//        print (info)
+//        print (notification.object)
+        var relD = false
 
-       
+     //FIXME  restrict to only BNNode updates and changes? it responds to the entry then the BNNode it is attached to
         
         if let objs = info?[NSUpdatedObjectsKey] as? Set<NSManagedObject> {
             for obj :NSManagedObject in objs {
-              // print ("UPD \(obj)")
+//               print ("UPD \(obj.entity.description)")
                 let changes = obj.changedValues()
                 for (key, value) in changes {
-                  //print ("UPD \(obj.objectID) \(key)")
+//                  print ("UPD \(obj.objectID) \(key)")
                     if(key == "cptReady"){
                         return
                     }
                     else if(key == "influences" || key == "influencedBy"){
                         calcThisCPT = true
+                        relD = true
+
                     }
                     else if(key == "cptArray" || key == "postArray" || key == "postCount" || key == "postETHigh" || key == "postETLow" || key == "postHPDHigh" || key == "postHPDLow" || key == "postMean" || key == "postSSD"){
                         
@@ -680,6 +708,7 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
                     }
                     else {
                         calcCPT = true
+                        relD = true
                     }
                 }
 
@@ -691,9 +720,10 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
               //  print ("DEL \(obj)")
                 let changes = obj.changedValues()
                 for (key, value) in changes {
-                   //print ("DEL \(obj.objectID) \(key)")
+//                   print ("DEL \(obj.objectID) \(key)")
 
                     calcCPT = true
+                    relD = true
 
                     
                 }
@@ -706,15 +736,19 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
              //  print ("INS \(obj)")
                 let changes = obj.changedValues()
                 for (key, value) in changes {
-                  //print ("INS \(obj.objectID) \(key)")
+//                  print ("INS \(obj.objectID) \(key)")
 
                     calcCPT = true
+                    relD = true
+
                 }
                 
             }
         }
         
-
+        if relD == true {
+            self.reloadData() //FIXME will this mess up CPT calc?
+        }
 
 
     }
@@ -771,7 +805,7 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
                 let index = tableView.tableColumns.index(of: tableColumn!)
                 //print ("index \(index): revstr \(revstr)")
                 if ( index! > revstr.characters.count) {
-                    print ("oops. curNode \(curNode.nodeLink.name) infBy \(theInfBy) index \(index): revstr \(revstr)")
+                    print ("Error. curNode \(curNode.nodeLink.name) infBy \(theInfBy) index \(index): revstr \(revstr)")
                 }
                 let index2 = revstr.characters.index(revstr.startIndex, offsetBy: index!)
                 if(revstr[index2] == "1"){
@@ -849,9 +883,6 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
             defaults.set(true, forKey: "leaveOnOpen")
             defaults.set(true, forKey: "leaveOnClose")
         }
-
-        
-        
 
         
         if(calcThisCPT == true){

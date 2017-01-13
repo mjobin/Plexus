@@ -26,7 +26,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         
         //Register defaults
         let defaults = UserDefaults.standard
-        let pTypes: [String] = ["Point", "Uniform", "Gaussian", "Beta", "Gamma"]
+        let pTypes: [String] = ["Point", "Uniform", "Gaussian", "Beta", "Gamma", "PostPrior"]
         let dTypes: [String] = ["Global", "Self", "Children"]
         let oTypes: [String] = ["Trait", "Entry", "Structure"]
         let devTypes: [String] = ["CPU", "GPU"]

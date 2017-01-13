@@ -11,17 +11,14 @@
 using namespace metal;
 
 
-
-
-
-
-kernel void bngibbs(const device unsigned int *rngseeds [[buffer(0)]], device float *bnresults [[buffer(1)]], const device unsigned int *p [[buffer(2)]], const device unsigned int *priordisttypes [[buffer(3)]], const device float *priorv1s [[buffer(4)]], const device float *priorv2s[[buffer(5)]], const device int *infnet [[buffer(6)]], const device float *cptnet [[buffer(7)]], device uint *shufflenodes[[buffer(8)]], device float *bnstates[[buffer(9)]], uint gid [[thread_position_in_grid]]){
+kernel void bngibbs(const device unsigned int *rngseeds [[buffer(0)]], device float *bnresults [[buffer(1)]], const device unsigned int *p [[buffer(2)]], const device unsigned int *priordisttypes [[buffer(3)]], const device float *priorv1s [[buffer(4)]], const device float *priorv2s[[buffer(5)]], const device int *infnet [[buffer(6)]], const device float *cptnet [[buffer(7)]], device uint *shufflenodes[[buffer(8)]], device float *bnstates[[buffer(9)]], const device float *postpriors [[buffer(10)]], uint gid [[thread_position_in_grid]]){
 
     //p[0] = runs per
     //p[1] = burnins
     //p[2] = nodes count
     //p[3] = maxInfSize
     //p[4] = maxCPTSize
+    //p[5] = maxPPsize
     unsigned int g, h, i,j, k, sn, tmp = 0;
     int binsum = 0;
     float binx = 0;
@@ -29,8 +26,6 @@ kernel void bngibbs(const device unsigned int *rngseeds [[buffer(0)]], device fl
     int tot = 0;
     
 
-    
-    
     //Offsets
     //Rngseeds: gid
     //BNresults: gid*nodescount -> boff
@@ -41,6 +36,8 @@ kernel void bngibbs(const device unsigned int *rngseeds [[buffer(0)]], device fl
     int ioff = 0;
     //Cptnet: maxCPTsize -> p[4]*sn
     int coff = 0;
+    //Postpriors: maxPPsize -> p[5]*sn
+    int ppoff = 0;
 
     
     //Initialize and seed RNG
@@ -77,6 +74,8 @@ kernel void bngibbs(const device unsigned int *rngseeds [[buffer(0)]], device fl
             binx = 0;
             ioff = p[3]*sn;
             coff = p[4]*sn;
+            ppoff = p[5]*sn;
+
             
             for (i=ioff; i<(ioff+p[3]); i++){
                 if(infnet[i]<0) break;
@@ -105,17 +104,17 @@ kernel void bngibbs(const device unsigned int *rngseeds [[buffer(0)]], device fl
                         case 4: // gamma
                             flip = mt.gamma_dev(priorv1s[sn]/priorv2s[sn]);
                             break;
+                        case 5: //Posterior Prior
+                            flip = postpriors[ppoff+mt.randomx(p[5])];
+                            break;
                         default:
                             flip = priorv1s[sn];
                             break;
                     }
                     
                 }
-                
-                
-                flip = 1.0;
+
                 bnstates[sn+boff] = mt.pointroll(flip);
-                
                 
             }
             
@@ -125,20 +124,25 @@ kernel void bngibbs(const device unsigned int *rngseeds [[buffer(0)]], device fl
         }
         
         //Begin to record results after burnins value exceeded
-//        if(g>=p[1]){
-//            for(k=0; k<p[2]; k++){
-//                bnresults[k+boff] += bnstates[k+boff];
-//            }
-//            tot++;
-//        }
+        if(g>=p[1]){
+            for(k=0; k<p[2]; k++){
+                bnresults[k+boff] += bnstates[k+boff];
+            }
+            tot++;
+        }
         
      //END g loop
     }
     
     
     //Output
-//    for(i=0; i<p[2]; i++){
-//        bnresults[boff+i] /= tot;
+    for(i=0; i<p[2]; i++){
+        bnresults[boff+i] /= tot;
+    }
+//    if(gid <= p[4]*p[2]){
+//        testout[gid] = cptnet[gid];
 //    }
+
+
     
 }

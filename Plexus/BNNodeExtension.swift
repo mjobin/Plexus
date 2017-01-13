@@ -170,6 +170,9 @@ extension BNNode {
             let cptarray = [Double](repeating: -1.0, count: 1)
             let archivedCPTArray = NSKeyedArchiver.archivedData(withRootObject: cptarray)
             self.setValue(archivedCPTArray, forKey: "cptArray")
+            let end = DispatchTime.now()
+            let cptRunTime = Double(end.uptimeNanoseconds - start.uptimeNanoseconds) / 1000000000
+//            print ("**********END CPT for \(self.nodeLink.name) \(cptRunTime) seconds")
             return 2
         }
         
@@ -255,10 +258,7 @@ extension BNNode {
                 
             }
 
-            
 
-           // print(binbins)
-            
             
             for binbin in binbins {
                 if(binbin.characters.count == theInfluencedBy.count){ //ONLY include in part of the total if ALL influences have an associated trait in this entry
