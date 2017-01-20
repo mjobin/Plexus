@@ -640,10 +640,6 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
     @IBAction func calcMetal(_ x:NSToolbarItem){
         
 
-
-
-        
-
         let kernelFunction: MTLFunction? = defaultLibrary?.makeFunction(name: "bngibbs")
         do {
             pipelineState = try device?.makeComputePipelineState(function: kernelFunction!)
@@ -706,7 +702,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                     maxInfSize = theInfluencedBy.count
                 }
             }
-            if(maxInfSize>1){
+            if(maxInfSize<1){
                 return //so that we don't work with completely unlinked graphs
             }
             

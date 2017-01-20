@@ -129,13 +129,14 @@ extension BNNode {
     }
     
     func CPT() -> Int {
-
-        let start = DispatchTime.now()
-//        print ("\n**********START CPT for \(self.nodeLink.name)")
+//        let start = DispatchTime.now()
+//        print ("\n**********START altCPT for \(self.nodeLink.name)")
         
+        let appDelegate : AppDelegate = NSApplication.shared().delegate as! AppDelegate
+        let moc = appDelegate.managedObjectContext
         
         let curModel : Model = self.model
-               
+        
         //First collect all the scoped ENTRIES
         
         var theEntries = [Entry]()
@@ -148,135 +149,147 @@ extension BNNode {
             theEntries = thisStructure.entry.allObjects as! [Entry]
         }
         else{
-            let appDelegate : AppDelegate = NSApplication.shared().delegate as! AppDelegate
-            let moc = appDelegate.managedObjectContext
-            
             let request = NSFetchRequest<Entry>(entityName: "Entry")
             do {
-                theEntries = try moc.fetch(request) 
-            } catch let error as NSError {
-                print (error)
-                return 2 //FIXME
+                theEntries = try moc.fetch(request)
+            } catch {
+                return -1
             }
             
         }
-
         
         
-    
         let theInfluencedBy = self.infBy(self)
+
         let nInfBy = theInfluencedBy.count
         if(nInfBy < 1) { //since 2^0 is 1
             let cptarray = [Double](repeating: -1.0, count: 1)
             let archivedCPTArray = NSKeyedArchiver.archivedData(withRootObject: cptarray)
             self.setValue(archivedCPTArray, forKey: "cptArray")
             let end = DispatchTime.now()
-            let cptRunTime = Double(end.uptimeNanoseconds - start.uptimeNanoseconds) / 1000000000
-//            print ("**********END CPT for \(self.nodeLink.name) \(cptRunTime) seconds")
+//            let cptRunTime = Double(end.uptimeNanoseconds - start.uptimeNanoseconds) / 1000000000
+            //            print ("**********END CPT for \(self.nodeLink.name) \(cptRunTime) seconds")
             return 2
         }
+        
+        var infNames = [String]()
+        var infNumericData : [String : Bool] = [:]
+        var infTraitvalue : [String : String] = [:]
+        var infTolerance : [String : Double] = [:]
+        var infLowT : [String : Double] = [:]
+        var infHighT : [String : Double] = [:]
+        var infTraits  = [String]()
+        for thisInfluencedBy in theInfluencedBy {
+            let  curInfluencedBy = thisInfluencedBy as! BNNode
+            infNames.append(curInfluencedBy.nodeLink.name)
+            infNumericData[curInfluencedBy.nodeLink.name] = curInfluencedBy.numericData as Bool?
+            infTolerance[curInfluencedBy.nodeLink.name] = curInfluencedBy.tolerance as Double!
+            let curTrait : Trait = curInfluencedBy.nodeLink as! Trait
+            infTraits.append(curTrait.name)
+            infTraitvalue[curInfluencedBy.nodeLink.name] = curTrait.traitValue
+        }
+        
+
+        
+        
+        var entryTraits : [String : [Trait]] = [:]
+        for thisEntry in theEntries {
+            let emptyTraits = [Trait]()
+            entryTraits[thisEntry.name] = emptyTraits
+        }
+        
+        for infName in infNames {
+            if infNumericData[infName] == true {
+                infLowT[infName] = Double(infTraitvalue[infName]!)! * (1.0 - (infTolerance[infName]!/2.0))
+                infHighT[infName] = Double(infTraitvalue[infName]!)! * (1.0 + (infTolerance[infName]!/2.0))
+            }
+
+            
+        }
+        
         
         let cptarraysize = Int(pow(2.0,Double(nInfBy)))
         var cptarray = [Double](repeating: 0.0, count: cptarraysize)
         
-
         
         var total = 0.0
         var missing = 0.0
+
         
-        for thisEntry in theEntries {
-//            print(thisEntry.name)
-            var binbins = [String]()
-            
-            
+        var theTraits = [Trait]()
+        let request = NSFetchRequest<Trait>(entityName: "Trait")
+        request.returnsObjectsAsFaults = false
+        let predicate = NSPredicate(format: "entry IN %@ && name IN %@", argumentArray: [theEntries, infNames])
+        request.predicate = predicate
+        
 
-            for thisInfluencedBy in theInfluencedBy {
-                var addbins = [String]()
-                let thisthisInfluencedBy = thisInfluencedBy as! BNNode
-                let curInfluencedBy = thisthisInfluencedBy.nodeLink as! Trait
-//                print ("CURRENT: \(curInfluencedBy.name) \(curInfluencedBy.traitValue)")
-                
-               // var binbin = String()
-
-                
-                var infTraits = [Trait]()
-                for thisTrait in thisEntry.trait {
-                    let curTrait = thisTrait as! Trait
-                    if(curTrait.name == curInfluencedBy.name){
-                        var bin = "0"
-//                        print ("INF: \(curTrait.name) \(curTrait.traitValue)")
-                        infTraits.append(curTrait)
-                        if(thisthisInfluencedBy.numericData == true){
-                            let lowT = Double(curInfluencedBy.traitValue)! * (1.0 - (thisthisInfluencedBy.tolerance.doubleValue/2.0))
-                            let highT = Double(curInfluencedBy.traitValue)! * (1.0 + (thisthisInfluencedBy.tolerance.doubleValue/2.0))
-                            if(Double(curTrait.traitValue)! >= lowT && Double(curTrait.traitValue)! <= highT){
-                                //binbin += "1"
-                                bin = "1"
-                            }
-                            else{
-                                //binbin += "0"
-                            }
-                        }
-                        else{
-                            if(curTrait.traitValue == curInfluencedBy.traitValue){
-                               // binbin += "1"
-                                bin = "1"
-                                
+        
+        do {
+            theTraits = try moc.fetch(request)
+            for thisTrait in theTraits {
+                entryTraits[thisTrait.entry.name]?.append(thisTrait)
+            }
+            for thisEntry in theEntries {
+                var allbins = [String]()
+                let thisEntryTraits = entryTraits[thisEntry.name]!
+                for curTrait in infTraits {
+                    var traitbins = [String]()
+                    for thisTrait in thisEntryTraits {
+                        if(thisTrait.name == curTrait){
+                            if infNumericData[curTrait] == true {
+                                if(Double(thisTrait.traitValue)! >= infLowT[curTrait]!  && Double(thisTrait.traitValue)! <= infHighT[curTrait]!){
+                                    traitbins.append("1")
+                                }
+                                else {
+                                    traitbins.append("0")
+                                }
                             }
                             else {
-                                //binbin += "0"
+                                if thisTrait.traitValue == infTraitvalue[curTrait] {
+                                    traitbins.append("1")
+                                }
+                                else {
+                                   traitbins.append("0")
+                                }
                                 
                             }
                             
                         }
-                        
-                        addbins.append(bin)
-                        
-                       // binbins.append(binbin)
-
                     }
                     
-                }
-
-                
-                if (binbins.isEmpty){
-                    for bin in addbins{
-                        binbins.append(bin)
-                    }
-                }
-                else{
-                    var workbins = [String]()
-                    for bin in addbins {
-                        for oldbin in binbins {
-                            let newbin = oldbin + bin
-                            workbins.append(newbin)
+                    if allbins.isEmpty {
+                        for traitbin in traitbins {
+                            allbins.append(traitbin)
                         }
                     }
-                    binbins = workbins
+                    else {
+                        var workbins = [String]()
+                        for traitbin in traitbins {
+                            for oldbin in allbins {
+                                let newbin = oldbin + traitbin
+                                workbins.append(newbin)
+                            }
+                        }
+                        allbins = workbins
+                    }
                 }
-
                 
-            }
-
-
-            
-            for binbin in binbins {
-                if(binbin.characters.count == theInfluencedBy.count){ //ONLY include in part of the total if ALL influences have an associated trait in this entry
-                    
-                    if let number = Int(binbin, radix: 2) {
-                        cptarray[number] += 1.0
+                for thebin in allbins {
+                    if thebin.characters.count == nInfBy {
+                        cptarray[Int(strtoul(thebin, nil, 2))] += 1.0
+                        total += 1
+                    }
+                    else {
+                        missing += 1
                     }
                     
-                    total += 1
                     
                 }
-                else{ //add as ppart of the missing
-                    missing += 1
-                }
+                
             }
  
-            
-
+        } catch  {
+            return -1
         }
 
         
@@ -284,33 +297,26 @@ extension BNNode {
             cptarray[i] = cptarray[i]/total
         }
         
-
-//        print("--")
-//        print(cptarray)
-//        print("--")
-//        print("total usable \(total)")
-//        print("total entries missing \(missing)")
  
         
-
         let archivedCPTArray = NSKeyedArchiver.archivedData(withRootObject: cptarray)
         self.setValue(archivedCPTArray, forKey: "cptArray")
-        let end = DispatchTime.now()
-        let cptRunTime = Double(end.uptimeNanoseconds - start.uptimeNanoseconds) / 1000000000
-//        print ("**********END CPT for \(self.nodeLink.name) \(cptRunTime) seconds")
-
-
+//        let end = DispatchTime.now()
+//        let cptRunTime = Double(end.uptimeNanoseconds - start.uptimeNanoseconds) / 1000000000
+//        print ("**********END ALT CPT for \(self.nodeLink.name) \(cptRunTime) seconds. Usable \(total) missing \(missing) Array: \(cptarray)")
 
         return 2
+        
+
     }
+    
+
     
 
     
     func getCPTArray(_ sender:AnyObject) -> [cl_float] {
 
-
         self.CPT()
-        
         let cptarray = NSKeyedUnarchiver.unarchiveObject(with: self.value(forKey: "cptArray") as! Data) as! [cl_float]
         return  cptarray
     }

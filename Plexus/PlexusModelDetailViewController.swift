@@ -307,6 +307,8 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
         }
         //Get selected node
         let cptTableContainer = NSScrollView(frame:nodeDetailCPTView.frame)
+        numericData.isHidden = false
+
 
         var curNodes : [BNNode] = nodesController.selectedObjects as! [BNNode]
         if(curNodes.count>0) {
@@ -320,7 +322,7 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
                 nodeDetailPriorView.isHidden = true
                 nodeDetailCPTView.isHidden = false
 
-                numericData.isHidden = false
+//                numericData.isHidden = false
                 graph.add(priorPlot)
                 graph.remove(priorPlot)
                 
@@ -386,7 +388,7 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
                 nodeDetailCPTView.isHidden = true
                 nodeDetailPriorView.isHidden = false
                 
-                numericData.isHidden = true
+//                numericData.isHidden = true
                 
                 switch priorDist{
                 case 0: //point/expert
@@ -866,7 +868,8 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
                 self.cptReady[key] = 1 //while processing
                 DispatchQueue.global().async {
 
-                    self.cptReady[key] = key.CPT()
+                  self.cptReady[key] = key.CPT()
+
                     
                     self.performSelector(onMainThread: #selector(PlexusModelDetailViewController.reloadData), with: nil, waitUntilDone: false)
 
