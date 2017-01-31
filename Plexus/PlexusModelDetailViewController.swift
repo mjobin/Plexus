@@ -684,18 +684,15 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
     func mocDidChange(_ notification: Notification){
 
         let info = notification.userInfo
-//        print (info)
-//        print (notification.object)
+
         var relD = false
 
-     //FIXME  restrict to only BNNode updates and changes? it responds to the entry then the BNNode it is attached to
-        
         if let objs = info?[NSUpdatedObjectsKey] as? Set<NSManagedObject> {
             for obj :NSManagedObject in objs {
-//               print ("UPD \(obj.entity.description)")
+
                 let changes = obj.changedValues()
-                for (key, value) in changes {
-//                  print ("UPD \(obj.objectID) \(key)")
+                for (key, _) in changes {
+
                     if(key == "cptReady"){
                         return
                     }
@@ -717,40 +714,18 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
             }
         }
 
-        if let objs = info?[NSDeletedObjectsKey] as? Set<NSManagedObject> {
-            for obj :NSManagedObject in objs {
-              //  print ("DEL \(obj)")
-                let changes = obj.changedValues()
-                for (key, value) in changes {
-//                   print ("DEL \(obj.objectID) \(key)")
-
-                    calcCPT = true
-                    relD = true
-
-                    
-                }
-                
-            }
+        if (info?[NSDeletedObjectsKey] as? Set<NSManagedObject>) != nil {
+            calcCPT = true
+            relD = true
         }
         
-        if let objs = info?[NSInsertedObjectsKey] as? Set<NSManagedObject> {
-            for obj :NSManagedObject in objs {
-             //  print ("INS \(obj)")
-                let changes = obj.changedValues()
-                for (key, value) in changes {
-//                  print ("INS \(obj.objectID) \(key)")
-
-                    calcCPT = true
-                    relD = true
-
-                }
-                
-            }
+        if (info?[NSInsertedObjectsKey] as? Set<NSManagedObject>) != nil {
+            calcCPT = true
+            relD = true
         }
         
         if relD == true {
-            self.reloadData() //FIXME will this mess up CPT calc?
-        }
+            self.reloadData()         }
 
 
     }

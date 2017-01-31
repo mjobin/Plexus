@@ -163,7 +163,7 @@ float mt19937::gasdev()
 {
 
     int iset=0;
-    float gset;
+    float gset = 0.0;
     float fac,rsq,v1,v2;
 
     // if (*idum < 0) iset=0;

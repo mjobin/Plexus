@@ -26,13 +26,19 @@ extension Entry {
     }
     
     
-    func collectChildren(_ entriesArray:[Entry]) -> [Entry] {
+    func collectChildren(_ entriesArray:[Entry], depth:Int) -> [Entry] {
 
         var tmpEntries = entriesArray
+//        for _ in 0..<depth {
+//            print("*", terminator:"")
+//        }
+//        print("\(self.name) children count = \(self.children.count)")
         for childEntry in self.children {
-            tmpEntries = (childEntry as! Entry).collectChildren(tmpEntries)
+            tmpEntries = (childEntry as! Entry).collectChildren(tmpEntries,depth: (depth+1))
         }
-        tmpEntries.append(self)
+        if(depth > 0){
+            tmpEntries.append(self)
+        }
         return tmpEntries
     }
     

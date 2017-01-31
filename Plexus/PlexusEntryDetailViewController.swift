@@ -60,9 +60,6 @@ class PlexusEntryDetailViewController: NSViewController, NSTableViewDelegate, NS
     func tableView(_ tableView: NSTableView, objectValueFor tableColumn: NSTableColumn?, row: Int) -> Any? {
         let traitsArray : NSArray = traitsController.arrangedObjects as! NSArray
         return traitsArray.object(at: row)
- 
-       // return traitsController.arrangedObjects.objectAtIndex(row) FIXME beta compiler was complaing so i used the above clumsiness. replace?
-
     }
     
     func tableView(_ aTableView: NSTableView,
@@ -78,7 +75,7 @@ class PlexusEntryDetailViewController: NSViewController, NSTableViewDelegate, NS
             
             let traitsArray : NSArray = traitsController.arrangedObjects as! NSArray
             let selectedObject : AnyObject = traitsArray.object(at: selectedRow!) as AnyObject
-            // let selectedObject: AnyObject = traitsController.arrangedObjects.objectAtIndex(selectedRow) FIXME beta compiler was complaing so i used the above clumsiness. replace?
+
 
             
             let mutableArray : NSMutableArray = NSMutableArray()

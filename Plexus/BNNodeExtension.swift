@@ -142,7 +142,7 @@ extension BNNode {
         var theEntries = [Entry]()
         if(curModel.scope.entity.name == "Entry"){
             let thisEntry = curModel.scope as! Entry
-            theEntries = thisEntry.collectChildren([Entry]())
+            theEntries = thisEntry.collectChildren([Entry](), depth: 0)
         }
         else if (curModel.scope.entity.name == "Structure"){
             let thisStructure = curModel.scope as! Structure
@@ -158,7 +158,7 @@ extension BNNode {
             
         }
         
-        
+    
         let theInfluencedBy = self.infBy(self)
 
         let nInfBy = theInfluencedBy.count
@@ -166,7 +166,7 @@ extension BNNode {
             let cptarray = [Double](repeating: -1.0, count: 1)
             let archivedCPTArray = NSKeyedArchiver.archivedData(withRootObject: cptarray)
             self.setValue(archivedCPTArray, forKey: "cptArray")
-            let end = DispatchTime.now()
+//            let end = DispatchTime.now()
 //            let cptRunTime = Double(end.uptimeNanoseconds - start.uptimeNanoseconds) / 1000000000
             //            print ("**********END CPT for \(self.nodeLink.name) \(cptRunTime) seconds")
             return 2
@@ -315,7 +315,6 @@ extension BNNode {
 
     
     func getCPTArray(_ sender:AnyObject) -> [cl_float] {
-
         self.CPT()
         let cptarray = NSKeyedUnarchiver.unarchiveObject(with: self.value(forKey: "cptArray") as! Data) as! [cl_float]
         return  cptarray

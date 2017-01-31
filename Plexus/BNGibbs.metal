@@ -85,7 +85,6 @@ kernel void bngibbs(const device unsigned int *rngseeds [[buffer(0)]], device fl
             
             if(cptnet[coff+binsum] < 0) {
                 
-                //FIXME inster distns
                 flip = -999.99;
                 while(flip < 0 || flip > 1){
                     switch(priordisttypes[sn]) {
@@ -139,9 +138,7 @@ kernel void bngibbs(const device unsigned int *rngseeds [[buffer(0)]], device fl
     for(i=0; i<p[2]; i++){
         bnresults[boff+i] /= tot;
     }
-//    if(gid <= p[4]*p[2]){
-//        testout[gid] = cptnet[gid];
-//    }
+
 
 
     

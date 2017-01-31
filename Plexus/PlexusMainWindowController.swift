@@ -903,10 +903,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                 results.append(thisresult)
             }
             
-            //Buffer 11: TEST Output FIXME remove once tests complete
-            var testout = Array(repeating: Float(0.0), count: ntWidth)
-            let testoutbuffer = self.device.makeBuffer(bytes: &testout, length: ntWidth*MemoryLayout<Float>.size, options: resourceOptions)
-            
+
 
             //RUN LOOP HERE
             var rc = 0
@@ -944,7 +941,6 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                 commandEncoder.setBuffer(shufflebuffer, offset: 0, at: 8)
                 commandEncoder.setBuffer(bnstatesbuffer, offset: 0, at: 9)
                 commandEncoder.setBuffer(postpriorbuffer, offset: 0, at: 10)
-                commandEncoder.setBuffer(testoutbuffer, offset: 0, at: 11)
                 
                 
 //                print("\nBefore dispatch: \(NSDate().timeIntervalSince(rstart as Date))")
@@ -965,26 +961,26 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                 var ri = 0
                 for to in bnresults {
 //                    print (to)
+                    if resc >= runstot {
+                        break
+                    }
                     results[ri].append(to)
                     ri = ri + 1
-                    resc = resc + 1
+                    
                     if ri >= nc {
                         ri = 0
+                        resc = resc + 1
                     }
                 }
-                
-                
-                let testoutdata = NSData(bytesNoCopy: testoutbuffer.contents(), length: testout.count*MemoryLayout<Float>.size, freeWhenDone: false)
-                testoutdata.getBytes(&testout, length:testout.count*MemoryLayout<Float>.size)
                 
 
 
                 
                 rc = rc + ntWidth
-//                print ("rc now \(rc)")
+
                 DispatchQueue.main.async {
                     self.progInd.increment(by: Double(ntWidth))
-                    self.curLabel.stringValue = String(rc)
+                    self.curLabel.stringValue = String(resc)
                 }
                 
 //                print("End of loop: \(NSDate().timeIntervalSince(rstart as Date))")
@@ -992,17 +988,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
             
             print("Time to run: \(NSDate().timeIntervalSince(start as Date)) seconds.")
             
-            //Trim off end
-//            for result in results {
-//                result = result.prefix(runstot)
-//            }
-            
 
-
-            
-            
-            let blankArray = [NSNumber]()
-            let blankData = NSKeyedArchiver.archivedData(withRootObject: blankArray)
             
             var bins = Int(pow(Float(curModel.runstot), 0.5))
             
@@ -1016,18 +1002,11 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
             
             var fi = 0
             for result in results {
-//                print ("********NODE")
-//                dump(result)
-//                print(result)
-                
-                //blank out previous postdata
-                //this shoudl never happen.. safer to blank it than mingle data
-//                inNode.setValue(blankData, forKey: "postCount")
-//                inNode.setValue(blankData, forKey: "postArray")
+
                 
                 var postCount = [Int](repeating: 0, count: bins)
                 
-                let inNode : BNNode = nodesForCalc[fi]  //FIXME is this the same node???
+                let inNode : BNNode = nodesForCalc[fi]
                 
                 var gi = 0
                 var flinetot : Float = 0.0
@@ -1103,18 +1082,12 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                 inNode.setValue(sortfline[low], forKey: "postHPDLow")
                 inNode.setValue(sortfline[high], forKey: "postHPDHigh")
                 
-                
-            
-                let startatime = Date.timeIntervalSinceReferenceDate;
-                
+
                 
                 let archivedPostArray = NSKeyedArchiver.archivedData(withRootObject: result)
                 inNode.setValue(archivedPostArray, forKey: "postArray")
                 
                 
-                let endatime = Date.timeIntervalSinceReferenceDate;
-                let ainterval = endatime-startatime
-//                print("Saving postarray took \(ainterval) seconds")
                 
                 
                 fi = fi + 1
@@ -1126,227 +1099,6 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         
     }
     
-//    @IBAction func  calculate(_ x:NSToolbarItem){
-//
-//        
-//        //collect data
-//        var nodesForCalc : [BNNode] = mainSplitViewController.modelDetailViewController?.nodesController.arrangedObjects as! [BNNode]
-//        let curModels : [Model] = mainSplitViewController.modelTreeController?.selectedObjects as! [Model]
-//        let curModel : Model = curModels[0]
-//        
-//        
-//        self.progSheet = self.progSetup(self)
-//        self.maxLabel.stringValue = String(describing: curModel.runstot)
-//        self.window!.beginSheet(self.progSheet, completionHandler: nil)
-//        self.progInd.isIndeterminate = false
-//        self.progInd.doubleValue = 0
-//        self.progInd.maxValue =  Double(curModel.runstot)
-//        self.progSheet.makeKeyAndOrderFront(self)
-//        
-//        
-//        DispatchQueue.global().async {
-//            
-//            let starttime = Date.timeIntervalSinceReferenceDate;
-//            
-//
-//
-//
-//            var operr: NSError?
-//            
-//            operr = self.calcop.calc(self.progInd, withCurLabel: self.curLabel, withWorkLabel: self.workLabel, withNodes: nodesForCalc, withRuns: curModel.runsper, withBurnin: curModel.burnins, withComputes: curModel.runstot) as NSError?
-//            
-//            DispatchQueue.main.async {
-//                self.progInd.isIndeterminate = true
-//                self.progInd.startAnimation(self)
-//                self.workLabel.stringValue = "Saving..."
-//            }
-//
-//    
-//            if(operr == nil){
-//                let resultNodes : NSMutableArray = self.calcop.getResults(self)
-//                
-//                let blankArray = [NSNumber]()
-//                let blankData = NSKeyedArchiver.archivedData(withRootObject: blankArray)
-//                
-//                var bins = Int(pow(Double(curModel.runstot), 0.5))
-//                
-//                if(bins < 100) {
-//                    bins = 100
-//                }
-//                
-//                let binQuotient = 1.0/Double(bins)
-//            
-//                bins = bins + 1 //one more bin for anything that is a 1.0
-//                
-//                var fi = 0
-//                for fNode in resultNodes {
-//                
-//                   // print("\n\n\n\n\n\n\n\n\n\n\n\n************\(fi)")
-//                    
-//                    var postCount = [Int](repeating: 0, count: bins)
-//                    
-//
-//                    
-//                    let inNode : BNNode = nodesForCalc[fi]  //FIXME is this the same node???
-//                    
-//                    //blank out previous postdata
-//                    //this shoudl never happen.. safer to blank it than mingle data
-//                    inNode.setValue(blankData, forKey: "postCount")
-//                    inNode.setValue(blankData, forKey: "postArray")
-//
-//
-//                    
-//                    let fline : [Double] = fNode as! [Double]
-//
-//
-//                    var gi = 0
-//                    var flinetot = 0.0
-//                    var flinecount = 0.0
-//                    for gNode : Double in fline {
-//                        
-//                       
-//                        if(gNode == gNode && gNode >= 0.0 && gNode <= 1.0) {//fails if nan
-//                            
-//                            let x = (Int)(floor(gNode/binQuotient))
-//                            //print ("result: \(gNode)  bin:\(x)")
-//                            postCount[x] += 1
-//                            flinetot += gNode
-//                            flinecount += 1.0
-//
-//                        }
-//                        
-//                        else{
-//                           // println("problem detected in reloadData. gNode is \(gNode)")
-//                        }
-//
-//                        gi += 1
-//                    }
-//                    
-//                    let archivedPostCount = NSKeyedArchiver.archivedData(withRootObject: postCount)
-//                    inNode.setValue(archivedPostCount, forKey: "postCount")
-//                    
-//                    
-//                    //Stats on post Array
-//                    //Mean
-//                    let flinemean = flinetot / flinecount
-//                    //print ("Mean \(flinemean)")
-//                    inNode.setValue(flinemean, forKey: "postMean")
-//                    
-//                    //Sample Standard Deviation
-//                    var sumsquares = 0.0
-//                    flinecount = 0.0
-//                    for gNode : Double in fline {
-//                        
-//                        if(gNode == gNode && gNode >= 0.0 && gNode <= 1.0) {//ignores if nan
-//                            sumsquares +=  pow(gNode - flinemean, 2.0)
-//                            flinecount += 1.0
-//                        }
-//                    }
-//                    
-//                    let ssd = sumsquares / (flinecount - 1.0)
-//                    inNode.setValue(ssd, forKey: "postSSD")
-//                    
-//                    let sortfline = fline.sorted()
-//                    let lowTail = sortfline[Int(Double(sortfline.count)*0.05)]
-//                    let highTail = sortfline[Int(Double(sortfline.count)*0.95)]
-//                    
-//                    inNode.setValue(lowTail, forKey: "postETLow")
-//                    inNode.setValue(highTail, forKey: "postETHigh")
-//                    
-//                    //Highest Posterior Density Interval. Alpha = 0.05
-//                    //Where n = sortfline.count (i.e. last entry)
-//                    //Compute credible intervals for j = 0 to j = n - ((1-0.05)n)
-//                    let alpha = 0.05
-//                    let jmax = Int(Double(sortfline.count) - ((1.0-alpha) * Double(sortfline.count)))
-//                    
-//                   var firsthpd = true
-//                    var interval = 0.0
-//                    var low = 0
-//                    var high = (sortfline.count - 1)
-//                    for hpdi in 0..<jmax {
-//                        let highpos = hpdi + Int(((1.0-alpha)*Double(sortfline.count)))
-//                        if(firsthpd || (sortfline[highpos] - sortfline[hpdi]) < interval){
-//                            firsthpd = false
-//                            interval = sortfline[highpos] - sortfline[hpdi]
-//                            low = hpdi
-//                            high = highpos
-//                        }
-//
-//                    }
-//                    inNode.setValue(sortfline[low], forKey: "postHPDLow")
-//                    inNode.setValue(sortfline[high], forKey: "postHPDHigh")
-//
-//
-//    
-//                    let startatime = Date.timeIntervalSinceReferenceDate;
-//
-//
-//                    let archivedPostArray = NSKeyedArchiver.archivedData(withRootObject: fline)
-//                    inNode.setValue(archivedPostArray, forKey: "postArray")
-//
-//                    
-//                    let endatime = Date.timeIntervalSinceReferenceDate;
-//                    let ainterval = endatime-startatime
-//                    print("Saving postarray took \(ainterval) seconds");
-//
-//                    fi += 1
-//                    
-//                }
-//                
-//                let notification:NSUserNotification = NSUserNotification()
-//                notification.title = "Plexus"
-//                notification.informativeText = "\(curModel.runstot.intValue) runs completed."
-//                
-//                notification.soundName = NSUserNotificationDefaultSoundName
-//                
-//                notification.deliveryDate = Date(timeIntervalSinceNow: 5)
-//                let notificationcenter:NSUserNotificationCenter = NSUserNotificationCenter.default
-//                
-//                notificationcenter.scheduleNotification(notification)
-//
-//
-//            }
-//            else{
-//                
-//                DispatchQueue.main.async {
-//                    let calcAlert : NSAlert = NSAlert()
-//                    calcAlert.alertStyle = NSAlertStyle.warning
-//                    calcAlert.messageText = (operr?.localizedFailureReason)!
-//                    calcAlert.informativeText = (operr?.localizedRecoverySuggestion)!
-//                    calcAlert.addButton(withTitle: "OK")
-//                    
-//                    let _ = calcAlert.runModal()
-//                    
-//                }
-//
-//                
-//
-//
-//        }
-//
-//            
-//            DispatchQueue.main.async {
-//                
-//                curModel.setValue(true, forKey: "complete")
-//    
-//                //self.window!.endSheet(self.progSheet)
-//                //self.progSheet.orderOut(self)
-//
-//            }
-//            
-//            self.performSelector(onMainThread: #selector(PlexusMainWindowController.endProgInd), with: nil, waitUntilDone: true)
-//            
-//            
-//
-//        
-//
-//            let endtime = Date.timeIntervalSinceReferenceDate;
-//            let interval = endtime-starttime
-//            print("Calculation took \(interval) seconds");
-//        }
-//        
-//       // print("End calcuilate fxn reached")
-//    }
     
 
     @IBAction func exportCSV(_ x:NSToolbarItem){
@@ -1401,7 +1153,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                 var theEntries = [Entry]()
                 if(curModel.scope.entity.name == "Entry"){
                     let thisEntry = curModel.scope as! Entry
-                    theEntries = thisEntry.collectChildren([Entry]())
+                    theEntries = thisEntry.collectChildren([Entry](), depth: 0)
                 }
                 else if (curModel.scope.entity.name == "Structure"){
                     let thisStructure = curModel.scope as! Structure

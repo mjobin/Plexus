@@ -11,7 +11,6 @@
 		C9077D981A11784C00997C0D /* PlexusBNNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9077D971A11784C00997C0D /* PlexusBNNode.swift */; };
 		C9077D9C1A1178AB00997C0D /* BNNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9077D9B1A1178AB00997C0D /* BNNode.swift */; };
 		C9077D9E1A117AE200997C0D /* ModelExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9077D9D1A117AE200997C0D /* ModelExtension.swift */; };
-		C90D3EB91D4C14D70079CCCF /* tinymt32.c in Sources */ = {isa = PBXBuildFile; fileRef = C90D3EB71D4C14D70079CCCF /* tinymt32.c */; };
 		C90E0D0D1A7156D30001833E /* PlexusBNTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C90E0D0C1A7156D30001833E /* PlexusBNTabView.swift */; };
 		C913DCE21A60939D0029E90D /* BNNodeExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = C913DCE11A60939D0029E90D /* BNNodeExtension.swift */; };
 		C91DFBCF1DF0EA220006D3FD /* Plexus.help in Resources */ = {isa = PBXBuildFile; fileRef = C91DFBCE1DF0EA220006D3FD /* Plexus.help */; };
@@ -34,16 +33,10 @@
 		C949AE3B1DF0E5E100ECA07B /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = C949AE3A1DF0E5E100ECA07B /* Credits.rtf */; };
 		C94E80731AF03DCF0016F563 /* plexusmath.c in Sources */ = {isa = PBXBuildFile; fileRef = C94E80721AF03DCF0016F563 /* plexusmath.c */; };
 		C95A3BBE1B02DBF000825393 /* PlexusStructureViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95A3BBD1B02DBF000825393 /* PlexusStructureViewController.swift */; };
-		C96059D81A9636D80046A8C8 /* PlexusCalculationOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = C96059D51A9636D80046A8C8 /* PlexusCalculationOperation.m */; };
 		C96946FC19DF6C8B001CE994 /* Quartz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C96946FB19DF6C8B001CE994 /* Quartz.framework */; };
 		C96946FE19DF6CC1001CE994 /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C96946FD19DF6CC1001CE994 /* MapKit.framework */; };
 		C969470119DF6D79001CE994 /* PlexusBNScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = C969470019DF6D79001CE994 /* PlexusBNScene.swift */; };
 		C969470419DF6DEF001CE994 /* CGPath+Arrow.swift in Sources */ = {isa = PBXBuildFile; fileRef = C969470319DF6DEF001CE994 /* CGPath+Arrow.swift */; };
-		C96DB1B41A8EAFBE0087762B /* bn_kernel.cl in CopyFiles */ = {isa = PBXBuildFile; fileRef = C92115481A01D9D7006E0183 /* bn_kernel.cl */; };
-		C9716DC61CA369390065D9A4 /* tinymt.clh in CopyFiles */ = {isa = PBXBuildFile; fileRef = C95937411B2101A600CCDA19 /* tinymt.clh */; };
-		C9716DC71CA369390065D9A4 /* tinymt32_jump_table.clh in CopyFiles */ = {isa = PBXBuildFile; fileRef = C95937421B2101A600CCDA19 /* tinymt32_jump_table.clh */; };
-		C9716DC81CA3693A0065D9A4 /* tinymt32_jump.clh in CopyFiles */ = {isa = PBXBuildFile; fileRef = C95937431B2101A600CCDA19 /* tinymt32_jump.clh */; };
-		C9716DC91CA3693A0065D9A4 /* tinymt32def.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = C95937441B2101A600CCDA19 /* tinymt32def.h */; };
 		C97B06EF1A4DE7E100514730 /* PlexusModelTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C97B06EE1A4DE7E100514730 /* PlexusModelTableViewController.swift */; };
 		C98034701AA550CF008B4802 /* NodeLinkExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = C980346F1AA550CF008B4802 /* NodeLinkExtension.swift */; };
 		C98034781AA55192008B4802 /* NodeLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = C98034771AA55192008B4802 /* NodeLink.swift */; };
@@ -135,7 +128,6 @@
 			dstPath = "";
 			dstSubfolderSpec = 7;
 			files = (
-				C96DB1B41A8EAFBE0087762B /* bn_kernel.cl in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -145,10 +137,6 @@
 			dstPath = "";
 			dstSubfolderSpec = 7;
 			files = (
-				C9716DC61CA369390065D9A4 /* tinymt.clh in CopyFiles */,
-				C9716DC71CA369390065D9A4 /* tinymt32_jump_table.clh in CopyFiles */,
-				C9716DC81CA3693A0065D9A4 /* tinymt32_jump.clh in CopyFiles */,
-				C9716DC91CA3693A0065D9A4 /* tinymt32def.h in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -169,12 +157,9 @@
 		C9077D971A11784C00997C0D /* PlexusBNNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlexusBNNode.swift; sourceTree = "<group>"; };
 		C9077D9B1A1178AB00997C0D /* BNNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BNNode.swift; sourceTree = "<group>"; };
 		C9077D9D1A117AE200997C0D /* ModelExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ModelExtension.swift; sourceTree = "<group>"; };
-		C90D3EB71D4C14D70079CCCF /* tinymt32.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = tinymt32.c; path = ../../TinyMT/tinymt/tinymt32.c; sourceTree = "<group>"; };
-		C90D3EB81D4C14D70079CCCF /* tinymt32.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = tinymt32.h; path = ../../TinyMT/tinymt/tinymt32.h; sourceTree = "<group>"; };
 		C90E0D0C1A7156D30001833E /* PlexusBNTabView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlexusBNTabView.swift; sourceTree = "<group>"; };
 		C913DCE11A60939D0029E90D /* BNNodeExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BNNodeExtension.swift; sourceTree = "<group>"; };
 		C91DFBCE1DF0EA220006D3FD /* Plexus.help */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Plexus.help; sourceTree = "<group>"; };
-		C92115481A01D9D7006E0183 /* bn_kernel.cl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.opencl; path = bn_kernel.cl; sourceTree = "<group>"; };
 		C9307BAD19DCCA3B002AFF07 /* Plexus.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Plexus.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C9307BB119DCCA3B002AFF07 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C9307BB219DCCA3B002AFF07 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -199,13 +184,7 @@
 		C947E6D31E0C94FD007C321D /* mt.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = mt.metal; sourceTree = "<group>"; };
 		C949AE3A1DF0E5E100ECA07B /* Credits.rtf */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.rtf; path = Credits.rtf; sourceTree = "<group>"; };
 		C94E80721AF03DCF0016F563 /* plexusmath.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = plexusmath.c; sourceTree = "<group>"; };
-		C95937411B2101A600CCDA19 /* tinymt.clh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = tinymt.clh; path = ../../TinyMT/opencl/tinymt.clh; sourceTree = "<group>"; };
-		C95937421B2101A600CCDA19 /* tinymt32_jump_table.clh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = tinymt32_jump_table.clh; path = ../../TinyMT/opencl/tinymt32_jump_table.clh; sourceTree = "<group>"; };
-		C95937431B2101A600CCDA19 /* tinymt32_jump.clh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = tinymt32_jump.clh; path = ../../TinyMT/opencl/tinymt32_jump.clh; sourceTree = "<group>"; };
-		C95937441B2101A600CCDA19 /* tinymt32def.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = tinymt32def.h; path = ../../TinyMT/opencl/tinymt32def.h; sourceTree = "<group>"; };
 		C95A3BBD1B02DBF000825393 /* PlexusStructureViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlexusStructureViewController.swift; sourceTree = "<group>"; };
-		C96059D41A9636D80046A8C8 /* PlexusCalculationOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlexusCalculationOperation.h; sourceTree = "<group>"; };
-		C96059D51A9636D80046A8C8 /* PlexusCalculationOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlexusCalculationOperation.m; sourceTree = "<group>"; };
 		C96946FB19DF6C8B001CE994 /* Quartz.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Quartz.framework; path = System/Library/Frameworks/Quartz.framework; sourceTree = SDKROOT; };
 		C96946FD19DF6CC1001CE994 /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
 		C96946FF19DF6CC1001CE994 /* Plexus.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = Plexus.entitlements; sourceTree = "<group>"; };
@@ -298,8 +277,6 @@
 				C9C962D91E07624800B049FD /* BNGibbs.metal */,
 				C947E6C61E0C94D9007C321D /* mt.h */,
 				C947E6D31E0C94FD007C321D /* mt.metal */,
-				C9774DA11B02A9930008CB5C /* TinyMT */,
-				C92115481A01D9D7006E0183 /* bn_kernel.cl */,
 				C9423AFE19E2FFC200EE109C /* CoreData.framework */,
 				C96946FD19DF6CC1001CE994 /* MapKit.framework */,
 				C96946FB19DF6C8B001CE994 /* Quartz.framework */,
@@ -353,23 +330,8 @@
 		C96059CF1A9636A90046A8C8 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
-				C96059D41A9636D80046A8C8 /* PlexusCalculationOperation.h */,
-				C96059D51A9636D80046A8C8 /* PlexusCalculationOperation.m */,
 			);
 			name = Classes;
-			sourceTree = "<group>";
-		};
-		C9774DA11B02A9930008CB5C /* TinyMT */ = {
-			isa = PBXGroup;
-			children = (
-				C95937411B2101A600CCDA19 /* tinymt.clh */,
-				C90D3EB71D4C14D70079CCCF /* tinymt32.c */,
-				C90D3EB81D4C14D70079CCCF /* tinymt32.h */,
-				C95937421B2101A600CCDA19 /* tinymt32_jump_table.clh */,
-				C95937431B2101A600CCDA19 /* tinymt32_jump.clh */,
-				C95937441B2101A600CCDA19 /* tinymt32def.h */,
-			);
-			name = TinyMT;
 			sourceTree = "<group>";
 		};
 		C97EAD1719EEECEF0004FF42 /* Models */ = {
@@ -568,7 +530,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C96059D81A9636D80046A8C8 /* PlexusCalculationOperation.m in Sources */,
 				C936A70D19F1DDDA00DFB23C /* Entry.swift in Sources */,
 				C9307BB319DCCA3B002AFF07 /* AppDelegate.swift in Sources */,
 				C9077D9C1A1178AB00997C0D /* BNNode.swift in Sources */,
@@ -577,7 +538,6 @@
 				C9307BB819DCCA3B002AFF07 /* Plexus.xcdatamodeld in Sources */,
 				C99B161D1A71794000554F83 /* PlexusMainSplitView.swift in Sources */,
 				C99FF8AF1B03AF80007C6722 /* Structure.swift in Sources */,
-				C90D3EB91D4C14D70079CCCF /* tinymt32.c in Sources */,
 				C9077D9E1A117AE200997C0D /* ModelExtension.swift in Sources */,
 				C913DCE21A60939D0029E90D /* BNNodeExtension.swift in Sources */,
 				C90E0D0D1A7156D30001833E /* PlexusBNTabView.swift in Sources */,
