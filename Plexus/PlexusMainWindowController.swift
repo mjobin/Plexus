@@ -8,7 +8,6 @@
 
 import Cocoa
 import CoreData
-import OpenCL
 import Metal
 import GameKit
 
@@ -49,7 +48,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
     }()
     var pipelineState: MTLComputePipelineState!
     
-//    let calcop = PlexusCalculationOperation() Disconnected 1/10/17
+
 
     
     var progSheet : NSWindow!
@@ -341,25 +340,10 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                 var batchCount : Int = 0
                 var columnCount = 0
                 var nameColumn = -1
-                var structureColumn = -1
                 var latitudeColumn = -1
                 var longitudeColumn = -1
                 var headers = [String]()
-                var existingStructures = [Structure]()
-                var existingStructureNames = [String]() //for speed
-                
-                let request = NSFetchRequest<Structure>(entityName: "Structure")
-                do{
-                    existingStructures = try self.moc.fetch(request)
 
-                    } catch let error as NSError {
-                        print(error)
-                }
-                
-                for curStructure :Structure in existingStructures {
-                    existingStructureNames.append(curStructure.name)
-                }
-            
                 
                 self.performSelector(onMainThread: #selector(PlexusMainWindowController.startProgInd), with: nil, waitUntilDone: true)
                 
@@ -386,9 +370,6 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                         for thisHeader in theHeader {
                             if thisHeader == "Name" {
                                 nameColumn = columnCount
-                            }
-                            if thisHeader == "Structure" {
-                                structureColumn = columnCount
                             }
                             if thisHeader == "Latitude" {
                                 latitudeColumn = columnCount
@@ -460,29 +441,8 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                                 newEntry.setValue(Float(theTraits[longitudeColumn]), forKey: "longitude")
                             }
                             
-                            if (structureColumn >= 0 ) {
-                                let theSubStructures : [String] = theTraits[structureColumn].components(separatedBy: "\t")
-                                for thisSubStructure in theSubStructures {
-                                    if(existingStructureNames.contains(thisSubStructure)){
-                                        for chkStructure in existingStructures {
-                                            if (chkStructure.name == thisSubStructure){
-                                                chkStructure.addEntryObject(newEntry)
-                                                //  an entry is part of EACH structure of that name
-                                            }
-                                        }
-                                        
-                                    }
-                                    else{ // a new stuetcure must be made, and added to exisitngStructures and existingStructureNames
-                                        let newStructure : Structure = Structure(entity: NSEntityDescription.entity(forEntityName: "Structure", in: inMOC)!, insertInto: inMOC)
-                                        newStructure.setValue(thisSubStructure, forKey: "name")
-                                        newStructure.addEntryObject(newEntry)
-                                        existingStructures.append(newStructure)
-                                        existingStructureNames.append(newStructure.name)
-                                    }
-                                }
-                                
-                            }
                             
+
                             
                             
                             newEntry.setValue("Entry", forKey: "type")
@@ -494,18 +454,16 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
 
                             
 
-
                             
                             columnCount = 0
                             for thisTrait in theTraits {
-                                //  print(thisTrait)
+
                                 
-                                if(columnCount != nameColumn && columnCount != structureColumn && columnCount != longitudeColumn && columnCount != latitudeColumn){
+                                if(columnCount != nameColumn && columnCount != longitudeColumn && columnCount != latitudeColumn){
                                     
                                     let theSubTraits : [String] = thisTrait.components(separatedBy: "\t")
                                     
                                     for thisSubTrait in theSubTraits {
-                                        //  print(thisSubTrait)
                                         if(thisSubTrait.trimmingCharacters(in: delimiterCharacterSet as CharacterSet) != "" ){//ignore empty
                                             let newTrait : Trait = Trait(entity: NSEntityDescription.entity(forEntityName: "Trait", in: inMOC)!, insertInto: inMOC)
                                             newTrait.setValue(headers[columnCount], forKey: "name")
@@ -597,15 +555,11 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                 
 
                     DispatchQueue.main.async {
-                        
-                       // self.progInd.isIndeterminate = true
-                       // self.progInd.startAnimation(self)
-                       // self.window!.endSheet(self.progSheet)
-                       // self.progSheet.orderOut(self)
-                        
+
                         let mSelPath = self.mainSplitViewController.modelTreeController.selectionIndexPath
                         self.moc.reset()
                         self.mainSplitViewController.entryTreeController.fetch(self)
+                        self.mainSplitViewController.structureViewController?.structureController.fetch(self)
                         self.mainSplitViewController.modelTreeController.fetch(self)
                         self.mainSplitViewController.modelTreeController.setSelectionIndexPath(mSelPath)
  
@@ -639,7 +593,9 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
     
     @IBAction func calcMetal(_ x:NSToolbarItem){
         
-
+        let mocChange = mainSplitViewController.modelDetailViewController?.mocChange
+        mainSplitViewController.modelDetailViewController?.calcInProgress = true
+        
         let kernelFunction: MTLFunction? = defaultLibrary?.makeFunction(name: "bngibbs")
         do {
             pipelineState = try device?.makeComputePipelineState(function: kernelFunction!)
@@ -794,7 +750,8 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
             //Buffer 7: Cptnet
             var cptnet = [Float]()
             for node in nodesForCalc {
-                let theCPT = node.getCPTArray(self)
+                let cptReady = self.mainSplitViewController.modelDetailViewController?.cptReady[node]!
+                let theCPT = node.getCPTArray(self, mocChanged: mocChange!, cptReady: cptReady!)
                 cptnet = cptnet + theCPT
                 let leftOver = maxCPTSize-theCPT.count
                 for _ in 0..<leftOver {
@@ -886,9 +843,6 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
             threadMemSize += intparams.count*MemoryLayout<UInt32>.size
             
 
-            
-
-            
             DispatchQueue.main.async {
                 self.progInd.isIndeterminate = false
                 self.progInd.doubleValue = 0
@@ -911,7 +865,6 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
             let start = NSDate()
             while (rc<runstot){
                 
-//                let rstart = NSDate()
                 
                 let commandBuffer = self.commandQueue.makeCommandBuffer()
                 let commandEncoder = commandBuffer.makeComputeCommandEncoder()
@@ -919,11 +872,6 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
             
                 //Buffer 0: RNG seeds
                 var seeds = (0..<ntWidth).map{_ in arc4random()}
-//                        print ("\n**********\nSEEDS")
-//                        for seed in seeds {
-//                            print (seed)
-//                            outText += seed
-//                        }
                 let seedsbuffer = self.device.makeBuffer(bytes: &seeds, length: seeds.count*MemoryLayout<UInt32>.size, options: MTLResourceOptions.cpuCacheModeWriteCombined)
                 commandEncoder.setBuffer(seedsbuffer, offset: 0, at: 0)
                 
@@ -943,7 +891,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                 commandEncoder.setBuffer(postpriorbuffer, offset: 0, at: 10)
                 
                 
-//                print("\nBefore dispatch: \(NSDate().timeIntervalSince(rstart as Date))")
+
                 
                 commandEncoder.dispatchThreadgroups(numThreadgroups, threadsPerThreadgroup: threadsPerThreadgroup)
                 
@@ -956,11 +904,9 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                 let bnresultsdata = NSData(bytesNoCopy: bnresultsbuffer.contents(), length: bnresults.count*MemoryLayout<Float>.size, freeWhenDone: false)
                 bnresultsdata.getBytes(&bnresults, length:bnresults.count*MemoryLayout<Float>.size)
                 
-//                print ("\n**********\nBNResults AFTER")
-//                print("Before data dump: \(NSDate().timeIntervalSince(rstart as Date))")
+
                 var ri = 0
                 for to in bnresults {
-//                    print (to)
                     if resc >= runstot {
                         break
                     }
@@ -983,7 +929,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                     self.curLabel.stringValue = String(resc)
                 }
                 
-//                print("End of loop: \(NSDate().timeIntervalSince(rstart as Date))")
+
             }
             
             print("Time to run: \(NSDate().timeIntervalSince(start as Date)) seconds.")
@@ -1087,6 +1033,8 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                 let archivedPostArray = NSKeyedArchiver.archivedData(withRootObject: result)
                 inNode.setValue(archivedPostArray, forKey: "postArray")
                 
+                inNode.setValue(inNode.cptArray, forKey: "cptFreezeArray")
+                
                 
                 
                 
@@ -1095,6 +1043,14 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
             }
 
             self.performSelector(onMainThread: #selector(PlexusMainWindowController.endProgInd), with: nil, waitUntilDone: true)
+            
+            DispatchQueue.main.async {
+                curModel.complete = true
+                self.mainSplitViewController.modelDetailViewController?.calcInProgress = false
+                
+                
+                
+            }
         }
         
     }
@@ -1278,12 +1234,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                 } catch _ {
                 }
                     
-                    
 
-                
-                //now print nodes
-               // let outDir = sv.directoryURL?.absoluteString
-               // let baseDir = outFile.absoluteString
                 DispatchQueue.main.async {
                 
                     self.progInd.isIndeterminate = true
@@ -1432,52 +1383,6 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                         graph?.paddingRight = 10.0
                         
 
-                        
-
-
-                        
-                        /*
-
-                        
-                        
-                         let titleStyle = CPTMutableTextStyle()
-                         titleStyle.fontName = "SanFrancisco"
-                         titleStyle.fontSize = 18.0
-                         titleStyle.color = CPTColor.blackColor()
-                         graph?.titleTextStyle = titleStyle
-                         graph?.title = node.nodeLink.name
-                         print ("title \(graph?.title)")
-                        
-                         let plotSpace : CPTXYPlotSpace = graph?.defaultPlotSpace as! CPTXYPlotSpace
-                         plotSpace.allowsUserInteraction = false
-                         
-                         
-                         let xRange = plotSpace.xRange.mutableCopy() as! CPTMutablePlotRange
-                         let yRange = plotSpace.yRange.mutableCopy() as! CPTMutablePlotRange
-                         
-                         xRange.length = 1.1
-                         yRange.length = 1.1
-                         
-                         
-                         plotSpace.xRange = xRange
-                         plotSpace.yRange = yRange
-
-                                                 plotSpace.scaleToFitPlots(graph?.allPlots())
-                        
-                        
-                        
-                        
-                        for plot in (graph?.allPlots())! {
-                            
-                            plot.frame = (graph?.bounds)!
-                            //print("plot \(plot.identifier) \(plot.frame.size)")
-                            //plot.reloadData()
-                            
-                        }
-
-                        
-        */
-
 
                         let pdfData = graph?.dataForPDFRepresentationOfLayer()
                         try? pdfData!.write(to: nodeURL!, options: [.atomic])
@@ -1490,8 +1395,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
  
 
                     self.performSelector(onMainThread: #selector(PlexusMainWindowController.endProgInd), with: nil, waitUntilDone: true)
-                   // self.window!.endSheet(self.progSheet)
-                   // self.progSheet.orderOut(self)
+
                     
                 }
             

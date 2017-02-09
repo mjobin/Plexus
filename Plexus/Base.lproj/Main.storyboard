@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="11762" systemVersion="16C67" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" initialViewController="B8D-0N-5wS">
+<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="11762" systemVersion="16D32" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" initialViewController="B8D-0N-5wS">
     <dependencies>
         <deployment identifier="macosx"/>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="11762"/>
@@ -693,14 +693,14 @@
                                         </connections>
                                     </button>
                                 </toolbarItem>
-                                <toolbarItem implicitItemIdentifier="7DBB251A-F64A-427D-B561-2BB1683FD206" label="" paletteLabel="" image="BB47B1A7-8C13-4A38-8D12-0CDA44ACE510" id="WkY-d0-2fX">
+                                <toolbarItem implicitItemIdentifier="7DBB251A-F64A-427D-B561-2BB1683FD206" label="" paletteLabel="" image="27CD07B2-7B38-4145-A183-C4A625A073FA" id="WkY-d0-2fX">
                                     <nil key="toolTip"/>
                                     <size key="minSize" width="47" height="32"/>
                                     <size key="maxSize" width="80" height="32"/>
                                     <button key="view" verticalHuggingPriority="750" id="W8k-c4-eBh">
                                         <rect key="frame" x="0.0" y="14" width="50" height="32"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="bevel" title="GPU" bezelStyle="regularSquare" image="BB47B1A7-8C13-4A38-8D12-0CDA44ACE510" imagePosition="left" alignment="left" inset="2" id="rGO-yi-MFW">
+                                        <buttonCell key="cell" type="bevel" title="GPU" bezelStyle="regularSquare" image="27CD07B2-7B38-4145-A183-C4A625A073FA" imagePosition="left" alignment="left" inset="2" id="rGO-yi-MFW">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
@@ -1537,7 +1537,7 @@
                                                     <rect key="frame" x="0.0" y="0.0" width="196" height="260"/>
                                                     <clipView key="contentView" id="Xhz-Nk-eWl">
                                                         <rect key="frame" x="1" y="1" width="194" height="258"/>
-                                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                        <autoresizingMask key="autoresizingMask"/>
                                                         <subviews>
                                                             <textView usesFontPanel="YES" selectionGranularity="word" findStyle="panel" continuousSpellChecking="YES" allowsUndo="YES" allowsImageEditing="YES" usesRuler="YES" allowsNonContiguousLayout="YES" quoteSubstitution="YES" dashSubstitution="YES" spellingCorrection="YES" smartInsertDelete="YES" id="dkI-5s-Loh">
                                                                 <rect key="frame" x="0.0" y="0.0" width="194" height="258"/>
@@ -1709,7 +1709,7 @@
                                                             <rect key="frame" x="0.0" y="0.0" width="580" height="162"/>
                                                             <autoresizingMask key="autoresizingMask"/>
                                                             <subviews>
-                                                                <visualEffectView appearanceType="vibrantDark" blendingMode="behindWindow" material="appearanceBased" state="active" translatesAutoresizingMaskIntoConstraints="NO" id="G5e-uy-BBg">
+                                                                <visualEffectView appearanceType="vibrantDark" blendingMode="behindWindow" material="ultraDark" state="active" translatesAutoresizingMaskIntoConstraints="NO" id="G5e-uy-BBg">
                                                                     <rect key="frame" x="0.0" y="0.0" width="580" height="162"/>
                                                                     <subviews>
                                                                         <customView translatesAutoresizingMaskIntoConstraints="NO" id="8km-Je-Bqh" customClass="PlexusBNSKView" customModule="Plexus" customModuleProvider="target">
@@ -2388,7 +2388,7 @@
                                     <constraint firstAttribute="width" relation="lessThanOrEqual" constant="150" id="nOr-vY-IcV"/>
                                 </constraints>
                                 <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="YES" id="Qqx-jE-fvC">
-                                    <rect key="frame" x="1" y="119" width="223" height="15"/>
+                                    <rect key="frame" x="1" y="193" width="148" height="16"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                 </scroller>
                                 <scroller key="verticalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="NO" id="kRC-35-COn">
@@ -2646,7 +2646,7 @@
         </scene>
     </scenes>
     <resources>
-        <image name="BB47B1A7-8C13-4A38-8D12-0CDA44ACE510" width="18" height="18">
+        <image name="27CD07B2-7B38-4145-A183-C4A625A073FA" width="18" height="18">
             <mutableData key="keyedArchiveRepresentation">
 YnBsaXN0MDDUAQIDBAUGZWZYJHZlcnNpb25YJG9iamVjdHNZJGFyY2hpdmVyVCR0b3ASAAGGoK8QGQcI
 ERYbHCo3ODk6Ozw9PkVGR0tPVFdaX2JVJG51bGzUCQoLDA0ODxBWJGNsYXNzXE5TSW1hZ2VGbGFnc1ZO
@@ -2675,8 +2675,8 @@ AtkC3ALuAvEC9gAAAAAAAAIBAAAAAAAAAGkAAAAAAAAAAAAAAAAAAAL4A
         <image name="NSRemoveTemplate" width="11" height="11"/>
         <image name="Plexus Export Icon" width="19" height="19"/>
         <image name="Plexus Import Icon" width="19" height="19"/>
-        <image name="PlexusAddChild" width="48" height="48"/>
-        <image name="PlexusScopeButton" width="48" height="48"/>
-        <image name="PlexusUnscopeButton" width="48" height="48"/>
+        <image name="PlexusAddChild" width="24" height="24"/>
+        <image name="PlexusScopeButton" width="24" height="24"/>
+        <image name="PlexusUnscopeButton" width="24" height="24"/>
     </resources>
 </document>

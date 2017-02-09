@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="11759" systemVersion="16C67" minimumToolsVersion="Xcode 7.3" sourceLanguage="Objective-C" userDefinedModelVersionIdentifier="">
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="11759" systemVersion="16D32" minimumToolsVersion="Xcode 7.3" sourceLanguage="Objective-C" userDefinedModelVersionIdentifier="">
     <entity name="BNNode" representedClassName="Plexus.BNNode" syncable="YES">
         <attribute name="cptArray" optional="YES" attributeType="Binary" syncable="YES"/>
+        <attribute name="cptFreezeArray" optional="YES" attributeType="Binary" syncable="YES"/>
         <attribute name="cptReady" optional="YES" attributeType="Integer 16" minValueString="0" maxValueString="2" defaultValueString="NO" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="numericData" optional="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="postArray" optional="YES" attributeType="Binary" syncable="YES"/>
@@ -60,7 +61,7 @@
         <relationship name="entry" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Entry" inverseName="trait" inverseEntity="Entry" syncable="YES"/>
     </entity>
     <elements>
-        <element name="BNNode" positionX="54" positionY="18" width="128" height="360"/>
+        <element name="BNNode" positionX="54" positionY="18" width="128" height="375"/>
         <element name="Entry" positionX="-468" positionY="-36" width="128" height="150"/>
         <element name="Model" positionX="349" positionY="-9" width="128" height="225"/>
         <element name="NodeLink" positionX="-297" positionY="-126" width="128" height="105"/>

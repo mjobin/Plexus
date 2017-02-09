@@ -49,7 +49,6 @@ class PlexusBNScene: SKScene {
         
         
         self.backgroundColor = SKColor.clear
-        
         self.physicsWorld.gravity = CGVector(dx: 0, dy: 0)
 
 

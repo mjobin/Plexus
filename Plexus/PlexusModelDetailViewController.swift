@@ -62,6 +62,8 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
     var calcThisCPT = false
 
     var firstrun = true
+    var mocChange = false
+    var calcInProgress = false
     
     let defaults = UserDefaults.standard
     
@@ -82,12 +84,10 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
 
         
         nodeVisView.blendingMode = NSVisualEffectBlendingMode.behindWindow
-        nodeVisView.material = NSVisualEffectMaterial.dark
+        nodeVisView.material = NSVisualEffectMaterial.ultraDark
         nodeVisView.state = NSVisualEffectState.active
         
 
-        
-        
         scene = PlexusBNScene(size: self.skView.bounds.size)
         scene.scaleMode = SKSceneScaleMode.resizeFill
         self.skView!.presentScene(scene)
@@ -100,17 +100,18 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
 
         
         singleNodeVisView.blendingMode = NSVisualEffectBlendingMode.behindWindow
-        singleNodeVisView.material = NSVisualEffectMaterial.dark
+        singleNodeVisView.material = NSVisualEffectMaterial.ultraDark
         singleNodeVisView.state = NSVisualEffectState.active
         
         nodeDetailVisView.blendingMode = NSVisualEffectBlendingMode.behindWindow
-        nodeDetailVisView.material = NSVisualEffectMaterial.dark
+        nodeDetailVisView.material = NSVisualEffectMaterial.ultraDark
         nodeDetailVisView.state = NSVisualEffectState.active
         
         
         
         graph = CPTXYGraph(frame:self.graphView.bounds)
         self.graphView.hostedGraph = graph
+//        graph.fill = CPTFill.init(color: CPTColor.black())
         
         detailGraph = CPTXYGraph(frame:self.graphView.bounds)
         self.nodeDetailGraphView.hostedGraph = detailGraph
@@ -125,6 +126,8 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
         graph.paddingLeft = 5.0
         graph.paddingRight = 5.0
         
+
+        
         detailGraph.plotAreaFrame?.paddingTop = 10.0
         detailGraph.plotAreaFrame?.paddingBottom = 10.0
         detailGraph.plotAreaFrame?.paddingLeft = 10.0
@@ -133,6 +136,8 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
         detailGraph.paddingBottom = 5.0
         detailGraph.paddingLeft = 5.0
         detailGraph.paddingRight = 5.0
+        
+
         
         let plotSpace : CPTXYPlotSpace = graph.defaultPlotSpace as! CPTXYPlotSpace
         plotSpace.allowsUserInteraction = false
@@ -164,7 +169,18 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
         axisSet.xAxis!.tickDirection = CPTSign.positive
         axisSet.yAxis!.tickDirection = CPTSign.positive
         axisSet.xAxis?.axisLineStyle = axisLineStyle
+        axisSet.xAxis?.majorTickLineStyle = axisLineStyle
+        axisSet.yAxis?.majorTickLineStyle = axisLineStyle
+        axisSet.xAxis?.minorTickLineStyle = axisLineStyle
+        axisSet.yAxis?.minorTickLineStyle = axisLineStyle
         axisSet.yAxis?.axisLineStyle = axisLineStyle
+        
+        let axisTextStyle = CPTMutableTextStyle.init()
+        axisTextStyle.color = CPTColor.white()
+        
+        axisSet.xAxis?.labelTextStyle = axisTextStyle
+        axisSet.yAxis?.labelTextStyle = axisTextStyle
+        
         
         let daxisSet = detailGraph.axisSet as! CPTXYAxisSet
         daxisSet.xAxis!.axisConstraints = CPTConstraints.constraint(withUpperOffset: 1.0)
@@ -173,6 +189,16 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
         daxisSet.xAxis!.axisConstraints = CPTConstraints.constraint(withLowerOffset: 0.0)
         daxisSet.xAxis!.tickDirection = CPTSign.positive
         daxisSet.yAxis!.tickDirection = CPTSign.positive
+        daxisSet.xAxis?.axisLineStyle = axisLineStyle
+        daxisSet.xAxis?.majorTickLineStyle = axisLineStyle
+        daxisSet.yAxis?.majorTickLineStyle = axisLineStyle
+        daxisSet.xAxis?.minorTickLineStyle = axisLineStyle
+        daxisSet.yAxis?.minorTickLineStyle = axisLineStyle
+        daxisSet.yAxis?.axisLineStyle = axisLineStyle
+        
+        daxisSet.xAxis?.labelTextStyle = axisTextStyle
+        daxisSet.yAxis?.labelTextStyle = axisTextStyle
+
         
         axisSet.xAxis!.labelingPolicy = .automatic
         axisSet.yAxis!.labelingPolicy = .automatic
@@ -191,9 +217,20 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
         detailGraph.axisSet = daxisSet
         
         
+        let titleTextStyle = CPTMutableTextStyle.init()
+        titleTextStyle.color = CPTColor.white()
+        
         priorPlot = CPTScatterPlot(frame:graph.bounds)
         priorPlot.identifier = "PriorPlot" as (NSCoding & NSCopying & NSObjectProtocol)?
-        priorPlot.title = "Prior"
+        
+        
+        let priorstring = "Prior"
+        let priorstringrange = (priorstring as NSString).range(of: priorstring)
+        let priorAS = NSMutableAttributedString(string: "Prior")
+        priorAS.addAttribute(NSForegroundColorAttributeName, value: NSColor.white, range: priorstringrange)
+        priorPlot.attributedTitle = priorAS
+        
+//        priorPlot.title = "Prior"
         let priorLineStyle = CPTMutableLineStyle()
         priorLineStyle.miterLimit = 1.0
         priorLineStyle.lineWidth = 2.0
@@ -207,7 +244,8 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
         
         dpriorPlot = CPTScatterPlot(frame:graph.bounds)
         dpriorPlot.identifier = "PriorPlot" as (NSCoding & NSCopying & NSObjectProtocol)?
-        dpriorPlot.title = "Prior"
+//        dpriorPlot.title = "Prior"
+        dpriorPlot.attributedTitle = priorAS
         let dpriorLineStyle = CPTMutableLineStyle()
         dpriorLineStyle.miterLimit = 1.0
         dpriorLineStyle.lineWidth = 2.0
@@ -222,7 +260,14 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
         
         let postPlot = CPTScatterPlot(frame:graph.bounds)
         postPlot.identifier = "PostPlot" as (NSCoding & NSCopying & NSObjectProtocol)?
-        postPlot.title = "Posterior"
+        
+        let poststring = "Posterior"
+        let poststringrange = (poststring as NSString).range(of: poststring)
+        let postAS = NSMutableAttributedString(string: "Posterior")
+        postAS.addAttribute(NSForegroundColorAttributeName, value: NSColor.white, range: poststringrange)
+        postPlot.attributedTitle = postAS
+        
+//        postPlot.title = "Posterior"
         let postLineStyle = CPTMutableLineStyle()
         postLineStyle.miterLimit = 1.0
         postLineStyle.lineWidth = 2.0
@@ -331,7 +376,11 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
                 
                 //Construct CPT table
                 
-                if(cptReady[curNode] == 2 && calcCPT == false && calcThisCPT == false){
+                let curModels : [Model] = modelTreeController.selectedObjects as! [Model]
+                let curModel : Model = curModels[0]
+
+                
+                if((cptReady[curNode] == 2 && calcCPT == false && calcThisCPT == false) || curModel.complete as Bool){
                     let cptTableView = NSTableView(frame:nodeDetailCPTView.frame)
                     for curColumn in cptTableView.tableColumns{
                         cptTableView.removeTableColumn(curColumn)
@@ -364,7 +413,6 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
                    // cptTableContainer.addSubview(cptProgInd)
                     cptProgInd.sizeToFit()
                     cptProgInd.startAnimation(self)
-
                     
  
                 }
@@ -497,7 +545,6 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
             if curNode.postCount != nil {
                 
                 let postCount = NSKeyedUnarchiver.unarchiveObject(with: curNode.value(forKey: "postCount") as! Data) as! [Int]
-                // println("postCount \(postCount)")
                 var postData = [NSNumber]()
                 var curtop = 0
                 for thisPost in postCount {
@@ -682,7 +729,7 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
     }
     
     func mocDidChange(_ notification: Notification){
-
+        mocChange = true
         let info = notification.userInfo
 
         var relD = false
@@ -701,7 +748,7 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
                         relD = true
 
                     }
-                    else if(key == "cptArray" || key == "postArray" || key == "postCount" || key == "postETHigh" || key == "postETLow" || key == "postHPDHigh" || key == "postHPDLow" || key == "postMean" || key == "postSSD"){
+                    else if(key == "cptArray" || key == "postArray" || key == "postCount" || key == "postETHigh" || key == "postETLow" || key == "postHPDHigh" || key == "postHPDLow" || key == "postMean" || key == "postSSD" || key == "complete"){
                         
                         return
                     }
@@ -743,8 +790,11 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
                 return 0
             }
             if(cptReady[curNode] == 2){
-                let cptarray = NSKeyedUnarchiver.unarchiveObject(with: curNode.value(forKey: "cptArray") as! Data) as! [cl_float]
-                return cptarray.count
+
+
+                    let cptarray = NSKeyedUnarchiver.unarchiveObject(with: curNode.value(forKey: "cptArray") as! Data) as! [cl_float]
+                    return cptarray.count
+                
             }
             else {
                 return 0
@@ -756,16 +806,28 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
     
     func tableView(_ tableView: NSTableView, objectValueFor tableColumn: NSTableColumn?, row: Int) -> Any? {
         
-        
-
-        
         var curNodes : [BNNode] = nodesController.selectedObjects as! [BNNode]
         if(curNodes.count>0) {
             curNode = curNodes[0]
            // print(curNode.nodeLink.name)
             if(tableColumn?.identifier == "Data" ){
+                let curModels : [Model] = modelTreeController.selectedObjects as! [Model]
+                let curModel : Model = curModels[0]
+                if curModel.complete.boolValue {
+                    if let cptfData = curNode.value(forKey: "cptFreezeArray") {
+                        let cptarray = NSKeyedUnarchiver.unarchiveObject(with: cptfData as! Data) as! [cl_float]
+                        return cptarray[row]
+                    }
+                    
+                    else {
+                        return nil 
+                    }
+
+                }
+                else {
                 let cptarray = NSKeyedUnarchiver.unarchiveObject(with: curNode.value(forKey: "cptArray") as! Data) as! [cl_float]
                 return cptarray[row]
+                }
             }
             else{
                 let poststr = String(row, radix: 2)
@@ -799,6 +861,11 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
  
     func cptCheck()
     {
+
+
+        if calcInProgress == true {
+            return
+        }
 
         if (firstrun){
             
@@ -835,10 +902,11 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
 
         
         var alltwos = true
+        var anyones = false
         
         for (key, value) in cptReady{
 //        print ("checking on \(key.nodeLink.name): \(value)")
-           if(value == 0) {
+           if(value == 0 && anyones == false) {
                 alltwos = false
                 self.cptReady[key] = 1 //while processing
                 DispatchQueue.global().async {
@@ -853,6 +921,7 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
             }
             else if (value == 1){
                 alltwos = false
+                anyones = true
             }
 
         }
@@ -864,7 +933,6 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
 
         
         if(calcThisCPT == true){
-           // print ("calcThisCPT")
             do {
                 try moc.save()
             } catch let error as NSError {
@@ -909,6 +977,8 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
 
             calcCPT = false
         }
+        
+        mocChange = false
         
     }
 
