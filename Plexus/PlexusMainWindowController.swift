@@ -12,11 +12,8 @@ import Metal
 import GameKit
 
 
-
 class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
     
-    
-
   
     var moc : NSManagedObjectContext!
     var mainSplitViewController = PlexusMainSplitViewController()
@@ -119,8 +116,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
 
         mainSplitViewController = contentViewController as! PlexusMainSplitViewController
 
-//        UserDefaults.standard.addObserver(self, forKeyPath: "hardwareDevice", options: NSKeyValueObservingOptions.new, context: nil)
-        
+ 
         modelTreeController = mainSplitViewController.modelViewController?.modelTreeController
         
         queue.async {
@@ -593,6 +589,12 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
     
     @IBAction func calcMetal(_ x:NSToolbarItem){
         
+        
+        let defaults = UserDefaults.standard
+
+        
+        let calcSpeed = defaults.integer(forKey: "calcSpeed")
+        
         let mocChange = mainSplitViewController.modelDetailViewController?.mocChange
         mainSplitViewController.modelDetailViewController?.calcInProgress = true
         
@@ -625,7 +627,13 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         let nc = nodesForCalc.count
 
         let runstot = curModel.runstot as Int
-        let ntWidth = (mTTPT/teWidth)-1
+        var ntWidth = (mTTPT/teWidth)-1
+        if calcSpeed == 0 {
+            ntWidth = Int(Double(ntWidth) * 0.5)
+        }
+        else if calcSpeed == 1 {
+            ntWidth = Int(Double(ntWidth) * 0.75)
+        }
         print ("Number of threadgroups: \(ntWidth)")
         let threadsPerThreadgroup : MTLSize = MTLSizeMake(teWidth, 1, 1)
         let numThreadgroups = MTLSize(width: ntWidth, height: 1, depth: 1)
@@ -1095,7 +1103,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                 return
             }
  
-            baseFile = baseFile! + "/" + sv.nameFieldStringValue
+            baseFile = baseFile! + "/" + sv.nameFieldStringValue.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed)!
             
             let outFileName = baseFile! + "-data.csv"
 
@@ -1383,11 +1391,112 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                         graph?.paddingRight = 10.0
                         
 
+                        let titleStyle = CPTMutableTextStyle()
+                        titleStyle.fontName = "Helvetica-Bold"
+                        titleStyle.fontSize = 18.0
+                        titleStyle.color = CPTColor.black()
+                        graph?.titleTextStyle = titleStyle
+                        graph?.title = node.nodeLink.name
+                        
+                        let titleTextStyle = CPTMutableTextStyle.init()
+                        titleTextStyle.color = CPTColor.white()
+                        
+                        
+
+                        for plot in (graph?.allPlots())! {
+                            plot.attributedTitle = nil
+                            if(plot.identifier!.isEqual("PriorPlot")){
+                                plot.title = "Prior"
+
+                            }
+                            else {
+                                plot.title = "Posterior"
+
+                            }
+                        }
+                        
+
+
+                        
+
+                        
+
+                        
+                        let axisSet = graph?.axisSet as! CPTXYAxisSet
+                        let axisLineStyle = CPTMutableLineStyle.init()
+                        axisLineStyle.lineColor = CPTColor.black()
+                        axisSet.xAxis!.axisConstraints = CPTConstraints.constraint(withUpperOffset: 1.0)
+                        axisSet.yAxis!.axisConstraints = CPTConstraints.constraint(withUpperOffset: 1.0)
+                        axisSet.yAxis!.axisConstraints = CPTConstraints.constraint(withLowerOffset: 0.0)
+                        axisSet.xAxis!.axisConstraints = CPTConstraints.constraint(withLowerOffset: 0.0)
+                        axisSet.xAxis!.tickDirection = CPTSign.positive
+                        axisSet.yAxis!.tickDirection = CPTSign.positive
+                        axisSet.xAxis?.axisLineStyle = axisLineStyle
+                        axisSet.xAxis?.majorTickLineStyle = axisLineStyle
+                        axisSet.yAxis?.majorTickLineStyle = axisLineStyle
+                        axisSet.xAxis?.minorTickLineStyle = axisLineStyle
+                        axisSet.yAxis?.minorTickLineStyle = axisLineStyle
+                        axisSet.yAxis?.axisLineStyle = axisLineStyle
+
+                        
+
+                        
+                        let axisTextStyle = CPTMutableTextStyle.init()
+                        axisTextStyle.color = CPTColor.black()
+                        
+                        axisSet.xAxis?.labelTextStyle = axisTextStyle
+                        axisSet.yAxis?.labelTextStyle = axisTextStyle
+                        
+                        axisSet.xAxis!.labelingPolicy = .automatic
+                        axisSet.yAxis!.labelingPolicy = .automatic
+                        axisSet.xAxis!.preferredNumberOfMajorTicks = 3
+                        axisSet.yAxis!.preferredNumberOfMajorTicks = 3
+                        axisSet.xAxis!.minorTicksPerInterval = 4
+                        axisSet.yAxis!.minorTicksPerInterval = 4
+                        graph?.axisSet = axisSet
+
+                        
+                        
+                        /*
+
+                        
+                        
+
+                        
+                         let plotSpace : CPTXYPlotSpace = graph?.defaultPlotSpace as! CPTXYPlotSpace
+                         plotSpace.allowsUserInteraction = false
+                         
+                         
+                         let xRange = plotSpace.xRange.mutableCopy() as! CPTMutablePlotRange
+                         let yRange = plotSpace.yRange.mutableCopy() as! CPTMutablePlotRange
+                         
+                         xRange.length = 1.1
+                         yRange.length = 1.1
+                         
+                         
+                         plotSpace.xRange = xRange
+                         plotSpace.yRange = yRange
+
+                                                 plotSpace.scaleToFitPlots(graph?.allPlots())
+                        
+                        
+                        
+                        
+                        for plot in (graph?.allPlots())! {
+                            
+                            plot.frame = (graph?.bounds)!
+                            //print("plot \(plot.identifier) \(plot.frame.size)")
+                            //plot.reloadData()
+                            
+                        }
+
+                        */
+
 
                         let pdfData = graph?.dataForPDFRepresentationOfLayer()
                         try? pdfData!.write(to: nodeURL!, options: [.atomic])
                         
-
+                        graph?.title = ""
                         
                         i += 1
                     }
@@ -1400,11 +1509,6 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                 }
             
             }
-
-            
-
-
-            
 
         }
         else { return }
@@ -1425,31 +1529,11 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
             self.progSheet.orderOut(self)
             self.window!.endSheet(self.progSheet)
         }
+        mainSplitViewController.modelDetailViewController?.setGraphParams()
         mainSplitViewController.modelDetailViewController?.reloadData()
         
     }
  
-/*
-    func mocDidChange(notification: NSNotification){
-        
 
-    
-        dispatch_async(dispatch_get_main_queue()) {
-            self.moc.mergeChangesFromContextDidSaveNotification(notification)
-        }
- 
-        
-    }
-
-*/
-
-
-//    override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
-//        if(keyPath == "hardwareDevice"){
-//            DispatchQueue.global().async {
-//                self.calcop.clCompile()
-//            }
-//        }
-//    }
 
 }

@@ -30,10 +30,6 @@ class PlexusBNScene: SKScene {
     var d2 : CGFloat = 0.8
     
     
-
-    
-    
-    
     override func didMove(to view: SKView) {
         
             
@@ -52,7 +48,6 @@ class PlexusBNScene: SKScene {
         self.physicsWorld.gravity = CGVector(dx: 0, dy: 0)
 
 
-        //var borderBody = SKPhysicsBody(edgeLoopFromRect: inset)
         let borderBody = SKPhysicsBody(edgeLoopFrom: self.frame)
         self.physicsBody = borderBody
         self.physicsBody?.friction = 0.0
@@ -154,16 +149,16 @@ class PlexusBNScene: SKScene {
 
         
                startNode = touchedNode
-        /*
-        if(startNode.name == "bnNode"){
-            let IDNode : PlexusBNNode = startNode as! PlexusBNNode
-            print("mouseDOWN now startNode is bnnode \(startNode) \(IDNode.node.nodeLink.name)")
-
-        }
-        else {
-            print ("mouseDown startnode is \(startNode)")
-        }
-        */
+        
+//        if(startNode.name == "bnNode"){
+//            let IDNode : PlexusBNNode = startNode as! PlexusBNNode
+//            print("mouseDOWN now startNode is bnnode \(startNode) \(IDNode.node.nodeLink.name)")
+//
+//        }
+//        else {
+//            print ("mouseDown startnode is \(startNode)")
+//        }
+ 
     }
     
     
@@ -205,6 +200,7 @@ class PlexusBNScene: SKScene {
         
         
         if (theEvent.modifierFlags.intersection(.command) == .command) {
+            touchedNode = startNode
             touchedNode.position = loc
         }
         
@@ -400,7 +396,6 @@ class PlexusBNScene: SKScene {
    
     
     func reloadData(){
-      // println("bnscene FULL reload")
         self.enumerateChildNodes(withName: "nodeName", using: { thisLine, stop in
             thisLine.removeFromParent()
         })
@@ -415,8 +410,6 @@ class PlexusBNScene: SKScene {
         
 
         let inset : CGRect = CGRect(x: 25, y: 25, width: self.size.width-50, height: self.size.height-50)
-        
-       // let inset : CGRect = CGRectMake(25, 25, self.frame.width-50, self.frame.height-50)
         
         let borderBody = SKPhysicsBody(edgeLoopFrom: inset)
         self.physicsBody = borderBody
@@ -613,7 +606,7 @@ class PlexusBNScene: SKScene {
             
         })
         
-        //redrawNodes()
+
   
         //Post message in nodes area if no nodes yet
         
@@ -624,16 +617,14 @@ class PlexusBNScene: SKScene {
                 let nnl1 = SKLabelNode(text: "Drag from  Traits to")
                 let nnl2 = SKLabelNode(text: "create a node.")
                 nnl1.fontSize = 18
-               // nnl1.fontName = "SanFrancisco"
+                nnl1.fontName = "Helvetica-Bold"
                 nnl1.name = "noNodesName"
                 nnl1.zPosition = 1
                 
                 nnl2.fontSize = 18
-               // nnl2.fontName = "SanFrancisco"
+                nnl2.fontName = "Helvetica-Bold"
                 nnl2.name = "noNodesName"
                 nnl2.zPosition = 1
-                
-
                 
                 nnl1.position = CGPoint(x: self.frame.width*0.5, y: self.frame.height*0.5+30)
                 nnl2.position = CGPoint(x: self.frame.width*0.5, y: self.frame.height*0.5)
@@ -691,13 +682,12 @@ class PlexusBNScene: SKScene {
     
     func makeNode(_ inNode : BNNode, inPos: CGPoint){
                
-       // var labelString = inNode.nodeLink.name
-        //truncate
+
         
         let myLabel = SKLabelNode(text: inNode.nodeLink.name)
         myLabel.fontName = "Helvetica-Bold"
         myLabel.fontSize = 14
-        myLabel.zPosition = 1
+        myLabel.zPosition = 3
         myLabel.name = "nodeName"
         myLabel.verticalAlignmentMode = SKLabelVerticalAlignmentMode.bottom
        // myLabel.userInteractionEnabled = true
@@ -708,7 +698,7 @@ class PlexusBNScene: SKScene {
         valLabel.fontName = "Helvetica"
         valLabel.fontSize = 12
         //valLabel.fontColor = SKColor.lightGray
-        valLabel.zPosition = 1
+        valLabel.zPosition = 2
         valLabel.name = "nodeName"
         valLabel.verticalAlignmentMode = SKLabelVerticalAlignmentMode.top
         
@@ -722,18 +712,15 @@ class PlexusBNScene: SKScene {
 
         
         
-        
-        
         let shapePath = CGPath(roundedRect: CGRect(x: -(nodeWidth/2), y: -(nodeHeight/2), width: nodeWidth, height: nodeHeight), cornerWidth: 4, cornerHeight: 4, transform: nil)
 
 
         
         let shape = PlexusBNNode(path: shapePath)
 
-
-       // shape.position = CGPointMake(self.frame.width*0.5,  self.frame.height*0.5)
         
         shape.position = inPos
+        shape.zPosition = 1
         shape.isUserInteractionEnabled = true
         shape.physicsBody = SKPhysicsBody(rectangleOf: CGRect(x: -(nodeWidth/2), y: -(nodeHeight/2), width: nodeWidth, height: nodeHeight).size)
         shape.physicsBody?.mass = 1.0

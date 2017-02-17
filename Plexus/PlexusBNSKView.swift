@@ -25,6 +25,7 @@ class PlexusBNSKView: SKView {
         self.register(forDraggedTypes: registeredTypes)
         
         self.allowsTransparency = true
+        self.ignoresSiblingOrder = true
         
         let appDelegate : AppDelegate = NSApplication.shared().delegate as! AppDelegate
         moc = appDelegate.managedObjectContext

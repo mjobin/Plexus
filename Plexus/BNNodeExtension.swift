@@ -315,7 +315,6 @@ extension BNNode {
 
     
     func getCPTArray(_ sender:AnyObject, mocChanged:Bool, cptReady:Int) -> [cl_float] {
-        print ("getcptsrray \(mocChanged) \( cptReady)")
         if mocChanged == true || cptReady != 2 {
            _ = self.CPT()
         }

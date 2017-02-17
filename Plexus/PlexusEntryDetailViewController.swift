@@ -22,7 +22,6 @@ class PlexusEntryDetailViewController: NSViewController, NSTableViewDelegate, NS
     
     @IBOutlet var textView: NSTextView!
     
-    @IBOutlet var mapView : MKMapView!
 
     
     
@@ -49,7 +48,7 @@ class PlexusEntryDetailViewController: NSViewController, NSTableViewDelegate, NS
     override func viewDidAppear() {
         super.viewDidAppear()
         
-        //self.markMap()
+
         
     }
     
@@ -98,34 +97,9 @@ class PlexusEntryDetailViewController: NSViewController, NSTableViewDelegate, NS
     }
     
     
-    //Tab View Delegate
-    func tabView(_ tabView: NSTabView, didSelect tabViewItem: NSTabViewItem?) {
-        self.markMap()
-    }
+
     
-    //Map
-    func markMap() {
 
-        
-        let mapEntries : [Entry] = entryTreeController.selectedObjects as! [Entry]
-        if(mapEntries.count > 0){
-            let mapEntry : Entry =  mapEntries[0]
-            
-            
-            let location = CLLocationCoordinate2D(
-                latitude: mapEntry.latitude,
-                longitude: mapEntry.longitude
-            )
-            let span = MKCoordinateSpanMake(1, 1)
-            let region = MKCoordinateRegion(center: location, span: span)
-            mapView.setRegion(region, animated: true)
-            
-            mapView.addAnnotation(MKPlacemark(coordinate: location, addressDictionary:nil))
-            
-
-        }
-        
-    }
     
 
     

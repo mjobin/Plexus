@@ -111,7 +111,7 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
         
         graph = CPTXYGraph(frame:self.graphView.bounds)
         self.graphView.hostedGraph = graph
-//        graph.fill = CPTFill.init(color: CPTColor.black())
+
         
         detailGraph = CPTXYGraph(frame:self.graphView.bounds)
         self.nodeDetailGraphView.hostedGraph = detailGraph
@@ -126,7 +126,6 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
         graph.paddingLeft = 5.0
         graph.paddingRight = 5.0
         
-
         
         detailGraph.plotAreaFrame?.paddingTop = 10.0
         detailGraph.plotAreaFrame?.paddingBottom = 10.0
@@ -137,7 +136,6 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
         detailGraph.paddingLeft = 5.0
         detailGraph.paddingRight = 5.0
         
-
         
         let plotSpace : CPTXYPlotSpace = graph.defaultPlotSpace as! CPTXYPlotSpace
         plotSpace.allowsUserInteraction = false
@@ -198,7 +196,7 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
         
         daxisSet.xAxis?.labelTextStyle = axisTextStyle
         daxisSet.yAxis?.labelTextStyle = axisTextStyle
-
+        
         
         axisSet.xAxis!.labelingPolicy = .automatic
         axisSet.yAxis!.labelingPolicy = .automatic
@@ -222,15 +220,14 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
         
         priorPlot = CPTScatterPlot(frame:graph.bounds)
         priorPlot.identifier = "PriorPlot" as (NSCoding & NSCopying & NSObjectProtocol)?
-        
-        
+//        priorPlot.title = ""
         let priorstring = "Prior"
         let priorstringrange = (priorstring as NSString).range(of: priorstring)
         let priorAS = NSMutableAttributedString(string: "Prior")
         priorAS.addAttribute(NSForegroundColorAttributeName, value: NSColor.white, range: priorstringrange)
         priorPlot.attributedTitle = priorAS
         
-//        priorPlot.title = "Prior"
+        
         let priorLineStyle = CPTMutableLineStyle()
         priorLineStyle.miterLimit = 1.0
         priorLineStyle.lineWidth = 2.0
@@ -244,7 +241,7 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
         
         dpriorPlot = CPTScatterPlot(frame:graph.bounds)
         dpriorPlot.identifier = "PriorPlot" as (NSCoding & NSCopying & NSObjectProtocol)?
-//        dpriorPlot.title = "Prior"
+//        dpriorPlot.title = ""
         dpriorPlot.attributedTitle = priorAS
         let dpriorLineStyle = CPTMutableLineStyle()
         dpriorLineStyle.miterLimit = 1.0
@@ -260,14 +257,19 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
         
         let postPlot = CPTScatterPlot(frame:graph.bounds)
         postPlot.identifier = "PostPlot" as (NSCoding & NSCopying & NSObjectProtocol)?
-        
+//        postPlot.title = ""
         let poststring = "Posterior"
         let poststringrange = (poststring as NSString).range(of: poststring)
         let postAS = NSMutableAttributedString(string: "Posterior")
         postAS.addAttribute(NSForegroundColorAttributeName, value: NSColor.white, range: poststringrange)
         postPlot.attributedTitle = postAS
         
-//        postPlot.title = "Posterior"
+        
+        
+        
+        
+        
+        //        postPlot.title = "Posterior"
         let postLineStyle = CPTMutableLineStyle()
         postLineStyle.miterLimit = 1.0
         postLineStyle.lineWidth = 2.0
@@ -280,7 +282,8 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
         
         let dpostPlot = CPTScatterPlot(frame:graph.bounds)
         dpostPlot.identifier = "PostPlot" as (NSCoding & NSCopying & NSObjectProtocol)?
-        dpostPlot.title = "Posterior"
+//        dpostPlot.title = ""
+        dpostPlot.attributedTitle = postAS
         let dpostLineStyle = CPTMutableLineStyle()
         dpostLineStyle.miterLimit = 1.0
         dpostLineStyle.lineWidth = 2.0
@@ -290,12 +293,59 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
         dpostPlot.delegate = self
         detailGraph.add(dpostPlot)
         
+        
+        for plot in (graph?.allPlots())! {
+            plot.attributedTitle = nil
+            if(plot.identifier!.isEqual("PriorPlot")){
+                let priorstring = "Prior"
+                let priorstringrange = (priorstring as NSString).range(of: priorstring)
+                let priorAS = NSMutableAttributedString(string: "Prior")
+                priorAS.addAttribute(NSForegroundColorAttributeName, value: NSColor.white, range: priorstringrange)
+                plot.attributedTitle = priorAS
+            }
+            else {
+                let poststring = "Posterior"
+                let poststringrange = (poststring as NSString).range(of: poststring)
+                let postAS = NSMutableAttributedString(string: "Posterior")
+                postAS.addAttribute(NSForegroundColorAttributeName, value: NSColor.white, range: poststringrange)
+                plot.attributedTitle = postAS
+            }
+        }
+        
+        
         graph.legend = CPTLegend(graph: graph)
         graph.legendAnchor = .topRight
         
         detailGraph.legend = CPTLegend(graph: detailGraph)
         detailGraph.legendAnchor = .topRight
         
+      
+        
+    }
+    
+    func setGraphParams() {
+        
+        graph.add(priorPlot)
+        
+        for plot in (graph?.allPlots())! {
+            plot.title = nil
+            plot.attributedTitle = nil
+            if(plot.identifier!.isEqual("PriorPlot")){
+                let priorstring = "Prior"
+                let priorstringrange = (priorstring as NSString).range(of: priorstring)
+                let priorAS = NSMutableAttributedString(string: "Prior")
+                priorAS.addAttribute(NSForegroundColorAttributeName, value: NSColor.white, range: priorstringrange)
+                plot.attributedTitle = priorAS
+            }
+            else {
+                let poststring = "Posterior"
+                let poststringrange = (poststring as NSString).range(of: poststring)
+                let postAS = NSMutableAttributedString(string: "Posterior")
+                postAS.addAttribute(NSForegroundColorAttributeName, value: NSColor.white, range: poststringrange)
+                plot.attributedTitle = postAS
+            }
+        }
+       
     }
     
     override func viewDidAppear() {
@@ -343,9 +393,6 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
     //******CPTScatterPlotDataSource fxns
     
     func reloadData() {
-        
-//        print ("reloadData: \(NSDate())")
-
         
         for view in nodeDetailCPTView.subviews{
             view.removeFromSuperview()
@@ -409,7 +456,7 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
                     cptProgInd.isIndeterminate = true
                     cptProgInd.style = .spinningStyle
                     cptTableContainer.documentView = cptProgInd
-                    
+                    //FIXME center?
                    // cptTableContainer.addSubview(cptProgInd)
                     cptProgInd.sizeToFit()
                     cptProgInd.startAnimation(self)
@@ -542,8 +589,29 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
             
 
             
-            if curNode.postCount != nil {
+            switch priorDist {
                 
+                case 5: //priorPost
+                    let priorCount = NSKeyedUnarchiver.unarchiveObject(with: curNode.value(forKey: "priorCount") as! Data) as! [Int]
+                    var priorData = [NSNumber]()
+                    var curtop = 0
+                    for thisPost in priorCount {
+                        if (curtop < thisPost) {
+                            curtop = thisPost
+                        }
+                    }
+                    for thisPrior : Int in priorCount {
+                        priorData.append((Double(thisPrior)/Double(curtop)) as NSNumber)
+                    }
+                    
+                    
+                    self.priorDataForChart = priorData
+                    
+                default:
+                    self.priorDataForChart = [Double](repeating: 0.0, count: 100) as [NSNumber]
+            }
+            
+            if curNode.postCount != nil {
                 let postCount = NSKeyedUnarchiver.unarchiveObject(with: curNode.value(forKey: "postCount") as! Data) as! [Int]
                 var postData = [NSNumber]()
                 var curtop = 0
@@ -556,35 +624,34 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
                     postData.append((Double(thisPost)/Double(curtop)) as NSNumber)
                 }
                 
-                
+
                 
                 self.dataForChart = postData
             }
             else {
-                
                 self.dataForChart = [Double](repeating: 0.0, count: 100) as [NSNumber]
             }
             
-            if curNode.priorCount != nil {
-                let priorCount = NSKeyedUnarchiver.unarchiveObject(with: curNode.value(forKey: "priorCount") as! Data) as! [Int]
-                var priorData = [NSNumber]()
-                var curtop = 0
-                for thisPost in priorCount {
-                    if (curtop < thisPost) {
-                        curtop = thisPost
-                    }
-                }
-                for thisPrior : Int in priorCount {
-                    priorData.append((Double(thisPrior)/Double(curtop)) as NSNumber)
-                }
-                
-            
-                self.priorDataForChart = priorData
-            }
-            else {
-                
-                self.priorDataForChart = [Double](repeating: 0.0, count: 100) as [NSNumber]
-            }
+//            if curNode.priorCount != nil {
+//                let priorCount = NSKeyedUnarchiver.unarchiveObject(with: curNode.value(forKey: "priorCount") as! Data) as! [Int]
+//                var priorData = [NSNumber]()
+//                var curtop = 0
+//                for thisPost in priorCount {
+//                    if (curtop < thisPost) {
+//                        curtop = thisPost
+//                    }
+//                }
+//                for thisPrior : Int in priorCount {
+//                    priorData.append((Double(thisPrior)/Double(curtop)) as NSNumber)
+//                }
+//                
+//            
+//                self.priorDataForChart = priorData
+//            }
+//            else {
+//                
+//                self.priorDataForChart = [Double](repeating: 0.0, count: 100) as [NSNumber]
+//            }
             
             
         }
@@ -610,17 +677,9 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
     func numberOfRecords(for plot: CPTPlot) -> UInt {
         
         if(plot.identifier!.isEqual("PriorPlot")){
-            switch priorDist {
-
-            case 5: //priorPost
-                return UInt(self.priorDataForChart.count)
-                
-            default:
-                return UInt(self.dataForChart.count)
-            }
+            return UInt(self.priorDataForChart.count)
         }
-        
-        return UInt(self.dataForChart.count)
+        return UInt(self.dataForChart.count) //Assume Posterior Plot otherwise
         
     }
     
@@ -634,10 +693,9 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
             
             if(plot.identifier!.isEqual("PriorPlot")){
                 
-                
+
                 let nidx = (Double(idx)/numrec)
                 let nnidx = (Double(idx+1)/numrec)
-                
                 switch priorDist {
                     
                 case 0:  //point/expert
