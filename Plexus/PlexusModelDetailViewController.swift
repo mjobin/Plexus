@@ -752,7 +752,7 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
     
     //****** distn fxns
     func gaussian(_ mu: Double, sigma: Double, x: Double) -> Double {
-        let n : Double = sigma * 2.0 * sqrt(M_PI)
+        let n : Double = sigma * 2.0 * sqrt(.pi)
         let p : Double = exp( -pow(x-mu, 2.0) / (2.0 * pow(sigma, 2.0)))
         return p/n
     }
@@ -766,7 +766,7 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
         return betanorm * secondhalf
     }
     
-    func gamma(_ a: Double, b: Double, x: Double) -> Double {//gamma distribution, not funciotn
+    func gamma(_ a: Double, b: Double, x: Double) -> Double {
         let numerator = pow(b,a) * pow(x, (a-1)) * pow(M_E,-(x*b))
         return numerator/tgamma(a)
     }

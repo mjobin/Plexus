@@ -128,26 +128,7 @@ class PlexusBNSKView: SKView {
 
 
     
-    @IBAction func removeNode(_ sender: AnyObject) {
-       // let errorPtr : NSErrorPointer = nil
-        
-        
-        var curNodes : [BNNode] = nodesController.selectedObjects as! [BNNode]
-        if(curNodes.count>0) {
-            let curNode : BNNode = curNodes[0]
-            
-             moc.delete(curNode)
-        }
 
-        
-        do {
-            try moc.save()
-        } catch let error as NSError {
-            self.print(error)
-        }
-        
-        
-    }
     
 
     

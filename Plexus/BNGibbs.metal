@@ -7,11 +7,16 @@
 //
 
 #include <metal_stdlib>
-#include "mt.h" 
+//#include "mt.h" 
+#include "rand.h"
+
 using namespace metal;
 
 
-kernel void bngibbs(const device unsigned int *rngseeds [[buffer(0)]], device float *bnresults [[buffer(1)]], const device unsigned int *p [[buffer(2)]], const device unsigned int *priordisttypes [[buffer(3)]], const device float *priorv1s [[buffer(4)]], const device float *priorv2s[[buffer(5)]], const device int *infnet [[buffer(6)]], const device float *cptnet [[buffer(7)]], device uint *shufflenodes[[buffer(8)]], device float *bnstates[[buffer(9)]], const device float *postpriors [[buffer(10)]], uint gid [[thread_position_in_grid]]){
+
+
+
+kernel void bngibbs(const device unsigned int *rngseeds [[buffer(0)]], device float *bnresults [[buffer(1)]], const device unsigned int *p [[buffer(2)]], const device unsigned int *priordisttypes [[buffer(3)]], const device float *priorv1s [[buffer(4)]], const device float *priorv2s[[buffer(5)]], const device int *infnet [[buffer(6)]], const device float *cptnet [[buffer(7)]], device uint *shufflenodes[[buffer(8)]], device float *bnstates[[buffer(9)]], const device float *postpriors [[buffer(10)]], device float *flips [[buffer(11)]], uint gid [[thread_position_in_grid]]){
 
     //p[0] = runs per
     //p[1] = burnins
@@ -25,6 +30,8 @@ kernel void bngibbs(const device unsigned int *rngseeds [[buffer(0)]], device fl
     float flip = -999.99;
     int tot = 0;
     
+    uint rs = wang_hash(rngseeds[gid]);
+//    uint rs = rngseeds[gid];
 
     //Offsets
     //Rngseeds: gid
@@ -40,27 +47,56 @@ kernel void bngibbs(const device unsigned int *rngseeds [[buffer(0)]], device fl
     int ppoff = 0;
 
     
-    //Initialize and seed RNG
-    mt19937 mt;
-    mt.srand(rngseeds[gid]);
     
+    
+//    //Initialize and seed RNG
+//    mt19937 mt;
+//    mt.srand(rngseeds[gid]);
+//    
    
     //Initialize node order
     for(i=0; i<p[2]; i++){
-        bnstates[boff+i] = mt.pointroll(0.5);
+        bnstates[boff+i] = pointroll(&rs, 0.5);
         shufflenodes[boff+i] = i;
+        
+        flip = -999.99;
+        while(flip < 0 || flip > 1){
+            switch(priordisttypes[i]) {
+                case 0: //point
+                    flip = priorv1s[i];
+                    break;
+                case 1: // uniform
+                    flip = unidev(&rs, priorv1s[i], priorv2s[i]);
+                    break;
+                case 2: //gaussian
+                    flip = priorv2s[i] * gasdev(&rs) + priorv1s[i];
+                    break;
+                case 3: //beta
+                    flip = beta_dev(&rs, priorv1s[i], priorv2s[i]);
+                    break;
+                case 4: // gamma
+                    flip = gamma_dev(&rs, priorv1s[i]/priorv2s[i]);
+                    break;
+                case 5: //Posterior Prior
+                    flip = postpriors[ppoff+randomx(&rs, p[5])];
+                    break;
+                default:
+                    flip = priorv1s[i];
+                    break;
+            }
+            
+        }
+        flips[boff+i] = flip;
+        
     }
-    
-    bnresults[boff] = infnet[0];
-    bnresults[boff+1] = infnet[1];
-    
+        
     for (g=0; g<p[0]; g++){
         
         //Fisher-Yates shuffle: randomly sort the node array
         j = 0;
         tmp = 0;
         for ( i = p[2]-1; i > 0; i--) {
-            j = mt.randomx(i + 1);
+            j = randomx(&rs, i + 1);
             tmp = shufflenodes[boff+j];
             shufflenodes[boff+j] = shufflenodes[boff+i];
             shufflenodes[boff+i] = tmp;
@@ -85,40 +121,12 @@ kernel void bngibbs(const device unsigned int *rngseeds [[buffer(0)]], device fl
             
             if(cptnet[coff+binsum] < 0) {
                 
-                flip = -999.99;
-                while(flip < 0 || flip > 1){
-                    switch(priordisttypes[sn]) {
-                        case 0: //point
-                            flip = priorv1s[sn];
-                            break;
-                        case 1: // uniform
-                            flip = mt.unidev(priorv1s[sn], priorv2s[sn]);
-                            break;
-                        case 2: //gaussian
-                            flip = priorv2s[sn] * mt.gasdev() + priorv1s[sn];
-                            break;
-                        case 3: //beta
-                            flip = mt.beta_dev(priorv1s[sn], priorv2s[sn]);
-                            break;
-                        case 4: // gamma
-                            flip = mt.gamma_dev(priorv1s[sn]/priorv2s[sn]);
-                            break;
-                        case 5: //Posterior Prior
-                            flip = postpriors[ppoff+mt.randomx(p[5])];
-                            break;
-                        default:
-                            flip = priorv1s[sn];
-                            break;
-                    }
-                    
-                }
-
-                bnstates[sn+boff] = mt.pointroll(flip);
+                bnstates[sn+boff] = pointroll(&rs, flips[boff+sn]);
                 
             }
             
             else {
-                bnstates[sn+boff] = mt.pointroll(cptnet[coff+binsum]);
+                bnstates[boff+sn] = pointroll(&rs, cptnet[coff+binsum]);
             }
         }
         

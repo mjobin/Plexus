@@ -182,8 +182,8 @@ extension BNNode {
         for thisInfluencedBy in theInfluencedBy {
             let  curInfluencedBy = thisInfluencedBy as! BNNode
             infNames.append(curInfluencedBy.nodeLink.name)
-            infNumericData[curInfluencedBy.nodeLink.name] = curInfluencedBy.numericData as Bool?
-            infTolerance[curInfluencedBy.nodeLink.name] = curInfluencedBy.tolerance as Double!
+            infNumericData[curInfluencedBy.nodeLink.name] = curInfluencedBy.numericData as? Bool
+            infTolerance[curInfluencedBy.nodeLink.name] = curInfluencedBy.tolerance as? Double
             let curTrait : Trait = curInfluencedBy.nodeLink as! Trait
             infTraits.append(curTrait.name)
             infTraitvalue[curInfluencedBy.nodeLink.name] = curTrait.traitValue

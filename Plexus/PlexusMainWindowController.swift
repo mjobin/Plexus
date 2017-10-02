@@ -160,7 +160,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         
         //sheet programamticaly
         let sheetRect = NSRect(x: 0, y: 0, width: 400, height: 82)
-        retWin = NSWindow(contentRect: sheetRect, styleMask: NSTitledWindowMask, backing: NSBackingStoreType.buffered, defer: true)
+        retWin = NSWindow(contentRect: sheetRect, styleMask: .titled, backing: NSBackingStoreType.buffered, defer: true)
         let contentView = NSView(frame: sheetRect)
         self.progInd = NSProgressIndicator(frame: NSRect(x: 143, y: 52, width: 239, height: 20))
         self.progInd.canDrawConcurrently = true
@@ -850,6 +850,10 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
             let intparamsbuffer = self.device.makeBuffer(bytes: &intparams, length: intparams.count*MemoryLayout<UInt32>.size, options: resourceOptions)
             threadMemSize += intparams.count*MemoryLayout<UInt32>.size
             
+            
+            //Buffer 11: flips
+            let flipsbuffer = self.device.makeBuffer(length: ntWidth*nodesForCalc.count*MemoryLayout<Float>.size, options: MTLResourceOptions.storageModePrivate)
+            threadMemSize += ntWidth*nodesForCalc.count*MemoryLayout<Float>.size
 
             DispatchQueue.main.async {
                 self.progInd.isIndeterminate = false
@@ -897,6 +901,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                 commandEncoder.setBuffer(shufflebuffer, offset: 0, at: 8)
                 commandEncoder.setBuffer(bnstatesbuffer, offset: 0, at: 9)
                 commandEncoder.setBuffer(postpriorbuffer, offset: 0, at: 10)
+                commandEncoder.setBuffer(flipsbuffer, offset: 0, at: 11)
                 
                 
 
@@ -919,10 +924,13 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                         break
                     }
                     results[ri].append(to)
+//                    print(to, terminator:"\t")
+
                     ri = ri + 1
                     
                     if ri >= nc {
                         ri = 0
+//                        print ("\n")
                         resc = resc + 1
                     }
                 }

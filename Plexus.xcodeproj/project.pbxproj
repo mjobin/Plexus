@@ -48,6 +48,7 @@
 		C9BFBFBB19EF12E400EF1A86 /* PlexusModelViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9BFBFBA19EF12E400EF1A86 /* PlexusModelViewController.swift */; };
 		C9C962DA1E07624800B049FD /* BNGibbs.metal in Sources */ = {isa = PBXBuildFile; fileRef = C9C962D91E07624800B049FD /* BNGibbs.metal */; };
 		C9C9C2C11A0AECB200EF0A6A /* EntryExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9C9C2C01A0AECB200EF0A6A /* EntryExtension.swift */; };
+		C9CCAE1A1E7B40AC00BD762D /* rand.metal in Sources */ = {isa = PBXBuildFile; fileRef = C9CCAE191E7B40AC00BD762D /* rand.metal */; };
 		C9D5B9881A714ABF00B64D5C /* PlexusBNSplitView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9D5B9871A714ABF00B64D5C /* PlexusBNSplitView.swift */; };
 		C9D80BC319E74779003A7575 /* PlexusEntryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9D80BC219E74779003A7575 /* PlexusEntryViewController.swift */; };
 		C9E74A7C1CA326E200A930DD /* CorePlot.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C9FC76C01BFE2CD5008CA6D0 /* CorePlot.framework */; };
@@ -202,6 +203,8 @@
 		C9BFBFBA19EF12E400EF1A86 /* PlexusModelViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlexusModelViewController.swift; sourceTree = "<group>"; };
 		C9C962D91E07624800B049FD /* BNGibbs.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = BNGibbs.metal; sourceTree = "<group>"; };
 		C9C9C2C01A0AECB200EF0A6A /* EntryExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EntryExtension.swift; sourceTree = "<group>"; };
+		C9CCAE181E7B408B00BD762D /* rand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = rand.h; sourceTree = "<group>"; };
+		C9CCAE191E7B40AC00BD762D /* rand.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = rand.metal; sourceTree = "<group>"; };
 		C9D5B9871A714ABF00B64D5C /* PlexusBNSplitView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlexusBNSplitView.swift; sourceTree = "<group>"; };
 		C9D80BC219E74779003A7575 /* PlexusEntryViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlexusEntryViewController.swift; sourceTree = "<group>"; };
 		C9F459031AFA636E00ADB4F4 /* PlexusRunMaxTranformer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlexusRunMaxTranformer.swift; sourceTree = "<group>"; };
@@ -276,7 +279,9 @@
 			children = (
 				C9C962D91E07624800B049FD /* BNGibbs.metal */,
 				C947E6C61E0C94D9007C321D /* mt.h */,
+				C9CCAE181E7B408B00BD762D /* rand.h */,
 				C947E6D31E0C94FD007C321D /* mt.metal */,
+				C9CCAE191E7B40AC00BD762D /* rand.metal */,
 				C9423AFE19E2FFC200EE109C /* CoreData.framework */,
 				C96946FD19DF6CC1001CE994 /* MapKit.framework */,
 				C96946FB19DF6C8B001CE994 /* Quartz.framework */,
@@ -554,6 +559,7 @@
 				C9D80BC319E74779003A7575 /* PlexusEntryViewController.swift in Sources */,
 				C97B06EF1A4DE7E100514730 /* PlexusModelTableViewController.swift in Sources */,
 				C969470119DF6D79001CE994 /* PlexusBNScene.swift in Sources */,
+				C9CCAE1A1E7B40AC00BD762D /* rand.metal in Sources */,
 				C9F459041AFA636E00ADB4F4 /* PlexusRunMaxTranformer.swift in Sources */,
 				C9464CEB1B27B8F0005004F0 /* PlexusModelDetailViewController.swift in Sources */,
 				C9AB85C01A5C3DF900F77E7E /* CPTMutablePlotRange+SwiftCompat.m in Sources */,

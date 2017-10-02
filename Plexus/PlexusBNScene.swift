@@ -73,10 +73,18 @@ class PlexusBNScene: SKScene {
     }
     
     override func deleteBackward(_ sender: Any?) {
+        
+        
         let selNodes : [BNNode]  = nodesController.selectedObjects as! [BNNode]
         for selNode : BNNode in selNodes{
             nodesController.removeObject(selNode)
+            let appDelegate : AppDelegate = NSApplication.shared().delegate as! AppDelegate
+            moc = appDelegate.managedObjectContext
+            moc.delete(selNode)
+            
         }
+        
+        
         self.reloadData()
     }
     
