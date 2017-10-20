@@ -7,13 +7,10 @@
 //
 
 #include <metal_stdlib>
-//#include "mt.h" 
 #include "rand.h"
 
+
 using namespace metal;
-
-
-
 
 
 kernel void bngibbs(const device unsigned int *rngseeds [[buffer(0)]], device float *bnresults [[buffer(1)]], const device unsigned int *p [[buffer(2)]], const device unsigned int *priordisttypes [[buffer(3)]], const device float *priorv1s [[buffer(4)]], const device float *priorv2s[[buffer(5)]], const device int *infnet [[buffer(6)]], const device float *cptnet [[buffer(7)]], device uint *shufflenodes[[buffer(8)]], device float *bnstates[[buffer(9)]], const device float *postpriors [[buffer(10)]], device float *flips [[buffer(11)]], uint gid [[thread_position_in_grid]]){
@@ -69,13 +66,15 @@ kernel void bngibbs(const device unsigned int *rngseeds [[buffer(0)]], device fl
                     flip = unidev(&rs, priorv1s[i], priorv2s[i]);
                     break;
                 case 2: //gaussian
-                    flip = priorv2s[i] * gasdev(&rs) + priorv1s[i];
+//                    flip = priorv2s[i] * gasdev(&rs) + priorv1s[i];
+                    flip = gennor(&rs, priorv1s[i], priorv2s[i]);
                     break;
                 case 3: //beta
-                    flip = beta_dev(&rs, priorv1s[i], priorv2s[i]);
+                    flip = genbet(&rs, priorv1s[i], priorv2s[i]);
                     break;
                 case 4: // gamma
-                    flip = gamma_dev(&rs, priorv1s[i]/priorv2s[i]);
+//                    flip = gamma_dev(&rs, priorv1s[i]/priorv2s[i]);
+                    flip = gengam(&rs, priorv1s[i], priorv2s[i]);
                     break;
                 case 5: //Posterior Prior
                     flip = postpriors[ppoff+randomx(&rs, p[5])];

@@ -145,9 +145,10 @@ class PlexusBNScene: SKScene {
 
                 
                 if(theEvent.clickCount > 1){ //double-clicks open single node view
-
-                   // var contextMenu = NSMenu.init(title: "whut")
-                   // NSMenu.popUpContextMenu(contextMenu, withEvent: theEvent, forView: self.view!)
+//                    print("DOUBLE")
+//
+//                    var contextMenu = NSMenu.init(title: "whut")
+//                    NSMenu.popUpContextMenu(contextMenu, with: theEvent, for: self.view!)
                 }
                 
             }
@@ -578,10 +579,6 @@ class PlexusBNScene: SKScene {
            
         }
 
-
-
-        
-        /* Called before each frame is rendered */
         var angle : CGFloat = 0.0
         
 
@@ -600,11 +597,7 @@ class PlexusBNScene: SKScene {
                         
                         angle = self.angleAway(thisKid, nodeB: thatKid)
                         
-                        
-                        
                     }
-                    
-                    
                     
                 }
                 
@@ -784,7 +777,7 @@ class PlexusBNScene: SKScene {
     }
     
     func angleAway(_ nodeA: SKNode, nodeB: SKNode) ->CGFloat {
-        return angleTowards(nodeA, nodeB: nodeB) + CGFloat(M_PI)
+        return angleTowards(nodeA, nodeB: nodeB) + CGFloat(Double.pi)
     }
     
     func angleTowards(_ nodeA: SKNode, nodeB: SKNode) ->CGFloat {

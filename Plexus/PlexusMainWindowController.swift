@@ -950,8 +950,6 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
             
             print("Time to run: \(NSDate().timeIntervalSince(start as Date)) seconds.")
             
-
-            
             var bins = Int(pow(Float(curModel.runstot), 0.5))
             
             if(bins < 100) {
@@ -959,13 +957,12 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
             }
             
             let binQuotient = 1.0/Float(bins)
-            
-            bins = bins + 1 //one more bin for anything that is a 1.0
+//
+//            bins = bins + 1 //one more bin for anything that is a 1.0
             
             var fi = 0
             for result in results {
 
-                
                 var postCount = [Int](repeating: 0, count: bins)
                 
                 let inNode : BNNode = nodesForCalc[fi]
@@ -975,10 +972,12 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                 var flinecount : Float = 0.0
                 for gNode : Float in result {
                     
-                    
                     if(gNode == gNode && gNode >= 0.0 && gNode <= 1.0) {//fails if nan
                         
-                        let x = (Int)(floor(gNode/binQuotient))
+                        var x = (Int)(floor(gNode/binQuotient))
+                        if x == bins {
+                            x = x - 1
+                        }
                         postCount[x] += 1
                         flinetot += gNode
                         flinecount += 1.0

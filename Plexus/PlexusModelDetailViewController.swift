@@ -9,6 +9,7 @@
 import Cocoa
 import SpriteKit
 
+
 class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NSTableViewDataSource, CPTScatterPlotDataSource, CPTScatterPlotDelegate {
     
     var moc : NSManagedObjectContext!
@@ -405,6 +406,7 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
         var curNodes : [BNNode] = nodesController.selectedObjects as! [BNNode]
         if(curNodes.count>0) {
             curNode = curNodes[0]
+            var priortop = 1.0
    
             priorDist = Int(curNode.priorDistType)
             V1 = Double(curNode.priorV1)
@@ -421,7 +423,7 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
                 detailGraph.add(dpriorPlot)
                 detailGraph.remove(dpriorPlot)
                 
-                //Construct CPT table
+                //Construct CPT
                 
                 let curModels : [Model] = modelTreeController.selectedObjects as! [Model]
                 let curModel : Model = curModels[0]
@@ -513,6 +515,9 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
                     priorV1Slider.maxValue = 1.0
                     priorV2Slider.minValue = 0.0
                     priorV2Slider.maxValue = 1.0
+                    
+                    priortop = gaussian(V1, c: V2, x: 0.5)
+//                    priortop = gaussian(V1, sigma: V2, x: 0.5)
                     
                     priorPlot.interpolation = CPTScatterPlotInterpolation.curved
                     dpriorPlot.interpolation = CPTScatterPlotInterpolation.curved
@@ -610,21 +615,22 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
                 default:
                     self.priorDataForChart = [Double](repeating: 0.0, count: 100) as [NSNumber]
             }
-            
-            if curNode.postCount != nil {
+            if(curNode.influencedBy.count > 0 && curNode.postCount != nil) {
+//            if curNode.postCount != nil {
+
                 let postCount = NSKeyedUnarchiver.unarchiveObject(with: curNode.value(forKey: "postCount") as! Data) as! [Int]
                 var postData = [NSNumber]()
                 var curtop = 0
                 for thisPost in postCount {
+//                    print ("thispost \(thisPost)")
                     if (curtop < thisPost) {
                         curtop = thisPost
                     }
                 }
                 for thisPost : Int in postCount {
                     postData.append((Double(thisPost)/Double(curtop)) as NSNumber)
+                    //FIXME this sets the top to 1 always
                 }
-                
-
                 
                 self.dataForChart = postData
             }
@@ -715,14 +721,16 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
                     }
                     
                 case 2: //gaussian
-                    return gaussian(V1, sigma: V2, x: nidx) as AnyObject?
+//                    print("prior \(gaussian(V1, c: V2, x: nidx))")
+                    return gaussian(V1, c: V2, x: nidx) as AnyObject?
+//                    return gaussian(V1, sigma: V2, x: nidx) as AnyObject?
                     
                 case 3: //beta
                     return beta(V1, b: V2, x: nidx) as AnyObject?
                     
                 case 4: //gamma
                     
-                    
+//                    print("prior \(gamma(V1, b: V2, x: nidx))")
                     return gamma(V1, b:V2, x:nidx) as AnyObject?
                     
                 case 5: //priorPost
@@ -735,7 +743,8 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
             }
                 
             else if(plot.identifier!.isEqual("PostPlot")){
-                
+//                print("post \(idx) \(self.dataForChart[Int(idx)] as NSNumber)")
+
                 return self.dataForChart[Int(idx)] as NSNumber
             }
         }
@@ -744,32 +753,36 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
         return 0 as AnyObject?
     }
     
-
-    
-    
-   
-    
     
     //****** distn fxns
-    func gaussian(_ mu: Double, sigma: Double, x: Double) -> Double {
-        let n : Double = sigma * 2.0 * sqrt(.pi)
-        let p : Double = exp( -pow(x-mu, 2.0) / (2.0 * pow(sigma, 2.0)))
-        return p/n
+
+    
+//    func gaussian(_ mu: Double, sigma: Double, x: Double) -> Double {
+//        let n : Double = sigma * 2.0 * sqrt(.pi)
+//        let p : Double = exp( -pow(x-mu, 2.0) / (2.0 * pow(sigma, 2.0)))
+//        return p/n
+//    }
+    
+    func gaussian(_ b: Double, c: Double, x: Double) -> Double {
+        return exp( -pow(x-b, 2.0) / (2.0 * pow(c, 2.0)))
     }
     
     func beta(_ a: Double, b: Double, x: Double) -> Double {
-        
         let betanorm : Double = tgamma((a+b))/(tgamma(a)+tgamma(b))
-        
         let secondhalf : Double = pow(x, (a-1))*pow((1-x),(b-1))
-        
         return betanorm * secondhalf
     }
-    
-    func gamma(_ a: Double, b: Double, x: Double) -> Double {
-        let numerator = pow(b,a) * pow(x, (a-1)) * pow(M_E,-(x*b))
-        return numerator/tgamma(a)
+        
+    func gamma(_ a: Double, b: Double, x: Double) -> Double { //(A^R)/Gamma(R) * X^(R-1) * Exp(-A*X)
+        return pow(a,b)/tgamma(b) * pow(x, (b-1)) * pow(M_E, -(x*a))
     }
+    
+    
+    
+
+    
+    
+    
     //******
     
 
