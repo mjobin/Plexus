@@ -34,6 +34,12 @@ class PlexusMainSplitViewController: NSSplitViewController {
         modelDetailViewController = childViewControllers[3] as? PlexusModelDetailViewController
         modelViewController = childViewControllers[4] as? PlexusModelViewController
         
+        
+        let structureListViewItem = self.splitViewItems[0] // 0 is left pane
+        structureListViewItem.isCollapsed = true
+
+        let modelListViewItem = self.splitViewItems[4] // 4 is right pane
+        modelListViewItem.isCollapsed = true
 
         
     }

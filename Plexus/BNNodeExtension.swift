@@ -187,9 +187,20 @@ extension BNNode {
             let curTrait : Trait = curInfluencedBy.nodeLink as! Trait
             infTraits.append(curTrait.name)
             infTraitvalue[curInfluencedBy.nodeLink.name] = curTrait.traitValue
+            
+            //checlk here to make sure data really IS numeric. if not, switch back
+            
+            if infNumericData[curInfluencedBy.nodeLink.name] == true {
+                let infTraittest = infTraitvalue[curInfluencedBy.nodeLink.name]!
+                if Double(infTraittest) == nil {
+                    infNumericData[curInfluencedBy.nodeLink.name] = false
+                    curInfluencedBy.numericData = false
+                    
+                }
+            }
+            
+            
         }
-        
-
         
         
         var entryTraits : [String : [Trait]] = [:]
@@ -199,9 +210,14 @@ extension BNNode {
         }
         
         for infName in infNames {
+            
             if infNumericData[infName] == true {
+
                 infLowT[infName] = Double(infTraitvalue[infName]!)! * (1.0 - (infTolerance[infName]!/2.0))
                 infHighT[infName] = Double(infTraitvalue[infName]!)! * (1.0 + (infTolerance[infName]!/2.0))
+                
+
+
             }
 
             
@@ -312,8 +328,6 @@ extension BNNode {
     
 
     
-
-    
     func getCPTArray(_ sender:AnyObject, mocChanged:Bool, cptReady:Int) -> [cl_float] {
         if mocChanged == true || cptReady != 2 {
            _ = self.CPT()
@@ -333,11 +347,6 @@ extension BNNode {
     func infs(_ sender:AnyObject) -> NSArray {
         return self.influences.array as! [BNNode] as NSArray
     }
-    
-    
-    
-    
-
     
     
 }

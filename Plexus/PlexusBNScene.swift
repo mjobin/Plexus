@@ -15,6 +15,7 @@ class PlexusBNScene: SKScene {
     var moc : NSManagedObjectContext!
     dynamic var modelTreeController : NSTreeController!
     dynamic var nodesController : NSArrayController!
+    var skView : PlexusBNSKView!
     
     var firstUpdate = true
     
@@ -39,7 +40,7 @@ class PlexusBNScene: SKScene {
         
         NotificationCenter.default.addObserver(self, selector: #selector(PlexusBNScene.mocDidChange(_:)), name: NSNotification.Name.NSManagedObjectContextObjectsDidChange, object: moc)
         
-
+        
  
         firstUpdate = true
         
@@ -54,6 +55,7 @@ class PlexusBNScene: SKScene {
         startNode = self // so initialized
 
         
+
     }
   /*
     override func didChangeSize(oldSize: CGSize) {
@@ -126,26 +128,35 @@ class PlexusBNScene: SKScene {
 
             if(touchedNode.name == "bnNode"){
                 
+                self.enumerateChildNodes(withName: "lightingNode", using: { thisNode, stop in
+                    thisNode.removeFromParent()
+                    
+                     })
                 
                 self.enumerateChildNodes(withName: "bnNode", using: { thisNode, stop in
-                    let noglowNode : SKShapeNode = thisNode as! SKShapeNode
-                    noglowNode.glowWidth = 0
+                    let noglowNode : SKSpriteNode = thisNode as! SKSpriteNode
+                    noglowNode.texture = SKTexture(imageNamed:"PlexusNode")
+                    
+
 
                 })
                 
                let idNode : PlexusBNNode = touchedNode as! PlexusBNNode
 
-                idNode.glowWidth = 5
+//                idNode.glowWidth = 5
+                idNode.texture = SKTexture(imageNamed:"PlexusNodeSelected")
+               
+                
                 let idArray : [BNNode] = [idNode.node]
 
                 nodesController.setSelectedObjects(idArray)
                 
-                
-
-
-                
                 if(theEvent.clickCount > 1){ //double-clicks open single node view
-//                    print("DOUBLE")
+                    NotificationCenter.default.post(name:Notification.Name(rawValue:"nodeDblClick"),
+                            object: nil,
+                            userInfo: ["message":"nodeDblClick", "date":Date()])
+                    
+
 //
 //                    var contextMenu = NSMenu.init(title: "whut")
 //                    NSMenu.popUpContextMenu(contextMenu, with: theEvent, for: self.view!)
@@ -530,8 +541,9 @@ class PlexusBNScene: SKScene {
                             
                             
                             let joinLine = SKShapeNode(path: arrowPath)
+                            joinLine.alpha = 1.0
                             joinLine.name = "nodeLine"
-                            joinLine.zPosition = -1
+                            joinLine.zPosition = 1
                             joinLine.fillColor = NSColor.white
                             
                             self.addChild(joinLine)
@@ -549,31 +561,6 @@ class PlexusBNScene: SKScene {
                 
             }
             
-
-            //glow selected
-            
-
-            
-            self.enumerateChildNodes(withName: "bnNode", using: { thisNode, stop in
-                let noglowNode : SKShapeNode = thisNode as! SKShapeNode
-                noglowNode.glowWidth = 0
-                
-            })
-            
-            
-            let selNodes : [BNNode]  = nodesController.selectedObjects as! [BNNode]
-            for selNode : BNNode in selNodes{
-                self.enumerateChildNodes(withName: "bnNode", using: { thisNode, stop in
-                    
-                    let idNode : PlexusBNNode = thisNode as! PlexusBNNode
-                    
-                    if(idNode.node == selNode){ //found, so make it glow
-                        idNode.glowWidth = 4
-  
-                    }
-                    
-                })
-            }
 
 
            
@@ -637,7 +624,7 @@ class PlexusBNScene: SKScene {
             }
         }
 
-
+        
         
     }
   
@@ -691,33 +678,34 @@ class PlexusBNScene: SKScene {
         myLabel.zPosition = 3
         myLabel.name = "nodeName"
         myLabel.verticalAlignmentMode = SKLabelVerticalAlignmentMode.bottom
-       // myLabel.userInteractionEnabled = true
         
         let inTrait = inNode.nodeLink as! Trait
         
         let valLabel = SKLabelNode(text: inTrait.traitValue)
         valLabel.fontName = "Helvetica"
         valLabel.fontSize = 12
-        //valLabel.fontColor = SKColor.lightGray
         valLabel.zPosition = 2
         valLabel.name = "nodeName"
         valLabel.verticalAlignmentMode = SKLabelVerticalAlignmentMode.top
         
         
         
-        var nodeWidth = (myLabel.frame.size.width)+10
+        var nodeWidth = (myLabel.frame.size.width)+15
         if(valLabel.frame.size.width > myLabel.frame.size.width) {
-            nodeWidth = (valLabel.frame.size.width)+10
+            nodeWidth = (valLabel.frame.size.width)+15
         }
-        let nodeHeight = myLabel.frame.size.height + valLabel.frame.size.height + 10
+        let nodeHeight = myLabel.frame.size.height + valLabel.frame.size.height + 15
+
+        let shapeSize = CGSize(width: nodeWidth, height: nodeHeight)
+//        print (shapeSize)
+        
+//        let shapePath = CGPath(roundedRect: CGRect(x: -(nodeWidth/2), y: -(nodeHeight/2), width: nodeWidth, height: nodeHeight), cornerWidth: 4, cornerHeight: 4, transform: nil)
+//
 
         
-        
-        let shapePath = CGPath(roundedRect: CGRect(x: -(nodeWidth/2), y: -(nodeHeight/2), width: nodeWidth, height: nodeHeight), cornerWidth: 4, cornerHeight: 4, transform: nil)
-
-
-        
-        let shape = PlexusBNNode(path: shapePath)
+//        let shape = PlexusBNNode(path: shapePath)
+        let shape = PlexusBNNode(imageNamed: "PlexusNode")
+        shape.scale(to: shapeSize)
 
         
         shape.position = inPos
@@ -735,8 +723,8 @@ class PlexusBNScene: SKScene {
         shape.physicsBody?.allowsRotation = false
         shape.physicsBody?.categoryBitMask = ColliderType.node.rawValue
         shape.physicsBody?.collisionBitMask = ColliderType.node.rawValue
-        shape.strokeColor = NSColor.blue
-        shape.fillColor = NSColor.darkGray
+//        shape.strokeColor = NSColor.blue
+//        shape.fillColor = NSColor.darkGray
 
         shape.node = inNode
         

@@ -9,7 +9,7 @@
 import Cocoa
 import SpriteKit
 
-class PlexusBNNode: SKShapeNode {
+class PlexusBNNode: SKSpriteNode {
     var node : BNNode!
 
 }

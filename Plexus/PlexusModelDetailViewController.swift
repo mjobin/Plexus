@@ -97,6 +97,8 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
         //Single Node View
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name.NSManagedObjectContextObjectsDidChange, object: moc)
         NotificationCenter.default.addObserver(self, selector: #selector(PlexusModelDetailViewController.mocDidChange(_:)), name: NSNotification.Name.NSManagedObjectContextObjectsDidChange, object: moc)
+        NotificationCenter.default.addObserver(forName:Notification.Name(rawValue:"nodeDblClick"), object:nil, queue:nil, using:catchNotification)
+        
         _ = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(PlexusModelDetailViewController.cptCheck), userInfo: nil, repeats: true)
 
         
@@ -351,7 +353,7 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
     
     override func viewDidAppear() {
         super.viewDidAppear()
-        
+        skView.vc = self
         skView.nodesController = self.nodesController
         skView.modelTreeController = self.modelTreeController
         scene.modelTreeController = self.modelTreeController
@@ -391,6 +393,35 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
         }
     }
     
+    
+    
+    func dblClickNode () {
+        let curNodes : [BNNode] = nodesController.selectedObjects as! [BNNode]
+        let curNode = curNodes[0]
+        if(curNode.influencedBy.count > 0) {
+            self.performSegue(withIdentifier: "postNode", sender: self)
+        }
+        else {
+           self.performSegue(withIdentifier: "nodeInspect", sender: self)
+        }
+
+    }
+    
+    override func prepare(for segue: NSStoryboardSegue, sender: Any?) {
+        if segue.identifier == "nodeInspect" {
+            let nodePop : PlexusNodePopoverDetail = segue.destinationController as! PlexusNodePopoverDetail
+            nodePop.nodesController = nodesController
+        }
+        
+        if segue.identifier == "postNode" {
+            let nodePop : PlexusPostPopoverDetail = segue.destinationController as! PlexusPostPopoverDetail
+            nodePop.nodesController = nodesController
+            nodePop.modelTreeController = modelTreeController
+            nodePop.plexusModelDetailViewController = self
+        }
+        
+    }
+    
     //******CPTScatterPlotDataSource fxns
     
     func reloadData() {
@@ -406,7 +437,6 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
         var curNodes : [BNNode] = nodesController.selectedObjects as! [BNNode]
         if(curNodes.count>0) {
             curNode = curNodes[0]
-            var priortop = 1.0
    
             priorDist = Int(curNode.priorDistType)
             V1 = Double(curNode.priorV1)
@@ -516,8 +546,7 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
                     priorV2Slider.minValue = 0.0
                     priorV2Slider.maxValue = 1.0
                     
-                    priortop = gaussian(V1, c: V2, x: 0.5)
-//                    priortop = gaussian(V1, sigma: V2, x: 0.5)
+
                     
                     priorPlot.interpolation = CPTScatterPlotInterpolation.curved
                     dpriorPlot.interpolation = CPTScatterPlotInterpolation.curved
@@ -849,6 +878,16 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
     }
     
 
+    
+
+    func catchNotification(notification:Notification) -> Void {
+
+        let message  = notification.userInfo!["message"] as? String
+        if(message == "nodeDblClick"){
+            self.dblClickNode()
+        }
+ 
+    }
  
     
 //tableview data source
@@ -876,7 +915,7 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
     
     
     func tableView(_ tableView: NSTableView, objectValueFor tableColumn: NSTableColumn?, row: Int) -> Any? {
-        
+
         var curNodes : [BNNode] = nodesController.selectedObjects as! [BNNode]
         if(curNodes.count>0) {
             curNode = curNodes[0]

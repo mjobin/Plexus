@@ -9,7 +9,6 @@
 #include <metal_stdlib>
 #include "rand.h"
 
-
 using namespace metal;
 
 

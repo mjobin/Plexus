@@ -1071,7 +1071,33 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
     }
     
     
+    @IBAction func lockToggle(_ x:NSToolbarItem){
 
+        let curModels : [Model] = modelTreeController.selectedObjects as! [Model]
+        let curModel : Model = curModels[0]
+        if(curModel.complete == true){
+           print ("locked")
+        }
+        else {
+
+            //delete all posterior data
+            let curNodes  = curModel.bnnode.allObjects as! [BNNode]
+            for curNode : BNNode in curNodes {
+                curNode.setValue(nil, forKey: "cptFreezeArray")
+                curNode.setValue(nil, forKey: "postArray")
+                curNode.setValue(nil, forKey: "postCount")
+                curNode.setValue(nil, forKey: "postMean")
+                curNode.setValue(nil, forKey: "postETLow")
+                curNode.setValue(nil, forKey: "postETHigh")
+                curNode.setValue(nil, forKey: "postHPDLow")
+                curNode.setValue(nil, forKey: "postHPDHigh")
+            }
+            
+        }
+    
+    
+    }
+    
     @IBAction func exportCSV(_ x:NSToolbarItem){
 
         

@@ -15,6 +15,7 @@ class PlexusBNSKView: SKView {
     var moc : NSManagedObjectContext!
     dynamic var modelTreeController : NSTreeController!
     dynamic var nodesController : NSArrayController!
+    var vc : PlexusModelDetailViewController!
     
     required init?(coder aDecoder: NSCoder)
     {
@@ -27,6 +28,7 @@ class PlexusBNSKView: SKView {
         self.allowsTransparency = true
         self.ignoresSiblingOrder = true
         
+        
         let appDelegate : AppDelegate = NSApplication.shared().delegate as! AppDelegate
         moc = appDelegate.managedObjectContext
     }
@@ -36,7 +38,6 @@ class PlexusBNSKView: SKView {
     override func draw(_ dirtyRect: NSRect) {
         super.draw(dirtyRect)
 
-        // Drawing code here.
     }
     
     override func draggingEntered(_ sender: NSDraggingInfo) -> NSDragOperation {
