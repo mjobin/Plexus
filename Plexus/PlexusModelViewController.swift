@@ -28,11 +28,11 @@ class PlexusModelViewController: NSViewController {
         // Do view setup here.
     }
     
+    
+
+    
    @IBAction func childModel(_ sender : AnyObject){
 
-    
-
-    
         let curModels : [Model] = modelTreeController.selectedObjects as! [Model]
         let curModel : Model = curModels[0]
 
@@ -63,10 +63,6 @@ class PlexusModelViewController: NSViewController {
         for curNode : BNNode in curNodes {
             let newNode : BNNode = BNNode(entity: NSEntityDescription.entity(forEntityName: "BNNode", in: self.moc)!, insertInto: self.moc)
 
-
-
-        
-            
             
             newNode.setValue(curNode.priorDistType, forKey: "priorDistType")
             newNode.setValue(curNode.priorV1, forKey: "priorV1")

@@ -20,6 +20,8 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
     @IBOutlet var mainToolbar : NSToolbar!
     @IBOutlet var testprog : NSProgressIndicator!
     @IBOutlet var metalDevices = MTLCopyAllDevices()
+    
+    
 
     let queue = DispatchQueue(label: "edu.scu.Plexus.metalQueue")
 
@@ -56,7 +58,11 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
     var maxLabel : NSTextField!
     var cancelButton : NSButton!
     
+    
+
+    
     var breakloop = false
+    
     
 
     
@@ -108,6 +114,11 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
 
         }
         
+
+        //NSNotificationCenter.defaultCenter().addObserver(self, selector: "contextDidSaveContext:", name: NSManagedObjectContextDidSaveNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(PlexusMainWindowController.contextDidSave(_:)), name: NSNotification.Name.NSManagedObjectContextDidSave, object: nil)
+//        NotificationCenter.default.addObserver(self, selector: #selector(PlexusBNScene.mocDidChange(_:)), name: NSNotification.Name.NSManagedObjectContextObjectsDidChange, object: moc)
+        
         
     }
     
@@ -122,6 +133,8 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         queue.async {
             self.setUpMetal()
         }
+        
+
         
     }
     
@@ -567,7 +580,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                 self.performSelector(onMainThread: #selector(PlexusMainWindowController.endProgInd), with: nil, waitUntilDone: true)
                 
                 
-                
+
                 
             }
             
@@ -586,6 +599,682 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
 
         self.breakloop = true
     }
+    
+    func randomChildModel(lastModel : Model, thisMOC : NSManagedObjectContext) -> Model {
+        
+        let newModel = lastModel.copySelf(thisMOC)
+        
+        let nodesForTest = newModel.bnnode.allObjects as! [BNNode]
+        
+        if (nodesForTest.count < 2){
+            print ("WFUCKC")
+        }
+        
+        let frompos = (Int(arc4random_uniform(UInt32(nodesForTest.count))))
+        
+        var topos = frompos
+        while(topos == frompos){
+            topos = (Int(arc4random_uniform(UInt32(nodesForTest.count))))
+        }
+        
+        let fromNode = nodesForTest[frompos]
+        let toNode = nodesForTest[topos]
+        
+        //Check if there is an arc between them
+        var isinfArc = false
+        var isinfByArc = false
+        let theInfluences : [BNNode] = fromNode.influences.array as! [BNNode]
+        for thisInfluences in theInfluences {
+            if thisInfluences == toNode {
+                isinfArc = true
+                break
+            }
+        }
+        
+        
+        let theInfluencedBy : [BNNode] = fromNode.influencedBy.array as! [BNNode]
+        for thisInfluencedBy in theInfluencedBy {
+            if thisInfluencedBy == toNode {
+                isinfByArc = true
+                break
+            }
+        }
+        
+        
+        if isinfArc == true && isinfByArc == false {
+            let cflip = arc4random_uniform(2)
+            if(cflip == 0) { // delete arc
+                fromNode.removeInfluencesObject(toNode)
+            }
+            else { // reverse arc
+                fromNode.removeInfluencesObject(toNode)
+                toNode.addInfluencesObject(fromNode)
+            }
+        }
+        
+        else if isinfArc == false && isinfByArc == true {
+            let cflip = arc4random_uniform(2)
+            if(cflip == 0) { // delete arc
+                toNode.removeInfluencesObject(fromNode)
+            }
+            else { // reverse arc
+                toNode.removeInfluencesObject(fromNode)
+                fromNode.addInfluencesObject(toNode)
+            }
+        }
+        
+        
+        else if isinfArc == true && isinfByArc == true {
+            fatalError("Error: infleunces in two dirrctions!")
+        }
+        else { //both false, no arc
+            fromNode.addInfluencesObject(toNode)
+        }
+        
+
+        return newModel
+    }
+    
+    
+    
+    @IBAction func singleRunPress(_ x:NSToolbarItem) {
+    
+    mainSplitViewController.modelDetailViewController?.calcInProgress = true
+    
+    self.progSheet = self.progSetup(self)
+    self.window!.beginSheet(self.progSheet, completionHandler: nil)
+    self.progSheet.makeKeyAndOrderFront(self)
+    
+    let curModels : [Model] = mainSplitViewController.modelTreeController?.selectedObjects as! [Model]
+    let firstModel : Model = curModels[0]
+        
+    let calcQueue = DispatchQueue(label: "calcQueue")
+    calcQueue.async {
+        let fmcrun = self.metalCalc(curModel : firstModel)
+        if fmcrun == false {
+            fatalError("unlinked network!")
+        }
+        let firstbic = self.calcLikelihood(curModel: firstModel)
+        firstModel.setValue(firstbic, forKey: "score")
+
+        
+        self.performSelector(onMainThread: #selector(PlexusMainWindowController.endProgInd), with: nil, waitUntilDone: true)
+        
+        DispatchQueue.main.async {
+            firstModel.complete = true
+            self.mainSplitViewController.modelDetailViewController?.calcInProgress = false
+            }
+                            //end calcQ
+        }
+    
+}
+    
+ 
+    @IBAction func calcButtonPress(_ x:NSToolbarItem){
+        mainSplitViewController.modelDetailViewController?.calcInProgress = true
+        
+        self.progSheet = self.progSetup(self)
+        self.window!.beginSheet(self.progSheet, completionHandler: nil)
+        self.progSheet.makeKeyAndOrderFront(self)
+        
+        let curModels : [Model] = mainSplitViewController.modelTreeController?.selectedObjects as! [Model]
+        let firstModel : Model = curModels[0]
+        let firstModelID = firstModel.objectID
+        
+        let calcQueue = DispatchQueue(label: "calcQueue")
+        calcQueue.async {
+
+            let cmoc = NSManagedObjectContext.init(concurrencyType: .privateQueueConcurrencyType)
+            cmoc.persistentStoreCoordinator = self.moc.persistentStoreCoordinator
+            
+
+            do {
+                let cfirstModel = try cmoc.existingObject(with: firstModelID) as! Model
+                
+                var modelPeaks = [Model]()
+                
+                var lastModel = cfirstModel
+                let fmcrun = self.metalCalc(curModel : cfirstModel)
+                if fmcrun == false {
+                    fatalError("unlinked network!")
+                }
+                let firstbic = self.calcLikelihood(curModel: cfirstModel)
+                cfirstModel.setValue(firstbic, forKey: "score")
+                
+                for _ in 0...2 {
+                
+                    var firstrun = true
+                    var lastbic = Float(0.0)
+                    var curbic = Float(0.0)
+                    
+                    for _ in 0...9 {
+                        if(firstrun == true){
+                            
+                            firstrun = false
+                            lastbic = firstbic
+                            
+                        }
+                        else {
+                            
+                            let curModel = self.randomChildModel(lastModel: lastModel, thisMOC: cmoc)
+                            let msrun = self.metalCalc(curModel : curModel)
+                            if (msrun == true) {
+                                curbic = self.calcLikelihood(curModel: curModel)
+                                print("\(lastbic) \(curbic)")
+                                curModel.setValue(curbic, forKey: "score")
+                                if curbic > lastbic {
+                                    lastModel = curModel
+                                    lastbic = curbic
+                                }
+                                else {
+                                    cmoc.delete(curModel)
+                                    
+                                }
+                            }
+                            else {
+                                cmoc.delete(curModel)
+                            }
+                            
+                        }
+                        
+                    }
+                    
+                    if lastModel != cfirstModel {
+//                        cfirstModel.addChildObject(lastModel)
+                        //and selecty it?
+                        modelPeaks.append(lastModel)
+                    }
+                    
+                }
+                
+                //Run through all the random restarts and select highest score
+                if(modelPeaks.count > 0){
+                    var peakModel = modelPeaks[0]
+                    for thisPeak in modelPeaks {
+                        if thisPeak.score as! Float > peakModel.score as! Float {
+                            peakModel = thisPeak
+                        }
+                    }
+                    
+                    for thisPeak in modelPeaks {
+                        if thisPeak != peakModel{
+                            cmoc.delete(thisPeak)
+                        }
+                    }
+                    
+                    if peakModel != cfirstModel {
+                        //name it with Best and date
+                        var bestname = peakModel.name + "-BEST-"
+                        let date = Date()
+                        let formatter = DateFormatter()
+                        formatter.dateFormat = "dd.MM.yyyy"
+                        bestname = bestname + formatter.string(from: date)
+                        peakModel.setValue(bestname, forKey: "name")
+                        cfirstModel.addChildObject(peakModel)
+//                                            mainSplitViewController.modelTreeController.set
+                    }
+                    
+                }
+                
+
+            
+                do {
+                    try cmoc.save()
+                } catch let error as NSError {
+                    print(error)
+                    fatalError("Could not save models")
+                }
+                self.performSelector(onMainThread: #selector(PlexusMainWindowController.endProgInd), with: nil, waitUntilDone: true)
+                self.mainSplitViewController.modelDetailViewController?.calcInProgress = false
+                
+                
+            }
+            catch {
+                fatalError("wtf")
+            }
+ 
+            
+        }
+  
+        
+    }
+    
+    
+
+    
+    func metalCalc(curModel:Model) -> Bool {
+        let defaults = UserDefaults.standard
+        
+        let calcSpeed = defaults.integer(forKey: "calcSpeed")
+        
+        let kernelFunction: MTLFunction? = defaultLibrary?.makeFunction(name: "bngibbs")
+        do {
+            pipelineState = try device?.makeComputePipelineState(function: kernelFunction!)
+        }
+        catch {
+            fatalError("Cannot set up Metal")
+        }
+        
+        let teWidth = pipelineState.threadExecutionWidth
+        let mTTPT = pipelineState.maxTotalThreadsPerThreadgroup
+        print("\n********* BNGibbs Metal run******")
+        print ("Thread execution width: \(teWidth)")
+        print ("Max threads per group: \(mTTPT)")
+        var maxWSS = 0
+        if #available(OSX 10.12, *) {
+            maxWSS = Int(device.recommendedMaxWorkingSetSize)
+            
+        }
+        print ("Max working set size: \(maxWSS) bytes")
+        
+        
+        let nodesForCalc = curModel.bnnode.allObjects as! [BNNode]
+        let nc = nodesForCalc.count
+        
+        let runstot = curModel.runstot as! Int
+        var ntWidth = (mTTPT/teWidth)-1
+        if calcSpeed == 0 {
+            ntWidth = Int(Double(ntWidth) * 0.5)
+        }
+        else if calcSpeed == 1 {
+            ntWidth = Int(Double(ntWidth) * 0.75)
+        }
+        print ("Number of threadgroups: \(ntWidth)")
+        let threadsPerThreadgroup : MTLSize = MTLSizeMake(teWidth, 1, 1)
+        let numThreadgroups = MTLSize(width: ntWidth, height: 1, depth: 1)
+        
+        
+        DispatchQueue.main.async {
+            
+            self.maxLabel.stringValue = String(describing: runstot)
+            self.progInd.doubleValue = 0
+            self.progInd.maxValue =  Double(runstot)
+            self.progInd.isIndeterminate = true
+            self.progInd.startAnimation(self)
+            self.workLabel.stringValue = "Preparing..."
+            
+
+        }
+
+            
+        //Setup input and output buffers
+        let resourceOptions = MTLResourceOptions()
+        
+        var threadMemSize = 0
+        
+        var maxInfSize = 0
+        for node in nodesForCalc {
+            let theInfluencedBy = node.infBy(self)
+            if(theInfluencedBy.count > maxInfSize) {
+                maxInfSize = theInfluencedBy.count
+            }
+        }
+        if(maxInfSize<1){
+            return false //so that we don't work with completely unlinked graphs
+        }
+        
+        //Maximum CPT size for a node
+        let maxCPTSize = Int(pow(2.0, Double(maxInfSize)))
+        
+        
+        
+        
+        //Buffer 2: Integer Parameters
+        var intparams = [UInt32]()
+        intparams.append(curModel.runsper as! UInt32) //0
+        intparams.append(curModel.burnins as! UInt32) //1
+        intparams.append(UInt32(nodesForCalc.count)) //2
+        intparams.append(UInt32(maxInfSize)) //3
+        intparams.append(UInt32(maxCPTSize)) //4
+        
+        
+        //Buffer 3: Prior Distribution Type
+        var priordisttypes = [UInt32]()
+        for node in nodesForCalc {
+            priordisttypes.append(UInt32(node.priorDistType))
+        }
+        let priordisttypesbuffer = self.device.makeBuffer(bytes: &priordisttypes, length: priordisttypes.count*MemoryLayout<UInt32>.size, options: MTLResourceOptions.cpuCacheModeWriteCombined)
+        threadMemSize += priordisttypes.count*MemoryLayout<UInt32>.size
+        
+        
+        //Buffer 4: PriorV1
+        var priorV1s = [Float]()
+        for node in nodesForCalc {
+            priorV1s.append(Float(node.priorV1))
+        }
+        let priorV1sbuffer = self.device.makeBuffer(bytes: &priorV1s, length: priorV1s.count*MemoryLayout<Float>.size, options: MTLResourceOptions.cpuCacheModeWriteCombined)
+        threadMemSize += priorV1s.count*MemoryLayout<Float>.size
+        
+        
+        
+        //Buffer 5: PriorV2
+        var priorV2s = [Float]()
+        for node in nodesForCalc {
+            priorV2s.append(Float(node.priorV2))
+        }
+        let priorV2sbuffer = self.device.makeBuffer(bytes: &priorV2s, length: priorV2s.count*MemoryLayout<Float>.size, options: MTLResourceOptions.cpuCacheModeWriteCombined)
+        threadMemSize += priorV2s.count*MemoryLayout<Float>.size
+        
+        
+        //Buffer 6: Infnet
+
+        var infnet = [Int32]()
+        for node in nodesForCalc {
+            var thisinf = [Int32]()
+            let theInfluencedBy = node.infBy(self)
+            for thisinfby in theInfluencedBy  {
+                let tib = thisinfby as! BNNode
+                thisinf.append(Int32(nodesForCalc.index(of: tib)!))
+            }
+            let leftOver = maxInfSize-thisinf.count
+            for _ in 0..<leftOver {
+                thisinf.append(Int32(-1.0))
+            }
+            infnet = infnet + thisinf
+            
+        }
+        let infnetbuffer = self.device.makeBuffer(bytes: &infnet, length: nodesForCalc.count*maxInfSize*MemoryLayout<Int32>.size, options: MTLResourceOptions.cpuCacheModeWriteCombined)
+        threadMemSize = nodesForCalc.count*maxInfSize*MemoryLayout<Int32>.size
+        
+        
+        //Buffer 7: Cptnet
+        var cptnet = [Float]()
+        for node in nodesForCalc {
+            let theCPT = node.getCPTArray(self, mocChanged: true, cptReady: 0)
+            cptnet = cptnet + theCPT
+            let leftOver = maxCPTSize-theCPT.count
+            for _ in 0..<leftOver {
+                cptnet.append(-1.0)
+            }
+            
+        }
+        let cptnetbuffer = self.device.makeBuffer(bytes: &cptnet, length: nodesForCalc.count*maxCPTSize*MemoryLayout<Float>.size, options: MTLResourceOptions.cpuCacheModeWriteCombined)
+        threadMemSize += nodesForCalc.count*maxCPTSize*MemoryLayout<Float>.size
+        let shufflebuffer = self.device.makeBuffer(length: ntWidth*nodesForCalc.count*MemoryLayout<UInt32>.size, options: MTLResourceOptions.storageModePrivate)
+        threadMemSize += ntWidth*nodesForCalc.count*MemoryLayout<UInt32>.size
+        
+        
+        //Buffer 9: BNStates array num notdes * ntWidth
+        let bnstatesbuffer = self.device.makeBuffer(length: ntWidth*nodesForCalc.count*MemoryLayout<Float>.size, options: MTLResourceOptions.storageModePrivate)
+        threadMemSize += ntWidth*nodesForCalc.count*MemoryLayout<Float>.size
+        
+        
+        //Buffer 10: postPrior
+        
+        //Work out maximum number of postPriors to assign
+        var maxPPmem = 10000 //Default if max WSS not accessible
+        if maxWSS > 0 {
+            let maxtest = Int((Double(maxWSS) / Double(nodesForCalc.count)) * 0.01) - threadMemSize
+            if maxtest > maxPPmem {
+                maxPPmem = maxtest
+            }
+        }
+        
+        
+        var postPriorSetup = [[Float]]()
+        var maxPP = 0
+        
+        for node in nodesForCalc {
+            
+            if let postData = node.value(forKey: "priorArray"){
+                let priorArray = NSKeyedUnarchiver.unarchiveObject(with: postData as! Data) as! [Float]
+                let shuffledPriorArray = GKRandomSource.sharedRandom().arrayByShufflingObjects(in: priorArray)
+                let firstTT = shuffledPriorArray.prefix(maxPPmem)
+                if firstTT.count > 1 {
+                    postPriorSetup.append(Array(firstTT) as! [Float])
+                    if(firstTT.count > maxPP){
+                        maxPP = firstTT.count
+                    }
+                }
+                else {
+                    postPriorSetup.append([Float(0.0)])
+                    if(1 > maxPP){
+                        maxPP = 1
+                    }
+                }
+            }
+            else {
+                postPriorSetup.append([Float(0.0)])
+                if(1 > maxPP){
+                    maxPP = 1
+                }
+            }
+            
+        }
+        //           Pad each out to maxPP if necessary
+        var postPriors = [Float]()
+        for pp in postPriorSetup{
+            postPriors += pp
+            for _ in pp.count..<maxPP {
+                postPriors.append(-1.0)
+            }
+        }
+        
+        
+        
+        let postpriorbuffer = self.device.makeBuffer(bytes: &postPriors, length: nodesForCalc.count*maxPP*MemoryLayout<Float>.size, options: MTLResourceOptions.cpuCacheModeWriteCombined)
+        threadMemSize += nodesForCalc.count*maxPP*MemoryLayout<Float>.size
+        
+        //Buffer 2: Integer Parameters Setting buffer here
+        intparams.append(UInt32(maxPP)) //5
+        let intparamsbuffer = self.device.makeBuffer(bytes: &intparams, length: intparams.count*MemoryLayout<UInt32>.size, options: resourceOptions)
+        threadMemSize += intparams.count*MemoryLayout<UInt32>.size
+        
+        
+        //Buffer 11: flips
+        let flipsbuffer = self.device.makeBuffer(length: ntWidth*nodesForCalc.count*MemoryLayout<Float>.size, options: MTLResourceOptions.storageModePrivate)
+        threadMemSize += ntWidth*nodesForCalc.count*MemoryLayout<Float>.size
+        
+        DispatchQueue.main.async {
+            self.progInd.isIndeterminate = false
+            self.progInd.doubleValue = 0
+            self.workLabel.stringValue = "Calculating..."
+            self.progInd.startAnimation(self)
+        }
+        
+        //Results array
+        var results = [[Float]]()
+        for _ in nodesForCalc {
+            let thisresult = [Float]()
+            results.append(thisresult)
+        }
+        
+        
+        
+        //RUN LOOP HERE
+        var rc = 0
+        var resc = 0
+        let start = NSDate()
+        while (rc<runstot){
+            
+            
+            let commandBuffer = self.commandQueue.makeCommandBuffer()
+            let commandEncoder = commandBuffer.makeComputeCommandEncoder()
+            commandEncoder.setComputePipelineState(self.pipelineState)
+            
+            //Buffer 0: RNG seeds
+            var seeds = (0..<ntWidth).map{_ in arc4random()}
+            let seedsbuffer = self.device.makeBuffer(bytes: &seeds, length: seeds.count*MemoryLayout<UInt32>.size, options: MTLResourceOptions.cpuCacheModeWriteCombined)
+            commandEncoder.setBuffer(seedsbuffer, offset: 0, at: 0)
+            
+            //Buffer 1: BN Results
+            var bnresults = [Float](repeating: -1.0, count: ntWidth*nodesForCalc.count)
+            let bnresultsbuffer = self.device.makeBuffer(bytes: &bnresults, length: bnresults.count*MemoryLayout<Float>.size, options: resourceOptions)
+            
+            commandEncoder.setBuffer(bnresultsbuffer, offset: 0, at: 1)
+            commandEncoder.setBuffer(intparamsbuffer, offset: 0, at: 2)
+            commandEncoder.setBuffer(priordisttypesbuffer, offset: 0, at: 3)
+            commandEncoder.setBuffer(priorV1sbuffer, offset: 0, at: 4)
+            commandEncoder.setBuffer(priorV2sbuffer, offset: 0, at: 5)
+            commandEncoder.setBuffer(infnetbuffer, offset: 0, at: 6)
+            commandEncoder.setBuffer(cptnetbuffer, offset: 0, at: 7)
+            commandEncoder.setBuffer(shufflebuffer, offset: 0, at: 8)
+            commandEncoder.setBuffer(bnstatesbuffer, offset: 0, at: 9)
+            commandEncoder.setBuffer(postpriorbuffer, offset: 0, at: 10)
+            commandEncoder.setBuffer(flipsbuffer, offset: 0, at: 11)
+            
+            
+            
+            
+            commandEncoder.dispatchThreadgroups(numThreadgroups, threadsPerThreadgroup: threadsPerThreadgroup)
+            
+            commandEncoder.endEncoding()
+            commandBuffer.enqueue()
+            commandBuffer.commit()
+            commandBuffer.waitUntilCompleted()
+            
+            
+            let bnresultsdata = NSData(bytesNoCopy: bnresultsbuffer.contents(), length: bnresults.count*MemoryLayout<Float>.size, freeWhenDone: false)
+            bnresultsdata.getBytes(&bnresults, length:bnresults.count*MemoryLayout<Float>.size)
+            
+            
+            var ri = 0
+            for to in bnresults {
+                if resc >= runstot {
+                    break
+                }
+                results[ri].append(to)
+                //                    print(to, terminator:"\t")
+                
+                ri = ri + 1
+                
+                if ri >= nc {
+                    ri = 0
+                    //                        print ("\n")
+                    resc = resc + 1
+                }
+            }
+            
+            
+            
+            
+            rc = rc + ntWidth
+            
+            DispatchQueue.main.async {
+                self.progInd.increment(by: Double(ntWidth))
+                self.curLabel.stringValue = String(resc)
+            }
+            
+            
+        }
+        
+        print("Time to run: \(NSDate().timeIntervalSince(start as Date)) seconds.")
+        
+        var bins = Int(pow(Float(curModel.runstot), 0.5))
+        
+        if(bins < 100) {
+            bins = 100
+        }
+        
+        let binQuotient = 1.0/Float(bins)
+        //
+        //            bins = bins + 1 //one more bin for anything that is a 1.0
+        
+        var fi = 0
+        for result in results {
+            
+            var postCount = [Int](repeating: 0, count: bins)
+            
+            let inNode : BNNode = nodesForCalc[fi]
+            
+            var gi = 0
+            var flinetot : Float = 0.0
+            var flinecount : Float = 0.0
+            for gNode : Float in result {
+                
+                if(gNode == gNode && gNode >= 0.0 && gNode <= 1.0) {//fails if nan
+                    
+                    var x = (Int)(floor(gNode/binQuotient))
+                    if x == bins {
+                        x = x - 1
+                    }
+                    postCount[x] += 1
+                    flinetot += gNode
+                    flinecount += 1.0
+                    
+                }
+                    
+                else{
+                    // print("problem detected in reloadData. gNode is \(gNode)")
+                }
+                
+                gi += 1
+            }
+            
+            let archivedPostCount = NSKeyedArchiver.archivedData(withRootObject: postCount)
+            inNode.setValue(archivedPostCount, forKey: "postCount")
+            
+            //Stats on post Array
+            //Mean
+            let flinemean = flinetot / flinecount
+            inNode.setValue(flinemean, forKey: "postMean")
+            
+            //Sample Standard Deviation
+            var sumsquares : Float = 0.0
+            flinecount = 0.0
+            for gNode : Float in result {
+                
+                if(gNode == gNode && gNode >= 0.0 && gNode <= 1.0) {//ignores if nan
+                    sumsquares +=  pow(gNode - flinemean, 2.0)
+                    flinecount += 1.0
+                }
+            }
+            
+            let ssd = sumsquares / (flinecount - 1.0)
+            inNode.setValue(ssd, forKey: "postSSD")
+            
+            let sortfline = result.sorted()
+            let lowTail = sortfline[Int(Float(sortfline.count)*0.05)]
+            let highTail = sortfline[Int(Float(sortfline.count)*0.95)]
+            
+            inNode.setValue(lowTail, forKey: "postETLow")
+            inNode.setValue(highTail, forKey: "postETHigh")
+            
+            //Highest Posterior Density Interval. Alpha = 0.05
+            //Where n = sortfline.count (i.e. last entry)
+            //Compute credible intervals for j = 0 to j = n - ((1-0.05)n)
+            let alpha : Float = 0.05
+            let jmax = Int(Float(sortfline.count) - ((1.0-alpha) * Float(sortfline.count)))
+            
+            var firsthpd = true
+            var interval : Float = 0.0
+            var low = 0
+            var high = (sortfline.count - 1)
+            for hpdi in 0..<jmax {
+                let highpos = hpdi + Int(((1.0-alpha)*Float(sortfline.count)))
+                if(firsthpd || (sortfline[highpos] - sortfline[hpdi]) < interval){
+                    firsthpd = false
+                    interval = sortfline[highpos] - sortfline[hpdi]
+                    low = hpdi
+                    high = highpos
+                }
+                
+            }
+            inNode.setValue(sortfline[low], forKey: "postHPDLow")
+            inNode.setValue(sortfline[high], forKey: "postHPDHigh")
+            
+            
+            
+            let archivedPostArray = NSKeyedArchiver.archivedData(withRootObject: result)
+            inNode.setValue(archivedPostArray, forKey: "postArray")
+            
+            inNode.setValue(inNode.cptArray, forKey: "cptFreezeArray")
+            
+            
+            
+            
+            fi = fi + 1
+                
+        }
+            
+            
+            DispatchQueue.main.async {
+                curModel.complete = true
+        }
+        self.performSelector(onMainThread: #selector(PlexusMainWindowController.betweenRuns), with: nil, waitUntilDone: true)
+        return true
+    }
+    
     
     @IBAction func calcMetal(_ x:NSToolbarItem){
         
@@ -624,9 +1313,13 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         let curModels : [Model] = mainSplitViewController.modelTreeController?.selectedObjects as! [Model]
         let curModel : Model = curModels[0]
         
+        
+
+        
+        
         let nc = nodesForCalc.count
 
-        let runstot = curModel.runstot as Int
+        let runstot = curModel.runstot as! Int
         var ntWidth = (mTTPT/teWidth)-1
         if calcSpeed == 0 {
             ntWidth = Int(Double(ntWidth) * 0.5)
@@ -638,7 +1331,6 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         let threadsPerThreadgroup : MTLSize = MTLSizeMake(teWidth, 1, 1)
         let numThreadgroups = MTLSize(width: ntWidth, height: 1, depth: 1)
 
-        
         
         self.progSheet = self.progSetup(self)
         self.maxLabel.stringValue = String(describing: runstot)
@@ -653,7 +1345,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         DispatchQueue.global().async {
         
 
-            
+
             //Setup input and output buffers
             let resourceOptions = MTLResourceOptions()
             
@@ -678,8 +1370,8 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
             
             //Buffer 2: Integer Parameters
             var intparams = [UInt32]()
-            intparams.append(curModel.runsper as UInt32) //0
-            intparams.append(curModel.burnins as UInt32) //1
+            intparams.append(curModel.runsper as! UInt32) //0
+            intparams.append(curModel.burnins as! UInt32) //1
             intparams.append(UInt32(nodesForCalc.count)) //2
             intparams.append(UInt32(maxInfSize)) //3
             intparams.append(UInt32(maxCPTSize)) //4
@@ -787,7 +1479,6 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
             let bnstatesbuffer = self.device.makeBuffer(length: ntWidth*nodesForCalc.count*MemoryLayout<Float>.size, options: MTLResourceOptions.storageModePrivate)
             threadMemSize += ntWidth*nodesForCalc.count*MemoryLayout<Float>.size
             
-
             
             //Buffer 10: postPrior
             
@@ -985,7 +1676,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                     }
                         
                     else{
-                        // println("problem detected in reloadData. gNode is \(gNode)")
+                        // print("problem detected in reloadData. gNode is \(gNode)")
                     }
                     
                     gi += 1
@@ -1062,14 +1753,17 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
             DispatchQueue.main.async {
                 curModel.complete = true
                 self.mainSplitViewController.modelDetailViewController?.calcInProgress = false
-                
-                
+                let bic = self.calcLikelihood(curModel:curModel)
+                print ("BIC: \(bic)")
+
+            
                 
             }
         }
         
     }
     
+
     
     @IBAction func lockToggle(_ x:NSToolbarItem){
 
@@ -1353,7 +2047,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                         for node in self.mainSplitViewController.modelDetailViewController?.nodesController.arrangedObjects as! [BNNode] {
                             self.mainSplitViewController.modelDetailViewController?.nodesController.setSelectionIndex(i)
                             if(j==0){
-                                outText += pTypes[node.priorDistType as Int]
+                                outText += pTypes[node.priorDistType as! Int]
                                 outText += ","
                                 outText += String(describing: node.priorV1)
                                 outText += ","
@@ -1556,17 +2250,191 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         self.progSheet.makeKeyAndOrderFront(self)
     }
     
+    
+    func betweenRuns(){
+        
+        if(self.progSheet != nil){
+
+        }
+        mainSplitViewController.modelDetailViewController?.setGraphParams()
+        mainSplitViewController.modelDetailViewController?.reloadData()
+        
+    }
+    
+    
     func endProgInd(){
 
         if(self.progSheet != nil){
             self.progSheet.orderOut(self)
             self.window!.endSheet(self.progSheet)
         }
+        
+        do {
+            try self.moc.save()
+        } catch let error as NSError {
+            print(error)
+            fatalError("Could not save models")
+        }
+        
         mainSplitViewController.modelDetailViewController?.setGraphParams()
         mainSplitViewController.modelDetailViewController?.reloadData()
         
     }
  
+    
 
+    
+/*************************** Likelihood functions  ****/
+    
+    func calcLikelihood(curModel:Model) -> Float {
+        
+//        let nodesForCalc : [BNNode] = mainSplitViewController.modelDetailViewController?.nodesController.arrangedObjects as! [BNNode]
+//        let curModels : [Model] = mainSplitViewController.modelTreeController?.selectedObjects as! [Model]
+//        let curModel : Model = curModels[0]
+        
+        let nodesForCalc = curModel.bnnode.allObjects as! [BNNode]
+        let appDelegate : AppDelegate = NSApplication.shared().delegate as! AppDelegate
+        let moc = appDelegate.managedObjectContext
 
+        var subsamp = curModel.runsper as! Int
+        if subsamp < 1000  {
+            subsamp = 1000
+        }
+        if subsamp > curModel.runstot as! Int {
+            subsamp = curModel.runstot as! Int
+        }
+        // Get the yes-no's within the scope of the data
+        //give this entriues buit its own fxn
+        var theEntries = [Entry]()
+        if(curModel.scope.entity.name == "Entry"){
+            let thisEntry = curModel.scope as! Entry
+            theEntries = thisEntry.collectChildren([Entry](), depth: 0)
+        }
+        else if (curModel.scope.entity.name == "Structure"){
+            let thisStructure = curModel.scope as! Structure
+            theEntries = thisStructure.entry.allObjects as! [Entry]
+        }
+        else{
+
+            let request = NSFetchRequest<Entry>(entityName: "Entry")
+            do {
+                theEntries = try moc.fetch(request)
+            } catch let error as NSError {
+                print (error)
+                return -999
+            }
+            
+        }
+        
+        
+        var dataratios = [Float]()
+        var matches = [Float]()
+        var tots = [Float]()
+        
+        for calcNode in nodesForCalc {
+            let calcTrait = calcNode.nodeLink as! Trait
+            let calcValue = calcTrait.traitValue
+            
+            var theTraits = [Trait]()
+            let predicate = NSPredicate(format: "entry IN %@ && name == %@", theEntries, calcNode.nodeLink.name)
+            let request = NSFetchRequest<Trait>(entityName: "Trait")
+            request.predicate = predicate
+            do {
+                theTraits = try moc.fetch(request)
+            } catch let error as NSError {
+                print (error)
+                return -999
+            }
+            
+
+            var mTraits = [Trait]()
+            let mpredicate = NSPredicate(format: "entry IN %@ && name == %@ && traitValue == %@", theEntries, calcNode.nodeLink.name, calcValue)
+            let mrequest = NSFetchRequest<Trait>(entityName: "Trait")
+            mrequest.predicate = mpredicate
+            do {
+                mTraits = try moc.fetch(mrequest)
+            } catch let error as NSError {
+                print (error)
+                return -999
+            }
+            matches.append(Float(mTraits.count))
+            tots.append(Float(theTraits.count))
+            dataratios.append(Float(mTraits.count) / Float(theTraits.count))
+        
+        }
+        
+        
+    
+        //Check that all post arrays are same length
+        //Subsample from the array
+        var firstnode = true
+        var postlength = -1
+        var sampS = [Int]()
+        var posts = [[Float]]()
+        
+
+        for calcNode in nodesForCalc {
+            let postArray = NSKeyedUnarchiver.unarchiveObject(with: calcNode.value(forKey: "postArray") as! Data) as! [Float]
+            if(firstnode == true){
+                firstnode = false
+                postlength = postArray.count
+                for _ in 0...postlength {
+                    sampS.append(Int(arc4random_uniform(UInt32(postlength))))
+                }
+            }
+            else {
+                if postlength != postArray.count{
+                    print("post array lengths do not match!")
+                    
+                }
+            }
+            var thisposts = [Float]()
+            for sp in sampS{
+                thisposts.append(postArray[sp])
+            }
+            posts.append(thisposts)
+        }
+        
+        var maxlike = Float(0.0)
+        var maxpos = -1
+        var firsttime = true
+        for s in 0...(postlength-1) {
+            var likes = [Float]()
+            for r in 0...(nodesForCalc.count-1){
+                likes.append( pow(posts[r][s], matches[r]) * pow(1-(posts[r][s]), (tots[r]-matches[r])))
+                
+                let likelihood = log(likes.reduce(1, *)) // hould not the likelihood of the data be the product of the likelihoods of the parzmeters assumig they ate indepent?
+                if firsttime == true {
+                    maxlike = likelihood
+                    maxpos = s
+                    firsttime = false
+                }
+                    else{
+                    if (likelihood > maxlike) {
+                        maxlike = likelihood
+                        maxpos = s
+                    }
+                }
+                
+
+            }
+        }
+        
+        return maxlike - ((Float(nodesForCalc.count) / 2.0) * log(Float(postlength)))
+        
+    }
+ 
+
+    
+    func contextDidSave(_ notification: Notification) {
+        let savedContext = notification.object as! NSManagedObjectContext
+        if(savedContext == self.moc) { // ignore change notifications for the main MOC
+            return
+        }
+        DispatchQueue.main.sync {
+            self.moc.mergeChanges(fromContextDidSave: notification)
+        }
+        
+
+    }
 }

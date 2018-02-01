@@ -128,6 +128,8 @@ kernel void bngibbs(const device unsigned int *rngseeds [[buffer(0)]], device fl
             }
         }
         
+        //Check if stationary
+        
         //Begin to record results after burnins value exceeded
         if(g>=p[1]){
             for(k=0; k<p[2]; k++){

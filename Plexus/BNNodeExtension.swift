@@ -22,7 +22,10 @@ extension BNNode {
     }
     
 
-
+    func removeInfluencesObject(_ value:BNNode) {
+        let influences = self.mutableOrderedSetValue(forKey: "influences");
+        influences.remove(value)
+    }
 
     
     func addInfluencedByObject(_ value:BNNode) {
@@ -30,7 +33,10 @@ extension BNNode {
         influencedBy.add(value)
     }
     
-
+    func removeInfluencedByObject(_ value:BNNode) {
+        let influencedBy = self.mutableOrderedSetValue(forKey: "influencedBy");
+        influencedBy.remove(value)
+    }
 
 
     

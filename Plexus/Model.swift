@@ -22,6 +22,7 @@ class Model: NSManagedObject {
     @NSManaged var dateModded: Date
     @NSManaged var dateCreated: Date
     @NSManaged var scope: NodeLink
+    @NSManaged var score: NSNumber
     
     
 
