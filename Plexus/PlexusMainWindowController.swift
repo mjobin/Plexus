@@ -857,6 +857,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         
         let teWidth = pipelineState.threadExecutionWidth
         let mTTPT = pipelineState.maxTotalThreadsPerThreadgroup
+        
         print("\n********* BNGibbs Metal run******")
         print ("Thread execution width: \(teWidth)")
         print ("Max threads per group: \(mTTPT)")
@@ -866,6 +867,13 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
             
         }
         print ("Max working set size: \(maxWSS) bytes")
+        
+        var mTML = 0
+        if #available(OSX 10.13, *) {
+            mTML = Int(device.maxThreadgroupMemoryLength)
+            
+        }
+        print ("Max threadgroup memory length: \(mTML) bytes")
         
         
         let nodesForCalc = curModel.bnnode.allObjects as! [BNNode]
@@ -879,10 +887,10 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         else if calcSpeed == 1 {
             ntWidth = Int(Double(ntWidth) * 0.75)
         }
-        print ("Number of threadgroups: \(ntWidth)")
-        let threadsPerThreadgroup : MTLSize = MTLSizeMake(teWidth, 1, 1)
-        let numThreadgroups = MTLSize(width: ntWidth, height: 1, depth: 1)
-        
+//        print ("Number of threadgroups: \(ntWidth)")
+        let threadsPerThreadgroup : MTLSize = MTLSizeMake(mTTPT, 1, 1)
+        let numThreadgroups = MTLSize(width: teWidth, height: 1, depth: 1)
+        ntWidth = teWidth * mTTPT
         
         DispatchQueue.main.async {
             
@@ -926,6 +934,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         intparams.append(UInt32(nodesForCalc.count)) //2
         intparams.append(UInt32(maxInfSize)) //3
         intparams.append(UInt32(maxCPTSize)) //4
+        
         
         
         //Buffer 3: Prior Distribution Type
@@ -998,70 +1007,14 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         let bnstatesbuffer = self.device.makeBuffer(length: ntWidth*nodesForCalc.count*MemoryLayout<Float>.size, options: MTLResourceOptions.storageModePrivate)
         threadMemSize += ntWidth*nodesForCalc.count*MemoryLayout<Float>.size
         
-        
-        //Buffer 10: postPrior
-        
-        //Work out maximum number of postPriors to assign
-        var maxPPmem = 10000 //Default if max WSS not accessible
-        if maxWSS > 0 {
-            let maxtest = Int((Double(maxWSS) / Double(nodesForCalc.count)) * 0.01) - threadMemSize
-            if maxtest > maxPPmem {
-                maxPPmem = maxtest
-            }
-        }
-        
-        
-        var postPriorSetup = [[Float]]()
-        var maxPP = 0
-        
-        for node in nodesForCalc {
-            
-            if let postData = node.value(forKey: "priorArray"){
-                let priorArray = NSKeyedUnarchiver.unarchiveObject(with: postData as! Data) as! [Float]
-                let shuffledPriorArray = GKRandomSource.sharedRandom().arrayByShufflingObjects(in: priorArray)
-                let firstTT = shuffledPriorArray.prefix(maxPPmem)
-                if firstTT.count > 1 {
-                    postPriorSetup.append(Array(firstTT) as! [Float])
-                    if(firstTT.count > maxPP){
-                        maxPP = firstTT.count
-                    }
-                }
-                else {
-                    postPriorSetup.append([Float(0.0)])
-                    if(1 > maxPP){
-                        maxPP = 1
-                    }
-                }
-            }
-            else {
-                postPriorSetup.append([Float(0.0)])
-                if(1 > maxPP){
-                    maxPP = 1
-                }
-            }
-            
-        }
-        //           Pad each out to maxPP if necessary
-        var postPriors = [Float]()
-        for pp in postPriorSetup{
-            postPriors += pp
-            for _ in pp.count..<maxPP {
-                postPriors.append(-1.0)
-            }
-        }
-        
-        
-        
-        let postpriorbuffer = self.device.makeBuffer(bytes: &postPriors, length: nodesForCalc.count*maxPP*MemoryLayout<Float>.size, options: MTLResourceOptions.cpuCacheModeWriteCombined)
-        threadMemSize += nodesForCalc.count*maxPP*MemoryLayout<Float>.size
+    
         
         //Buffer 2: Integer Parameters Setting buffer here
-        intparams.append(UInt32(maxPP)) //5
         let intparamsbuffer = self.device.makeBuffer(bytes: &intparams, length: intparams.count*MemoryLayout<UInt32>.size, options: resourceOptions)
         threadMemSize += intparams.count*MemoryLayout<UInt32>.size
         
         
-        //Buffer 11: flips
+        //Buffer 10: flips
         let flipsbuffer = self.device.makeBuffer(length: ntWidth*nodesForCalc.count*MemoryLayout<Float>.size, options: MTLResourceOptions.storageModePrivate)
         threadMemSize += ntWidth*nodesForCalc.count*MemoryLayout<Float>.size
         
@@ -1079,7 +1032,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
             results.append(thisresult)
         }
         
-        
+//        print("static stuiff \(threadMemSize)")
         
         //RUN LOOP HERE
         var rc = 0
@@ -1087,7 +1040,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         let start = NSDate()
         while (rc<runstot){
             
-            
+            var thisTMS = threadMemSize
             let commandBuffer = self.commandQueue.makeCommandBuffer()
             let commandEncoder = commandBuffer.makeComputeCommandEncoder()
             commandEncoder.setComputePipelineState(self.pipelineState)
@@ -1095,11 +1048,15 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
             //Buffer 0: RNG seeds
             var seeds = (0..<ntWidth).map{_ in arc4random()}
             let seedsbuffer = self.device.makeBuffer(bytes: &seeds, length: seeds.count*MemoryLayout<UInt32>.size, options: MTLResourceOptions.cpuCacheModeWriteCombined)
+            thisTMS += seeds.count*MemoryLayout<UInt32>.size
             commandEncoder.setBuffer(seedsbuffer, offset: 0, at: 0)
             
             //Buffer 1: BN Results
             var bnresults = [Float](repeating: -1.0, count: ntWidth*nodesForCalc.count)
             let bnresultsbuffer = self.device.makeBuffer(bytes: &bnresults, length: bnresults.count*MemoryLayout<Float>.size, options: resourceOptions)
+            thisTMS += bnresults.count*MemoryLayout<Float>.size
+            
+//            print ("thisTMS \(thisTMS) bytes")
             
             commandEncoder.setBuffer(bnresultsbuffer, offset: 0, at: 1)
             commandEncoder.setBuffer(intparamsbuffer, offset: 0, at: 2)
@@ -1110,8 +1067,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
             commandEncoder.setBuffer(cptnetbuffer, offset: 0, at: 7)
             commandEncoder.setBuffer(shufflebuffer, offset: 0, at: 8)
             commandEncoder.setBuffer(bnstatesbuffer, offset: 0, at: 9)
-            commandEncoder.setBuffer(postpriorbuffer, offset: 0, at: 10)
-            commandEncoder.setBuffer(flipsbuffer, offset: 0, at: 11)
+            commandEncoder.setBuffer(flipsbuffer, offset: 0, at: 10)
             
             
             
@@ -1276,492 +1232,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
     }
     
     
-    @IBAction func calcMetal(_ x:NSToolbarItem){
-        
-        
-        let defaults = UserDefaults.standard
-
-        
-        let calcSpeed = defaults.integer(forKey: "calcSpeed")
-        
-        let mocChange = mainSplitViewController.modelDetailViewController?.mocChange
-        mainSplitViewController.modelDetailViewController?.calcInProgress = true
-        
-        let kernelFunction: MTLFunction? = defaultLibrary?.makeFunction(name: "bngibbs")
-        do {
-            pipelineState = try device?.makeComputePipelineState(function: kernelFunction!)
-        }
-        catch {
-            fatalError("Cannot set up Metal")
-        }
-
-        
-        let teWidth = pipelineState.threadExecutionWidth
-        let mTTPT = pipelineState.maxTotalThreadsPerThreadgroup
-        print ("Thread execution width: \(teWidth)")
-        print ("Max threads per group: \(mTTPT)")
-        var maxWSS = 0
-        if #available(OSX 10.12, *) {
-            maxWSS = Int(device.recommendedMaxWorkingSetSize)
-
-        }
-        print ("Max working set size: \(maxWSS) bytes")
-
-
-
-        let nodesForCalc : [BNNode] = mainSplitViewController.modelDetailViewController?.nodesController.arrangedObjects as! [BNNode]
-        let curModels : [Model] = mainSplitViewController.modelTreeController?.selectedObjects as! [Model]
-        let curModel : Model = curModels[0]
-        
-        
-
-        
-        
-        let nc = nodesForCalc.count
-
-        let runstot = curModel.runstot as! Int
-        var ntWidth = (mTTPT/teWidth)-1
-        if calcSpeed == 0 {
-            ntWidth = Int(Double(ntWidth) * 0.5)
-        }
-        else if calcSpeed == 1 {
-            ntWidth = Int(Double(ntWidth) * 0.75)
-        }
-        print ("Number of threadgroups: \(ntWidth)")
-        let threadsPerThreadgroup : MTLSize = MTLSizeMake(teWidth, 1, 1)
-        let numThreadgroups = MTLSize(width: ntWidth, height: 1, depth: 1)
-
-        
-        self.progSheet = self.progSetup(self)
-        self.maxLabel.stringValue = String(describing: runstot)
-        self.window!.beginSheet(self.progSheet, completionHandler: nil)
-        self.progInd.doubleValue = 0
-        self.progInd.maxValue =  Double(runstot)
-        self.progSheet.makeKeyAndOrderFront(self)
-        self.progInd.isIndeterminate = true
-        self.progInd.startAnimation(self)
-        self.workLabel.stringValue = "Preparing..."
-        
-        DispatchQueue.global().async {
-        
-
-
-            //Setup input and output buffers
-            let resourceOptions = MTLResourceOptions()
-            
-            var threadMemSize = 0
-            
-            var maxInfSize = 0
-            for node in nodesForCalc {
-                let theInfluencedBy = node.infBy(self)
-                if(theInfluencedBy.count > maxInfSize) {
-                    maxInfSize = theInfluencedBy.count
-                }
-            }
-            if(maxInfSize<1){
-                return //so that we don't work with completely unlinked graphs
-            }
-            
-            //Maximum CPT size for a node
-            let maxCPTSize = Int(pow(2.0, Double(maxInfSize)))
-            
-        
-
-            
-            //Buffer 2: Integer Parameters
-            var intparams = [UInt32]()
-            intparams.append(curModel.runsper as! UInt32) //0
-            intparams.append(curModel.burnins as! UInt32) //1
-            intparams.append(UInt32(nodesForCalc.count)) //2
-            intparams.append(UInt32(maxInfSize)) //3
-            intparams.append(UInt32(maxCPTSize)) //4
-
-
-            //Buffer 3: Prior Distribution Type
-            var priordisttypes = [UInt32]()
-            for node in nodesForCalc {
-                priordisttypes.append(UInt32(node.priorDistType))
-            }
-            let priordisttypesbuffer = self.device.makeBuffer(bytes: &priordisttypes, length: priordisttypes.count*MemoryLayout<UInt32>.size, options: MTLResourceOptions.cpuCacheModeWriteCombined)
-            threadMemSize += priordisttypes.count*MemoryLayout<UInt32>.size
-
-            
-            //Buffer 4: PriorV1
-            var priorV1s = [Float]()
-            for node in nodesForCalc {
-                priorV1s.append(Float(node.priorV1))
-            }
-            let priorV1sbuffer = self.device.makeBuffer(bytes: &priorV1s, length: priorV1s.count*MemoryLayout<Float>.size, options: MTLResourceOptions.cpuCacheModeWriteCombined)
-            threadMemSize += priorV1s.count*MemoryLayout<Float>.size
-
-            
-            
-            //Buffer 5: PriorV2
-            var priorV2s = [Float]()
-            for node in nodesForCalc {
-                priorV2s.append(Float(node.priorV2))
-            }
-            let priorV2sbuffer = self.device.makeBuffer(bytes: &priorV2s, length: priorV2s.count*MemoryLayout<Float>.size, options: MTLResourceOptions.cpuCacheModeWriteCombined)
-            threadMemSize += priorV2s.count*MemoryLayout<Float>.size
-
-
-            //Buffer 6: Infnet
-    //        var maxCPTSize = 0
-    //        var infnet = [UInt32]()
-    //        for node in nodesForCalc {
-    //            var thisinf = [UInt32](repeating: 0, count: nodesForCalc.count)
-    //             let theInfluencedBy = node.infBy(self)
-    //            if(theInfluencedBy.count > maxCPTSize) {
-    //                maxCPTSize = theInfluencedBy.count
-    //            }
-    //            for thisinfby in theInfluencedBy  {
-    //                let tib = thisinfby as! BNNode
-    //                let loc = nodesForCalc.index(of: tib)!
-    //                thisinf[loc] = 1
-    //            }
-    //            infnet = infnet + thisinf
-    //            
-    //        }
-    //        print (infnet)
-    //        let infnetbuffer = device.makeBuffer(bytes: &infnet, length: nodesForCalc.count*nodesForCalc.count*MemoryLayout<UInt32>.size, options: MTLResourceOptions.cpuCacheModeWriteCombined)
-    //        commandEncoder.setBuffer(infnetbuffer, offset: 0, at: 6)
-            
-
-            
-            var infnet = [Int32]()
-            for node in nodesForCalc {
-                var thisinf = [Int32]()
-                let theInfluencedBy = node.infBy(self)
-                for thisinfby in theInfluencedBy  {
-                    let tib = thisinfby as! BNNode
-                    thisinf.append(Int32(nodesForCalc.index(of: tib)!))
-                }
-                let leftOver = maxInfSize-thisinf.count
-                for _ in 0..<leftOver {
-                    thisinf.append(Int32(-1.0))
-                }
-                infnet = infnet + thisinf
-                
-            }
-            let infnetbuffer = self.device.makeBuffer(bytes: &infnet, length: nodesForCalc.count*maxInfSize*MemoryLayout<Int32>.size, options: MTLResourceOptions.cpuCacheModeWriteCombined)
-            threadMemSize = nodesForCalc.count*maxInfSize*MemoryLayout<Int32>.size
-
-
-            //Buffer 7: Cptnet
-            var cptnet = [Float]()
-            for node in nodesForCalc {
-                let cptReady = self.mainSplitViewController.modelDetailViewController?.cptReady[node]!
-                let theCPT = node.getCPTArray(self, mocChanged: mocChange!, cptReady: cptReady!)
-                cptnet = cptnet + theCPT
-                let leftOver = maxCPTSize-theCPT.count
-                for _ in 0..<leftOver {
-                    cptnet.append(-1.0)
-                }
-                
-            }
-            let cptnetbuffer = self.device.makeBuffer(bytes: &cptnet, length: nodesForCalc.count*maxCPTSize*MemoryLayout<Float>.size, options: MTLResourceOptions.cpuCacheModeWriteCombined)
-            threadMemSize += nodesForCalc.count*maxCPTSize*MemoryLayout<Float>.size
-            //Buffer 8: Shuffled Array
-    //        var shufflenodes = [UInt32]()
-    //        var shufflearray = [UInt32]()
-    //        for i in 0..<nodesForCalc.count {
-    //            shufflearray.append(UInt32(i))
-    //        }
-    //        for _ in 0..<runstot {
-    //            shufflenodes += shufflearray
-    //        }
-    //        print (shufflenodes)
-            let shufflebuffer = self.device.makeBuffer(length: ntWidth*nodesForCalc.count*MemoryLayout<UInt32>.size, options: MTLResourceOptions.storageModePrivate)
-            threadMemSize += ntWidth*nodesForCalc.count*MemoryLayout<UInt32>.size
-
-            
-             //Buffer 9: BNStates array num notdes * ntWidth
-            let bnstatesbuffer = self.device.makeBuffer(length: ntWidth*nodesForCalc.count*MemoryLayout<Float>.size, options: MTLResourceOptions.storageModePrivate)
-            threadMemSize += ntWidth*nodesForCalc.count*MemoryLayout<Float>.size
-            
-            
-            //Buffer 10: postPrior
-            
-            //Work out maximum number of postPriors to assign
-            var maxPPmem = 10000 //Default of max WSS not accessible
-            if maxWSS > 0 {
-                let maxtest = Int((Double(maxWSS) / Double(nodesForCalc.count)) * 0.01) - threadMemSize
-                if maxtest > maxPPmem {
-                    maxPPmem = maxtest
-                }
-            }
-            
-            
-            var postPriorSetup = [[Float]]()
-            var maxPP = 0
-            
-            for node in nodesForCalc {
-
-                if let postData = node.value(forKey: "priorArray"){
-                    let priorArray = NSKeyedUnarchiver.unarchiveObject(with: postData as! Data) as! [Float]
-                    let shuffledPriorArray = GKRandomSource.sharedRandom().arrayByShufflingObjects(in: priorArray)
-                    let firstTT = shuffledPriorArray.prefix(maxPPmem)
-                    if firstTT.count > 1 {
-                        postPriorSetup.append(Array(firstTT) as! [Float])
-                        if(firstTT.count > maxPP){
-                            maxPP = firstTT.count
-                        }
-                    }
-                    else {
-                        postPriorSetup.append([Float(0.0)])
-                        if(1 > maxPP){
-                            maxPP = 1
-                        }
-                    }
-                }
-                else {
-                    postPriorSetup.append([Float(0.0)])
-                    if(1 > maxPP){
-                        maxPP = 1
-                    }
-                }
-
-            }
-//           Pad each out to maxPP if necessary
-            var postPriors = [Float]()
-            for pp in postPriorSetup{
-                postPriors += pp
-                for _ in pp.count..<maxPP {
-                    postPriors.append(-1.0)
-                }
-            }
-            
-
-            
-            let postpriorbuffer = self.device.makeBuffer(bytes: &postPriors, length: nodesForCalc.count*maxPP*MemoryLayout<Float>.size, options: MTLResourceOptions.cpuCacheModeWriteCombined)
-            threadMemSize += nodesForCalc.count*maxPP*MemoryLayout<Float>.size
-
-            //Buffer 2: Integer Parameters Setting buffer here
-            intparams.append(UInt32(maxPP)) //5
-            let intparamsbuffer = self.device.makeBuffer(bytes: &intparams, length: intparams.count*MemoryLayout<UInt32>.size, options: resourceOptions)
-            threadMemSize += intparams.count*MemoryLayout<UInt32>.size
-            
-            
-            //Buffer 11: flips
-            let flipsbuffer = self.device.makeBuffer(length: ntWidth*nodesForCalc.count*MemoryLayout<Float>.size, options: MTLResourceOptions.storageModePrivate)
-            threadMemSize += ntWidth*nodesForCalc.count*MemoryLayout<Float>.size
-
-            DispatchQueue.main.async {
-                self.progInd.isIndeterminate = false
-                self.progInd.doubleValue = 0
-                self.workLabel.stringValue = "Calculating..."
-                self.progInd.startAnimation(self)
-            }
-            
-            //Results array
-            var results = [[Float]]()
-            for _ in nodesForCalc {
-                let thisresult = [Float]()
-                results.append(thisresult)
-            }
-            
-
-
-            //RUN LOOP HERE
-            var rc = 0
-            var resc = 0
-            let start = NSDate()
-            while (rc<runstot){
-                
-                
-                let commandBuffer = self.commandQueue.makeCommandBuffer()
-                let commandEncoder = commandBuffer.makeComputeCommandEncoder()
-                commandEncoder.setComputePipelineState(self.pipelineState)
-            
-                //Buffer 0: RNG seeds
-                var seeds = (0..<ntWidth).map{_ in arc4random()}
-                let seedsbuffer = self.device.makeBuffer(bytes: &seeds, length: seeds.count*MemoryLayout<UInt32>.size, options: MTLResourceOptions.cpuCacheModeWriteCombined)
-                commandEncoder.setBuffer(seedsbuffer, offset: 0, at: 0)
-                
-                //Buffer 1: BN Results
-                var bnresults = [Float](repeating: -1.0, count: ntWidth*nodesForCalc.count)
-                let bnresultsbuffer = self.device.makeBuffer(bytes: &bnresults, length: bnresults.count*MemoryLayout<Float>.size, options: resourceOptions)
-                
-                commandEncoder.setBuffer(bnresultsbuffer, offset: 0, at: 1)
-                commandEncoder.setBuffer(intparamsbuffer, offset: 0, at: 2)
-                commandEncoder.setBuffer(priordisttypesbuffer, offset: 0, at: 3)
-                commandEncoder.setBuffer(priorV1sbuffer, offset: 0, at: 4)
-                commandEncoder.setBuffer(priorV2sbuffer, offset: 0, at: 5)
-                commandEncoder.setBuffer(infnetbuffer, offset: 0, at: 6)
-                commandEncoder.setBuffer(cptnetbuffer, offset: 0, at: 7)
-                commandEncoder.setBuffer(shufflebuffer, offset: 0, at: 8)
-                commandEncoder.setBuffer(bnstatesbuffer, offset: 0, at: 9)
-                commandEncoder.setBuffer(postpriorbuffer, offset: 0, at: 10)
-                commandEncoder.setBuffer(flipsbuffer, offset: 0, at: 11)
-                
-                
-
-                
-                commandEncoder.dispatchThreadgroups(numThreadgroups, threadsPerThreadgroup: threadsPerThreadgroup)
-                
-                commandEncoder.endEncoding()
-                commandBuffer.enqueue()
-                commandBuffer.commit()
-                commandBuffer.waitUntilCompleted()
-
-
-                let bnresultsdata = NSData(bytesNoCopy: bnresultsbuffer.contents(), length: bnresults.count*MemoryLayout<Float>.size, freeWhenDone: false)
-                bnresultsdata.getBytes(&bnresults, length:bnresults.count*MemoryLayout<Float>.size)
-                
-
-                var ri = 0
-                for to in bnresults {
-                    if resc >= runstot {
-                        break
-                    }
-                    results[ri].append(to)
-//                    print(to, terminator:"\t")
-
-                    ri = ri + 1
-                    
-                    if ri >= nc {
-                        ri = 0
-//                        print ("\n")
-                        resc = resc + 1
-                    }
-                }
-                
-
-
-                
-                rc = rc + ntWidth
-
-                DispatchQueue.main.async {
-                    self.progInd.increment(by: Double(ntWidth))
-                    self.curLabel.stringValue = String(resc)
-                }
-                
-
-            }
-            
-            print("Time to run: \(NSDate().timeIntervalSince(start as Date)) seconds.")
-            
-            var bins = Int(pow(Float(curModel.runstot), 0.5))
-            
-            if(bins < 100) {
-                bins = 100
-            }
-            
-            let binQuotient = 1.0/Float(bins)
-//
-//            bins = bins + 1 //one more bin for anything that is a 1.0
-            
-            var fi = 0
-            for result in results {
-
-                var postCount = [Int](repeating: 0, count: bins)
-                
-                let inNode : BNNode = nodesForCalc[fi]
-                
-                var gi = 0
-                var flinetot : Float = 0.0
-                var flinecount : Float = 0.0
-                for gNode : Float in result {
-                    
-                    if(gNode == gNode && gNode >= 0.0 && gNode <= 1.0) {//fails if nan
-                        
-                        var x = (Int)(floor(gNode/binQuotient))
-                        if x == bins {
-                            x = x - 1
-                        }
-                        postCount[x] += 1
-                        flinetot += gNode
-                        flinecount += 1.0
-                        
-                    }
-                        
-                    else{
-                        // print("problem detected in reloadData. gNode is \(gNode)")
-                    }
-                    
-                    gi += 1
-                }
-                
-                let archivedPostCount = NSKeyedArchiver.archivedData(withRootObject: postCount)
-                inNode.setValue(archivedPostCount, forKey: "postCount")
-                
-                //Stats on post Array
-                //Mean
-                let flinemean = flinetot / flinecount
-                inNode.setValue(flinemean, forKey: "postMean")
-                
-                //Sample Standard Deviation
-                var sumsquares : Float = 0.0
-                flinecount = 0.0
-                for gNode : Float in result {
-                    
-                    if(gNode == gNode && gNode >= 0.0 && gNode <= 1.0) {//ignores if nan
-                        sumsquares +=  pow(gNode - flinemean, 2.0)
-                        flinecount += 1.0
-                    }
-                }
-                
-                let ssd = sumsquares / (flinecount - 1.0)
-                inNode.setValue(ssd, forKey: "postSSD")
-                
-                let sortfline = result.sorted()
-                let lowTail = sortfline[Int(Float(sortfline.count)*0.05)]
-                let highTail = sortfline[Int(Float(sortfline.count)*0.95)]
-                
-                inNode.setValue(lowTail, forKey: "postETLow")
-                inNode.setValue(highTail, forKey: "postETHigh")
-                
-                //Highest Posterior Density Interval. Alpha = 0.05
-                //Where n = sortfline.count (i.e. last entry)
-                //Compute credible intervals for j = 0 to j = n - ((1-0.05)n)
-                let alpha : Float = 0.05
-                let jmax = Int(Float(sortfline.count) - ((1.0-alpha) * Float(sortfline.count)))
-                
-                var firsthpd = true
-                var interval : Float = 0.0
-                var low = 0
-                var high = (sortfline.count - 1)
-                for hpdi in 0..<jmax {
-                    let highpos = hpdi + Int(((1.0-alpha)*Float(sortfline.count)))
-                    if(firsthpd || (sortfline[highpos] - sortfline[hpdi]) < interval){
-                        firsthpd = false
-                        interval = sortfline[highpos] - sortfline[hpdi]
-                        low = hpdi
-                        high = highpos
-                    }
-                    
-                }
-                inNode.setValue(sortfline[low], forKey: "postHPDLow")
-                inNode.setValue(sortfline[high], forKey: "postHPDHigh")
-                
-
-                
-                let archivedPostArray = NSKeyedArchiver.archivedData(withRootObject: result)
-                inNode.setValue(archivedPostArray, forKey: "postArray")
-                
-                inNode.setValue(inNode.cptArray, forKey: "cptFreezeArray")
-                
-                
-                
-                
-                fi = fi + 1
-
-            }
-
-            self.performSelector(onMainThread: #selector(PlexusMainWindowController.endProgInd), with: nil, waitUntilDone: true)
-            
-            DispatchQueue.main.async {
-                curModel.complete = true
-                self.mainSplitViewController.modelDetailViewController?.calcInProgress = false
-                let bic = self.calcLikelihood(curModel:curModel)
-                print ("BIC: \(bic)")
-
-            
-                
-            }
-        }
-        
-    }
+  
     
 
     
