@@ -101,7 +101,7 @@ class PlexusBNScene: SKScene {
         var touchedNode : SKNode = self.atPoint(loc)
        // print("mouseDown touched \(touchedNode) parent: \(touchedNode.parent)")
 
-        if(touchedNode.isEqual(to: self)) {
+        if(touchedNode.isEqual(to: self)) { //pass up to scroll?
             //  print("miss")
 
             
@@ -184,7 +184,7 @@ class PlexusBNScene: SKScene {
     
     override func rightMouseDown(with theEvent: NSEvent) {
         
-
+        print("right mouse down")
        
         let loc = theEvent.location(in: self)
 
@@ -200,11 +200,18 @@ class PlexusBNScene: SKScene {
  */
     }
     
+    override func rightMouseDragged(with event: NSEvent) {
+        print("right mouse dragged")
+    }
     override func mouseDragged(with theEvent: NSEvent) {
         
         
         let loc : CGPoint = theEvent.location(in: self)
         var touchedNode : SKNode = self.atPoint(loc)
+        
+//        if(touchedNode.isEqual(to: self)) { //pass up to scroll?
+//            
+//        }
         
         if(touchedNode.name == "nodeName"){//passing mouseDown to node beenath
             let allNodes : [SKNode] = self.nodes(at: touchedNode.position) 
@@ -219,13 +226,9 @@ class PlexusBNScene: SKScene {
         }
         
         
+
         if (theEvent.modifierFlags.intersection(.command) == .command) {
-            touchedNode = startNode
-            touchedNode.position = loc
-        }
-        
-        else {
-            
+
             let curModels : [Model] = modelTreeController.selectedObjects as! [Model]
             let curModel : Model = curModels[0]
             if(curModel.complete == true){
@@ -258,6 +261,11 @@ class PlexusBNScene: SKScene {
             }
             
         }
+        else {
+            touchedNode = startNode
+            touchedNode.position = loc
+        }
+        
 
     }
     
@@ -338,7 +346,7 @@ class PlexusBNScene: SKScene {
             }
             
 
-           self.reloadData()
+//           self.reloadData()
 
             
         }
@@ -446,20 +454,20 @@ class PlexusBNScene: SKScene {
         
 
         
-        var outOfBounds = false
-        self.enumerateChildNodes(withName: "bnNode", using: { thisNode, stop in
-            let idNode : PlexusBNNode = thisNode as! PlexusBNNode
-        
-            if(idNode.position.x < 0 || idNode.position.y < 0 || idNode.position.x > self.size.width || idNode.position.y  > self.size.height) {
-                
-                outOfBounds = true
-            }
-
-        })
-        
-        if (outOfBounds == true){
-            self.reloadData()
-        }
+//        var outOfBounds = false
+//        self.enumerateChildNodes(withName: "bnNode", using: { thisNode, stop in
+//            let idNode : PlexusBNNode = thisNode as! PlexusBNNode
+//        
+//            if(idNode.position.x < 0 || idNode.position.y < 0 || idNode.position.x > self.size.width || idNode.position.y  > self.size.height) {
+//                
+//                outOfBounds = true
+//            }
+//
+//        })
+//        
+//        if (outOfBounds == true){
+//            self.reloadData()
+//        }
         
         
         
@@ -486,7 +494,9 @@ class PlexusBNScene: SKScene {
                 })
                 
                 if(!matchNode){//no visible node exists, so make one
-                    self.makeNode(curNode, inPos: CGPoint(x: self.frame.width*0.5,  y: self.frame.height*0.5) )
+                    let xloc = drand48()*Double(self.frame.width)
+                    let yloc = drand48()*Double(self.frame.height)
+                    self.makeNode(curNode, inPos: CGPoint(x: xloc,  y: yloc) )
                     startNode = self //to ensure no deleted nodes rteained as startNode
                     
                 }
@@ -569,30 +579,30 @@ class PlexusBNScene: SKScene {
         var angle : CGFloat = 0.0
         
 
-        self.enumerateChildNodes(withName: "bnNode", using: { thisKid, stop in
-            
-            var shortestDistance = self.size.width
-            
-            self.enumerateChildNodes(withName: "bnNode", using: { thatKid, stop in
-                if(!thisKid.isEqual(to: thatKid)){
-                    
-                    let distance = self.distanceBetween(thisKid.position, q: thatKid.position)
-                    
-                    if(distance < shortestDistance){
-                        
-                        shortestDistance = distance
-                        
-                        angle = self.angleAway(thisKid, nodeB: thatKid)
-                        
-                    }
-                    
-                }
-                
-            })
-            
-            thisKid.physicsBody?.applyImpulse(self.vectorFromRadians(angle))
-            
-        })
+//        self.enumerateChildNodes(withName: "bnNode", using: { thisKid, stop in
+//
+//            var shortestDistance = self.size.width
+//
+//            self.enumerateChildNodes(withName: "bnNode", using: { thatKid, stop in
+//                if(!thisKid.isEqual(to: thatKid)){
+//
+//                    let distance = self.distanceBetween(thisKid.position, q: thatKid.position)
+//
+//                    if(distance < shortestDistance){
+//
+//                        shortestDistance = distance
+//
+//                        angle = self.angleAway(thisKid, nodeB: thatKid)
+//
+//                    }
+//
+//                }
+//
+//            })
+//
+//            thisKid.physicsBody?.applyImpulse(self.vectorFromRadians(angle))
+//
+//        })
         
 
   
