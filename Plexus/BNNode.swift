@@ -34,5 +34,7 @@ class BNNode: NSManagedObject {
     @NSManaged var postHPDLow: NSNumber
     @NSManaged var postHPDHigh: NSNumber
     @NSManaged var cptReady: NSNumber
+    @NSManaged var savedX: NSNumber
+    @NSManaged var savedY: NSNumber
 
 }

@@ -11,5 +11,7 @@ import SpriteKit
 
 class PlexusBNNode: SKSpriteNode {
     var node : BNNode!
+    var nameLabel : SKLabelNode!
+    var valLabel : SKLabelNode!
 
 }

@@ -1653,7 +1653,7 @@
                                                                 <rect key="frame" x="1" y="1" width="578" height="215"/>
                                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                 <subviews>
-                                                                    <view autoresizesSubviews="NO" wantsLayer="YES" translatesAutoresizingMaskIntoConstraints="NO" id="bkY-pl-IKz">
+                                                                    <view wantsLayer="YES" translatesAutoresizingMaskIntoConstraints="NO" id="bkY-pl-IKz">
                                                                         <rect key="frame" x="0.0" y="0.0" width="578" height="215"/>
                                                                         <subviews>
                                                                             <visualEffectView wantsLayer="YES" appearanceType="vibrantDark" blendingMode="behindWindow" material="ultraDark" state="active" translatesAutoresizingMaskIntoConstraints="NO" id="G5e-uy-BBg">
@@ -2443,7 +2443,7 @@
                 <customObject id="dO3-27-Riw" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
                 <userDefaultsController id="MAE-2B-P7H"/>
             </objects>
-            <point key="canvasLocation" x="936" y="1912"/>
+            <point key="canvasLocation" x="695" y="2068"/>
         </scene>
         <!--Plexus Post Popover Detail-->
         <scene sceneID="Oir-3h-OF7">

@@ -18,6 +18,8 @@
         <attribute name="priorDistType" optional="YES" attributeType="Integer 32" minValueString="0" defaultValueString="0" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="priorV1" optional="YES" attributeType="Double" defaultValueString="0.5" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="priorV2" optional="YES" attributeType="Double" defaultValueString="0.5" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="savedX" optional="YES" attributeType="Double" minValueString="0" defaultValueString="0.0" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="savedY" optional="YES" attributeType="Double" minValueString="0" defaultValueString="0.0" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="tolerance" optional="YES" attributeType="Double" minValueString="0" maxValueString="1" defaultValueString="0.05" usesScalarValueType="NO" syncable="YES"/>
         <relationship name="influencedBy" optional="YES" toMany="YES" deletionRule="Nullify" ordered="YES" destinationEntity="BNNode" inverseName="influences" inverseEntity="BNNode" syncable="YES"/>
         <relationship name="influences" optional="YES" toMany="YES" deletionRule="Nullify" ordered="YES" destinationEntity="BNNode" inverseName="influencedBy" inverseEntity="BNNode" syncable="YES"/>
@@ -62,7 +64,7 @@
         <relationship name="entry" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Entry" inverseName="trait" inverseEntity="Entry" syncable="YES"/>
     </entity>
     <elements>
-        <element name="BNNode" positionX="54" positionY="18" width="128" height="375"/>
+        <element name="BNNode" positionX="54" positionY="18" width="128" height="403"/>
         <element name="Entry" positionX="-468" positionY="-36" width="128" height="150"/>
         <element name="Model" positionX="349" positionY="-9" width="128" height="238"/>
         <element name="NodeLink" positionX="-297" positionY="-126" width="128" height="105"/>
