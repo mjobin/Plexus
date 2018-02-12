@@ -463,25 +463,24 @@ class PlexusBNScene: SKScene {
         
 
         
-//        var outOfBounds = false
-//        self.enumerateChildNodes(withName: "bnNode", using: { thisNode, stop in
-//            let idNode : PlexusBNNode = thisNode as! PlexusBNNode
-//        
-//            if(idNode.position.x < 0 || idNode.position.y < 0 || idNode.position.x > self.size.width || idNode.position.y  > self.size.height) {
-//                
-//                outOfBounds = true
-//            }
-//
-//        })
-//        
-//        if (outOfBounds == true){
-//            self.reloadData()
-//        }
+        var outOfBounds = false
+        self.enumerateChildNodes(withName: "bnNode", using: { thisNode, stop in
+            let idNode : PlexusBNNode = thisNode as! PlexusBNNode
+        
+            if(idNode.position.x < 0 || idNode.position.y < 0 || idNode.position.x > self.size.width || idNode.position.y  > self.size.height) {
+                
+                outOfBounds = true
+            }
+
+        })
+        
+        if (outOfBounds == true){
+            self.reloadData()
+        }
         
         
         
         //make sure all listed nodes are drawn
-        var unmatched = 0
         if(nodesController != nil ){
 
             let curNodes : [BNNode]  = nodesController.arrangedObjects as! [BNNode]
@@ -502,21 +501,17 @@ class PlexusBNScene: SKScene {
                 })
         
                 if(!matchNode){//no visible node exists, so make one
-//                    let xloc = drand48()*Double(self.frame.width)
-//                    let yloc = drand48()*Double(self.frame.height)
                     let xloc = Double(self.frame.width/2)
                     let yloc = Double(self.frame.height/2)
                     self.makeNode(curNode, inPos: CGPoint(x: xloc,  y: yloc) )
                     startNode = self //to ensure no deleted nodes rteained as startNode
-                    unmatched = unmatched + 1
-                    //radians
                 }
                 
             }
             
 
             //draw arrows
-
+            if curNodes.count > 0 {
                 for curNode :BNNode in curNodes{
                     
                     
@@ -565,8 +560,10 @@ class PlexusBNScene: SKScene {
 
                     
                 
+                }
+                firstUpdate = false
             }
-                   firstUpdate = false
+            
         }
 //
 //        var angle : CGFloat = 0.0
@@ -633,7 +630,6 @@ class PlexusBNScene: SKScene {
   
     
     func saveData () {
-
         if(nodesController != nil ){
             
             let curNodes : [BNNode]  = nodesController.arrangedObjects as! [BNNode]
