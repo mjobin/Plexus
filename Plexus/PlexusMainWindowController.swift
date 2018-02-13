@@ -880,18 +880,19 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         let nc = nodesForCalc.count
         
         let runstot = curModel.runstot as! Int
-        var ntWidth = (mTTPT/teWidth)-1
+        
+
+
+        let threadsPerThreadgroup : MTLSize = MTLSizeMake(mTTPT, 1, 1)
+        let numThreadgroups = MTLSize(width: teWidth, height: 1, depth: 1)
+        var ntWidth = teWidth * mTTPT
         if calcSpeed == 0 {
             ntWidth = Int(Double(ntWidth) * 0.5)
         }
         else if calcSpeed == 1 {
             ntWidth = Int(Double(ntWidth) * 0.75)
         }
-//        print ("Number of threadgroups: \(ntWidth)")
-        let threadsPerThreadgroup : MTLSize = MTLSizeMake(mTTPT, 1, 1)
-        let numThreadgroups = MTLSize(width: teWidth, height: 1, depth: 1)
-        ntWidth = teWidth * mTTPT
-        
+        //print ("Number of threadgroups: \(ntWidth)")
         DispatchQueue.main.async {
             
             self.maxLabel.stringValue = String(describing: runstot)
