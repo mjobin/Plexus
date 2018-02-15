@@ -1177,6 +1177,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         //RUN LOOP HERE
         var rc = 0
         var resc = 0
+        var pesc = 0
         let start = NSDate()
         while (rc<runstot){
             
@@ -1215,6 +1216,11 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
             bnresultsdata.getBytes(&bnresults, length:bnresults.count*MemoryLayout<Float>.stride)
             var ri = 0
             for to in bnresults {
+                
+//                if(to != to || to < 0.0 || to > 1.0) {//fails if nan
+//                    print("bare results problem detected. \(to)")
+//                }
+                
                 if resc >= runstot {
                     break
                 }
@@ -1233,7 +1239,12 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
             priorsdata.getBytes(&priors, length:priors.count*MemoryLayout<Float>.stride)
             ri = 0
             for to in priors {
-                if resc >= runstot {
+                
+//                if(to != to && to <= 0.0 && to >= 1.0) {//fails if nan
+//                    print("bare priors problem detected. \(to)")
+//                }
+                
+                if pesc >= runstot {
                     break
                 }
                 priorresults[ri].append(to)
@@ -1242,7 +1253,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                 if ri >= nc {
                     ri = 0
 //                print ("\n")
-                    resc = resc + 1
+                pesc = pesc + 1
                 }
             }
             
@@ -1266,101 +1277,132 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         }
         
         let binQuotient = 1.0/Float(bins)
-        //
-        //            bins = bins + 1 //one more bin for anything that is a 1.0
         
         var fi = 0
-        for result in results {
-            
-            var postCount = [Int](repeating: 0, count: bins)
-            
+        for priorresult in priorresults {
             let inNode : BNNode = nodesForCalc[fi]
             
-            var gi = 0
-            var flinetot : Float = 0.0
-            var flinecount : Float = 0.0
-            for gNode : Float in result {
+            let theInfluencedBy : [BNNode] = inNode.influencedBy.array as! [BNNode]
+            if theInfluencedBy.count > 0 { //if dependent node
+                let dummyPrior = [Float](repeating: 0.0, count: priorresult.count)
+                let archivedPriorArray = NSKeyedArchiver.archivedData(withRootObject: dummyPrior)
+                inNode.setValue(archivedPriorArray, forKey: "priorArray")
+            }
+            else {
                 
-                if(gNode == gNode && gNode >= 0.0 && gNode <= 1.0) {//fails if nan
+                let archivedPriorArray = NSKeyedArchiver.archivedData(withRootObject: priorresult)
+                inNode.setValue(archivedPriorArray, forKey: "priorArray")
+                
+            }
+            
+            
+
+            fi = fi + 1
+            
+        }
+        
+        fi = 0
+        for result in results {
+
+            var postCount = [Int](repeating: 0, count: bins)
+            let inNode : BNNode = nodesForCalc[fi]
+
+            let theInfluencedBy : [BNNode] = inNode.influencedBy.array as! [BNNode]
+            if theInfluencedBy.count > 0 { //if dependent node
+            
+                var gi = 0
+                var flinetot : Float = 0.0
+                var flinecount : Float = 0.0
+                for gNode : Float in result {
                     
-                    var x = (Int)(floor(gNode/binQuotient))
-                    if x == bins {
-                        x = x - 1
+                    if(gNode == gNode && gNode >= 0.0 && gNode <= 1.0) {//fails if nan
+                        
+                        var x = (Int)(floor(gNode/binQuotient))
+                        if x == bins {
+                            x = x - 1
+                        }
+                        postCount[x] += 1
+                        flinetot += gNode
+                        flinecount += 1.0
+                        
                     }
-                    postCount[x] += 1
-                    flinetot += gNode
-                    flinecount += 1.0
+                    
+//                    else{
+//                         print("problem detected. gNode is \(gNode)")
+//                    }
+                    
+                    gi += 1
+                }
+                
+                let archivedPostCount = NSKeyedArchiver.archivedData(withRootObject: postCount)
+                inNode.setValue(archivedPostCount, forKey: "postCount")
+                
+                //Stats on post Array
+                //Mean
+                let flinemean = flinetot / flinecount
+                inNode.setValue(flinemean, forKey: "postMean")
+                
+                //Sample Standard Deviation
+                var sumsquares : Float = 0.0
+                flinecount = 0.0
+                for gNode : Float in result {
+                    
+                    if(gNode == gNode && gNode >= 0.0 && gNode <= 1.0) {//ignores if nan
+                        sumsquares +=  pow(gNode - flinemean, 2.0)
+                        flinecount += 1.0
+                    }
+                }
+                
+                let ssd = sumsquares / (flinecount - 1.0)
+                inNode.setValue(ssd, forKey: "postSSD")
+                
+                let sortfline = result.sorted()
+                let lowTail = sortfline[Int(Float(sortfline.count)*0.05)]
+                let highTail = sortfline[Int(Float(sortfline.count)*0.95)]
+                
+                inNode.setValue(lowTail, forKey: "postETLow")
+                inNode.setValue(highTail, forKey: "postETHigh")
+                
+                //Highest Posterior Density Interval. Alpha = 0.05
+                //Where n = sortfline.count (i.e. last entry)
+                //Compute credible intervals for j = 0 to j = n - ((1-0.05)n)
+                let alpha : Float = 0.05
+                let jmax = Int(Float(sortfline.count) - ((1.0-alpha) * Float(sortfline.count)))
+                
+                var firsthpd = true
+                var interval : Float = 0.0
+                var low = 0
+                var high = (sortfline.count - 1)
+                for hpdi in 0..<jmax {
+                    let highpos = hpdi + Int(((1.0-alpha)*Float(sortfline.count)))
+                    if(firsthpd || (sortfline[highpos] - sortfline[hpdi]) < interval){
+                        firsthpd = false
+                        interval = sortfline[highpos] - sortfline[hpdi]
+                        low = hpdi
+                        high = highpos
+                    }
                     
                 }
-                    
-                else{
-                     print("problem detected. gNode is \(gNode)")
-                }
+                inNode.setValue(sortfline[low], forKey: "postHPDLow")
+                inNode.setValue(sortfline[high], forKey: "postHPDHigh")
                 
-                gi += 1
+                
+                
+                let archivedPostArray = NSKeyedArchiver.archivedData(withRootObject: result)
+                inNode.setValue(archivedPostArray, forKey: "postArray")
+                
+                inNode.setValue(inNode.cptArray, forKey: "cptFreezeArray")
+            
             }
             
-            let archivedPostCount = NSKeyedArchiver.archivedData(withRootObject: postCount)
-            inNode.setValue(archivedPostCount, forKey: "postCount")
-            
-            //Stats on post Array
-            //Mean
-            let flinemean = flinetot / flinecount
-            inNode.setValue(flinemean, forKey: "postMean")
-            
-            //Sample Standard Deviation
-            var sumsquares : Float = 0.0
-            flinecount = 0.0
-            for gNode : Float in result {
-                
-                if(gNode == gNode && gNode >= 0.0 && gNode <= 1.0) {//ignores if nan
-                    sumsquares +=  pow(gNode - flinemean, 2.0)
-                    flinecount += 1.0
-                }
+            else {
+                let dummyPost = [Float](repeating: 0.0, count: result.count)
+                let archivedPostArray = NSKeyedArchiver.archivedData(withRootObject: dummyPost)
+                inNode.setValue(archivedPostArray, forKey: "postArray")
+                let archivedPostCount = NSKeyedArchiver.archivedData(withRootObject: postCount)
+                inNode.setValue(archivedPostCount, forKey: "postCount")
+                inNode.setValue(inNode.cptArray, forKey: "cptFreezeArray")
             }
-            
-            let ssd = sumsquares / (flinecount - 1.0)
-            inNode.setValue(ssd, forKey: "postSSD")
-            
-            let sortfline = result.sorted()
-            let lowTail = sortfline[Int(Float(sortfline.count)*0.05)]
-            let highTail = sortfline[Int(Float(sortfline.count)*0.95)]
-            
-            inNode.setValue(lowTail, forKey: "postETLow")
-            inNode.setValue(highTail, forKey: "postETHigh")
-            
-            //Highest Posterior Density Interval. Alpha = 0.05
-            //Where n = sortfline.count (i.e. last entry)
-            //Compute credible intervals for j = 0 to j = n - ((1-0.05)n)
-            let alpha : Float = 0.05
-            let jmax = Int(Float(sortfline.count) - ((1.0-alpha) * Float(sortfline.count)))
-            
-            var firsthpd = true
-            var interval : Float = 0.0
-            var low = 0
-            var high = (sortfline.count - 1)
-            for hpdi in 0..<jmax {
-                let highpos = hpdi + Int(((1.0-alpha)*Float(sortfline.count)))
-                if(firsthpd || (sortfline[highpos] - sortfline[hpdi]) < interval){
-                    firsthpd = false
-                    interval = sortfline[highpos] - sortfline[hpdi]
-                    low = hpdi
-                    high = highpos
-                }
-                
-            }
-            inNode.setValue(sortfline[low], forKey: "postHPDLow")
-            inNode.setValue(sortfline[high], forKey: "postHPDHigh")
-            
-            
-            
-            let archivedPostArray = NSKeyedArchiver.archivedData(withRootObject: result)
-            inNode.setValue(archivedPostArray, forKey: "postArray")
-            
-            inNode.setValue(inNode.cptArray, forKey: "cptFreezeArray")
-            
-            
-            
             
             fi = fi + 1
                 
@@ -1797,41 +1839,6 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                         graph?.axisSet = axisSet
 
                         
-                        
-                        /*
-
-                        
-                        
-
-                        
-                         let plotSpace : CPTXYPlotSpace = graph?.defaultPlotSpace as! CPTXYPlotSpace
-                         plotSpace.allowsUserInteraction = false
-                         
-                         
-                         let xRange = plotSpace.xRange.mutableCopy() as! CPTMutablePlotRange
-                         let yRange = plotSpace.yRange.mutableCopy() as! CPTMutablePlotRange
-                         
-                         xRange.length = 1.1
-                         yRange.length = 1.1
-                         
-                         
-                         plotSpace.xRange = xRange
-                         plotSpace.yRange = yRange
-
-                                                 plotSpace.scaleToFitPlots(graph?.allPlots())
-                        
-                        
-                        
-                        
-                        for plot in (graph?.allPlots())! {
-                            
-                            plot.frame = (graph?.bounds)!
-                            //print("plot \(plot.identifier) \(plot.frame.size)")
-                            //plot.reloadData()
-                            
-                        }
-
-                        */
 
 
                         let pdfData = graph?.dataForPDFRepresentationOfLayer()
