@@ -1052,14 +1052,14 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         
         //Buffer 0: RNG seeds
         var seeds = [UInt32](repeating: 0, count: ntWidth)
-        let seedsbuffer = self.device.makeBuffer(bytes: &seeds, length: seeds.count*MemoryLayout<UInt32>.size, options: MTLResourceOptions.cpuCacheModeWriteCombined)
-        threadMemSize += seeds.count*MemoryLayout<UInt32>.size
+        let seedsbuffer = self.device.makeBuffer(bytes: &seeds, length: seeds.count*MemoryLayout<UInt32>.stride, options: MTLResourceOptions.cpuCacheModeWriteCombined)
+        threadMemSize += seeds.count*MemoryLayout<UInt32>.stride
         
         
         //Buffer 1: BN Results
         var bnresults = [Float](repeating: -1.0, count: ntWidth*nodesForCalc.count)
-        let bnresultsbuffer = self.device.makeBuffer(bytes: &bnresults, length: bnresults.count*MemoryLayout<Float>.size, options: resourceOptions)
-        threadMemSize += bnresults.count*MemoryLayout<Float>.size
+        let bnresultsbuffer = self.device.makeBuffer(bytes: &bnresults, length: bnresults.count*MemoryLayout<Float>.stride, options: resourceOptions)
+        threadMemSize += bnresults.count*MemoryLayout<Float>.stride
         
         
         //Buffer 2: Integer Parameters
@@ -1069,8 +1069,8 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         intparams.append(UInt32(nodesForCalc.count)) //2
         intparams.append(UInt32(maxInfSize)) //3
         intparams.append(UInt32(maxCPTSize)) //4
-        let intparamsbuffer = self.device.makeBuffer(bytes: &intparams, length: intparams.count*MemoryLayout<UInt32>.size, options: resourceOptions)
-        threadMemSize += intparams.count*MemoryLayout<UInt32>.size
+        let intparamsbuffer = self.device.makeBuffer(bytes: &intparams, length: intparams.count*MemoryLayout<UInt32>.stride, options: resourceOptions)
+        threadMemSize += intparams.count*MemoryLayout<UInt32>.stride
         
         
         //Buffer 3: Prior Distribution Type
@@ -1078,8 +1078,8 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         for node in nodesForCalc {
             priordisttypes.append(UInt32(node.priorDistType))
         }
-        let priordisttypesbuffer = self.device.makeBuffer(bytes: &priordisttypes, length: priordisttypes.count*MemoryLayout<UInt32>.size, options: MTLResourceOptions.cpuCacheModeWriteCombined)
-        threadMemSize += priordisttypes.count*MemoryLayout<UInt32>.size
+        let priordisttypesbuffer = self.device.makeBuffer(bytes: &priordisttypes, length: priordisttypes.count*MemoryLayout<UInt32>.stride, options: MTLResourceOptions.cpuCacheModeWriteCombined)
+        threadMemSize += priordisttypes.count*MemoryLayout<UInt32>.stride
         
         
         //Buffer 4: PriorV1
@@ -1087,8 +1087,8 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         for node in nodesForCalc {
             priorV1s.append(Float(node.priorV1))
         }
-        let priorV1sbuffer = self.device.makeBuffer(bytes: &priorV1s, length: priorV1s.count*MemoryLayout<Float>.size, options: MTLResourceOptions.cpuCacheModeWriteCombined)
-        threadMemSize += priorV1s.count*MemoryLayout<Float>.size
+        let priorV1sbuffer = self.device.makeBuffer(bytes: &priorV1s, length: priorV1s.count*MemoryLayout<Float>.stride, options: MTLResourceOptions.cpuCacheModeWriteCombined)
+        threadMemSize += priorV1s.count*MemoryLayout<Float>.stride
         
         
         
@@ -1097,8 +1097,8 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         for node in nodesForCalc {
             priorV2s.append(Float(node.priorV2))
         }
-        let priorV2sbuffer = self.device.makeBuffer(bytes: &priorV2s, length: priorV2s.count*MemoryLayout<Float>.size, options: MTLResourceOptions.cpuCacheModeWriteCombined)
-        threadMemSize += priorV2s.count*MemoryLayout<Float>.size
+        let priorV2sbuffer = self.device.makeBuffer(bytes: &priorV2s, length: priorV2s.count*MemoryLayout<Float>.stride, options: MTLResourceOptions.cpuCacheModeWriteCombined)
+        threadMemSize += priorV2s.count*MemoryLayout<Float>.stride
         
         
         //Buffer 6: Infnet
@@ -1117,8 +1117,8 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
             infnet = infnet + thisinf
             
         }
-        let infnetbuffer = self.device.makeBuffer(bytes: &infnet, length: nodesForCalc.count*maxInfSize*MemoryLayout<Int32>.size, options: MTLResourceOptions.cpuCacheModeWriteCombined)
-        threadMemSize = nodesForCalc.count*maxInfSize*MemoryLayout<Int32>.size
+        let infnetbuffer = self.device.makeBuffer(bytes: &infnet, length: nodesForCalc.count*maxInfSize*MemoryLayout<Int32>.stride, options: MTLResourceOptions.cpuCacheModeWriteCombined)
+        threadMemSize = nodesForCalc.count*maxInfSize*MemoryLayout<Int32>.stride
         
         
         //Buffer 7: Cptnet
@@ -1132,23 +1132,22 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
             }
             
         }
-        let cptnetbuffer = self.device.makeBuffer(bytes: &cptnet, length: nodesForCalc.count*maxCPTSize*MemoryLayout<Float>.size, options: MTLResourceOptions.cpuCacheModeWriteCombined)
-        threadMemSize += nodesForCalc.count*maxCPTSize*MemoryLayout<Float>.size
+        let cptnetbuffer = self.device.makeBuffer(bytes: &cptnet, length: nodesForCalc.count*maxCPTSize*MemoryLayout<Float>.stride, options: MTLResourceOptions.cpuCacheModeWriteCombined)
+        threadMemSize += nodesForCalc.count*maxCPTSize*MemoryLayout<Float>.stride
         
         
         //Buffer 8 Shuffle Buffer
-        let shufflebuffer = self.device.makeBuffer(length: ntWidth*nodesForCalc.count*MemoryLayout<UInt32>.size, options: MTLResourceOptions.storageModePrivate)
-        threadMemSize += ntWidth*nodesForCalc.count*MemoryLayout<UInt32>.size
+        let shufflebuffer = self.device.makeBuffer(length: ntWidth*nodesForCalc.count*MemoryLayout<UInt32>.stride, options: MTLResourceOptions.storageModePrivate)
+        threadMemSize += ntWidth*nodesForCalc.count*MemoryLayout<UInt32>.stride
         
         //Buffer 9: BNStates array num notdes * ntWidth
-        let bnstatesbuffer = self.device.makeBuffer(length: ntWidth*nodesForCalc.count*MemoryLayout<Float>.size, options: MTLResourceOptions.storageModePrivate)
-        threadMemSize += ntWidth*nodesForCalc.count*MemoryLayout<Float>.size
+        let bnstatesbuffer = self.device.makeBuffer(length: ntWidth*nodesForCalc.count*MemoryLayout<Float>.stride, options: MTLResourceOptions.storageModePrivate)
+        threadMemSize += ntWidth*nodesForCalc.count*MemoryLayout<Float>.stride
         
         //Buffer 10: Prior values
         var priors = [Float](repeating: -1.0, count: ntWidth*nodesForCalc.count)
-//        let priorsbuffer = self.device.makeBuffer(length: ntWidth*nodesForCalc.count*MemoryLayout<Float>.size, options: MTLResourceOptions.storageModePrivate)
-        let priorsbuffer = self.device.makeBuffer(bytes: &priors, length: priors.count*MemoryLayout<Float>.size, options: resourceOptions)
-        threadMemSize += ntWidth*nodesForCalc.count*MemoryLayout<Float>.size
+        let priorsbuffer = self.device.makeBuffer(bytes: &priors, length: priors.count*MemoryLayout<Float>.stride, options: resourceOptions)
+        threadMemSize += ntWidth*nodesForCalc.count*MemoryLayout<Float>.stride
 
         
         DispatchQueue.main.async {
@@ -1212,8 +1211,8 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
             commandBuffer.waitUntilCompleted()
             
             
-            let bnresultsdata = NSData(bytesNoCopy: bnresultsbuffer.contents(), length: bnresults.count*MemoryLayout<Float>.size, freeWhenDone: false)
-            bnresultsdata.getBytes(&bnresults, length:bnresults.count*MemoryLayout<Float>.size)
+            let bnresultsdata = NSData(bytesNoCopy: bnresultsbuffer.contents(), length: bnresults.count*MemoryLayout<Float>.stride, freeWhenDone: false)
+            bnresultsdata.getBytes(&bnresults, length:bnresults.count*MemoryLayout<Float>.stride)
             var ri = 0
             for to in bnresults {
                 if resc >= runstot {
@@ -1230,8 +1229,8 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
             }
             
 
-            let priorsdata = NSData(bytesNoCopy: priorsbuffer.contents(), length: priors.count*MemoryLayout<Float>.size, freeWhenDone: false)
-            priorsdata.getBytes(&priors, length:priors.count*MemoryLayout<Float>.size)
+            let priorsdata = NSData(bytesNoCopy: priorsbuffer.contents(), length: priors.count*MemoryLayout<Float>.stride, freeWhenDone: false)
+            priorsdata.getBytes(&priors, length:priors.count*MemoryLayout<Float>.stride)
             ri = 0
             for to in priors {
                 if resc >= runstot {
