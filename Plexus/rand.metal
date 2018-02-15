@@ -8,7 +8,6 @@
 
 #include <metal_stdlib>
 #include "rand.h"
-#import "loki_header.metal"
 #define M_E 2.7182818284590452353602874713527f
 using namespace metal;
 

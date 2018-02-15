@@ -40,9 +40,11 @@
         <attribute name="complete" optional="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="dateCreated" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="dateModded" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="hillchains" optional="YES" attributeType="Integer 32" minValueString="1" defaultValueString="100" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="image" optional="YES" attributeType="Binary" allowsExternalBinaryDataStorage="YES" syncable="YES"/>
         <attribute name="name" optional="YES" attributeType="String" defaultValueString="New Model" syncable="YES"/>
         <attribute name="runsper" optional="YES" attributeType="Integer 32" minValueString="0" defaultValueString="1000" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="runstarts" optional="YES" attributeType="Integer 32" minValueString="1" defaultValueString="10" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="runstot" optional="YES" attributeType="Integer 32" minValueString="0" defaultValueString="10000" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="score" optional="YES" attributeType="Float" defaultValueString="0.0" usesScalarValueType="NO" syncable="YES"/>
         <relationship name="bnnode" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="BNNode" inverseName="model" inverseEntity="BNNode" syncable="YES"/>
@@ -66,7 +68,7 @@
     <elements>
         <element name="BNNode" positionX="54" positionY="18" width="128" height="403"/>
         <element name="Entry" positionX="-468" positionY="-36" width="128" height="150"/>
-        <element name="Model" positionX="349" positionY="-9" width="128" height="238"/>
+        <element name="Model" positionX="349" positionY="-9" width="128" height="270"/>
         <element name="NodeLink" positionX="-297" positionY="-126" width="128" height="105"/>
         <element name="Structure" positionX="-261" positionY="-9" width="128" height="60"/>
         <element name="Trait" positionX="-279" positionY="317" width="128" height="75"/>

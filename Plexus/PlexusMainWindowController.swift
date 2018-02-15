@@ -47,18 +47,29 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
     }()
     var pipelineState: MTLComputePipelineState!
     
-
-
-    
     var progSheet : NSWindow!
+    var cancelButton : NSButton!
+    
+
     var progInd : NSProgressIndicator!
     var workLabel : NSTextField!
     var curLabel : NSTextField!
     var ofLabel : NSTextField!
     var maxLabel : NSTextField!
-    var cancelButton : NSButton!
+
     
+    var hProgInd : NSProgressIndicator!
+    var hworkLabel : NSTextField!
+    var hofLabel : NSTextField!
+    var hcurLabel : NSTextField!
+    var hmaxLabel : NSTextField!
     
+    var rProgInd : NSProgressIndicator!
+    var rworkLabel : NSTextField!
+    var rofLabel : NSTextField!
+    var rcurLabel : NSTextField!
+    var rmaxLabel : NSTextField!
+     
 
     
     var breakloop = false
@@ -228,6 +239,106 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
     }
     
     
+    func progHillSetup(_ sender: AnyObject) -> NSWindow {
+        var retWin : NSWindow!
+        
+        //sheet programamticaly
+        let sheetRect = NSRect(x: 0, y: 0, width: 500, height: 180)
+        retWin = NSWindow(contentRect: sheetRect, styleMask: .titled, backing: NSBackingStoreType.buffered, defer: true)
+        let contentView = NSView(frame: sheetRect)
+        progInd = NSProgressIndicator(frame: NSRect(x: 100, y: 52, width: 250, height: 20))
+        progInd.canDrawConcurrently = true
+        progInd.isIndeterminate = false
+        progInd.usesThreadedAnimation = true
+        
+        self.workLabel = NSTextField(frame: NSRect(x: 10, y: 52, width: 72, height: 20))
+        workLabel.isEditable = false
+        workLabel.drawsBackground = false
+        workLabel.isSelectable = false
+        workLabel.isBezeled = false
+        workLabel.stringValue = "Working..."
+        
+        self.cancelButton = NSButton(frame: NSRect(x: 304, y: 12, width: 84, height: 32))
+        cancelButton.bezelStyle = NSBezelStyle.rounded
+        cancelButton.title = "Cancel"
+        cancelButton.target = self
+        cancelButton.action = #selector(PlexusMainWindowController.cancelProg(_:))
+        
+        self.maxLabel = NSTextField(frame: NSRect(x: 428, y: 52, width: 64, height: 20))
+        maxLabel.isEditable = false
+        maxLabel.drawsBackground = false
+        maxLabel.isSelectable = false
+        maxLabel.isBezeled = false
+        maxLabel.stringValue = String(0)
+        
+        self.ofLabel = NSTextField(frame: NSRect(x: 404, y: 52, width: 24, height: 20))
+        ofLabel.isEditable = false
+        ofLabel.drawsBackground = false
+        ofLabel.isSelectable = false
+        ofLabel.isBezeled = false
+        ofLabel.stringValue = "of"
+        
+        self.curLabel = NSTextField(frame: NSRect(x: 360, y: 52, width: 64, height: 20))
+        curLabel.isEditable = false
+        curLabel.drawsBackground = false
+        curLabel.isSelectable = false
+        curLabel.isBezeled = false
+        curLabel.stringValue = String(0)
+        
+        
+
+        
+        hProgInd = NSProgressIndicator(frame: NSRect(x: 100, y: 94, width: 250, height: 20))
+        hProgInd.canDrawConcurrently = true
+        hProgInd.isIndeterminate = false
+        hProgInd.usesThreadedAnimation = true
+        
+        self.hworkLabel = NSTextField(frame: NSRect(x: 10, y: 94, width: 72, height: 20))
+        hworkLabel.isEditable = false
+        hworkLabel.drawsBackground = false
+        hworkLabel.isSelectable = false
+        hworkLabel.isBezeled = false
+        hworkLabel.stringValue = "Chain"
+        
+        self.hofLabel = NSTextField(frame: NSRect(x: 404, y: 94, width: 24, height: 20))
+        hofLabel.isEditable = false
+        hofLabel.drawsBackground = false
+        hofLabel.isSelectable = false
+        hofLabel.isBezeled = false
+        hofLabel.stringValue = "of"
+        
+        rProgInd = NSProgressIndicator(frame: NSRect(x: 100, y: 136, width: 250, height: 20))
+        rProgInd.canDrawConcurrently = true
+        rProgInd.isIndeterminate = false
+        rProgInd.usesThreadedAnimation = true
+        
+        self.rworkLabel = NSTextField(frame: NSRect(x: 10, y: 136, width: 72, height: 20))
+        rworkLabel.isEditable = false
+        rworkLabel.drawsBackground = false
+        rworkLabel.isSelectable = false
+        rworkLabel.isBezeled = false
+        rworkLabel.stringValue = "Hill"
+        
+        
+        contentView.addSubview(workLabel)
+        contentView.addSubview(curLabel)
+        contentView.addSubview(ofLabel)
+        contentView.addSubview(maxLabel)
+        contentView.addSubview(progInd)
+        contentView.addSubview(cancelButton)
+        
+        
+        contentView.addSubview(hProgInd)
+        contentView.addSubview(hworkLabel)
+        
+        contentView.addSubview(rProgInd)
+        contentView.addSubview(rworkLabel)
+        
+        retWin.contentView = contentView
+        
+        
+        return retWin
+    }
     
     
     @IBAction func  importCSV(_ x:NSToolbarItem){
@@ -606,10 +717,6 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         
         let nodesForTest = newModel.bnnode.allObjects as! [BNNode]
         
-        if (nodesForTest.count < 2){
-            print ("WFUCKC")
-        }
-        
         let frompos = (Int(arc4random_uniform(UInt32(nodesForTest.count))))
         
         var topos = frompos
@@ -665,7 +772,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         
         
         else if isinfArc == true && isinfByArc == true {
-            fatalError("Error: infleunces in two dirrctions!")
+            fatalError("Error: infleunces in two directions!")
         }
         else { //both false, no arc
             fromNode.addInfluencesObject(toNode)
@@ -687,6 +794,11 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
     
     let curModels : [Model] = mainSplitViewController.modelTreeController?.selectedObjects as! [Model]
     let firstModel : Model = curModels[0]
+    
+    let nodesForTest = firstModel.bnnode.allObjects as! [BNNode]
+    if (nodesForTest.count < 2){
+            return
+    }
         
     let calcQueue = DispatchQueue(label: "calcQueue")
     calcQueue.async {
@@ -713,13 +825,23 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
     @IBAction func calcButtonPress(_ x:NSToolbarItem){
         mainSplitViewController.modelDetailViewController?.calcInProgress = true
         
-        self.progSheet = self.progSetup(self)
-        self.window!.beginSheet(self.progSheet, completionHandler: nil)
-        self.progSheet.makeKeyAndOrderFront(self)
         
         let curModels : [Model] = mainSplitViewController.modelTreeController?.selectedObjects as! [Model]
         let firstModel : Model = curModels[0]
         let firstModelID = firstModel.objectID
+        
+        self.progSheet = self.progHillSetup(self)
+        self.window!.beginSheet(self.progSheet, completionHandler: nil)
+        self.hProgInd.maxValue =  Double(firstModel.hillchains)
+        self.rProgInd.maxValue =  Double(firstModel.runstarts)
+        self.progSheet.makeKeyAndOrderFront(self)
+        
+
+        
+        let nodesForTest = firstModel.bnnode.allObjects as! [BNNode]
+        if (nodesForTest.count < 2){
+            return
+        }
         
         let calcQueue = DispatchQueue(label: "calcQueue")
         calcQueue.async {
@@ -741,13 +863,13 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                 let firstbic = self.calcLikelihood(curModel: cfirstModel)
                 cfirstModel.setValue(firstbic, forKey: "score")
                 
-                for _ in 0...2 {
+                for _ in 0...Int(cfirstModel.runstarts) {
                 
                     var firstrun = true
                     var lastbic = Float(0.0)
                     var curbic = Float(0.0)
                     
-                    for _ in 0...9 {
+                    for _ in 0...Int(cfirstModel.hillchains) {
                         if(firstrun == true){
                             
                             firstrun = false
@@ -776,7 +898,9 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                             }
                             
                         }
-                        
+                        DispatchQueue.main.async {
+                            self.hProgInd.increment(by: 1.0)
+                        }
                     }
                     
                     if lastModel != cfirstModel {
@@ -784,7 +908,9 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                         //and selecty it?
                         modelPeaks.append(lastModel)
                     }
-                    
+                    DispatchQueue.main.async {
+                        self.rProgInd.increment(by: 1.0)
+                    }
                 }
                 
                 //Run through all the random restarts and select highest score
@@ -811,7 +937,6 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                         bestname = bestname + formatter.string(from: date)
                         peakModel.setValue(bestname, forKey: "name")
                         cfirstModel.addChildObject(peakModel)
-//                                            mainSplitViewController.modelTreeController.set
                     }
                     
                 }
@@ -880,19 +1005,18 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         let nc = nodesForCalc.count
         
         let runstot = curModel.runstot as! Int
-        
-
-
-        let threadsPerThreadgroup : MTLSize = MTLSizeMake(mTTPT, 1, 1)
-        let numThreadgroups = MTLSize(width: teWidth, height: 1, depth: 1)
-        var ntWidth = teWidth * mTTPT
+        var ntWidth = (mTTPT/teWidth)-1
         if calcSpeed == 0 {
             ntWidth = Int(Double(ntWidth) * 0.5)
         }
         else if calcSpeed == 1 {
             ntWidth = Int(Double(ntWidth) * 0.75)
         }
-        //print ("Number of threadgroups: \(ntWidth)")
+//        print ("Number of threadgroups: \(ntWidth)")
+        let threadsPerThreadgroup : MTLSize = MTLSizeMake(mTTPT, 1, 1)
+        let numThreadgroups = MTLSize(width: teWidth, height: 1, depth: 1)
+        ntWidth = teWidth * mTTPT
+        
         DispatchQueue.main.async {
             
             self.maxLabel.stringValue = String(describing: runstot)
@@ -1019,6 +1143,8 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         let flipsbuffer = self.device.makeBuffer(length: ntWidth*nodesForCalc.count*MemoryLayout<Float>.size, options: MTLResourceOptions.storageModePrivate)
         threadMemSize += ntWidth*nodesForCalc.count*MemoryLayout<Float>.size
         
+
+        
         DispatchQueue.main.async {
             self.progInd.isIndeterminate = false
             self.progInd.doubleValue = 0
@@ -1057,7 +1183,6 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
             let bnresultsbuffer = self.device.makeBuffer(bytes: &bnresults, length: bnresults.count*MemoryLayout<Float>.size, options: resourceOptions)
             thisTMS += bnresults.count*MemoryLayout<Float>.size
             
-//            print ("thisTMS \(thisTMS) bytes")
             
             commandEncoder.setBuffer(bnresultsbuffer, offset: 0, at: 1)
             commandEncoder.setBuffer(intparamsbuffer, offset: 0, at: 2)
@@ -1069,9 +1194,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
             commandEncoder.setBuffer(shufflebuffer, offset: 0, at: 8)
             commandEncoder.setBuffer(bnstatesbuffer, offset: 0, at: 9)
             commandEncoder.setBuffer(flipsbuffer, offset: 0, at: 10)
-            
-            
-            
+
             
             commandEncoder.dispatchThreadgroups(numThreadgroups, threadsPerThreadgroup: threadsPerThreadgroup)
             
@@ -1112,7 +1235,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                 self.curLabel.stringValue = String(resc)
             }
             
-            
+            // End rc loop
         }
         
         print("Time to run: \(NSDate().timeIntervalSince(start as Date)) seconds.")
@@ -1760,9 +1883,6 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
     
     func calcLikelihood(curModel:Model) -> Float {
         
-//        let nodesForCalc : [BNNode] = mainSplitViewController.modelDetailViewController?.nodesController.arrangedObjects as! [BNNode]
-//        let curModels : [Model] = mainSplitViewController.modelTreeController?.selectedObjects as! [Model]
-//        let curModel : Model = curModels[0]
         
         let nodesForCalc = curModel.bnnode.allObjects as! [BNNode]
         let appDelegate : AppDelegate = NSApplication.shared().delegate as! AppDelegate
@@ -1776,29 +1896,8 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
             subsamp = curModel.runstot as! Int
         }
         // Get the yes-no's within the scope of the data
-        //give this entriues buit its own fxn
-        var theEntries = [Entry]()
-        if(curModel.scope.entity.name == "Entry"){
-            let thisEntry = curModel.scope as! Entry
-            theEntries = thisEntry.collectChildren([Entry](), depth: 0)
-        }
-        else if (curModel.scope.entity.name == "Structure"){
-            let thisStructure = curModel.scope as! Structure
-            theEntries = thisStructure.entry.allObjects as! [Entry]
-        }
-        else{
+        let theEntries = self.entriesInScope(curModel: curModel)
 
-            let request = NSFetchRequest<Entry>(entityName: "Entry")
-            do {
-                theEntries = try moc.fetch(request)
-            } catch let error as NSError {
-                print (error)
-                return -999
-            }
-            
-        }
-        
-        
         var dataratios = [Float]()
         var matches = [Float]()
         var tots = [Float]()
@@ -1838,13 +1937,12 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         
     
         //Check that all post arrays are same length
-        //Subsample from the array
+        //Subsample from the posteriors
         var firstnode = true
         var postlength = -1
         var sampS = [Int]()
         var posts = [[Float]]()
         
-
         for calcNode in nodesForCalc {
             let postArray = NSKeyedUnarchiver.unarchiveObject(with: calcNode.value(forKey: "postArray") as! Data) as! [Float]
             if(firstnode == true){
@@ -1867,6 +1965,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
             posts.append(thisposts)
         }
         
+        //Pick index where likelihood of the posterior is the highest
         var maxlike = Float(0.0)
         var maxpos = -1
         var firsttime = true
@@ -1875,7 +1974,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
             for r in 0...(nodesForCalc.count-1){
                 likes.append( pow(posts[r][s], matches[r]) * pow(1-(posts[r][s]), (tots[r]-matches[r])))
                 
-                let likelihood = log(likes.reduce(1, *)) // hould not the likelihood of the data be the product of the likelihoods of the parzmeters assumig they ate indepent?
+                let likelihood = log(likes.reduce(1, *)) // Should not the likelihood of the data be the product of the likelihoods of the parzmeters assumig they ate indepent?
                 if firsttime == true {
                     maxlike = likelihood
                     maxpos = s
@@ -1895,8 +1994,31 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         return maxlike - ((Float(nodesForCalc.count) / 2.0) * log(Float(postlength)))
         
     }
- 
 
+    func entriesInScope(curModel:Model) -> [Entry] {
+        var theEntries = [Entry]()
+        if(curModel.scope.entity.name == "Entry"){
+            let thisEntry = curModel.scope as! Entry
+            theEntries = thisEntry.collectChildren([Entry](), depth: 0)
+        }
+        else if (curModel.scope.entity.name == "Structure"){
+            let thisStructure = curModel.scope as! Structure
+            theEntries = thisStructure.entry.allObjects as! [Entry]
+        }
+        else{
+            
+            let request = NSFetchRequest<Entry>(entityName: "Entry")
+            do {
+                theEntries = try moc.fetch(request)
+            } catch let error as NSError {
+                fatalError()
+            }
+            
+        }
+        return theEntries
+    }
+    
+   
     
     func contextDidSave(_ notification: Notification) {
         let savedContext = notification.object as! NSManagedObjectContext

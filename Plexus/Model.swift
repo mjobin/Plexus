@@ -23,6 +23,8 @@ class Model: NSManagedObject {
     @NSManaged var dateCreated: Date
     @NSManaged var scope: NodeLink
     @NSManaged var score: NSNumber
+    @NSManaged var runstarts: NSNumber
+    @NSManaged var hillchains: NSNumber
     
     
 
