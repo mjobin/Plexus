@@ -1050,6 +1050,16 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         let maxCPTSize = Int(pow(2.0, Double(maxInfSize)))
         
         
+        //Buffer 0: RNG seeds
+        var seeds = [UInt32](repeating: 0, count: ntWidth)
+        let seedsbuffer = self.device.makeBuffer(bytes: &seeds, length: seeds.count*MemoryLayout<UInt32>.size, options: MTLResourceOptions.cpuCacheModeWriteCombined)
+        threadMemSize += seeds.count*MemoryLayout<UInt32>.size
+        
+        
+        //Buffer 1: BN Results
+        var bnresults = [Float](repeating: -1.0, count: ntWidth*nodesForCalc.count)
+        let bnresultsbuffer = self.device.makeBuffer(bytes: &bnresults, length: bnresults.count*MemoryLayout<Float>.size, options: resourceOptions)
+        threadMemSize += bnresults.count*MemoryLayout<Float>.size
         
         
         //Buffer 2: Integer Parameters
@@ -1059,7 +1069,8 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         intparams.append(UInt32(nodesForCalc.count)) //2
         intparams.append(UInt32(maxInfSize)) //3
         intparams.append(UInt32(maxCPTSize)) //4
-        
+        let intparamsbuffer = self.device.makeBuffer(bytes: &intparams, length: intparams.count*MemoryLayout<UInt32>.size, options: resourceOptions)
+        threadMemSize += intparams.count*MemoryLayout<UInt32>.size
         
         
         //Buffer 3: Prior Distribution Type
@@ -1091,7 +1102,6 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         
         
         //Buffer 6: Infnet
-
         var infnet = [Int32]()
         for node in nodesForCalc {
             var thisinf = [Int32]()
@@ -1124,25 +1134,21 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         }
         let cptnetbuffer = self.device.makeBuffer(bytes: &cptnet, length: nodesForCalc.count*maxCPTSize*MemoryLayout<Float>.size, options: MTLResourceOptions.cpuCacheModeWriteCombined)
         threadMemSize += nodesForCalc.count*maxCPTSize*MemoryLayout<Float>.size
+        
+        
+        //Buffer 8 Shuffle Buffer
         let shufflebuffer = self.device.makeBuffer(length: ntWidth*nodesForCalc.count*MemoryLayout<UInt32>.size, options: MTLResourceOptions.storageModePrivate)
         threadMemSize += ntWidth*nodesForCalc.count*MemoryLayout<UInt32>.size
-        
         
         //Buffer 9: BNStates array num notdes * ntWidth
         let bnstatesbuffer = self.device.makeBuffer(length: ntWidth*nodesForCalc.count*MemoryLayout<Float>.size, options: MTLResourceOptions.storageModePrivate)
         threadMemSize += ntWidth*nodesForCalc.count*MemoryLayout<Float>.size
         
-    
-        
-        //Buffer 2: Integer Parameters Setting buffer here
-        let intparamsbuffer = self.device.makeBuffer(bytes: &intparams, length: intparams.count*MemoryLayout<UInt32>.size, options: resourceOptions)
-        threadMemSize += intparams.count*MemoryLayout<UInt32>.size
-        
-        
-        //Buffer 10: flips
-        let flipsbuffer = self.device.makeBuffer(length: ntWidth*nodesForCalc.count*MemoryLayout<Float>.size, options: MTLResourceOptions.storageModePrivate)
+        //Buffer 10: Prior values
+        var priors = [Float](repeating: -1.0, count: ntWidth*nodesForCalc.count)
+//        let priorsbuffer = self.device.makeBuffer(length: ntWidth*nodesForCalc.count*MemoryLayout<Float>.size, options: MTLResourceOptions.storageModePrivate)
+        let priorsbuffer = self.device.makeBuffer(bytes: &priors, length: priors.count*MemoryLayout<Float>.size, options: resourceOptions)
         threadMemSize += ntWidth*nodesForCalc.count*MemoryLayout<Float>.size
-        
 
         
         DispatchQueue.main.async {
@@ -1159,7 +1165,15 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
             results.append(thisresult)
         }
         
-//        print("static stuiff \(threadMemSize)")
+        //priors array
+        var priorresults = [[Float]]()
+        for _ in nodesForCalc {
+            let thisprior = [Float]()
+            priorresults.append(thisprior)
+        }
+        
+        
+        print("ThreadMemSize \(threadMemSize)")
         
         //RUN LOOP HERE
         var rc = 0
@@ -1167,23 +1181,17 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         let start = NSDate()
         while (rc<runstot){
             
-            var thisTMS = threadMemSize
+
             let commandBuffer = self.commandQueue.makeCommandBuffer()
             let commandEncoder = commandBuffer.makeComputeCommandEncoder()
             commandEncoder.setComputePipelineState(self.pipelineState)
             
-            //Buffer 0: RNG seeds
-            var seeds = (0..<ntWidth).map{_ in arc4random()}
-            let seedsbuffer = self.device.makeBuffer(bytes: &seeds, length: seeds.count*MemoryLayout<UInt32>.size, options: MTLResourceOptions.cpuCacheModeWriteCombined)
-            thisTMS += seeds.count*MemoryLayout<UInt32>.size
+
+            seeds = (0..<ntWidth).map{_ in arc4random()}
+            seedsbuffer.contents().copyBytes(from: seeds, count: seeds.count * MemoryLayout<UInt32>.stride)
+            
+            
             commandEncoder.setBuffer(seedsbuffer, offset: 0, at: 0)
-            
-            //Buffer 1: BN Results
-            var bnresults = [Float](repeating: -1.0, count: ntWidth*nodesForCalc.count)
-            let bnresultsbuffer = self.device.makeBuffer(bytes: &bnresults, length: bnresults.count*MemoryLayout<Float>.size, options: resourceOptions)
-            thisTMS += bnresults.count*MemoryLayout<Float>.size
-            
-            
             commandEncoder.setBuffer(bnresultsbuffer, offset: 0, at: 1)
             commandEncoder.setBuffer(intparamsbuffer, offset: 0, at: 2)
             commandEncoder.setBuffer(priordisttypesbuffer, offset: 0, at: 3)
@@ -1193,7 +1201,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
             commandEncoder.setBuffer(cptnetbuffer, offset: 0, at: 7)
             commandEncoder.setBuffer(shufflebuffer, offset: 0, at: 8)
             commandEncoder.setBuffer(bnstatesbuffer, offset: 0, at: 9)
-            commandEncoder.setBuffer(flipsbuffer, offset: 0, at: 10)
+            commandEncoder.setBuffer(priorsbuffer, offset: 0, at: 10)
 
             
             commandEncoder.dispatchThreadgroups(numThreadgroups, threadsPerThreadgroup: threadsPerThreadgroup)
@@ -1206,26 +1214,38 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
             
             let bnresultsdata = NSData(bytesNoCopy: bnresultsbuffer.contents(), length: bnresults.count*MemoryLayout<Float>.size, freeWhenDone: false)
             bnresultsdata.getBytes(&bnresults, length:bnresults.count*MemoryLayout<Float>.size)
-            
-            
             var ri = 0
             for to in bnresults {
                 if resc >= runstot {
                     break
                 }
                 results[ri].append(to)
-                //                    print(to, terminator:"\t")
-                
+//              print(to, terminator:"\t")
                 ri = ri + 1
-                
                 if ri >= nc {
                     ri = 0
-                    //                        print ("\n")
+//              print ("\n")
                     resc = resc + 1
                 }
             }
             
-            
+
+            let priorsdata = NSData(bytesNoCopy: priorsbuffer.contents(), length: priors.count*MemoryLayout<Float>.size, freeWhenDone: false)
+            priorsdata.getBytes(&priors, length:priors.count*MemoryLayout<Float>.size)
+            ri = 0
+            for to in priors {
+                if resc >= runstot {
+                    break
+                }
+                priorresults[ri].append(to)
+//                print(to, terminator:"\t")
+                ri = ri + 1
+                if ri >= nc {
+                    ri = 0
+//                print ("\n")
+                    resc = resc + 1
+                }
+            }
             
             
             rc = rc + ntWidth
@@ -1275,7 +1295,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                 }
                     
                 else{
-                    // print("problem detected in reloadData. gNode is \(gNode)")
+                     print("problem detected. gNode is \(gNode)")
                 }
                 
                 gi += 1
