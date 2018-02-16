@@ -449,16 +449,18 @@ class PlexusBNScene: SKScene {
         self.physicsBody = borderBody
         
 
-            self.enumerateChildNodes(withName: "nodeLine", using: { thisLine, stop in
-                thisLine.removeFromParent()
-            })
+        self.enumerateChildNodes(withName: "nodeLine", using: { thisLine, stop in
+            thisLine.removeFromParent()
+        })
 
     
-        
+        self.enumerateChildNodes(withName: "scoreName", using: { thisText, stop in
+            thisText.removeFromParent()
+        })
 
 
-        self.enumerateChildNodes(withName: "noNodesName", using: { thisLine, stop in
-            thisLine.removeFromParent()
+        self.enumerateChildNodes(withName: "noNodesName", using: { thisText, stop in
+            thisText.removeFromParent()
         })
         
 
@@ -594,10 +596,9 @@ class PlexusBNScene: SKScene {
 //
 //        })
         
-
+        
   
         //Post message in nodes area if no nodes yet
-        
         if(nodesController != nil ){
             
             let curNodes : [BNNode]  = nodesController.arrangedObjects as! [BNNode]
@@ -624,6 +625,25 @@ class PlexusBNScene: SKScene {
             }
         }
 
+        if(modelTreeController != nil ){
+            let curModels : [Model] = modelTreeController.selectedObjects as! [Model]
+            if curModels.count > 0{
+                let curModel : Model = curModels[0]
+                if(curModel.score != 0){
+                    let scoretxt = SKLabelNode(text: "Score: \(curModel.score)")
+                    scoretxt.fontSize = 18
+                    scoretxt.fontName = "Helvetica-Bold"
+                    scoretxt.name = "scoreName"
+                    scoretxt.zPosition = 1
+                    scoretxt.position = CGPoint(x: self.frame.width*0.5, y: 20)
+                    self.addChild(scoretxt)
+                }
+                
+            }
+        }
+        
+        
+        
 
         
     }
