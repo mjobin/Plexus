@@ -910,6 +910,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                     }
                     DispatchQueue.main.async {
                         self.rProgInd.increment(by: 1.0)
+                        self.hProgInd.doubleValue = 0
                     }
                 }
                 
