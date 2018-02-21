@@ -12,7 +12,7 @@
 using namespace metal;
 
 
-kernel void bngibbs(const device unsigned int *rngseeds [[buffer(0)]], device float *bnresults [[buffer(1)]], const device unsigned int *p [[buffer(2)]], const device unsigned int *priordisttypes [[buffer(3)]], const device float *priorv1s [[buffer(4)]], const device float *priorv2s[[buffer(5)]], const device int *infnet [[buffer(6)]], const device float *cptnet [[buffer(7)]], device uint *shufflenodes[[buffer(8)]], device float *bnstates[[buffer(9)]], device float *flips [[buffer(10)]], uint gid [[thread_position_in_grid]]){
+kernel void bngibbs(const device unsigned int *rngseeds [[buffer(0)]], device float *bnresults [[buffer(1)]], const device unsigned int *p [[buffer(2)]], const device unsigned int *priordisttypes [[buffer(3)]], const device float *priorv1s [[buffer(4)]], const device float *priorv2s[[buffer(5)]], const device int *infnet [[buffer(6)]], const device float *cptnet [[buffer(7)]], device uint *shufflenodes[[buffer(8)]], device float *bnstates[[buffer(9)]], device float *flips [[buffer(10)]], device float *bnstatesout[[buffer(11)]], uint gid [[thread_position_in_grid]]){
 
     //p[0] = runs per
     //p[1] = burnins
@@ -139,6 +139,21 @@ kernel void bngibbs(const device unsigned int *rngseeds [[buffer(0)]], device fl
     //Output
     for(i=0; i<p[2]; i++){
         bnresults[boff+i] /= tot;
+        
+        bnstatesout[boff+i] = bnstates[boff+i];
+        
+        binsum = 0;
+        binx = 0;
+        ioff = p[3]*i;
+        coff = p[4]*i;
+        for (j=ioff; j<(ioff+p[3]); j++){
+            if(infnet[j]<0) break;
+            binsum += bnstates[infnet[j]+boff] * pow(2.0f, binx);
+            binx++;
+        }
+        if(cptnet[coff+binsum] >= 0) { //If a dependent node, copy in its final state
+            flips[boff+i] = bnstates[boff+i];
+        }
     }
 
 

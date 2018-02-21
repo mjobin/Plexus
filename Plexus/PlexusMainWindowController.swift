@@ -344,6 +344,9 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
     @IBAction func  importCSV(_ x:NSToolbarItem){
 
 
+        
+
+
         self.mainSplitViewController.entryTreeController.fetch(self)
         
         
@@ -389,6 +392,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
 
         
         if (result == NSFileHandlingPanelOKButton) {
+            mainSplitViewController.modelDetailViewController?.calcInProgress = true
             var i = 1
             var firstLine = true
             let inFile  = op.url
@@ -683,7 +687,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                         self.mainSplitViewController.modelTreeController.fetch(self)
                         self.mainSplitViewController.modelTreeController.setSelectionIndexPath(mSelPath)
  
-                        
+                        self.mainSplitViewController.modelDetailViewController?.calcInProgress = false
 
                         
                     }
@@ -802,14 +806,12 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         
     let calcQueue = DispatchQueue(label: "calcQueue")
     calcQueue.async {
-        let fmcrun = self.metalCalc(curModel : firstModel)
+        let fmcrun = self.metalCalc(curModel : firstModel, verbose: true)
         if fmcrun == false {
             fatalError("unlinked network!")
         }
-        let firstbic = self.calcLikelihood(curModel: firstModel)
-        firstModel.setValue(firstbic, forKey: "score")
+        let firstbic = firstModel.score
 
-        
         self.performSelector(onMainThread: #selector(PlexusMainWindowController.endProgInd), with: nil, waitUntilDone: true)
         
         DispatchQueue.main.async {
@@ -824,6 +826,8 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
  
     @IBAction func calcButtonPress(_ x:NSToolbarItem){
         mainSplitViewController.modelDetailViewController?.calcInProgress = true
+        
+        print(mainSplitViewController.modelDetailViewController?.calcInProgress)
         
         
         let curModels : [Model] = mainSplitViewController.modelTreeController?.selectedObjects as! [Model]
@@ -856,18 +860,19 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                 var modelPeaks = [Model]()
                 
                 var lastModel = cfirstModel
-                let fmcrun = self.metalCalc(curModel : cfirstModel)
+                let fmcrun = self.metalCalc(curModel : cfirstModel, verbose: true)
                 if fmcrun == false {
                     fatalError("unlinked network!")
                 }
-                let firstbic = self.calcLikelihood(curModel: cfirstModel)
-                cfirstModel.setValue(firstbic, forKey: "score")
+//                let firstbic = self.calcLikelihood(curModel: cfirstModel)
+                let firstbic = firstModel.score
+
                 
                 for _ in 0...Int(cfirstModel.runstarts) {
                 
                     var firstrun = true
-                    var lastbic = Float(0.0)
-                    var curbic = Float(0.0)
+                    var lastbic = NSNumber.init(value: 0.0)
+                    var curbic = NSNumber.init(value: 0.0)
                     
                     for _ in 0...Int(cfirstModel.hillchains) {
                         if(firstrun == true){
@@ -879,12 +884,12 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                         else {
                             
                             let curModel = self.randomChildModel(lastModel: lastModel, thisMOC: cmoc)
-                            let msrun = self.metalCalc(curModel : curModel)
+                            let msrun = self.metalCalc(curModel : curModel, verbose: false)
                             if (msrun == true) {
-                                curbic = self.calcLikelihood(curModel: curModel)
+                                curbic = curModel.score
                                 print("\(lastbic) \(curbic)")
                                 curModel.setValue(curbic, forKey: "score")
-                                if curbic > lastbic {
+                                if curbic.floatValue > lastbic.floatValue {
                                     lastModel = curModel
                                     lastbic = curbic
                                 }
@@ -968,7 +973,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
     
 
     
-    func metalCalc(curModel:Model) -> Bool {
+    func metalCalc(curModel:Model, verbose:Bool) -> Bool {
         let defaults = UserDefaults.standard
         
         let calcSpeed = defaults.integer(forKey: "calcSpeed")
@@ -984,22 +989,26 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         let teWidth = pipelineState.threadExecutionWidth
         let mTTPT = pipelineState.maxTotalThreadsPerThreadgroup
         
-        print("\n********* BNGibbs Metal run******")
-        print ("Thread execution width: \(teWidth)")
-        print ("Max threads per group: \(mTTPT)")
+
         var maxWSS = 0
         if #available(OSX 10.12, *) {
             maxWSS = Int(device.recommendedMaxWorkingSetSize)
             
         }
-        print ("Max working set size: \(maxWSS) bytes")
+
         
         var mTML = 0
         if #available(OSX 10.13, *) {
             mTML = Int(device.maxThreadgroupMemoryLength)
             
         }
-        print ("Max threadgroup memory length: \(mTML) bytes")
+        if verbose == true {
+            print("\n********* BNGibbs Metal run******")
+            print ("Thread execution width: \(teWidth)")
+            print ("Max threads per group: \(mTTPT)")
+            print ("Max working set size: \(maxWSS) bytes")
+            print ("Max threadgroup memory length: \(mTML) bytes")
+        }
         
         
         let nodesForCalc = curModel.bnnode.allObjects as! [BNNode]
@@ -1092,7 +1101,6 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         threadMemSize += priorV1s.count*MemoryLayout<Float>.stride
         
         
-        
         //Buffer 5: PriorV2
         var priorV2s = [Float]()
         for node in nodesForCalc {
@@ -1103,6 +1111,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         
         
         //Buffer 6: Infnet
+        var sInfNet = [[Int32]]()
         var infnet = [Int32]()
         for node in nodesForCalc {
             var thisinf = [Int32]()
@@ -1116,8 +1125,9 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                 thisinf.append(Int32(-1.0))
             }
             infnet = infnet + thisinf
-            
+            sInfNet.append(thisinf)
         }
+
         let infnetbuffer = self.device.makeBuffer(bytes: &infnet, length: nodesForCalc.count*maxInfSize*MemoryLayout<Int32>.stride, options: MTLResourceOptions.cpuCacheModeWriteCombined)
         threadMemSize = nodesForCalc.count*maxInfSize*MemoryLayout<Int32>.stride
         
@@ -1141,13 +1151,20 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         let shufflebuffer = self.device.makeBuffer(length: ntWidth*nodesForCalc.count*MemoryLayout<UInt32>.stride, options: MTLResourceOptions.storageModePrivate)
         threadMemSize += ntWidth*nodesForCalc.count*MemoryLayout<UInt32>.stride
         
+        
         //Buffer 9: BNStates array num notdes * ntWidth
         let bnstatesbuffer = self.device.makeBuffer(length: ntWidth*nodesForCalc.count*MemoryLayout<Float>.stride, options: MTLResourceOptions.storageModePrivate)
         threadMemSize += ntWidth*nodesForCalc.count*MemoryLayout<Float>.stride
         
+        
         //Buffer 10: Prior values
         var priors = [Float](repeating: -1.0, count: ntWidth*nodesForCalc.count)
         let priorsbuffer = self.device.makeBuffer(bytes: &priors, length: priors.count*MemoryLayout<Float>.stride, options: resourceOptions)
+        threadMemSize += ntWidth*nodesForCalc.count*MemoryLayout<Float>.stride
+        
+        //Buffer 11: BNStates output array num notdes * ntWidth
+        var bnstatesout = [Float](repeating: -1.0, count: ntWidth*nodesForCalc.count)
+        let bnstatesoutbuffer = self.device.makeBuffer(length: ntWidth*nodesForCalc.count*MemoryLayout<Float>.stride, options: resourceOptions)
         threadMemSize += ntWidth*nodesForCalc.count*MemoryLayout<Float>.stride
 
         
@@ -1172,13 +1189,20 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
             priorresults.append(thisprior)
         }
         
+
+        var bnstatesoutresults = [[Float]]()
+        for _ in nodesForCalc {
+            let thisbnstate = [Float]()
+            bnstatesoutresults.append(thisbnstate)
+        }
         
-        print("ThreadMemSize \(threadMemSize)")
+//        print("ThreadMemSize \(threadMemSize)")
         
         //RUN LOOP HERE
         var rc = 0
         var resc = 0
         var pesc = 0
+        var besc = 0
         let start = NSDate()
         while (rc<runstot){
             
@@ -1203,6 +1227,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
             commandEncoder.setBuffer(shufflebuffer, offset: 0, at: 8)
             commandEncoder.setBuffer(bnstatesbuffer, offset: 0, at: 9)
             commandEncoder.setBuffer(priorsbuffer, offset: 0, at: 10)
+            commandEncoder.setBuffer(bnstatesoutbuffer, offset: 0, at: 11)
 
             
             commandEncoder.dispatchThreadgroups(numThreadgroups, threadsPerThreadgroup: threadsPerThreadgroup)
@@ -1258,6 +1283,26 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                 }
             }
             
+
+
+            let bnstatesoutdata = NSData(bytesNoCopy: bnstatesoutbuffer.contents(), length: bnstatesout.count*MemoryLayout<Float>.stride, freeWhenDone: false)
+            bnstatesoutdata.getBytes(&bnstatesout, length:bnstatesout.count*MemoryLayout<Float>.stride)
+            ri = 0
+            for to in bnstatesout {
+                
+                if besc >= runstot {
+                    break
+                }
+//                print(to, terminator:"\t")
+                bnstatesoutresults[ri].append(to)
+
+                ri = ri + 1
+                if ri >= nc {
+                    ri = 0
+//                                    print ("\n")
+                    besc = besc + 1
+                }
+            }
             
             rc = rc + ntWidth
             
@@ -1269,7 +1314,9 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
             // End rc loop
         }
         
-        print("Time to run: \(NSDate().timeIntervalSince(start as Date)) seconds.")
+        if verbose == true {
+            print("Time to run: \(NSDate().timeIntervalSince(start as Date)) seconds.")
+        }
         
         var bins = Int(pow(Float(curModel.runstot), 0.5))
         
@@ -1282,19 +1329,24 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         var fi = 0
         for priorresult in priorresults {
             let inNode : BNNode = nodesForCalc[fi]
+//            print(inNode.nodeLink.name)
+//            print(priorresult)
             
-            let theInfluencedBy : [BNNode] = inNode.influencedBy.array as! [BNNode]
-            if theInfluencedBy.count > 0 { //if dependent node
-                let dummyPrior = [Float](repeating: 0.0, count: priorresult.count)
-                let archivedPriorArray = NSKeyedArchiver.archivedData(withRootObject: dummyPrior)
-                inNode.setValue(archivedPriorArray, forKey: "priorArray")
-            }
-            else {
-                
-                let archivedPriorArray = NSKeyedArchiver.archivedData(withRootObject: priorresult)
-                inNode.setValue(archivedPriorArray, forKey: "priorArray")
-                
-            }
+            let archivedPriorArray = NSKeyedArchiver.archivedData(withRootObject: priorresult)
+            inNode.setValue(archivedPriorArray, forKey: "priorArray")
+            
+//            let theInfluencedBy : [BNNode] = inNode.influencedBy.array as! [BNNode]
+//            if theInfluencedBy.count > 0 { //if dependent node
+//                let dummyPrior = [Float](repeating: 0.0, count: priorresult.count)
+//                let archivedPriorArray = NSKeyedArchiver.archivedData(withRootObject: dummyPrior)
+//                inNode.setValue(archivedPriorArray, forKey: "priorArray")
+//            }
+//            else {
+//
+//                let archivedPriorArray = NSKeyedArchiver.archivedData(withRootObject: priorresult)
+//                inNode.setValue(archivedPriorArray, forKey: "priorArray")
+//
+//            }
             
             
 
@@ -1408,12 +1460,22 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
             fi = fi + 1
                 
         }
-            
-            
+        
+        let score = self.calcMarginalLikelihood(curModel: curModel, nodesForCalc: nodesForCalc, infnet : sInfNet, results : results, priorresults : priorresults, bnstatesoutresults : bnstatesoutresults)
+//                let lscore = self.calcLikelihood(curModel: curModel, nodesForCalc: nodesForCalc)
+//        print("score \(score)")
+//        print("bic \(lscore)")
+        curModel.setValue(score, forKey: "score")
+        
             DispatchQueue.main.async {
                 curModel.complete = true
+                
+                
         }
         self.performSelector(onMainThread: #selector(PlexusMainWindowController.betweenRuns), with: nil, waitUntilDone: true)
+        if verbose == true {
+            print("Full run: \(NSDate().timeIntervalSince(start as Date)) seconds.")
+        }
         return true
     }
     
@@ -1451,7 +1513,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
     
     @IBAction func exportCSV(_ x:NSToolbarItem){
 
-        
+
 
         
         let curModels : [Model] = self.mainSplitViewController.modelTreeController?.selectedObjects as! [Model]
@@ -1469,6 +1531,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         sv.close()
         
         if (result == NSFileHandlingPanelOKButton) {
+            mainSplitViewController.modelDetailViewController?.calcInProgress = true
            
             var baseFile  = sv.url?.absoluteString
             let baseDir = sv.directoryURL
@@ -1852,6 +1915,9 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                 
  
 
+                    DispatchQueue.main.async {
+                        self.mainSplitViewController.modelDetailViewController?.calcInProgress = false
+                    }
                     self.performSelector(onMainThread: #selector(PlexusMainWindowController.endProgInd), with: nil, waitUntilDone: true)
 
                     
@@ -1908,10 +1974,9 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
     
 /*************************** Likelihood functions  ****/
     
-    func calcLikelihood(curModel:Model) -> Float {
+    func calcLikelihood(curModel:Model, nodesForCalc:[BNNode]) -> Float {
         
         
-        let nodesForCalc = curModel.bnnode.allObjects as! [BNNode]
         let appDelegate : AppDelegate = NSApplication.shared().delegate as! AppDelegate
         let moc = appDelegate.managedObjectContext
 
@@ -1944,16 +2009,32 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                 return -999
             }
             
-
+            
             var mTraits = [Trait]()
-            let mpredicate = NSPredicate(format: "entry IN %@ && name == %@ && traitValue == %@", theEntries, calcNode.nodeLink.name, calcValue)
-            let mrequest = NSFetchRequest<Trait>(entityName: "Trait")
-            mrequest.predicate = mpredicate
-            do {
-                mTraits = try moc.fetch(mrequest)
-            } catch let error as NSError {
-                print (error)
-                return -999
+            
+            if calcNode.numericData == true {
+                let calcNumVal = Double(calcValue)
+                let tol = calcNode.tolerance as! Double
+                let lowT = calcNumVal! * (1.0 - (tol/2.0))
+                let highT = calcNumVal! * (1.0 + (tol/2.0))
+                
+                for chkTrait in theTraits {
+                    if ((Double(chkTrait.traitValue)!) < highT || (Double(chkTrait.traitValue)!) > lowT) {
+                        mTraits.append(chkTrait)
+                    }
+                }
+                
+            }
+            else {
+                let mpredicate = NSPredicate(format: "entry IN %@ && name == %@ && traitValue == %@", theEntries, calcNode.nodeLink.name, calcValue)
+                let mrequest = NSFetchRequest<Trait>(entityName: "Trait")
+                mrequest.predicate = mpredicate
+                do {
+                    mTraits = try moc.fetch(mrequest)
+                } catch let error as NSError {
+                    print (error)
+                    return -999
+                }
             }
             matches.append(Float(mTraits.count))
             tots.append(Float(theTraits.count))
@@ -1961,8 +2042,6 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         
         }
         
-        
-    
         //Check that all post arrays are same length
         //Subsample from the posteriors
         var firstnode = true
@@ -2000,7 +2079,6 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
             var likes = [Float]()
             for r in 0...(nodesForCalc.count-1){
                 likes.append( pow(posts[r][s], matches[r]) * pow(1-(posts[r][s]), (tots[r]-matches[r])))
-                
                 let likelihood = log(likes.reduce(1, *)) // Should not the likelihood of the data be the product of the likelihoods of the parzmeters assumig they ate indepent?
                 if firsttime == true {
                     maxlike = likelihood
@@ -2022,6 +2100,263 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         
     }
 
+    
+    func calcMarginalLikelihood(curModel:Model, nodesForCalc:[BNNode], infnet:[[Int32]], results : [[Float]], priorresults : [[Float]], bnstatesoutresults : [[Float]]) -> Float {
+        
+        let appDelegate : AppDelegate = NSApplication.shared().delegate as! AppDelegate
+        let moc = appDelegate.managedObjectContext
+        
+        var subsamp = curModel.runsper as! Int
+        if subsamp < 1000  {
+            subsamp = 1000
+        }
+        if subsamp > curModel.runstot as! Int {
+            subsamp = curModel.runstot as! Int
+        }
+        // Get the yes-no's within the scope of the data
+        let theEntries = self.entriesInScope(curModel: curModel)
+        
+        var dataratios = [Float]()
+        var matches = [Float]()
+        var tots = [Float]()
+        
+        for calcNode in nodesForCalc {
+            let calcTrait = calcNode.nodeLink as! Trait
+            let calcValue = calcTrait.traitValue
+            
+            var theTraits = [Trait]()
+            let predicate = NSPredicate(format: "entry IN %@ && name == %@", theEntries, calcNode.nodeLink.name)
+            let request = NSFetchRequest<Trait>(entityName: "Trait")
+            request.predicate = predicate
+            do {
+                theTraits = try moc.fetch(request)
+            } catch let error as NSError {
+                print (error)
+                return -999
+            }
+            
+            
+            var mTraits = [Trait]()
+            
+            if calcNode.numericData == true {
+                let calcNumVal = Double(calcValue)
+                let tol = calcNode.tolerance as! Double
+                let lowT = calcNumVal! * (1.0 - (tol/2.0))
+                let highT = calcNumVal! * (1.0 + (tol/2.0))
+                
+                for chkTrait in theTraits {
+                    if ((Double(chkTrait.traitValue)!) < highT || (Double(chkTrait.traitValue)!) > lowT) {
+                        mTraits.append(chkTrait)
+                    }
+                }
+                
+            }
+            else {
+                let mpredicate = NSPredicate(format: "entry IN %@ && name == %@ && traitValue == %@", theEntries, calcNode.nodeLink.name, calcValue)
+                let mrequest = NSFetchRequest<Trait>(entityName: "Trait")
+                mrequest.predicate = mpredicate
+                do {
+                    mTraits = try moc.fetch(mrequest)
+                } catch let error as NSError {
+                    print (error)
+                    return -999
+                }
+            }
+            matches.append(Float(mTraits.count))
+            tots.append(Float(theTraits.count))
+            dataratios.append(Float(mTraits.count) / Float(theTraits.count))
+            
+        }
+//        print(dataratios)
+        //Check that all post arrays are same length
+        //Subsample from the posteriors
+        var firstnode = true
+        var postlength = -1
+        var priorlength = -1
+        var sampS = [Int]()
+        var posts = [[Float]]()
+        var priors = [[Float]]()
+        var nc = 0
+        
+        for nodeForCalc in nodesForCalc {
+//            print (nodeForCalc.nodeLink.name)
+            let postArray = results[nc]
+            let priorArray = priorresults[nc]
+            if(firstnode == true){
+                firstnode = false
+                postlength = postArray.count
+                priorlength = priorArray.count
+                if priorlength != postlength {
+                    fatalError("priorlength and postlength shoudl be same!")
+                }
+                for _ in 0...postlength {
+                    sampS.append(Int(arc4random_uniform(UInt32(postlength))))
+                }
+            }
+            else {
+                if postlength != postArray.count{
+                    fatalError("post array lengths do not match!")
+                }
+                if postlength != priorArray.count{
+                    fatalError("prior array lengths do not match!")
+                }
+            }
+            var thisposts = [Float]()
+            var thispriors = [Float]()
+            for sp in sampS{
+                thisposts.append(postArray[sp])
+                thispriors.append(priorArray[sp])
+            }
+//            print("PRIOR")
+//            print(thispriors)
+//            print("POST")
+//            print(thisposts)
+            posts.append(thisposts)
+            priors.append(thispriors)
+            nc =  nc + 1
+        }
+        
+
+        
+        //Pick index where likelihood of the posterior is the highest
+        var maxlike = Float(0.0)
+        var maxpos = -1
+        var firsttime = true
+        for s in 0...(postlength-1) {
+            var likes = [Float]()
+            for r in 0...(nodesForCalc.count-1){
+//                print(nodesForCalc[r].nodeLink.name)
+                if(tots[r]>0) { // to avoid hidden or data-free nodes in likelihood calc
+//                    print(posts[r][s])
+//                    print(matches[r])
+//                    print(1-(posts[r][s]))
+//                    print(tots[r]-matches[r])
+//                    print(pow(posts[r][s], matches[r]))
+//                    print(pow(1-(posts[r][s]), (tots[r]-matches[r])))
+//                    print(pow(posts[r][s], matches[r]) * pow(1-(posts[r][s]), (tots[r]-matches[r])))
+//                    var ml = [Float]()
+//                    for _ in 0...Int(matches[r]){
+//                        ml.append(posts[r][s])
+//                    }
+//                    for _ in 0...Int(tots[r]-matches[r]){
+//                        ml.append(1-posts[r][s])
+//                    }
+//                    print(ml)
+//                    let newlike = ml.reduce(1, *)
+//                    print(newlike)
+//                    likes.append(pow(posts[r][s], matches[r]) * pow(1-(posts[r][s]), (tots[r]-matches[r]))) //This is likelihood of data given the POSTERIOR
+                    likes.append(pow(matches[r], posts[r][s]) * pow((tots[r]-matches[r]), 1-(posts[r][s]))) //This is likelihood of posterior given the data
+                }
+            
+//                print(likes)
+                let likelihood = log(likes.reduce(1, *)) // Joint
+                if firsttime == true {
+                    maxlike = likelihood
+                    maxpos = s
+                    firsttime = false
+                }
+                else{
+                    if (likelihood > maxlike) {
+                        maxlike = likelihood
+                        maxpos = s
+                    }
+                }
+            }
+        }
+        
+        
+//        print("\n maxpos \(maxpos)" )
+        var postvals = [Float]()
+        for r in 0...(nodesForCalc.count-1){
+            postvals.append(posts[r][maxpos])
+        }
+        let postterm = (postvals.reduce(1, *))
+//        print("π(ϴ|y) \(postterm)")
+        
+        
+        //Prior
+        var priorProds = [Float]()
+        nc = 0
+        var binsum = Float(0.0)
+        var binx = 0
+        for r in 0...(nodesForCalc.count-1){
+            let thisinfnet = infnet[nc]
+            let infBy = nodesForCalc[r].influencedBy
+            if infBy.count > 0 { //dependent
+                binsum = 0.0
+                binx = 0
+                for thisinf in thisinfnet{
+                    if(thisinf<0){
+                        break
+                    }
+                    binsum = binsum + bnstatesoutresults[nc][binx] * pow(2, Float(binx))
+                    binx = binx + 1
+                }
+                let binfinal = Int(binsum)
+                let cptarray = NSKeyedUnarchiver.unarchiveObject(with: nodesForCalc[r].value(forKey: "cptArray") as! Data) as! [cl_float] //FIXME easier to pull this at top of funciton
+                priorProds.append(cptarray[binfinal])
+
+            }
+            else { //independent
+                priorProds.append(priors[r][maxpos])
+            }
+            nc = nc + 1
+        }
+
+//        print(priorProds)
+        let priorterm = (priorProds.reduce(1, *))
+//        print("π(ϴ) \(priorterm)")
+
+        
+        var likes = [Float]()
+        for r in 0...(nodesForCalc.count-1){
+            
+        
+            if(tots[r]>0) { // to avoid hidden or data-free nodes in likelihood calc
+//                print("name: \(nodesForCalc[r].nodeLink.name)")
+//                print("prior: \(priorProds[r])")
+//                print("matches: \(matches[r])")
+//                print("1-prior: \(1-(priorProds[r]))")
+//                print("nomatches: \(tots[r]-matches[r])")
+//                print("prior^matches \(pow(priorProds[r], matches[r]))")
+//                print((pow(1-(priorProds[r]), (tots[r]-matches[r]))))
+//                print(pow(priorProds[r], matches[r]) * pow(1-(priorProds[r]), (tots[r]-matches[r])))
+                likes.append(pow(priorProds[r], matches[r]) * pow(1-(priorProds[r]), (tots[r]-matches[r]))) //This is likelihood of data given the Priors
+            }
+            
+        }
+        
+        
+        let likelihood = log(likes.reduce(1, *)) // Should not the likelihood of the data be the product of the likelihoods of the parzmeters assumig they ate indepent?
+        
+//        print("f(y|ϴ) \(likelihood)")
+        
+        
+//        //Posterior
+//        var postProds = [Float]()
+//        for calcNode in nodesForCalc {
+//            let infBy = calcNode.influencedBy
+//            if infBy.count > 0 { //depednet
+//                let postArray = NSKeyedUnarchiver.unarchiveObject(with: calcNode.value(forKey: "postArray") as! Data) as! [Float]
+//                postProds.append(postArray[maxpos])
+//            }
+//            else { //independent
+//                let priorArray = NSKeyedUnarchiver.unarchiveObject(with: calcNode.value(forKey: "priorArray") as! Data) as! [Float]
+//                postProds.append(priorArray[maxpos])
+//            }
+//
+//        }
+//
+//        print(postProds)
+        
+//        let postterm = (postProds.reduce(1, *))
+//        print("pi theta | y \(postterm)")
+        
+
+        return log(priorterm) + log(likelihood) - log(postterm)
+        
+    }
+    
     func entriesInScope(curModel:Model) -> [Entry] {
         var theEntries = [Entry]()
         if(curModel.scope.entity.name == "Entry"){
