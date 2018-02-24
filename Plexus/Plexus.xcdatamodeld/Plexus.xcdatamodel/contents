@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="13772" systemVersion="17D47" minimumToolsVersion="Xcode 7.3" sourceLanguage="Objective-C" userDefinedModelVersionIdentifier="">
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="13772" systemVersion="17D102" minimumToolsVersion="Xcode 7.3" sourceLanguage="Objective-C" userDefinedModelVersionIdentifier="">
     <entity name="BNNode" representedClassName="Plexus.BNNode" syncable="YES">
         <attribute name="cptArray" optional="YES" attributeType="Binary" syncable="YES"/>
         <attribute name="cptFreezeArray" optional="YES" attributeType="Binary" syncable="YES"/>
@@ -43,10 +43,11 @@
         <attribute name="hillchains" optional="YES" attributeType="Integer 32" minValueString="1" defaultValueString="100" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="image" optional="YES" attributeType="Binary" allowsExternalBinaryDataStorage="YES" syncable="YES"/>
         <attribute name="name" optional="YES" attributeType="String" defaultValueString="New Model" syncable="YES"/>
-        <attribute name="runsper" optional="YES" attributeType="Integer 32" minValueString="0" defaultValueString="1000" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="runsper" optional="YES" attributeType="Integer 32" minValueString="0" defaultValueString="10000" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="runstarts" optional="YES" attributeType="Integer 32" minValueString="1" defaultValueString="10" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="runstot" optional="YES" attributeType="Integer 32" minValueString="0" defaultValueString="10000" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="score" optional="YES" attributeType="Float" defaultValueString="0.0" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="thin" optional="YES" attributeType="Integer 32" minValueString="1" defaultValueString="10" usesScalarValueType="NO" syncable="YES"/>
         <relationship name="bnnode" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="BNNode" inverseName="model" inverseEntity="BNNode" syncable="YES"/>
         <relationship name="children" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="Model" inverseName="parent" inverseEntity="Model" syncable="YES"/>
         <relationship name="parent" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Model" inverseName="children" inverseEntity="Model" syncable="YES"/>
@@ -68,7 +69,7 @@
     <elements>
         <element name="BNNode" positionX="54" positionY="18" width="128" height="403"/>
         <element name="Entry" positionX="-468" positionY="-36" width="128" height="150"/>
-        <element name="Model" positionX="349" positionY="-9" width="128" height="270"/>
+        <element name="Model" positionX="349" positionY="-9" width="128" height="285"/>
         <element name="NodeLink" positionX="-297" positionY="-126" width="128" height="105"/>
         <element name="Structure" positionX="-261" positionY="-9" width="128" height="60"/>
         <element name="Trait" positionX="-279" positionY="317" width="128" height="75"/>

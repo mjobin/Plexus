@@ -25,6 +25,7 @@ class Model: NSManagedObject {
     @NSManaged var score: NSNumber
     @NSManaged var runstarts: NSNumber
     @NSManaged var hillchains: NSNumber
+    @NSManaged var thin: NSNumber
     
     
 

@@ -620,6 +620,8 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                         
                         self.progInd.increment(by: 1)
                         self.curLabel.stringValue = String(i)
+                        
+
 
                     }
                     
@@ -791,6 +793,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
     @IBAction func singleRunPress(_ x:NSToolbarItem) {
     
     mainSplitViewController.modelDetailViewController?.calcInProgress = true
+    self.breakloop = false
     
     self.progSheet = self.progSetup(self)
     self.window!.beginSheet(self.progSheet, completionHandler: nil)
@@ -810,12 +813,14 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         if fmcrun == false {
             fatalError("unlinked network!")
         }
-        let firstbic = firstModel.score
+
 
         self.performSelector(onMainThread: #selector(PlexusMainWindowController.endProgInd), with: nil, waitUntilDone: true)
         
         DispatchQueue.main.async {
-            firstModel.complete = true
+            if(self.breakloop == false){
+                firstModel.complete = true
+            }
             self.mainSplitViewController.modelDetailViewController?.calcInProgress = false
             }
                             //end calcQ
@@ -826,6 +831,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
  
     @IBAction func calcButtonPress(_ x:NSToolbarItem){
         mainSplitViewController.modelDetailViewController?.calcInProgress = true
+        self.breakloop = false
         
         print(mainSplitViewController.modelDetailViewController?.calcInProgress)
         
@@ -1074,11 +1080,12 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         
         //Buffer 2: Integer Parameters
         var intparams = [UInt32]()
-        intparams.append(curModel.runsper as! UInt32) //0
+        intparams.append((curModel.runsper as! UInt32) + (curModel.burnins as! UInt32)) //0
         intparams.append(curModel.burnins as! UInt32) //1
         intparams.append(UInt32(nodesForCalc.count)) //2
         intparams.append(UInt32(maxInfSize)) //3
         intparams.append(UInt32(maxCPTSize)) //4
+        intparams.append(curModel.thin as! UInt32) //5
         let intparamsbuffer = self.device.makeBuffer(bytes: &intparams, length: intparams.count*MemoryLayout<UInt32>.stride, options: resourceOptions)
         threadMemSize += intparams.count*MemoryLayout<UInt32>.stride
         
@@ -1458,6 +1465,10 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
             }
             
             fi = fi + 1
+            
+            if self.breakloop == true {
+                return false
+            }
                 
         }
         
@@ -2313,22 +2324,20 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
             
         
             if(tots[r]>0) { // to avoid hidden or data-free nodes in likelihood calc
-//                print("name: \(nodesForCalc[r].nodeLink.name)")
+//                print("\nname: \(nodesForCalc[r].nodeLink.name)")
 //                print("prior: \(priorProds[r])")
 //                print("matches: \(matches[r])")
 //                print("1-prior: \(1-(priorProds[r]))")
 //                print("nomatches: \(tots[r]-matches[r])")
 //                print("prior^matches \(pow(priorProds[r], matches[r]))")
 //                print((pow(1-(priorProds[r]), (tots[r]-matches[r]))))
-//                print(pow(priorProds[r], matches[r]) * pow(1-(priorProds[r]), (tots[r]-matches[r])))
-                likes.append(pow(priorProds[r], matches[r]) * pow(1-(priorProds[r]), (tots[r]-matches[r]))) //This is likelihood of data given the Priors
+//                print(log(pow(priorProds[r], matches[r]) * pow(1-(priorProds[r]), (tots[r]-matches[r]))))
+                likes.append(log(pow(priorProds[r], matches[r]) * pow(1-(priorProds[r]), (tots[r]-matches[r])))) //This is likelihood of data given the Priors
             }
             
         }
-        
-        
-        let likelihood = log(likes.reduce(1, *)) // Should not the likelihood of the data be the product of the likelihoods of the parzmeters assumig they ate indepent?
-        
+//        print (likes)
+        let likelihood = likes.reduce(1, +)
 //        print("f(y|ϴ) \(likelihood)")
         
         
@@ -2353,7 +2362,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
 //        print("pi theta | y \(postterm)")
         
 
-        return log(priorterm) + log(likelihood) - log(postterm)
+        return log(priorterm) + likelihood - log(postterm)
         
     }
     

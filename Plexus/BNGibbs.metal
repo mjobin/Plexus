@@ -14,11 +14,14 @@ using namespace metal;
 
 kernel void bngibbs(const device unsigned int *rngseeds [[buffer(0)]], device float *bnresults [[buffer(1)]], const device unsigned int *p [[buffer(2)]], const device unsigned int *priordisttypes [[buffer(3)]], const device float *priorv1s [[buffer(4)]], const device float *priorv2s[[buffer(5)]], const device int *infnet [[buffer(6)]], const device float *cptnet [[buffer(7)]], device uint *shufflenodes[[buffer(8)]], device float *bnstates[[buffer(9)]], device float *flips [[buffer(10)]], device float *bnstatesout[[buffer(11)]], uint gid [[thread_position_in_grid]]){
 
-    //p[0] = runs per
+    //p[0] = runs per + burnins
     //p[1] = burnins
     //p[2] = nodes count
     //p[3] = maxInfSize
     //p[4] = maxCPTSize
+    //p[5] = thin
+
+    
     unsigned int g, h, i,j, k, sn, tmp = 0;
     int binsum = 0;
     float binx = 0;
@@ -40,13 +43,6 @@ kernel void bngibbs(const device unsigned int *rngseeds [[buffer(0)]], device fl
     int coff = 0;
 
 
-    
-    
-    
-//    //Initialize and seed RNG
-//    mt19937 mt;
-//    mt.srand(rngseeds[gid]);
-//    
    
     //Initialize node order
     for(i=0; i<p[2]; i++){
@@ -125,7 +121,7 @@ kernel void bngibbs(const device unsigned int *rngseeds [[buffer(0)]], device fl
         //Check if stationary
         
         //Begin to record results after burnins value exceeded
-        if(g>=p[1]){
+        if(g>=p[1] && g%p[5]==0){
             for(k=0; k<p[2]; k++){
                 bnresults[k+boff] += bnstates[k+boff];
             }
@@ -141,6 +137,7 @@ kernel void bngibbs(const device unsigned int *rngseeds [[buffer(0)]], device fl
         bnresults[boff+i] /= tot;
         
         bnstatesout[boff+i] = bnstates[boff+i];
+ 
         
         binsum = 0;
         binx = 0;
