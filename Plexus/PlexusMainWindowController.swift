@@ -344,10 +344,8 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
     @IBAction func  importCSV(_ x:NSToolbarItem){
 
 
-        
-
-
         self.mainSplitViewController.entryTreeController.fetch(self)
+        self.breakloop = false
         
         
         //Open panel for .csv files only
@@ -484,7 +482,6 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                 for thisLine : String in fileLines {
 
                     if(self.breakloop){
-                        self.breakloop = false
                         break
                     }
                     
@@ -601,15 +598,10 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                                     
                                 }
                                 
-                                
-                                
+                            
                                 columnCount += 1
                                 
                             }
-                            
-
- 
-
                             
                         }
                         
@@ -621,7 +613,6 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                         self.progInd.increment(by: 1)
                         self.curLabel.stringValue = String(i)
                         
-
 
                     }
                     
@@ -647,16 +638,10 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                             fatalError()
                         }
                         batchCount = 0
-                       // inMOC.reset()
-     
-                        
 
                         
                     }
- 
 
-
-                    
                 }
                 
                 
@@ -672,12 +657,8 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                         fatalError()
                     }
                 
-                
 
                     inMOC.reset()
-                
-                
-
                 
 
                     DispatchQueue.main.async {
@@ -695,17 +676,9 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                     }
                 
                 self.performSelector(onMainThread: #selector(PlexusMainWindowController.endProgInd), with: nil, waitUntilDone: true)
-                
-                
 
-                
             }
-            
-            
-
-            
-            
-            
+  
         }
         
 
@@ -810,15 +783,11 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
     let calcQueue = DispatchQueue(label: "calcQueue")
     calcQueue.async {
         let fmcrun = self.metalCalc(curModel : firstModel, verbose: true)
-        if fmcrun == false {
-            fatalError("unlinked network!")
-        }
-
 
         self.performSelector(onMainThread: #selector(PlexusMainWindowController.endProgInd), with: nil, waitUntilDone: true)
         
         DispatchQueue.main.async {
-            if(self.breakloop == false){
+            if(fmcrun == true){
                 firstModel.complete = true
             }
             self.mainSplitViewController.modelDetailViewController?.calcInProgress = false
@@ -832,8 +801,6 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
     @IBAction func calcButtonPress(_ x:NSToolbarItem){
         mainSplitViewController.modelDetailViewController?.calcInProgress = true
         self.breakloop = false
-        
-        print(mainSplitViewController.modelDetailViewController?.calcInProgress)
         
         
         let curModels : [Model] = mainSplitViewController.modelTreeController?.selectedObjects as! [Model]
@@ -867,9 +834,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                 
                 var lastModel = cfirstModel
                 let fmcrun = self.metalCalc(curModel : cfirstModel, verbose: true)
-                if fmcrun == false {
-                    fatalError("unlinked network!")
-                }
+
 //                let firstbic = self.calcLikelihood(curModel: cfirstModel)
                 let firstbic = firstModel.score
 
@@ -1312,10 +1277,14 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
             }
             
             rc = rc + ntWidth
+            if self.breakloop == true {
+                return false
+            }
             
             DispatchQueue.main.async {
                 self.progInd.increment(by: Double(ntWidth))
                 self.curLabel.stringValue = String(resc)
+
             }
             
             // End rc loop
@@ -1466,9 +1435,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
             
             fi = fi + 1
             
-            if self.breakloop == true {
-                return false
-            }
+
                 
         }
         
@@ -1524,7 +1491,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
     
     @IBAction func exportCSV(_ x:NSToolbarItem){
 
-
+        self.breakloop = false
 
         
         let curModels : [Model] = self.mainSplitViewController.modelTreeController?.selectedObjects as! [Model]
