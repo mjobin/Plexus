@@ -47,18 +47,16 @@ class PlexusStructureViewController: NSViewController, NSTableViewDelegate, NSTa
     
     @IBAction func setScopeStructrure(_ sender : AnyObject) {
 
-        
         let curModels : [Model] = modelTreeController.selectedObjects as! [Model]
         let curModel : Model = curModels[0]
         
         let curStructures : [Structure] = structureController.selectedObjects as! [Structure]
-        let curStructure : Structure = curStructures[0]
-        
-        curStructure.addScopeObject(curModel)
-        curModel.scope = curStructure
-        
-
-        
+        if curStructures.count > 0 {
+            let curStructure : Structure = curStructures[0]
+            curStructure.addScopeObject(curModel)
+            curModel.scope = curStructure
+        }
+ 
     }
     
     //NSTableView Delegate for dragging
