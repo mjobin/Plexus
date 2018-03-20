@@ -3,7 +3,7 @@
 //  Plexus
 //
 //  Created by matt on 10/1/14.
-//  Copyright (c) 2014 Santa Clara University. All rights reserved.
+//  Copyright (c) 2014 Matthew Jobin. All rights reserved.
 //
 
 import Cocoa
@@ -23,7 +23,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
     
     
 
-    let queue = DispatchQueue(label: "edu.scu.Plexus.metalQueue")
+    let queue = DispatchQueue(label: "com.plexus.Plexus.metalQueue")
 
     lazy var device: MTLDevice! = {
         let devices: [MTLDevice] = MTLCopyAllDevices()

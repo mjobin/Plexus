@@ -3,7 +3,7 @@
 //  Plexus
 //
 //  Created by matt on 5/12/2015.
-//  Copyright (c) 2015 Santa Clara University. All rights reserved.
+//  Copyright (c) 2015 Matthew Jobin. All rights reserved.
 //
 
 import Cocoa

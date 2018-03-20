@@ -3,7 +3,7 @@
 //  Plexus
 //
 //  Created by matt on 12/18/16.
-//  Copyright © 2016 Santa Clara University. All rights reserved.
+//  Copyright © 2016 Matthew Jobin. All rights reserved.
 //
 
 #include <metal_stdlib>

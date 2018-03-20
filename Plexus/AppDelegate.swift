@@ -3,7 +3,7 @@
 //  Plexus
 //
 //  Created by matt on 10/1/14.
-//  Copyright (c) 2014 Santa Clara University. All rights reserved.
+//  Copyright (c) 2014 Matthew Jobin. All rights reserved.
 //
 
 import Cocoa
@@ -43,10 +43,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     // MARK: - Core Data stack
     
     lazy var applicationDocumentsDirectory: URL = {
-        // The directory the application uses to store the Core Data store file. This code uses a directory named "edu.scu.Plexus" in the user's Application Support directory.
+        // The directory the application uses to store the Core Data store file. This code uses a directory named "com.plexus.Plexus" in the user's Application Support directory.
         let urls = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)
         let appSupportURL = urls[urls.count - 1]
-        return appSupportURL.appendingPathComponent("edu.scu.Plexus")
+        return appSupportURL.appendingPathComponent("com.plexus.Plexus")
         }()
     
     lazy var managedObjectModel: NSManagedObjectModel = {
