@@ -73,9 +73,7 @@ class PlexusPostPopoverDetail: NSViewController, NSTableViewDelegate, NSTableVie
             }
             if(plexusModelDetailViewController.cptReady[curNode] == 2){
 
-
-                let cptarray = NSKeyedUnarchiver.unarchiveObject(with: curNode.value(forKey: "cptArray") as! Data) as! [cl_float]
-                return cptarray.count
+                return curNode.cptArray.count
 
             }
             else {
@@ -92,7 +90,7 @@ class PlexusPostPopoverDetail: NSViewController, NSTableViewDelegate, NSTableVie
             if(tableColumn?.identifier == "Data" ){
                 let curModels : [Model] = plexusModelDetailViewController.modelTreeController.selectedObjects as! [Model]
                 let curModel : Model = curModels[0]
-                if curModel.complete.boolValue {
+                if curModel.complete {
                     if let cptfData = curNode.value(forKey: "cptFreezeArray") {
                         let cptarray = NSKeyedUnarchiver.unarchiveObject(with: cptfData as! Data) as! [cl_float]
                         return cptarray[row]
@@ -104,8 +102,8 @@ class PlexusPostPopoverDetail: NSViewController, NSTableViewDelegate, NSTableVie
                     
                 }
                 else {
-                    let cptarray = NSKeyedUnarchiver.unarchiveObject(with: curNode.value(forKey: "cptArray") as! Data) as! [cl_float]
-                    return cptarray[row]
+
+                    return curNode.cptArray[row]
                 }
             }
             else{
@@ -113,19 +111,19 @@ class PlexusPostPopoverDetail: NSViewController, NSTableViewDelegate, NSTableVie
                 //add chars to pad out
                 let theInfBy = curNode.infBy(self)
                 var prestr = String()
-                for _ in poststr.characters.count..<theInfBy.count {
+                for _ in poststr.count..<theInfBy.count {
                     prestr += "0"
                 }
                 let str = prestr + poststr
                 //print("str \(str)")
-                let revstr = String(str.characters.reversed())
+                let revstr = String(str.reversed())
                 //and revrse
                 let index = tableView.tableColumns.index(of: tableColumn!)
                 //print ("index \(index): revstr \(revstr)")
-                if ( index! > revstr.characters.count) {
-                    print ("Error. curNode \(curNode.nodeLink.name) infBy \(theInfBy) index \(index): revstr \(revstr)")
+                if ( index! > revstr.count) {
+                    print ("Error. curNode \(curNode.nodeLink.name) infBy \(theInfBy) index \(String(describing: index)): revstr \(revstr)")
                 }
-                let index2 = revstr.characters.index(revstr.startIndex, offsetBy: index!)
+                let index2 = revstr.index(revstr.startIndex, offsetBy: index!)
                 if(revstr[index2] == "1"){
                     return "T"
                 }

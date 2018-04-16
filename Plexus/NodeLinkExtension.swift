@@ -33,7 +33,7 @@ extension NodeLink {
         let kString : String = kUTTypeURL as String
         if(type == kString){
             let moURI : NSURL = self.objectID.uriRepresentation() as NSURL
-            return moURI.pasteboardPropertyList(forType: kString) as AnyObject!
+            return moURI.pasteboardPropertyList(forType: kString) as AnyObject?
         }
         return nil
     }

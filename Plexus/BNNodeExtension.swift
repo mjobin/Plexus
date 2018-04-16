@@ -169,9 +169,7 @@ extension BNNode {
 
         let nInfBy = theInfluencedBy.count
         if(nInfBy < 1) { //since 2^0 is 1
-            let cptarray = [Double](repeating: -1.0, count: 1)
-            let archivedCPTArray = NSKeyedArchiver.archivedData(withRootObject: cptarray)
-            self.setValue(archivedCPTArray, forKey: "cptArray")
+            self.cptArray = [Float](repeating: -1.0, count: 1)
 //            let end = DispatchTime.now()
 //            let cptRunTime = Double(end.uptimeNanoseconds - start.uptimeNanoseconds) / 1000000000
             //            print ("**********END CPT for \(self.nodeLink.name) \(cptRunTime) seconds")
@@ -188,7 +186,7 @@ extension BNNode {
         for thisInfluencedBy in theInfluencedBy {
             let  curInfluencedBy = thisInfluencedBy as! BNNode
             infNames.append(curInfluencedBy.nodeLink.name)
-            infNumericData[curInfluencedBy.nodeLink.name] = curInfluencedBy.numericData as? Bool
+            infNumericData[curInfluencedBy.nodeLink.name] = curInfluencedBy.numericData
             infTolerance[curInfluencedBy.nodeLink.name] = curInfluencedBy.tolerance as? Double
             let curTrait : Trait = curInfluencedBy.nodeLink as! Trait
             infTraits.append(curTrait.name)
@@ -231,11 +229,11 @@ extension BNNode {
         
         
         let cptarraysize = Int(pow(2.0,Double(nInfBy)))
-        var cptarray = [Double](repeating: 0.0, count: cptarraysize)
+        var cptarray = [Float](repeating: 0.0, count: cptarraysize)
         
         
-        var total = 0.0
-        var missing = 0.0
+        var total = Float(0.0)
+        var missing = Float(0.0)
 
         
         var theTraits = [Trait]()
@@ -297,7 +295,7 @@ extension BNNode {
                 }
                 
                 for thebin in allbins {
-                    if thebin.characters.count == nInfBy {
+                    if thebin.count == nInfBy {
                         cptarray[Int(strtoul(thebin, nil, 2))] += 1.0
                         total += 1
                     }
@@ -319,10 +317,8 @@ extension BNNode {
             cptarray[i] = cptarray[i]/total
         }
         
- 
-        
-        let archivedCPTArray = NSKeyedArchiver.archivedData(withRootObject: cptarray)
-        self.setValue(archivedCPTArray, forKey: "cptArray")
+
+        self.cptArray = cptarray
 //        let end = DispatchTime.now()
 //        let cptRunTime = Double(end.uptimeNanoseconds - start.uptimeNanoseconds) / 1000000000
 //        print ("**********END ALT CPT for \(self.nodeLink.name) \(cptRunTime) seconds. Usable \(total) missing \(missing) Array: \(cptarray)")
@@ -338,8 +334,7 @@ extension BNNode {
         if mocChanged == true || cptReady != 2 {
            _ = self.CPT()
         }
-        let cptarray = NSKeyedUnarchiver.unarchiveObject(with: self.value(forKey: "cptArray") as! Data) as! [cl_float]
-        return  cptarray
+        return self.cptArray
     }
     
     

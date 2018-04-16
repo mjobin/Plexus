@@ -644,10 +644,9 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
                 default:
                     self.priorDataForChart = [Double](repeating: 0.0, count: 100) as [NSNumber]
             }
-            if(curNode.influencedBy.count > 0 && curNode.postCount != nil) {
-//            if curNode.postCount != nil {
+            if(curNode.influencedBy.count > 0 && curNode.postCount.count > 0) {
 
-                let postCount = NSKeyedUnarchiver.unarchiveObject(with: curNode.value(forKey: "postCount") as! Data) as! [Int]
+                let postCount = curNode.postCount
                 var postData = [NSNumber]()
                 var curtop = 0
                 for thisPost in postCount {
@@ -666,28 +665,7 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
             else {
                 self.dataForChart = [Double](repeating: 0.0, count: 100) as [NSNumber]
             }
-            
-//            if curNode.priorCount != nil {
-//                let priorCount = NSKeyedUnarchiver.unarchiveObject(with: curNode.value(forKey: "priorCount") as! Data) as! [Int]
-//                var priorData = [NSNumber]()
-//                var curtop = 0
-//                for thisPost in priorCount {
-//                    if (curtop < thisPost) {
-//                        curtop = thisPost
-//                    }
-//                }
-//                for thisPrior : Int in priorCount {
-//                    priorData.append((Double(thisPrior)/Double(curtop)) as NSNumber)
-//                }
-//                
-//            
-//                self.priorDataForChart = priorData
-//            }
-//            else {
-//                
-//                self.priorDataForChart = [Double](repeating: 0.0, count: 100) as [NSNumber]
-//            }
-            
+                        
             
         }
             
@@ -900,11 +878,7 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
                 return 0
             }
             if(cptReady[curNode] == 2){
-
-
-                    let cptarray = NSKeyedUnarchiver.unarchiveObject(with: curNode.value(forKey: "cptArray") as! Data) as! [cl_float]
-                    return cptarray.count
-                
+                    return curNode.cptArray.count
             }
             else {
                 return 0
@@ -923,10 +897,9 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
             if(tableColumn?.identifier == "Data" ){
                 let curModels : [Model] = modelTreeController.selectedObjects as! [Model]
                 let curModel : Model = curModels[0]
-                if curModel.complete.boolValue {
-                    if let cptfData = curNode.value(forKey: "cptFreezeArray") {
-                        let cptarray = NSKeyedUnarchiver.unarchiveObject(with: cptfData as! Data) as! [cl_float]
-                        return cptarray[row]
+                if curModel.complete {
+                    if curNode.value(forKey: "cptFreezeArray") != nil {
+                        return curNode.cptFreezeArray[row]
                     }
                     
                     else {
@@ -935,8 +908,7 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
 
                 }
                 else {
-                let cptarray = NSKeyedUnarchiver.unarchiveObject(with: curNode.value(forKey: "cptArray") as! Data) as! [cl_float]
-                return cptarray[row]
+                return curNode.cptArray[row]
                 }
             }
             else{
@@ -944,19 +916,19 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
                 //add chars to pad out
                 let theInfBy = curNode.infBy(self)
                 var prestr = String()
-                for _ in poststr.characters.count..<theInfBy.count {
+                for _ in poststr.count..<theInfBy.count {
                     prestr += "0"
                 }
                 let str = prestr + poststr
                 //print("str \(str)")
-                let revstr = String(str.characters.reversed())
+                let revstr = String(str.reversed())
                 //and revrse
                 let index = tableView.tableColumns.index(of: tableColumn!)
                 //print ("index \(index): revstr \(revstr)")
-                if ( index! > revstr.characters.count) {
-                    print ("Error. curNode \(curNode.nodeLink.name) infBy \(theInfBy) index \(index): revstr \(revstr)")
+                if ( index! > revstr.count) {
+                    print ("Error. curNode \(curNode.nodeLink.name) infBy \(theInfBy) index \(String(describing: index)): revstr \(revstr)")
                 }
-                let index2 = revstr.characters.index(revstr.startIndex, offsetBy: index!)
+                let index2 = revstr.index(revstr.startIndex, offsetBy: index!)
                 if(revstr[index2] == "1"){
                     return "T"
                 }
@@ -985,11 +957,11 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
             let curNodes : [BNNode] = allNodesController.arrangedObjects as! [BNNode]
             if(curNodes.count>0) {
                 for curNode in curNodes{
-                    if (curNode.cptReady as Int? == 1){
+                    if (curNode.cptReady.intValue == 1){
                         cptReady[curNode] = 0
                     }
                     else {
-                        cptReady[curNode] = curNode.cptReady as Int?
+                        cptReady[curNode] = curNode.cptReady.intValue
                     }
                 }
                 

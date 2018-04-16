@@ -833,9 +833,8 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                 var modelPeaks = [Model]()
                 
                 var lastModel = cfirstModel
-                let fmcrun = self.metalCalc(curModel : cfirstModel, verbose: true)
+                _ = self.metalCalc(curModel : cfirstModel, verbose: true)
 
-//                let firstbic = self.calcLikelihood(curModel: cfirstModel)
                 let firstbic = firstModel.score
 
                 
@@ -1416,21 +1415,18 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                 inNode.setValue(sortfline[high], forKey: "postHPDHigh")
                 
                 
+                inNode.postArray = result
+                inNode.cptFreezeArray = inNode.cptArray
                 
-                let archivedPostArray = NSKeyedArchiver.archivedData(withRootObject: result)
-                inNode.setValue(archivedPostArray, forKey: "postArray")
-                
-                inNode.setValue(inNode.cptArray, forKey: "cptFreezeArray")
             
             }
             
             else {
-                let dummyPost = [Float](repeating: 0.0, count: result.count)
-                let archivedPostArray = NSKeyedArchiver.archivedData(withRootObject: dummyPost)
-                inNode.setValue(archivedPostArray, forKey: "postArray")
-                let archivedPostCount = NSKeyedArchiver.archivedData(withRootObject: postCount)
-                inNode.setValue(archivedPostCount, forKey: "postCount")
-                inNode.setValue(inNode.cptArray, forKey: "cptFreezeArray")
+
+
+                inNode.postArray = [Float](repeating: 0.0, count: result.count)
+                inNode.postCount = postCount
+                inNode.cptFreezeArray = inNode.cptArray
             }
             
             fi = fi + 1
@@ -2051,7 +2047,6 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         
         //Pick index where likelihood of the posterior is the highest
         var maxlike = Float(0.0)
-        var maxpos = -1
         var firsttime = true
         for s in 0...(postlength-1) {
             var likes = [Float]()
@@ -2060,13 +2055,11 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                 let likelihood = log(likes.reduce(1, *)) // Should not the likelihood of the data be the product of the likelihoods of the parzmeters assumig they ate indepent?
                 if firsttime == true {
                     maxlike = likelihood
-                    maxpos = s
                     firsttime = false
                 }
                     else{
                     if (likelihood > maxlike) {
                         maxlike = likelihood
-                        maxpos = s
                     }
                 }
                 
@@ -2156,8 +2149,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         var priors = [[Float]]()
         var nc = 0
         
-        for nodeForCalc in nodesForCalc {
-//            print (nodeForCalc.nodeLink.name)
+        for _ in nodesForCalc {
             let postArray = results[nc]
             let priorArray = priorresults[nc]
             if(firstnode == true){
@@ -2271,7 +2263,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                     binx = binx + 1
                 }
                 let binfinal = Int(binsum)
-                let cptarray = NSKeyedUnarchiver.unarchiveObject(with: nodesForCalc[r].value(forKey: "cptArray") as! Data) as! [cl_float] //FIXME easier to pull this at top of funciton
+                let cptarray = nodesForCalc[r].cptArray //FIXME easier to pull this at top of funciton
                 priorProds.append(cptarray[binfinal])
 
             }
@@ -2348,7 +2340,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
             let request = NSFetchRequest<Entry>(entityName: "Entry")
             do {
                 theEntries = try moc.fetch(request)
-            } catch let error as NSError {
+            } catch _ as NSError {
                 fatalError()
             }
             

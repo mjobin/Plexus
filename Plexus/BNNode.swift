@@ -19,14 +19,15 @@ class BNNode: NSManagedObject {
     @NSManaged var nodeLink: NodeLink
     @NSManaged var influences: NSOrderedSet
     @NSManaged var influencedBy: NSOrderedSet
-    @NSManaged var priorCount: Data?
-    @NSManaged var priorArray: Data?
-    @NSManaged var postCount: Data?
-    @NSManaged var postArray: Data?
-    @NSManaged var numericData: NSNumber
+    @NSManaged var priorCount: [Int]
+    @NSManaged var priorArray: [Float]
+    @NSManaged var postCount: [Int]
+    @NSManaged var postArray: [Float]
+    @NSManaged var numericData: Bool
 
     @NSManaged var tolerance: NSNumber
-    @NSManaged var cptArray: Data?
+    @NSManaged var cptArray: [Float]
+    @NSManaged var cptFreezeArray: [Float]
     @NSManaged var postMean: NSNumber
     @NSManaged var postSSD: NSNumber
     @NSManaged var postETLow: NSNumber
