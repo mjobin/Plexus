@@ -49,10 +49,10 @@ extension Model {
         
             
             
-            let blankArray = [NSNumber]()
-            let blankData = NSKeyedArchiver.archivedData(withRootObject: blankArray)
-            newNode.setValue(blankData, forKey: "postCount")
-            newNode.setValue(blankData, forKey: "postArray")
+            let blankCount = [Int]()
+            let blankArray = [Float]()
+            newNode.setValue(blankCount, forKey: "postCount")
+            newNode.setValue(blankArray, forKey: "postArray")
             
             
             newNode.setValue(curNode.cptReady, forKey: "cptReady")

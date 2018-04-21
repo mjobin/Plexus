@@ -91,8 +91,8 @@ class PlexusPostPopoverDetail: NSViewController, NSTableViewDelegate, NSTableVie
                 let curModels : [Model] = plexusModelDetailViewController.modelTreeController.selectedObjects as! [Model]
                 let curModel : Model = curModels[0]
                 if curModel.complete {
-                    if let cptfData = curNode.value(forKey: "cptFreezeArray") {
-                        let cptarray = NSKeyedUnarchiver.unarchiveObject(with: cptfData as! Data) as! [cl_float]
+                    if curNode.cptFreezeArray.count > 0 {
+                        let cptarray = curNode.cptFreezeArray
                         return cptarray[row]
                     }
                         

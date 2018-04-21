@@ -1307,24 +1307,10 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
 //            print(inNode.nodeLink.name)
 //            print(priorresult)
             
-            let archivedPriorArray = NSKeyedArchiver.archivedData(withRootObject: priorresult)
-            inNode.setValue(archivedPriorArray, forKey: "priorArray")
-            
-//            let theInfluencedBy : [BNNode] = inNode.influencedBy.array as! [BNNode]
-//            if theInfluencedBy.count > 0 { //if dependent node
-//                let dummyPrior = [Float](repeating: 0.0, count: priorresult.count)
-//                let archivedPriorArray = NSKeyedArchiver.archivedData(withRootObject: dummyPrior)
-//                inNode.setValue(archivedPriorArray, forKey: "priorArray")
-//            }
-//            else {
-//
-//                let archivedPriorArray = NSKeyedArchiver.archivedData(withRootObject: priorresult)
-//                inNode.setValue(archivedPriorArray, forKey: "priorArray")
-//
-//            }
+            inNode.priorArray = priorresult
             
             
-
+    
             fi = fi + 1
             
         }
@@ -1362,8 +1348,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                     gi += 1
                 }
                 
-                let archivedPostCount = NSKeyedArchiver.archivedData(withRootObject: postCount)
-                inNode.setValue(archivedPostCount, forKey: "postCount")
+                inNode.postCount = postCount
                 
                 //Stats on post Array
                 //Mean
@@ -1680,7 +1665,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                     
                     var postBins = [[Double]]()
                     var postCounts = [[Int]]()
-                    var postArrays = [[Double]]()
+                    var postArrays = [[Float]]()
                     
                     for node in self.mainSplitViewController.modelDetailViewController?.nodesController.arrangedObjects as! [BNNode] {
                         self.mainSplitViewController.modelDetailViewController?.nodesController.setSelectionIndex(i)
@@ -1700,7 +1685,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                         outText += node.nodeLink.name
                         outText += "-PostCount,"
                         
-                         let postCount = NSKeyedUnarchiver.unarchiveObject(with: node.value(forKey: "postCount") as! Data) as! [Int]
+                         let postCount = node.postCount
                         if (postCount.count > longestColumn){
                             longestColumn = postCount.count
                         }
@@ -1725,7 +1710,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                         
                         outText += node.nodeLink.name
                         outText += "-PostDist,"
-                        let postArray = NSKeyedUnarchiver.unarchiveObject(with: node.value(forKey: "postArray") as! Data) as! [Double]
+                        let postArray = node.postArray
                         if (postArray.count > longestColumn){
                             longestColumn = postArray.count
                         }
@@ -2024,7 +2009,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         var posts = [[Float]]()
         
         for calcNode in nodesForCalc {
-            let postArray = NSKeyedUnarchiver.unarchiveObject(with: calcNode.value(forKey: "postArray") as! Data) as! [Float]
+            let postArray = calcNode.postArray
             if(firstnode == true){
                 firstnode = false
                 postlength = postArray.count

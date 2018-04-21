@@ -625,25 +625,10 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
             
             switch priorDist {
                 
-                case 5: //priorPost
-                    let priorCount = NSKeyedUnarchiver.unarchiveObject(with: curNode.value(forKey: "priorCount") as! Data) as! [Int]
-                    var priorData = [NSNumber]()
-                    var curtop = 0
-                    for thisPost in priorCount {
-                        if (curtop < thisPost) {
-                            curtop = thisPost
-                        }
-                    }
-                    for thisPrior : Int in priorCount {
-                        priorData.append((Double(thisPrior)/Double(curtop)) as NSNumber)
-                    }
-                    
-                    
-                    self.priorDataForChart = priorData
-                    
                 default:
                     self.priorDataForChart = [Double](repeating: 0.0, count: 100) as [NSNumber]
             }
+            
             if(curNode.influencedBy.count > 0 && curNode.postCount.count > 0) {
 
                 let postCount = curNode.postCount

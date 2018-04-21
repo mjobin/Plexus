@@ -160,6 +160,16 @@ class PlexusBNSKView: SKView {
             curModel.addBNNodeObject(newNode)
 
             newNode.setValue(curModel, forKey: "model")
+            
+            let blankCount = [Int]()
+            let blankArray = [Float]()
+            newNode.postCount = blankCount
+            newNode.priorCount = blankCount
+            newNode.priorArray = blankArray
+            newNode.postArray = blankArray
+            newNode.cptFreezeArray = blankArray
+            newNode.cptArray = blankArray
+
 
             
             

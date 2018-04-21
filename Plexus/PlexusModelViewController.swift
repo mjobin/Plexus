@@ -73,10 +73,13 @@ class PlexusModelViewController: NSViewController {
             newNode.setValue(curNode.cptArray, forKey: "cptArray")
                         
             
-            let blankArray = [NSNumber]()
-            let blankData = NSKeyedArchiver.archivedData(withRootObject: blankArray)
-            newNode.setValue(blankData, forKey: "postCount")
-            newNode.setValue(blankData, forKey: "postArray")
+            let blankCount = [Int]()
+            let blankArray = [Float]()
+            newNode.postCount = blankCount
+            newNode.postArray = blankArray
+            newNode.priorCount = blankCount
+            newNode.priorArray = blankArray
+
             
             
             newNode.setValue(curNode.cptReady, forKey: "cptReady")
