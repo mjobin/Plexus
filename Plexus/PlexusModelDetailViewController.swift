@@ -585,19 +585,7 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
                     dpriorPlot.interpolation = CPTScatterPlotInterpolation.curved
                     
                     
-                case 5: //priorpost
-                    priorV1Slider.isHidden = true
-                    priorV1Field.isHidden = true
-                    priorV2Slider.isHidden = true
-                    priorV2Field.isHidden = true
-                    priorV1Label.isHidden = true
-                    priorV2Label.isHidden = true
-                    priorV1Slider.minValue = 0.0
-                    priorV1Slider.maxValue = 1.0
-                    priorV2Slider.minValue = 0.0
-                    priorV2Slider.maxValue = 1.0
-                    priorPlot.interpolation = CPTScatterPlotInterpolation.curved
-                    dpriorPlot.interpolation = CPTScatterPlotInterpolation.curved
+
                     
                 default:
                     priorV1Slider.isHidden = false
@@ -725,8 +713,6 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
 //                    print("prior \(gamma(V1, b: V2, x: nidx))")
                     return gamma(V1, b:V2, x:nidx) as AnyObject?
                     
-                case 5: //priorPost
-                    return self.priorDataForChart[Int(idx)] as NSNumber
                     
                 default:
                     return 0 as AnyObject?
