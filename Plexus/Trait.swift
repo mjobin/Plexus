@@ -9,10 +9,12 @@
 import Foundation
 import CoreData
 
-class Trait: NodeLink {
+class Trait: NSManagedObject {
 
 
-    @NSManaged var traitValue: String
+    @NSManaged var name: String
+    @NSManaged var value: String
+    
     @NSManaged var entry: Entry
 
 }

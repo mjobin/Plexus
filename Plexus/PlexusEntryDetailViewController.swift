@@ -7,13 +7,12 @@
 //
 
 import Cocoa
-import MapKit
 
 class PlexusEntryDetailViewController: NSViewController, NSTableViewDelegate, NSTableViewDataSource, NSTabViewDelegate {
     
     
     var moc : NSManagedObjectContext!
-    dynamic var entryTreeController : NSTreeController!
+    dynamic var entryController : NSController!
     
     @IBOutlet dynamic var traitsController : NSArrayController!
     @IBOutlet weak var traitsTableView : NSTableView!
@@ -47,9 +46,6 @@ class PlexusEntryDetailViewController: NSViewController, NSTableViewDelegate, NS
     
     override func viewDidAppear() {
         super.viewDidAppear()
-        
-
-        
     }
     
 
@@ -96,12 +92,5 @@ class PlexusEntryDetailViewController: NSViewController, NSTableViewDelegate, NS
         }
     }
     
-    
-
-    
-
-    
-
-    
-    
+  
 }

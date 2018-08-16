@@ -10,76 +10,27 @@ import Foundation
 import CoreData
 
 extension Entry {
-    func addChildObject(_ value:Entry) {
+    func addAChildObject(_ value:Entry) {
         let items = self.mutableSetValue(forKey: "children");
         items.add(value)
     }
     
-    func addTraitObject(_ value:Trait) {
+    func addATraitObject(_ value:Trait) {
         let items = self.mutableSetValue(forKey: "trait");
         items.add(value)
     }
     
-    func addStructureObject(_ value:Structure) {
-        let items = self.mutableSetValue(forKey: "structure");
+    func addAModelObject(_ value:Model) {
+        let items = self.mutableSetValue(forKey: "model");
         items.add(value)
     }
-    
-    
-    func collectChildren(_ entriesArray:[Entry], depth:Int) -> [Entry] {
 
-        var tmpEntries = entriesArray
-//        for _ in 0..<depth {
-//            print("*", terminator:"")
-//        }
-//        print("\(self.name) children count = \(self.children.count)")
-        for childEntry in self.children {
-            tmpEntries = (childEntry as! Entry).collectChildren(tmpEntries,depth: (depth+1))
-        }
-        if(depth > 0){
-            tmpEntries.append(self)
-        }
-        return tmpEntries
+    func removeAModelObject(_ value:Model) {
+        let items = self.mutableSetValue(forKey: "model");
+        items.remove(value)
     }
     
-    func collectTraits(_ traitsArray:[Trait], traitName:String) -> [Trait] {
-        var tmpTraits = traitsArray
         
-        
-        for thisChild in self.children {
-            tmpTraits = (thisChild as! Entry).collectTraits(tmpTraits, traitName: traitName)
-        }
-        
-        for thisTrait in self.trait{
-            let tmpTrait = thisTrait as! Trait
-            if(tmpTrait.name == traitName){
-                tmpTraits.append(tmpTrait)
-            }
-            
-        }
-        
-        return tmpTraits
-    }
-    
-    func collectTraitValues(_ traitsArray:[String], traitName:String) -> [String] {
-        var tmpTraits = traitsArray
-        
-
-        for thisChild in self.children {
-            tmpTraits = (thisChild as! Entry).collectTraitValues(tmpTraits, traitName: traitName)
-        }
-        
-        for thisTrait in self.trait{
-            let tmpTrait = thisTrait as! Trait
-            if(tmpTrait.name == traitName){
-                tmpTraits.append(tmpTrait.traitValue)
-            }
-            
-        }
-        
-        
-
-       return tmpTraits
-    }
+  
     
 }

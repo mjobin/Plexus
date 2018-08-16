@@ -179,7 +179,7 @@ class PlexusBNScene: SKScene {
         
 //        if(startNode.name == "bnNode"){
 //            let IDNode : PlexusBNNode = startNode as! PlexusBNNode
-//            print("mouseDOWN now startNode is bnnode \(startNode) \(IDNode.node.nodeLink.name)")
+//            print("mouseDOWN now startNode is bnnode \(startNode) \(IDNode.node.name)")
 //
 //        }
 //        else {
@@ -331,8 +331,8 @@ class PlexusBNScene: SKScene {
             self.physicsWorld.add(theJoint)
             
 
-            startIDNode.node.addInfluencesObject(releasedIDNode.node)
-            releasedIDNode.node.addInfluencedByObject(startIDNode.node)
+            startIDNode.node.addAnInfluencesObject(releasedIDNode.node)
+            releasedIDNode.node.addAnInfluencedByObject(startIDNode.node)
 
             
             if(startIDNode.node.DFTcyclechk([startIDNode.node]) || releasedIDNode.node.DFTcyclechk([releasedIDNode.node])){
@@ -720,16 +720,15 @@ class PlexusBNScene: SKScene {
                
 
         
-        let myLabel = SKLabelNode(text: inNode.nodeLink.name)
+        let myLabel = SKLabelNode(text: inNode.name)
         myLabel.fontName = "Helvetica-Bold"
         myLabel.fontSize = 14
         myLabel.zPosition = 3
         myLabel.name = "nodeName"
         myLabel.verticalAlignmentMode = SKLabelVerticalAlignmentMode.bottom
         
-        let inTrait = inNode.nodeLink as! Trait
         
-        let valLabel = SKLabelNode(text: inTrait.traitValue)
+        let valLabel = SKLabelNode(text: inNode.value)
         valLabel.fontName = "Helvetica"
         valLabel.fontSize = 12
         valLabel.zPosition = 2

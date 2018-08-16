@@ -11,22 +11,25 @@ import CoreData
 
 class Model: NSManagedObject {
 
-    @NSManaged var name: String
-    @NSManaged var children: NSOrderedSet
-    @NSManaged var parent: NSSet
-    @NSManaged var bnnode: NSSet
     @NSManaged var burnins: NSNumber
-    @NSManaged var runsper: NSNumber
-    @NSManaged var runstot: NSNumber
     @NSManaged var complete: Bool
-    @NSManaged var dateModded: Date
     @NSManaged var dateCreated: Date
-    @NSManaged var scope: NodeLink
-    @NSManaged var score: NSNumber
-    @NSManaged var runstarts: NSNumber
+    @NSManaged var dateModded: Date
     @NSManaged var hillchains: NSNumber
+    @NSManaged var latitude: Double
+    @NSManaged var longitude: Double
+    @NSManaged var name: String
+    @NSManaged var runsper: NSNumber
+    @NSManaged var runstarts: NSNumber
+    @NSManaged var runstot: NSNumber
+    @NSManaged var score: NSNumber
     @NSManaged var thin: NSNumber
     
-    
+
+    @NSManaged var bnnode: NSSet
+    @NSManaged var children: NSOrderedSet
+    @NSManaged var entry: NSSet
+    @NSManaged var parent: NSSet
+   
 
 }

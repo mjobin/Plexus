@@ -10,13 +10,12 @@ import Cocoa
 import CoreServices
 
 
-class PlexusEntryViewController: NSViewController, NSOutlineViewDelegate, NSOutlineViewDataSource {
+class PlexusEntryViewController: NSViewController, NSTableViewDelegate, NSTableViewDataSource {
 
     var moc : NSManagedObjectContext!
     dynamic var modelTreeController : NSTreeController!
-    @IBOutlet dynamic var entryTreeController : NSTreeController!
-    @IBOutlet weak var entryOutlineView : NSOutlineView!
-
+    @IBOutlet dynamic var entryController : NSArrayController!
+    @IBOutlet weak var entryTableView : NSTableView!
 
     
     required init?(coder aDecoder: NSCoder)
@@ -37,100 +36,98 @@ class PlexusEntryViewController: NSViewController, NSOutlineViewDelegate, NSOutl
     
         let kString : String = kUTTypeURL as String
         let registeredTypes:[String] = [kString]
-        entryOutlineView.register(forDraggedTypes: registeredTypes)
-        entryOutlineView.setDraggingSourceOperationMask(NSDragOperation.every, forLocal: true)
-        entryOutlineView.setDraggingSourceOperationMask(NSDragOperation.every, forLocal: false)
-        entryOutlineView.verticalMotionCanBeginDrag = true
-        
-        
-        
-        let sortDescriptor = NSSortDescriptor(key: "name", ascending: true, selector: #selector(NSString.localizedStandardCompare(_:)))
-        entryTreeController.sortDescriptors = [sortDescriptor]
-
+        entryTableView.register(forDraggedTypes: registeredTypes)
+        entryTableView.setDraggingSourceOperationMask(NSDragOperation.every, forLocal: true)
+        entryTableView.setDraggingSourceOperationMask(NSDragOperation.every, forLocal: false)
+        entryTableView.verticalMotionCanBeginDrag = true
 
     }
     
-    
-    @IBAction func setScopeEntry(_ sender : AnyObject) {
 
+    @IBAction func removeEntries(_ sender: AnyObject) {
         
-        let curModels : [Model] = modelTreeController.selectedObjects as! [Model]
+        let curModels : [Model] = modelTreeController?.selectedObjects as! [Model]
         let curModel : Model = curModels[0]
-        
-        let curEntries : [Entry] = entryTreeController.selectedObjects as! [Entry]
-        if (curEntries.count > 0){
-            let curEntry : Entry = curEntries[0]
-            curEntry.addScopeObject(curModel)
-            curModel.scope = curEntry
+        if(curModel.complete == true){
+            return
         }
-    }
-    
-    @IBAction func unScope(_ sender : AnyObject) {
-
         
-        let curModels : [Model] = modelTreeController.selectedObjects as! [Model]
-        let curModel : Model = curModels[0]
-        
-        let curScoped : NodeLink = curModel.scope
-        curScoped.scope = Set<Model>() as NSSet
-        
- 
-    }
     
-
-
-    //nsoutlineview delegate methods
-    func outlineView(_ outlineView: NSOutlineView, viewFor tableColumn: NSTableColumn?, item: Any) -> NSView? {
-
-        let thisView : NSTableCellView = outlineView.make(withIdentifier: "Entry Cell", owner: self) as! NSTableCellView
-
-        return thisView
-    }
-    
-    
-    func outlineView(_ outlineView: NSOutlineView, mouseDownInHeaderOf tableColumn: NSTableColumn) {
-        
-        let sds = entryTreeController.sortDescriptors
-        if(sds.count > 0){
-        
-            let sd = entryTreeController.sortDescriptors[0]
-
-            let sortDescriptor = NSSortDescriptor(key: "name", ascending: !sd.ascending, selector: #selector(NSString.localizedStandardCompare(_:)))
-
-            entryTreeController.sortDescriptors = [sortDescriptor]
-            
-        }
-        else {
-            let sortDescriptor = NSSortDescriptor(key: "name", ascending: true, selector: #selector(NSString.localizedStandardCompare(_:))) //This should not happen, but default to true just in case sortDescriptiors empty
-            
-            entryTreeController.sortDescriptors = [sortDescriptor]
-        }
-
-    }
-
-
-    
-    
-    
-    
-    func outlineView(_ outlineView: NSOutlineView, writeItems items: [Any], to pasteboard: NSPasteboard) -> Bool {
-
-        let mutableArray : NSMutableArray = NSMutableArray()
-        
-        for object in items{
-            if let treeItem : AnyObject? = (object as AnyObject).representedObject!{
-                mutableArray.add(treeItem!.objectID.uriRepresentation())
+        let curEntries : [Entry] = entryController.selectedObjects as! [Entry]
+        for curEntry in curEntries {
+            curModel.removeAnEntryObject(curEntry)
+            curEntry.removeAModelObject(curModel)
+            //If the Entry is no longer associated with any models, delete from data store
+            if curEntry.model.count < 1 {
+                moc.delete(curEntry)
             }
         }
         
-        let data : Data = NSKeyedArchiver.archivedData(withRootObject: mutableArray)
-        let kString : String = kUTTypeURL as String
-        pasteboard.setData(data, forType: kString)
+        do {
+            try moc.save()
+        } catch let error as NSError {
+            print(error)
+        }
         
-        return true
+
     }
 
+    //TableView Delegate fxns
+    func tableView(_ tableView: NSTableView, objectValueFor tableColumn: NSTableColumn?, row: Int) -> Any? {
 
+        let entryArray : NSArray = entryController.arrangedObjects as! NSArray
+        return entryArray.object(at: row)
+    }
+    
+    func tableView(_ aTableView: NSTableView,
+                   writeRowsWith rowIndexes: IndexSet,
+                   to pboard: NSPasteboard) -> Bool
+    {
 
+        if ((aTableView == entryTableView))
+        {
+            
+
+            
+//            let selectedRow = rowIndexes.first
+//            let selectedRows = rowIndexes
+            
+            let entryArray : NSArray = entryController.arrangedObjects as! NSArray
+            print (entryArray.count)
+            
+            
+            let mutableArray : NSMutableArray = NSMutableArray()
+            
+            for rowIndex in rowIndexes {
+
+                 let selectedObject : AnyObject = entryArray.object(at: rowIndex) as AnyObject
+                mutableArray.add(selectedObject.objectID.uriRepresentation())
+            }
+
+            
+//            let selectedObject : AnyObject = entryArray.object(at: selectedRow!) as AnyObject
+//
+//
+//
+//
+//
+//            mutableArray.add(selectedObject.objectID.uriRepresentation())
+            
+            
+            let data : Data = NSKeyedArchiver.archivedData(withRootObject: mutableArray)
+            
+            let kString : String = kUTTypeURL as String
+            pboard.setData(data, forType: kString)
+            return true
+            
+            
+        }
+        else
+        {
+            return false
+        }
+    }
+    
+    
     
 }

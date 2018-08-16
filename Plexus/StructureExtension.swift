@@ -27,11 +27,11 @@ extension Structure {
         return tmpTraits
     }
     
-    func collectTraitValues(_ traitsArray:[String], traitName:String) -> [String] {
+    func collectvalues(_ traitsArray:[String], traitName:String) -> [String] {
         var tmpTraits = traitsArray
         for thisEntry in self.entry{
             let tmpEntry = thisEntry as! Entry
-            tmpTraits += tmpEntry.collectTraitValues(tmpTraits, traitName: traitName)
+            tmpTraits += tmpEntry.collectvalues(tmpTraits, traitName: traitName)
         }
         return tmpTraits
     }

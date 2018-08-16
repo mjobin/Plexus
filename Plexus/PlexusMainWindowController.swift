@@ -78,7 +78,6 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
 
     
 
-    dynamic var entryTreeController : NSTreeController!
     dynamic var modelTreeController : NSTreeController!
     
 
@@ -168,13 +167,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         
     }
     
-    @IBAction func  toggleStructures(_ x:NSToolbarItem){
 
-        
-        mainSplitViewController.toggleStructures(x)
-
-        
-    }
     
 
 
@@ -344,7 +337,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
     @IBAction func  importCSV(_ x:NSToolbarItem){
 
 
-        self.mainSplitViewController.entryTreeController.fetch(self)
+        self.mainSplitViewController.entryController.fetch(self)
         self.breakloop = false
         
         
@@ -355,31 +348,31 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         op.canChooseFiles = true
         op.allowedFileTypes = ["csv"]
         
-        let aView : NSView = NSView(frame: NSMakeRect(0.0, 0.0, 324.0, 22.0))
-        
-        //accessory view to allow addition to current locaiton
-        let av:NSButton = NSButton(frame: NSMakeRect(0.0, 0.0, 140.0, 22.0))
-        av.setButtonType(NSButtonType.switch)
-        av.title = "Add as child"
-        av.state = 0
-        aView.addSubview(av)
-        op.accessoryView = aView
-        
-        let sc:NSButton = NSButton(frame: NSMakeRect(170.0, 0.0, 140.0, 22.0))
-        sc.setButtonType(NSButtonType.switch)
-        sc.title = "Create new model"
-        sc.state = 1
-        aView.addSubview(sc)
-        
-        op.accessoryView = aView
-        
-        
-       //
-        if #available(OSX 10.11, *) {
-            op.isAccessoryViewDisclosed = true
-        } else {
-            op.accessoryView?.isHidden = false
-        }
+//        let aView : NSView = NSView(frame: NSMakeRect(0.0, 0.0, 324.0, 22.0))
+//        
+//        //accessory view to allow addition to current locaiton
+//        let av:NSButton = NSButton(frame: NSMakeRect(0.0, 0.0, 140.0, 22.0))
+//        av.setButtonType(NSButtonType.switch)
+//        av.title = "Add as child"
+//        av.state = 0
+//        aView.addSubview(av)
+//        op.accessoryView = aView
+//        
+//        let sc:NSButton = NSButton(frame: NSMakeRect(170.0, 0.0, 140.0, 22.0))
+//        sc.setButtonType(NSButtonType.switch)
+//        sc.title = "Create new model"
+//        sc.state = 1
+//        aView.addSubview(sc)
+//        
+//        op.accessoryView = aView
+//        
+//        
+//       //
+//        if #available(OSX 10.11, *) {
+//            op.isAccessoryViewDisclosed = true
+//        } else {
+//            op.accessoryView?.isHidden = false
+//        }
         
         let result = op.runModal()
         
@@ -396,49 +389,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
             let inFile  = op.url
             let inFileBase = inFile?.deletingPathExtension()
 
-            
-            var curEntry : Entry!
-            
-            if(av.state == 0){//New entires will be added as a child of an entry given the name of the input file
-                curEntry = Entry(entity: NSEntityDescription.entity(forEntityName: "Entry", in: self.moc)!, insertInto: self.moc)
-                curEntry.setValue(inFileBase?.lastPathComponent, forKey: "name")
-            }
-            
-            else { //New Entries will be added as children of current entry.
-                let curEntries : [Entry] = self.mainSplitViewController.entryTreeController.selectedObjects as! [Entry]
-                if(curEntries.count > 0){
-                    curEntry  = curEntries[0]
-                }
-                else {
-                    curEntry = Entry(entity: NSEntityDescription.entity(forEntityName: "Entry", in: self.moc)!, insertInto: self.moc)
-                   curEntry.setValue(inFileBase?.lastPathComponent, forKey: "name")
-                }
-                
-            }
-            
-            if(sc.state == 1){
 
-
-                let newModel : Model = Model(entity: NSEntityDescription.entity(forEntityName: "Model", in: self.moc)!, insertInto: self.moc)
-                newModel.setValue(curEntry.name, forKey: "name")
-                newModel.setValue(curEntry, forKey: "scope")
-
-
-                
-            }
-            
-
-            do {
-                try self.moc.save()
-            } catch let error as NSError {
-                print(error)
-            } catch {
-                fatalError()
-            }
-            
-            
-            let curEntryID = curEntry.objectID
-            
             DispatchQueue.global().async {
                 
                 
@@ -447,10 +398,9 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                 let inMOC = NSManagedObjectContext(concurrencyType: .privateQueueConcurrencyType)
                 inMOC.undoManager = nil
                 inMOC.persistentStoreCoordinator = self.moc.persistentStoreCoordinator
-
-                let parentEntry : Entry = inMOC.object(with: curEntryID) as! Entry
-
-
+                
+                let newModel : Model = Model(entity: NSEntityDescription.entity(forEntityName: "Model", in: self.moc)!, insertInto: inMOC)
+                newModel.setValue(inFileBase?.lastPathComponent, forKey: "name")
                 
                 let fileContents : String = (try! NSString(contentsOfFile: inFile!.path, encoding: String.Encoding.utf8.rawValue)) as String
                 let fileLines : [String] = fileContents.components(separatedBy: "\n")
@@ -566,12 +516,13 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
 
                             
                             
-                            newEntry.setValue("Entry", forKey: "type")
                             
-                          //  if(av.state == 1){
-                                newEntry.setValue(parentEntry, forKey: "parent")
-                                parentEntry.addChildObject(newEntry)
-                          //  }
+                            newModel.addAnEntryObject(newEntry)
+                            newEntry.addAModelObject(newModel)
+
+                            
+
+
 
                             
 
@@ -588,10 +539,10 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                                         if(thisSubTrait.trimmingCharacters(in: delimiterCharacterSet as CharacterSet) != "" ){//ignore empty
                                             let newTrait : Trait = Trait(entity: NSEntityDescription.entity(forEntityName: "Trait", in: inMOC)!, insertInto: inMOC)
                                             newTrait.setValue(headers[columnCount], forKey: "name")
-                                            newTrait.setValue(thisSubTrait.trimmingCharacters(in: delimiterCharacterSet as CharacterSet), forKey: "traitValue")
+                                            newTrait.setValue(thisSubTrait.trimmingCharacters(in: delimiterCharacterSet as CharacterSet), forKey: "value")
                                             newTrait.setValue(newEntry, forKey: "entry")
                                             
-                                            newEntry.addTraitObject(newTrait)
+                                            newEntry.addATraitObject(newTrait)
                                         }
                                     }
                                     
@@ -665,11 +616,9 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
 
                         let mSelPath = self.mainSplitViewController.modelTreeController.selectionIndexPath
                         self.moc.reset()
-                        self.mainSplitViewController.entryTreeController.fetch(self)
-                        self.mainSplitViewController.structureViewController?.structureController.fetch(self)
+                        self.mainSplitViewController.entryController.fetch(self)
                         self.mainSplitViewController.modelTreeController.fetch(self)
                         self.mainSplitViewController.modelTreeController.setSelectionIndexPath(mSelPath)
- 
                         self.mainSplitViewController.modelDetailViewController?.calcInProgress = false
 
                         
@@ -730,22 +679,22 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         if isinfArc == true && isinfByArc == false {
             let cflip = arc4random_uniform(2)
             if(cflip == 0) { // delete arc
-                fromNode.removeInfluencesObject(toNode)
+                fromNode.removeAnInfluencesObject(toNode)
             }
             else { // reverse arc
-                fromNode.removeInfluencesObject(toNode)
-                toNode.addInfluencesObject(fromNode)
+                fromNode.removeAnInfluencesObject(toNode)
+                toNode.addAnInfluencesObject(fromNode)
             }
         }
         
         else if isinfArc == false && isinfByArc == true {
             let cflip = arc4random_uniform(2)
             if(cflip == 0) { // delete arc
-                toNode.removeInfluencesObject(fromNode)
+                toNode.removeAnInfluencesObject(fromNode)
             }
             else { // reverse arc
-                toNode.removeInfluencesObject(fromNode)
-                fromNode.addInfluencesObject(toNode)
+                toNode.removeAnInfluencesObject(fromNode)
+                fromNode.addAnInfluencesObject(toNode)
             }
         }
         
@@ -754,7 +703,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
             fatalError("Error: infleunces in two directions!")
         }
         else { //both false, no arc
-            fromNode.addInfluencesObject(toNode)
+            fromNode.addAnInfluencesObject(toNode)
         }
         
 
@@ -912,7 +861,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                         formatter.dateFormat = "dd.MM.yyyy"
                         bestname = bestname + formatter.string(from: date)
                         peakModel.setValue(bestname, forKey: "name")
-                        cfirstModel.addChildObject(peakModel)
+                        cfirstModel.addAChildObject(peakModel)
                     }
                     
                 }
@@ -1304,8 +1253,6 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         var fi = 0
         for priorresult in priorresults {
             let inNode : BNNode = nodesForCalc[fi]
-//            print(inNode.nodeLink.name)
-//            print(priorresult)
             
             inNode.priorArray = priorresult
             
@@ -1517,35 +1464,12 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
             
 
             DispatchQueue.global().async {
-
-
-                    
-                var theEntries = [Entry]()
-                if(curModel.scope.entity.name == "Entry"){
-                    let thisEntry = curModel.scope as! Entry
-                    theEntries = thisEntry.collectChildren([Entry](), depth: 0)
-                }
-                else if (curModel.scope.entity.name == "Structure"){
-                    let thisStructure = curModel.scope as! Structure
-                    theEntries = thisStructure.entry.allObjects as! [Entry]
-                }
-                else{
-                    let appDelegate : AppDelegate = NSApplication.shared().delegate as! AppDelegate
-                    let moc = appDelegate.managedObjectContext
-                    
-                    let request = NSFetchRequest<Entry>(entityName: "Entry")
-                    do {
-                        theEntries = try moc.fetch(request)
-                    } catch let error as NSError {
-                        print (error)
-                        return
-                    }
-                    
-                }
                 
                 var allScopedTraits  = [Trait]()
+                let theEntries = curModel.entry
                 for thisEntry in theEntries {
-                    for thisTrait in thisEntry.trait {
+                    let curEntry = thisEntry as! Entry
+                    for thisTrait in curEntry.trait {
                         let curTrait = thisTrait as! Trait
                         allScopedTraits.append(curTrait)
                     }
@@ -1587,7 +1511,8 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                 
                 self.progInd.isIndeterminate = false
                 
-                for entry : Entry in theEntries {
+                for thisEntry in theEntries {
+                    let entry = thisEntry as! Entry
                     outText += entry.name
                     outText += ","
                     
@@ -1601,9 +1526,9 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                         for tTrait in tTraits{
                             let tKey = (tTrait as AnyObject).value(forKey: "name") as! String
                             if hKey == tKey{
-                                //outText += tTrait.valueForKey("traitValue") as! String
+                                //outText += tTrait.valueForKey("value") as! String
                                 //outText += "\t"
-                                traitString.append((tTrait as AnyObject).value(forKey: "traitValue") as! String)
+                                traitString.append((tTrait as AnyObject).value(forKey: "value") as! String)
                             }
                             
                             
@@ -1670,19 +1595,19 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                     for node in self.mainSplitViewController.modelDetailViewController?.nodesController.arrangedObjects as! [BNNode] {
                         self.mainSplitViewController.modelDetailViewController?.nodesController.setSelectionIndex(i)
                         
-                        outText += node.nodeLink.name
+                        outText += node.name
                         outText += "-PriorType,"
                         
-                        outText += node.nodeLink.name
+                        outText += node.name
                         outText += "-PriorV1,"
                         
-                        outText += node.nodeLink.name
+                        outText += node.name
                         outText += "-PriorV2,"
                         
 
 
                         
-                        outText += node.nodeLink.name
+                        outText += node.name
                         outText += "-PostCount,"
                         
                          let postCount = node.postCount
@@ -1704,11 +1629,11 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                         }
                         postBins.append(postBin)
                         
-                        outText += node.nodeLink.name
+                        outText += node.name
                         outText += "-PostBins,"
                         
                         
-                        outText += node.nodeLink.name
+                        outText += node.name
                         outText += "-PostDist,"
                         let postArray = node.postArray
                         if (postArray.count > longestColumn){
@@ -1779,7 +1704,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
 
                         
                         //create a compound of the outFile name and node name
-                        let nodePDFFileName = baseFile! + "-" + node.nodeLink.name + ".pdf"
+                        let nodePDFFileName = baseFile! + "-" + node.name + ".pdf"
                         let nodeURL = URL(string: nodePDFFileName)
 
                         
@@ -1802,7 +1727,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                         titleStyle.fontSize = 18.0
                         titleStyle.color = CPTColor.black()
                         graph?.titleTextStyle = titleStyle
-                        graph?.title = node.nodeLink.name
+                        graph?.title = node.name
                         
                         let titleTextStyle = CPTMutableTextStyle.init()
                         titleTextStyle.color = CPTColor.white()
@@ -1947,18 +1872,17 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
             subsamp = curModel.runstot as! Int
         }
         // Get the yes-no's within the scope of the data
-        let theEntries = self.entriesInScope(curModel: curModel)
+        let theEntries = curModel.entry
 
         var dataratios = [Float]()
         var matches = [Float]()
         var tots = [Float]()
         
         for calcNode in nodesForCalc {
-            let calcTrait = calcNode.nodeLink as! Trait
-            let calcValue = calcTrait.traitValue
+            let calcValue = calcNode.value
             
             var theTraits = [Trait]()
-            let predicate = NSPredicate(format: "entry IN %@ && name == %@", theEntries, calcNode.nodeLink.name)
+            let predicate = NSPredicate(format: "entry IN %@ && name == %@", theEntries, calcNode.name)
             let request = NSFetchRequest<Trait>(entityName: "Trait")
             request.predicate = predicate
             do {
@@ -1978,14 +1902,14 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                 let highT = calcNumVal! * (1.0 + (tol/2.0))
                 
                 for chkTrait in theTraits {
-                    if ((Double(chkTrait.traitValue)!) < highT || (Double(chkTrait.traitValue)!) > lowT) {
+                    if ((Double(chkTrait.value)!) < highT || (Double(chkTrait.value)!) > lowT) {
                         mTraits.append(chkTrait)
                     }
                 }
                 
             }
             else {
-                let mpredicate = NSPredicate(format: "entry IN %@ && name == %@ && traitValue == %@", theEntries, calcNode.nodeLink.name, calcValue)
+                let mpredicate = NSPredicate(format: "entry IN %@ && name == %@ && value == %@", theEntries, calcNode.name, calcValue)
                 let mrequest = NSFetchRequest<Trait>(entityName: "Trait")
                 mrequest.predicate = mpredicate
                 do {
@@ -2070,18 +1994,18 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
             subsamp = curModel.runstot as! Int
         }
         // Get the yes-no's within the scope of the data
-        let theEntries = self.entriesInScope(curModel: curModel)
+        let theEntries = curModel.entry
         
         var dataratios = [Float]()
         var matches = [Float]()
         var tots = [Float]()
         
         for calcNode in nodesForCalc {
-            let calcTrait = calcNode.nodeLink as! Trait
-            let calcValue = calcTrait.traitValue
+
+            let calcValue = calcNode.value
             
             var theTraits = [Trait]()
-            let predicate = NSPredicate(format: "entry IN %@ && name == %@", theEntries, calcNode.nodeLink.name)
+            let predicate = NSPredicate(format: "entry IN %@ && name == %@", theEntries, calcNode.name)
             let request = NSFetchRequest<Trait>(entityName: "Trait")
             request.predicate = predicate
             do {
@@ -2101,14 +2025,14 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                 let highT = calcNumVal! * (1.0 + (tol/2.0))
                 
                 for chkTrait in theTraits {
-                    if ((Double(chkTrait.traitValue)!) < highT || (Double(chkTrait.traitValue)!) > lowT) {
+                    if ((Double(chkTrait.value)!) < highT || (Double(chkTrait.value)!) > lowT) {
                         mTraits.append(chkTrait)
                     }
                 }
                 
             }
             else {
-                let mpredicate = NSPredicate(format: "entry IN %@ && name == %@ && traitValue == %@", theEntries, calcNode.nodeLink.name, calcValue)
+                let mpredicate = NSPredicate(format: "entry IN %@ && name == %@ && value == %@", theEntries, calcNode.name, calcValue)
                 let mrequest = NSFetchRequest<Trait>(entityName: "Trait")
                 mrequest.predicate = mpredicate
                 do {
@@ -2180,7 +2104,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         for s in 0...(postlength-1) {
             var likes = [Float]()
             for r in 0...(nodesForCalc.count-1){
-//                print(nodesForCalc[r].nodeLink.name)
+//                print(nodesForCalc[r].node.name)
                 if(tots[r]>0) { // to avoid hidden or data-free nodes in likelihood calc
 //                    print(posts[r][s])
 //                    print(matches[r])
@@ -2268,7 +2192,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
             
         
             if(tots[r]>0) { // to avoid hidden or data-free nodes in likelihood calc
-//                print("\nname: \(nodesForCalc[r].nodeLink.name)")
+//                print("\nname: \(nodesForCalc[r].node.name)")
 //                print("prior: \(priorProds[r])")
 //                print("matches: \(matches[r])")
 //                print("1-prior: \(1-(priorProds[r]))")
@@ -2310,30 +2234,8 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         
     }
     
-    func entriesInScope(curModel:Model) -> [Entry] {
-        var theEntries = [Entry]()
-        if(curModel.scope.entity.name == "Entry"){
-            let thisEntry = curModel.scope as! Entry
-            theEntries = thisEntry.collectChildren([Entry](), depth: 0)
-        }
-        else if (curModel.scope.entity.name == "Structure"){
-            let thisStructure = curModel.scope as! Structure
-            theEntries = thisStructure.entry.allObjects as! [Entry]
-        }
-        else{
-            
-            let request = NSFetchRequest<Entry>(entityName: "Entry")
-            do {
-                theEntries = try moc.fetch(request)
-            } catch _ as NSError {
-                fatalError()
-            }
-            
-        }
-        return theEntries
-    }
+
     
-   
     
     func contextDidSave(_ notification: Notification) {
         let savedContext = notification.object as! NSManagedObjectContext

@@ -16,24 +16,24 @@ extension BNNode {
     
     
     
-    func addInfluencesObject(_ value:BNNode) {
+    func addAnInfluencesObject(_ value:BNNode) {
         let influences = self.mutableOrderedSetValue(forKey: "influences");
         influences.add(value)
     }
     
 
-    func removeInfluencesObject(_ value:BNNode) {
+    func removeAnInfluencesObject(_ value:BNNode) {
         let influences = self.mutableOrderedSetValue(forKey: "influences");
         influences.remove(value)
     }
 
     
-    func addInfluencedByObject(_ value:BNNode) {
+    func addAnInfluencedByObject(_ value:BNNode) {
         let influencedBy = self.mutableOrderedSetValue(forKey: "influencedBy");
         influencedBy.add(value)
     }
     
-    func removeInfluencedByObject(_ value:BNNode) {
+    func removeAnInfluencedByObject(_ value:BNNode) {
         let influencedBy = self.mutableOrderedSetValue(forKey: "influencedBy");
         influencedBy.remove(value)
     }
@@ -101,7 +101,7 @@ extension BNNode {
     
     func DFTcyclechk(_ nodeStack:[BNNode]) -> Bool {
         
-       // print("checking \(self.nodeLink.name)")
+       // print("checking \(self.node.name)")
         var tmpnodeStack = nodeStack
         
         //check if any two in the array are the same, if so return true
@@ -113,7 +113,7 @@ extension BNNode {
                     chkcount += 1
                 }
             }
-            //print("chknode \(chknode.nodeLink.name) has \(chkcount) copies")
+            //print("chknode \(chknode.name) has \(chkcount) copies")
             if(chkcount > 1) {
                 return true
             }
@@ -123,7 +123,7 @@ extension BNNode {
         let theInfluences : [BNNode] = self.influences.array as! [BNNode]
 
         for thisInfluences in theInfluences {
-           // print("influences \(thisInfluences.nodeLink.name)")
+           // print("influences \(thisInfluences.node.name)")
             tmpnodeStack.append(thisInfluences)
             if(thisInfluences.DFTcyclechk(tmpnodeStack) == true){
                 return true;
@@ -134,199 +134,216 @@ extension BNNode {
         return false;
     }
     
-    func CPT() -> Int {
-//        let start = DispatchTime.now()
-//        print ("\n**********START altCPT for \(self.nodeLink.name)")
+    
+    
+    func CPT() -> Int { //FIXME dummy
+        let start = DispatchTime.now()
+        print ("\n**********START CPT for \(self.name)")
         
         let appDelegate : AppDelegate = NSApplication.shared().delegate as! AppDelegate
         let moc = appDelegate.managedObjectContext
-        
         let curModel : Model = self.model
+        let theEntries = curModel.entry
         
-        //First collect all the scoped ENTRIES
-        
-        var theEntries = [Entry]()
-        if(curModel.scope.entity.name == "Entry"){
-            let thisEntry = curModel.scope as! Entry
-            theEntries = thisEntry.collectChildren([Entry](), depth: 0)
-        }
-        else if (curModel.scope.entity.name == "Structure"){
-            let thisStructure = curModel.scope as! Structure
-            theEntries = thisStructure.entry.allObjects as! [Entry]
-        }
-        else{
-            let request = NSFetchRequest<Entry>(entityName: "Entry")
-            do {
-                theEntries = try moc.fetch(request)
-            } catch {
-                return -1
-            }
-            
-        }
-        
-    
         let theInfluencedBy = self.infBy(self)
-
         let nInfBy = theInfluencedBy.count
         if(nInfBy < 1) { //since 2^0 is 1
             self.cptArray = [Float](repeating: -1.0, count: 1)
-//            let end = DispatchTime.now()
-//            let cptRunTime = Double(end.uptimeNanoseconds - start.uptimeNanoseconds) / 1000000000
-            //            print ("**********END CPT for \(self.nodeLink.name) \(cptRunTime) seconds")
+            return 2
+        }
+        else {
+            self.cptArray = [Float](repeating: -1.0, count: 1)
             return 2
         }
         
-        var infNames = [String]()
-        var infNumericData : [String : Bool] = [:]
-        var infTraitvalue : [String : String] = [:]
-        var infTolerance : [String : Double] = [:]
-        var infLowT : [String : Double] = [:]
-        var infHighT : [String : Double] = [:]
-        var infTraits  = [String]()
-        for thisInfluencedBy in theInfluencedBy {
-            let  curInfluencedBy = thisInfluencedBy as! BNNode
-            infNames.append(curInfluencedBy.nodeLink.name)
-            infNumericData[curInfluencedBy.nodeLink.name] = curInfluencedBy.numericData
-            infTolerance[curInfluencedBy.nodeLink.name] = curInfluencedBy.tolerance as? Double
-            let curTrait : Trait = curInfluencedBy.nodeLink as! Trait
-            infTraits.append(curTrait.name)
-            infTraitvalue[curInfluencedBy.nodeLink.name] = curTrait.traitValue
-            
-            //checlk here to make sure data really IS numeric. if not, switch back
-            
-            if infNumericData[curInfluencedBy.nodeLink.name] == true {
-                let infTraittest = infTraitvalue[curInfluencedBy.nodeLink.name]!
-                if Double(infTraittest) == nil {
-                    infNumericData[curInfluencedBy.nodeLink.name] = false
-                    curInfluencedBy.numericData = false
-                    
-                }
-            }
-            
-            
-        }
         
-        
-        var entryTraits : [String : [Trait]] = [:]
-        for thisEntry in theEntries {
-            let emptyTraits = [Trait]()
-            entryTraits[thisEntry.name] = emptyTraits
-        }
-        
-        for infName in infNames {
-            
-            if infNumericData[infName] == true {
-
-                infLowT[infName] = Double(infTraitvalue[infName]!)! * (1.0 - (infTolerance[infName]!/2.0))
-                infHighT[infName] = Double(infTraitvalue[infName]!)! * (1.0 + (infTolerance[infName]!/2.0))
-                
-
-
-            }
-
-            
-        }
-        
-        
-        let cptarraysize = Int(pow(2.0,Double(nInfBy)))
-        var cptarray = [Float](repeating: 0.0, count: cptarraysize)
-        
-        
-        var total = Float(0.0)
-        var missing = Float(0.0)
-
-        
-        var theTraits = [Trait]()
-        let request = NSFetchRequest<Trait>(entityName: "Trait")
-        request.returnsObjectsAsFaults = false
-        let predicate = NSPredicate(format: "entry IN %@ && name IN %@", argumentArray: [theEntries, infNames])
-        request.predicate = predicate
-        
-
-        
-        do {
-            theTraits = try moc.fetch(request)
-            for thisTrait in theTraits {
-                entryTraits[thisTrait.entry.name]?.append(thisTrait)
-            }
-            for thisEntry in theEntries {
-                var allbins = [String]()
-                let thisEntryTraits = entryTraits[thisEntry.name]!
-                for curTrait in infTraits {
-                    var traitbins = [String]()
-                    for thisTrait in thisEntryTraits {
-                        if(thisTrait.name == curTrait){
-                            if infNumericData[curTrait] == true {
-                                if(Double(thisTrait.traitValue)! >= infLowT[curTrait]!  && Double(thisTrait.traitValue)! <= infHighT[curTrait]!){
-                                    traitbins.append("1")
-                                }
-                                else {
-                                    traitbins.append("0")
-                                }
-                            }
-                            else {
-                                if thisTrait.traitValue == infTraitvalue[curTrait] {
-                                    traitbins.append("1")
-                                }
-                                else {
-                                   traitbins.append("0")
-                                }
-                                
-                            }
-                            
-                        }
-                    }
-                    
-                    if allbins.isEmpty {
-                        for traitbin in traitbins {
-                            allbins.append(traitbin)
-                        }
-                    }
-                    else {
-                        var workbins = [String]()
-                        for traitbin in traitbins {
-                            for oldbin in allbins {
-                                let newbin = oldbin + traitbin
-                                workbins.append(newbin)
-                            }
-                        }
-                        allbins = workbins
-                    }
-                }
-                
-                for thebin in allbins {
-                    if thebin.count == nInfBy {
-                        cptarray[Int(strtoul(thebin, nil, 2))] += 1.0
-                        total += 1
-                    }
-                    else {
-                        missing += 1
-                    }
-                    
-                    
-                }
-                
-            }
- 
-        } catch  {
-            return -1
-        }
-
-        
-        for i in 0 ..< cptarray.count {
-            cptarray[i] = cptarray[i]/total
-        }
-        
-
-        self.cptArray = cptarray
-//        let end = DispatchTime.now()
-//        let cptRunTime = Double(end.uptimeNanoseconds - start.uptimeNanoseconds) / 1000000000
-//        print ("**********END ALT CPT for \(self.nodeLink.name) \(cptRunTime) seconds. Usable \(total) missing \(missing) Array: \(cptarray)")
-
-        return 2
-        
-
+     //END CPT()
     }
+    
+    
+//    func CPT() -> Int {
+//        let start = DispatchTime.now()
+//        print ("\n**********START altCPT for \(self.name)")
+//
+//        let appDelegate : AppDelegate = NSApplication.shared().delegate as! AppDelegate
+//        let moc = appDelegate.managedObjectContext
+//
+//        let curModel : Model = self.model
+//
+//
+//        var theEntries = curModel.entry
+//
+//
+//
+//
+//
+//
+//        var end = DispatchTime.now()
+//        var cptRunTime = Double(end.uptimeNanoseconds - start.uptimeNanoseconds) / 1000000000
+//        print ("**********FINISHED fetch CPT for \(self.name) \(cptRunTime) seconds")
+//        let theInfluencedBy = self.infBy(self)
+//
+//        let nInfBy = theInfluencedBy.count
+//        if(nInfBy < 1) { //since 2^0 is 1
+//            self.cptArray = [Float](repeating: -1.0, count: 1)
+//            let end = DispatchTime.now()
+//            let cptRunTime = Double(end.uptimeNanoseconds - start.uptimeNanoseconds) / 1000000000
+//                        print ("**********END CPT for \(self.name) \(cptRunTime) seconds")
+//            return 2
+//        }
+//
+//        var infNames = [String]()
+//        var infNumericData : [String : Bool] = [:]
+//        var infvalue : [String : String] = [:]
+//        var infTolerance : [String : Double] = [:]
+//        var infLowT : [String : Double] = [:]
+//        var infHighT : [String : Double] = [:]
+//        var infTraits  = [String]()
+//        for thisInfluencedBy in theInfluencedBy {
+//            let  curInfluencedBy = thisInfluencedBy as! BNNode
+//            infNames.append(curInfluencedBy.name)
+//            infNumericData[curInfluencedBy.name] = curInfluencedBy.numericData
+//            infTolerance[curInfluencedBy.name] = curInfluencedBy.tolerance as? Double
+
+//            infTraits.append(curTrait.name)
+//            infvalue[curInfluencedBy.node.name] = curTrait.value
+//
+//            //checlk here to make sure data really IS numeric. if not, switch back
+//
+//            if infNumericData[curInfluencedBy.node.name] == true {
+//                let infTraittest = infvalue[curInfluencedBy.node.name]!
+//                if Double(infTraittest) == nil {
+//                    infNumericData[curInfluencedBy.name] = false
+//                    curInfluencedBy.numericData = false
+//
+//                }
+//            }
+//
+//
+//        }
+//
+//
+//        var entryTraits : [String : [Trait]] = [:]
+//        for thisEntry in theEntries {
+//            let curEntry = thisEntry as! Entry
+//            let emptyTraits = [Trait]()
+//            entryTraits[curEntry.name] = emptyTraits
+//        }
+//
+//        for infName in infNames {
+//
+//            if infNumericData[infName] == true {
+//
+//                infLowT[infName] = Double(infvalue[infName]!)! * (1.0 - (infTolerance[infName]!/2.0))
+//                infHighT[infName] = Double(infvalue[infName]!)! * (1.0 + (infTolerance[infName]!/2.0))
+//
+//
+//
+//            }
+//
+//
+//        }
+//
+//
+//        let cptarraysize = Int(pow(2.0,Double(nInfBy)))
+//        var cptarray = [Float](repeating: 0.0, count: cptarraysize)
+//
+//
+//        var total = Float(0.0)
+//        var missing = Float(0.0)
+//
+//
+//        var theTraits = [Trait]()
+//        let request = NSFetchRequest<Trait>(entityName: "Trait")
+//        request.returnsObjectsAsFaults = false
+//        let predicate = NSPredicate(format: "entry IN %@ && name IN %@", argumentArray: [theEntries, infNames])
+//        request.predicate = predicate
+//
+//
+//
+//        do {
+//            theTraits = try moc.fetch(request)
+//            for thisTrait in theTraits {
+//                entryTraits[thisTrait.entry.name]?.append(thisTrait)
+//            }
+//            for thisEntry in theEntries {
+//                var allbins = [String]()
+//                let thisEntryTraits = entryTraits[thisEntry.name]!
+//                for curTrait in infTraits {
+//                    var traitbins = [String]()
+//                    for thisTrait in thisEntryTraits {
+//                        if(thisTrait.name == curTrait){
+//                            if infNumericData[curTrait] == true {
+//                                if(Double(thisTrait.value)! >= infLowT[curTrait]!  && Double(thisTrait.value)! <= infHighT[curTrait]!){
+//                                    traitbins.append("1")
+//                                }
+//                                else {
+//                                    traitbins.append("0")
+//                                }
+//                            }
+//                            else {
+//                                if thisTrait.value == infvalue[curTrait] {
+//                                    traitbins.append("1")
+//                                }
+//                                else {
+//                                   traitbins.append("0")
+//                                }
+//
+//                            }
+//
+//                        }
+//                    }
+//
+//                    if allbins.isEmpty {
+//                        for traitbin in traitbins {
+//                            allbins.append(traitbin)
+//                        }
+//                    }
+//                    else {
+//                        var workbins = [String]()
+//                        for traitbin in traitbins {
+//                            for oldbin in allbins {
+//                                let newbin = oldbin + traitbin
+//                                workbins.append(newbin)
+//                            }
+//                        }
+//                        allbins = workbins
+//                    }
+//                }
+//
+//                for thebin in allbins {
+//                    if thebin.count == nInfBy {
+//                        cptarray[Int(strtoul(thebin, nil, 2))] += 1.0
+//                        total += 1
+//                    }
+//                    else {
+//                        missing += 1
+//                    }
+//
+//
+//                }
+//
+//            }
+//
+//        } catch  {
+//            return -1
+//        }
+//
+//
+//        for i in 0 ..< cptarray.count {
+//            cptarray[i] = cptarray[i]/total
+//        }
+//
+//
+//        self.cptArray = cptarray
+//        end = DispatchTime.now()
+//        cptRunTime = Double(end.uptimeNanoseconds - start.uptimeNanoseconds) / 1000000000
+//        print ("**********END ALT CPT for \(self.node.name) \(cptRunTime) seconds. Usable \(total) missing \(missing) Array: \(cptarray)")
+//
+//        return 2
+//
+//
+//    }
     
 
     

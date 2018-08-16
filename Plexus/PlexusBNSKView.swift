@@ -109,7 +109,7 @@ class PlexusBNSKView: SKView {
             
             if let id : NSManagedObjectID = moc.persistentStoreCoordinator?.managedObjectID(forURIRepresentation: mourl){
                 
-                let mo : NodeLink = moc.object(with: id) as! NodeLink
+                let mo = moc.object(with: id)
                 
                 if (mo.entity.name == "Trait"){
                     
@@ -126,63 +126,55 @@ class PlexusBNSKView: SKView {
         return false
     }
     
-
-
-    
-
-    
-
-    
     func addNode(_ mourl: URL){
-       // let errorPtr : NSErrorPointer = nil
+        
+        let newNode : BNNode = BNNode(entity: NSEntityDescription.entity(forEntityName: "BNNode", in: moc)!, insertInto: moc)
+
         if let id : NSManagedObjectID = moc.persistentStoreCoordinator?.managedObjectID(forURIRepresentation: mourl){
             
-            let mo : NodeLink = moc.object(with: id) as! NodeLink
+            let mo = moc.object(with: id)
             
-            let curNodes : [BNNode] = nodesController.arrangedObjects as! [BNNode]
-            for curNode : BNNode in curNodes {
-                if(curNode.nodeLink == mo) { //cannot add a node the same as an exisitng node
-                    return
-                }
+            if (mo.entity.name == "Trait"){
+                let moTrait = mo as! Trait
+
+//                let curNodes : [BNNode] = nodesController.arrangedObjects as! [BNNode]
+//                for curNode : BNNode in curNodes {
+//                    if(curNode.name == moTrait.name) { //cannot add a node the same as an exisitng node
+//                        return
+//                    }
+//                }
+                newNode.setValue(moTrait.name, forKey: "name")
+                newNode.setValue(moTrait.value, forKey: "value")
+
             }
-            
-            
-            let newNode : BNNode = BNNode(entity: NSEntityDescription.entity(forEntityName: "BNNode", in: moc)!, insertInto: moc)
-            newNode.setValue(mo, forKey: "nodeLink")
-          // mo.addBNNodeObject(newNode)
-            
-
-
-            let curModels : [Model] = modelTreeController.selectedObjects as! [Model]
-            let curModel : Model = curModels[0]
-
-            
-            curModel.addBNNodeObject(newNode)
-
-            newNode.setValue(curModel, forKey: "model")
-            
-            let blankCount = [Int]()
-            let blankArray = [Float]()
-            newNode.postCount = blankCount
-            newNode.priorCount = blankCount
-            newNode.priorArray = blankArray
-            newNode.postArray = blankArray
-            newNode.cptFreezeArray = blankArray
-            newNode.cptArray = blankArray
-
-
-            
-            
-            
-            do {
-                try moc.save()
-            } catch let error as NSError {
-                self.print(error)
-            }
-
-            
         }
+            
         
+
+        let curModels : [Model] = modelTreeController.selectedObjects as! [Model]
+        let curModel : Model = curModels[0]
+
+        
+        curModel.addABNNodeObject(newNode)
+
+        newNode.setValue(curModel, forKey: "model")
+        
+        let blankCount = [Int]()
+        let blankArray = [Float]()
+        newNode.postCount = blankCount
+        newNode.priorCount = blankCount
+        newNode.priorArray = blankArray
+        newNode.postArray = blankArray
+        newNode.cptFreezeArray = blankArray
+        newNode.cptArray = blankArray
+
+
+        do {
+            try moc.save()
+        } catch let error as NSError {
+            self.print(error)
+        }
+ 
     }
     
     

@@ -29,8 +29,8 @@ class PlexusPostPopoverDetail: NSViewController, NSTableViewDelegate, NSTableVie
         }
         let theInfBy : [BNNode] = curNode.infBy(self) as! [BNNode]
         for thisInfBy in theInfBy {
-            let cptcolumn = NSTableColumn(identifier: thisInfBy.nodeLink.name)
-            cptcolumn.headerCell.stringValue = thisInfBy.nodeLink.name
+            let cptcolumn = NSTableColumn(identifier: thisInfBy.name)
+            cptcolumn.headerCell.stringValue = thisInfBy.name
             cptcolumn.sizeToFit()
 
             tableWidth += Double(cptcolumn.width)
@@ -121,7 +121,7 @@ class PlexusPostPopoverDetail: NSViewController, NSTableViewDelegate, NSTableVie
                 let index = tableView.tableColumns.index(of: tableColumn!)
                 //print ("index \(index): revstr \(revstr)")
                 if ( index! > revstr.count) {
-                    print ("Error. curNode \(curNode.nodeLink.name) infBy \(theInfBy) index \(String(describing: index)): revstr \(revstr)")
+                    print ("Error. curNode \(curNode.name) infBy \(theInfBy) index \(String(describing: index)): revstr \(revstr)")
                 }
                 let index2 = revstr.index(revstr.startIndex, offsetBy: index!)
                 if(revstr[index2] == "1"){

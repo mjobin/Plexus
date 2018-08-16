@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="14133" systemVersion="17E199" minimumToolsVersion="Xcode 7.3" sourceLanguage="Objective-C" userDefinedModelVersionIdentifier="">
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="14315.2.4" systemVersion="17G65" minimumToolsVersion="Xcode 7.3" sourceLanguage="Objective-C" userDefinedModelVersionIdentifier="">
     <entity name="BNNode" representedClassName="Plexus.BNNode" syncable="YES">
         <attribute name="cptArray" optional="YES" attributeType="Transformable" customClassName="[Float]" syncable="YES"/>
         <attribute name="cptFreezeArray" optional="YES" attributeType="Transformable" customClassName="[Float]" syncable="YES"/>
         <attribute name="cptReady" optional="YES" attributeType="Integer 16" minValueString="0" maxValueString="2" defaultValueString="NO" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="name" optional="YES" attributeType="String" defaultValueString="New Node" syncable="YES"/>
         <attribute name="numericData" optional="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="postArray" optional="YES" attributeType="Transformable" customClassName="[Float]" syncable="YES"/>
         <attribute name="postCount" optional="YES" attributeType="Transformable" valueTransformerName="" customClassName="[Int]" syncable="YES"/>
@@ -21,18 +22,15 @@
         <attribute name="savedX" optional="YES" attributeType="Double" minValueString="0" defaultValueString="0.0" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="savedY" optional="YES" attributeType="Double" minValueString="0" defaultValueString="0.0" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="tolerance" optional="YES" attributeType="Double" minValueString="0" maxValueString="1" defaultValueString="0.05" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="value" optional="YES" attributeType="String" defaultValueString="No Value" syncable="YES"/>
         <relationship name="influencedBy" optional="YES" toMany="YES" deletionRule="Nullify" ordered="YES" destinationEntity="BNNode" inverseName="influences" inverseEntity="BNNode" syncable="YES"/>
         <relationship name="influences" optional="YES" toMany="YES" deletionRule="Nullify" ordered="YES" destinationEntity="BNNode" inverseName="influencedBy" inverseEntity="BNNode" syncable="YES"/>
         <relationship name="model" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Model" inverseName="bnnode" inverseEntity="Model" syncable="YES"/>
-        <relationship name="nodeLink" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="NodeLink" inverseName="bnNode" inverseEntity="NodeLink" syncable="YES"/>
     </entity>
-    <entity name="Entry" representedClassName="Plexus.Entry" parentEntity="NodeLink" syncable="YES">
-        <attribute name="latitude" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="NO" syncable="YES"/>
-        <attribute name="longitude" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="NO" syncable="YES"/>
+    <entity name="Entry" representedClassName="Plexus.Entry" syncable="YES">
+        <attribute name="name" optional="YES" attributeType="String" defaultValueString="New Entry" syncable="YES"/>
         <attribute name="notes" optional="YES" attributeType="Binary" syncable="YES"/>
-        <relationship name="children" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="Entry" inverseName="parent" inverseEntity="Entry" syncable="YES"/>
-        <relationship name="parent" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Entry" inverseName="children" inverseEntity="Entry" syncable="YES"/>
-        <relationship name="structure" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Structure" inverseName="entry" inverseEntity="Structure" syncable="YES"/>
+        <relationship name="model" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Model" inverseName="entry" inverseEntity="Model" syncable="YES"/>
         <relationship name="trait" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="Trait" inverseName="entry" inverseEntity="Trait" syncable="YES"/>
     </entity>
     <entity name="Model" representedClassName="Plexus.Model" syncable="YES">
@@ -41,7 +39,8 @@
         <attribute name="dateCreated" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="dateModded" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="hillchains" optional="YES" attributeType="Integer 32" minValueString="1" defaultValueString="100" usesScalarValueType="NO" syncable="YES"/>
-        <attribute name="image" optional="YES" attributeType="Binary" allowsExternalBinaryDataStorage="YES" syncable="YES"/>
+        <attribute name="latitude" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="longitude" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="name" optional="YES" attributeType="String" defaultValueString="New Model" syncable="YES"/>
         <attribute name="runsper" optional="YES" attributeType="Integer 32" minValueString="0" defaultValueString="10000" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="runstarts" optional="YES" attributeType="Integer 32" minValueString="1" defaultValueString="10" usesScalarValueType="NO" syncable="YES"/>
@@ -50,28 +49,18 @@
         <attribute name="thin" optional="YES" attributeType="Integer 32" minValueString="1" defaultValueString="10" usesScalarValueType="NO" syncable="YES"/>
         <relationship name="bnnode" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="BNNode" inverseName="model" inverseEntity="BNNode" syncable="YES"/>
         <relationship name="children" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="Model" inverseName="parent" inverseEntity="Model" syncable="YES"/>
+        <relationship name="entry" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Entry" inverseName="model" inverseEntity="Entry" syncable="YES"/>
         <relationship name="parent" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Model" inverseName="children" inverseEntity="Model" syncable="YES"/>
-        <relationship name="scope" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="NodeLink" inverseName="scope" inverseEntity="NodeLink" syncable="YES"/>
     </entity>
-    <entity name="NodeLink" representedClassName="Plexus.NodeLink" syncable="YES">
-        <attribute name="name" optional="YES" attributeType="String" defaultValueString="new" syncable="YES"/>
-        <attribute name="type" optional="YES" attributeType="String" defaultValueString="Default" syncable="YES"/>
-        <relationship name="bnNode" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="BNNode" inverseName="nodeLink" inverseEntity="BNNode" syncable="YES"/>
-        <relationship name="scope" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Model" inverseName="scope" inverseEntity="Model" syncable="YES"/>
-    </entity>
-    <entity name="Structure" representedClassName="Plexus.Structure" parentEntity="NodeLink" syncable="YES">
-        <relationship name="entry" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Entry" inverseName="structure" inverseEntity="Entry" syncable="YES"/>
-    </entity>
-    <entity name="Trait" representedClassName="Plexus.Trait" parentEntity="NodeLink" syncable="YES">
-        <attribute name="traitValue" optional="YES" attributeType="String" defaultValueString="Unknown Value" syncable="YES"/>
+    <entity name="Trait" representedClassName="Plexus.Trait" syncable="YES">
+        <attribute name="name" optional="YES" attributeType="String" defaultValueString="New Trait" syncable="YES"/>
+        <attribute name="value" optional="YES" attributeType="String" defaultValueString="Unknown Value" syncable="YES"/>
         <relationship name="entry" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Entry" inverseName="trait" inverseEntity="Entry" syncable="YES"/>
     </entity>
     <elements>
-        <element name="BNNode" positionX="54" positionY="18" width="128" height="405"/>
-        <element name="Entry" positionX="-468" positionY="-36" width="128" height="150"/>
-        <element name="Model" positionX="349" positionY="-9" width="128" height="285"/>
-        <element name="NodeLink" positionX="-297" positionY="-126" width="128" height="105"/>
-        <element name="Structure" positionX="-261" positionY="-9" width="128" height="60"/>
-        <element name="Trait" positionX="-279" positionY="317" width="128" height="75"/>
+        <element name="BNNode" positionX="54" positionY="18" width="128" height="420"/>
+        <element name="Entry" positionX="-468" positionY="-36" width="128" height="105"/>
+        <element name="Model" positionX="349" positionY="-9" width="128" height="300"/>
+        <element name="Trait" positionX="-279" positionY="317" width="128" height="90"/>
     </elements>
 </model>

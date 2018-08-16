@@ -441,7 +441,7 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
             priorDist = Int(curNode.priorDistType)
             V1 = Double(curNode.priorV1)
             V2 = Double(curNode.priorV2)
-//            print ("\(curNode.nodeLink.name) infbys: \(curNode.influencedBy.count)")
+//            print ("\(curnode.name) infbys: \(curNode.influencedBy.count)")
             if(curNode.influencedBy.count > 0) {
                 nodeDetailPriorView.isHidden = true
                 nodeDetailCPTView.isHidden = false
@@ -466,8 +466,8 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
                     }
                     let theInfBy : [BNNode] = curNode.infBy(self) as! [BNNode]
                     for thisInfBy in theInfBy {
-                        let cptcolumn = NSTableColumn(identifier: thisInfBy.nodeLink.name)
-                        cptcolumn.headerCell.stringValue = thisInfBy.nodeLink.name
+                        let cptcolumn = NSTableColumn(identifier: thisInfBy.name)
+                        cptcolumn.headerCell.stringValue = thisInfBy.name
                         cptTableView.addTableColumn(cptcolumn)
                         
                     }
@@ -864,7 +864,7 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
         var curNodes : [BNNode] = nodesController.selectedObjects as! [BNNode]
         if(curNodes.count>0) {
             curNode = curNodes[0]
-           // print(curNode.nodeLink.name)
+           // print(curnode.name)
             if(tableColumn?.identifier == "Data" ){
                 let curModels : [Model] = modelTreeController.selectedObjects as! [Model]
                 let curModel : Model = curModels[0]
@@ -897,7 +897,7 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
                 let index = tableView.tableColumns.index(of: tableColumn!)
                 //print ("index \(index): revstr \(revstr)")
                 if ( index! > revstr.count) {
-                    print ("Error. curNode \(curNode.nodeLink.name) infBy \(theInfBy) index \(String(describing: index)): revstr \(revstr)")
+                    print ("Error. curNode \(curNode.name) infBy \(theInfBy) index \(String(describing: index)): revstr \(revstr)")
                 }
                 let index2 = revstr.index(revstr.startIndex, offsetBy: index!)
                 if(revstr[index2] == "1"){
@@ -958,7 +958,7 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
         var anyones = false
         
         for (key, value) in cptReady{
-//        print ("checking on \(key.nodeLink.name): \(value)")
+//        print ("checking on \(key.node.name): \(value)")
            if(value == 0 && anyones == false) {
                 alltwos = false
                 self.cptReady[key] = 1 //while processing

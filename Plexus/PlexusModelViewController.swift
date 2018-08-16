@@ -8,10 +8,11 @@
 
 import Cocoa
 
-class PlexusModelViewController: NSViewController {
+class PlexusModelViewController: NSViewController, NSOutlineViewDelegate, NSOutlineViewDataSource {
 
     var moc : NSManagedObjectContext!
     @IBOutlet dynamic var modelTreeController : NSTreeController!
+    @IBOutlet weak var modelOutlineView : NSOutlineView!
     
     
     required init?(coder aDecoder: NSCoder)
@@ -25,112 +26,182 @@ class PlexusModelViewController: NSViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do view setup here.
+        let kString : String = kUTTypeURL as String
+        let registeredTypes:[String] = [kString]
+        modelOutlineView.register(forDraggedTypes: registeredTypes)
+    }
+
+    //NSOutlineView delegate functions
+    
+    
+    func outlineView(_ outlineView: NSOutlineView, validateDrop info: NSDraggingInfo, proposedItem item: Any?, proposedChildIndex index: Int) -> NSDragOperation {
+
+        if(outlineView == modelOutlineView){
+            
+            return .copy
+        }
+
+        return NSDragOperation()
+
     }
     
-    
-
-    
-   @IBAction func childModel(_ sender : AnyObject){
-
-        let curModels : [Model] = modelTreeController.selectedObjects as! [Model]
-        let curModel : Model = curModels[0]
-
-
-        //print ("curmodel \(curModel)")
-    
-    
-    if let curPath : IndexPath = modelTreeController.selectionIndexPath {
-        let newPath :IndexPath = curPath.appending(curModel.children.count)
-        
-        
-
-        let newModel : Model = Model(entity: NSEntityDescription.entity(forEntityName: "Model", in: self.moc)!, insertInto: self.moc)
+    func outlineView(_ outlineView: NSOutlineView, acceptDrop info: NSDraggingInfo, item: Any?, childIndex index: Int) -> Bool {
         
 
         
-        
-       // curModel.addChildObject(newModel)
-       // newModel.setValue(curModel, forKey: "parent")
-        modelTreeController.insert(newModel, atArrangedObjectIndexPath: newPath)
-        let copyName : String = curModel.name + " copy"
-        newModel.setValue(copyName, forKey: "name")
-        newModel.setValue(curModel.scope, forKey: "scope")
+        let pboard : NSPasteboard = info.draggingPasteboard()
+        let kString : String = kUTTypeURL as String
+        let data : Data = pboard.data(forType: kString)!
+        let draggedArray : NSArray = NSKeyedUnarchiver.unarchiveObject(with: data) as! NSArray
 
-        var tempNodeArray = [BNNode]()
         
-        let curNodes  = curModel.bnnode.allObjects as! [BNNode]
-        for curNode : BNNode in curNodes {
-            let newNode : BNNode = BNNode(entity: NSEntityDescription.entity(forEntityName: "BNNode", in: self.moc)!, insertInto: self.moc)
+        if let dropTreeNode = item as? NSTreeNode {
 
-            
-            newNode.setValue(curNode.priorDistType, forKey: "priorDistType")
-            newNode.setValue(curNode.priorV1, forKey: "priorV1")
-            newNode.setValue(curNode.priorV2, forKey: "priorV2")
-            newNode.setValue(curNode.nodeLink, forKey: "nodeLink")
-            newNode.setValue(curNode.numericData, forKey: "numericData")
-            newNode.setValue(curNode.tolerance, forKey: "tolerance")
-            newNode.setValue(curNode.cptArray, forKey: "cptArray")
+            let dropObject = dropTreeNode.representedObject
+
+            if let dropModel = dropObject as? Model {
+
+                
+                for object : AnyObject in draggedArray as [AnyObject] {
+
+                    
+                    let mourl : URL = object as! URL
+                    
+                    if let id : NSManagedObjectID = moc.persistentStoreCoordinator?.managedObjectID(forURIRepresentation: mourl){
                         
-            
-            let blankCount = [Int]()
-            let blankArray = [Float]()
-            newNode.postCount = blankCount
-            newNode.postArray = blankArray
-            newNode.priorCount = blankCount
-            newNode.priorArray = blankArray
+                        let mo = moc.object(with: id)
+                        
+                        if (mo.entity.name == "Entry"){
+                            let curEntry = mo as! Entry
 
-            
-            
-            newNode.setValue(curNode.cptReady, forKey: "cptReady")
-            
-            
-            newNode.setValue(newModel, forKey: "model")
-            newModel.addBNNodeObject(newNode)
-            
-            tempNodeArray.append(newNode)
-            
-            
-            
-        }
-        
-        var infstwod = [[Int]]()
 
-        
-        //Copy Influences
-        for curNode : BNNode in curNodes {
-            var infsoned = [Int]()
-            let infs : [BNNode] = curNode.influences.array as! [BNNode]
-            for inf : BNNode in infs{
-                var chk = 0
-                for chkNode : BNNode in curNodes {
-                    if (chkNode == inf){
-                        infsoned.append(chk)
+                            
+                            dropModel.addAnEntryObject(curEntry)
+                            curEntry.addAModelObject(dropModel)
+                            
+                        }
+                        
                     }
-                    chk += 1
-                }
+                    
+                    
+                } //End for object...
                 
             }
-            infstwod.append(infsoned)
+        }
+        
+        
+
+
+
+        do {
+            try moc.save()
+        } catch let error as NSError {
+            print(error)
+        }
+        
+        return true
+    }
+
+    
+    @IBAction func childModel(_ sender : AnyObject){
+        
+        let curModels : [Model] = modelTreeController.selectedObjects as! [Model]
+        let curModel : Model = curModels[0]
+        
+        
+        //print ("curmodel \(curModel)")
+        
+        
+        if let curPath : IndexPath = modelTreeController.selectionIndexPath {
+            let newPath :IndexPath = curPath.appending(curModel.children.count)
+            
+            
+            
+            let newModel : Model = Model(entity: NSEntityDescription.entity(forEntityName: "Model", in: self.moc)!, insertInto: self.moc)
+            
+            
+            
+            
+            // curModel.addChildObject(newModel)
+            // newModel.setValue(curModel, forKey: "parent")
+            modelTreeController.insert(newModel, atArrangedObjectIndexPath: newPath)
+            let copyName : String = curModel.name + " copy"
+            newModel.setValue(copyName, forKey: "name")
+
+            
+            var tempNodeArray = [BNNode]()
+            
+            let curNodes  = curModel.bnnode.allObjects as! [BNNode]
+            for curNode : BNNode in curNodes {
+                let newNode : BNNode = BNNode(entity: NSEntityDescription.entity(forEntityName: "BNNode", in: self.moc)!, insertInto: self.moc)
+                
+                
+                newNode.setValue(curNode.priorDistType, forKey: "priorDistType")
+                newNode.setValue(curNode.priorV1, forKey: "priorV1")
+                newNode.setValue(curNode.priorV2, forKey: "priorV2")
+                newNode.setValue(curNode.numericData, forKey: "numericData")
+                newNode.setValue(curNode.tolerance, forKey: "tolerance")
+                newNode.setValue(curNode.cptArray, forKey: "cptArray")
+                
+                
+                let blankCount = [Int]()
+                let blankArray = [Float]()
+                newNode.postCount = blankCount
+                newNode.postArray = blankArray
+                newNode.priorCount = blankCount
+                newNode.priorArray = blankArray
+                
+                
+                
+                newNode.setValue(curNode.cptReady, forKey: "cptReady")
+                
+                
+                newNode.setValue(newModel, forKey: "model")
+                newModel.addABNNodeObject(newNode)
+                
+                tempNodeArray.append(newNode)
+                
+                
+                
+            }
+            
+            var infstwod = [[Int]]()
+            
+            
+            //Copy Influences
+            for curNode : BNNode in curNodes {
+                var infsoned = [Int]()
+                let infs : [BNNode] = curNode.influences.array as! [BNNode]
+                for inf : BNNode in infs{
+                    var chk = 0
+                    for chkNode : BNNode in curNodes {
+                        if (chkNode == inf){
+                            infsoned.append(chk)
+                        }
+                        chk += 1
+                    }
+                    
+                }
+                infstwod.append(infsoned)
+                
+            }
+            
+            var i = 0
+            for infsoned : [Int] in infstwod{
+                for thisinf in infsoned{
+                    tempNodeArray[i].addAnInfluencesObject(tempNodeArray[thisinf])
+                    tempNodeArray[thisinf].addAnInfluencedByObject(tempNodeArray[i])
+                }
+                i += 1
+            }
             
         }
         
-        var i = 0
-        for infsoned : [Int] in infstwod{
-            for thisinf in infsoned{
-                tempNodeArray[i].addInfluencesObject(tempNodeArray[thisinf])
-                tempNodeArray[thisinf].addInfluencedByObject(tempNodeArray[i])
-            }
-            i += 1
-        }
         
-    }
-
-
-
-    
-
-    
+        
+        
+        
+        
     }
     
 }

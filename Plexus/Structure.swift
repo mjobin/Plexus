@@ -9,7 +9,7 @@
 import Foundation
 import CoreData
 
-class Structure: NodeLink {
+class Structure: NSManagedObject {
 
 
     @NSManaged var entry: NSSet

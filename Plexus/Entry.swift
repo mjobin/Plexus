@@ -10,14 +10,12 @@ import Foundation
 import CoreData
 
 
-class Entry: NodeLink  {
+class Entry: NSManagedObject  {
 
-    @NSManaged var children: NSSet
-    @NSManaged var parent: NSSet
-    @NSManaged var trait: NSSet
-    @NSManaged var latitude: Double
-    @NSManaged var longitude: Double
-    @NSManaged var structure: NSSet
+    @NSManaged var name: String
     @NSManaged var notes: Data?
 
+    @NSManaged var trait: NSSet
+    @NSManaged var model: NSSet
+    
 }
