@@ -136,14 +136,19 @@ extension BNNode {
     
     
     
-    func CPT() -> Int { //FIXME dummy
-        let start = DispatchTime.now()
-        print ("\n**********START CPT for \(self.name)")
+    func CPT() -> Int {
+//        let start = DispatchTime.now()
+//        print ("\n**********START CPT for \(self.name)")
         
         let appDelegate : AppDelegate = NSApplication.shared().delegate as! AppDelegate
         let moc = appDelegate.managedObjectContext
         let curModel : Model = self.model
         let theEntries = curModel.entry
+        
+        var ifthens = [Float]()
+//
+//        var end = DispatchTime.now()
+//        var cptRunTime = Double(end.uptimeNanoseconds - start.uptimeNanoseconds) / 1000000000
         
         let theInfluencedBy = self.infBy(self)
         let nInfBy = theInfluencedBy.count
@@ -152,203 +157,119 @@ extension BNNode {
             return 2
         }
         else {
-            self.cptArray = [Float](repeating: -1.0, count: 1)
-            return 2
+            let theInfluencedBy = self.infBy(self)
+            for thisInfluencedBy in theInfluencedBy {
+                let  curInfluencedBy = thisInfluencedBy as! BNNode
+                //Which of the entries contain a trait matching the name of the node trait
+
+                let request = NSFetchRequest<Trait>(entityName: "Trait")
+                let predicate = NSPredicate(format: "entry IN %@ && name == %@", argumentArray: [theEntries, curInfluencedBy.name])
+                request.predicate = predicate
+
+                do {
+                    let allCount = try moc.count(for: request)
+//                    print("allCount \(allCount)")
+
+                    if allCount < 1 {
+                        ifthens.append(0.5)
+                    }
+                    else {
+
+                        let matchRequest = NSFetchRequest<Trait>(entityName: "Trait")
+                        var matchPredicate = NSPredicate()
+                        var chkNumeric = true
+                        if curInfluencedBy.numericData {
+                            if Double(curInfluencedBy.value) == nil {
+                                chkNumeric = false
+                            }
+                            
+                        }
+                        
+                        
+                        //If data is numeric, need to invoke tolerance
+                        if curInfluencedBy.numericData && chkNumeric == true {
+                            
+                            let calcNumVal = Double(curInfluencedBy.value)
+                            let tol = curInfluencedBy.tolerance as! Double
+                            let lowT = calcNumVal! * (1.0 - (tol/2.0))
+                            let highT = calcNumVal! * (1.0 + (tol/2.0))
+                            
+                            matchPredicate = NSPredicate(format: "entry IN %@ && name == %@ && value >= %f && value <= %f", argumentArray: [theEntries, curInfluencedBy.name, lowT, highT])
+
+                        }
+                        else{
+                            
+                            matchPredicate = NSPredicate(format: "entry IN %@ && name == %@ && value == %@", argumentArray: [theEntries, curInfluencedBy.name, curInfluencedBy.value])
+                        }
+                        matchRequest.predicate = matchPredicate
+                        do {
+                            
+                            let matchCount = try moc.count(for: matchRequest)
+                            ifthens.append(Float(matchCount) / Float(allCount))
+                            
+                        } catch {
+                            print("Failed")
+                        }
+                        
+                    }
+                    
+                } catch {
+                    
+                    print("Failed")
+                }
+                
+            } // END for thisInfluencedBy in theInfluencedBy
+            
+            
+        } //END else
+        
+        
+        
+        
+        let cptarraysize = Int(pow(2.0,Double(nInfBy)))
+        var cptarray = [Float](repeating: 0.0, count: cptarraysize)
+
+        for i in 0..<cptarraysize {
+            let poststr = String(i, radix: 2)
+            
+            var prestr = String()
+            for _ in poststr.count..<nInfBy {
+                prestr += "0"
+            }
+            let bin = prestr + poststr
+            
+            var compound = [Float]()
+            
+            var tfc = 0
+            for tf in bin {
+                if tf == "1" {
+                    compound.append(ifthens[tfc])
+                }
+                else {
+                    compound.append(1.0-ifthens[tfc])
+                }
+                tfc += 1
+            }
+            cptarray[i] = (compound.reduce(1,*))
+
         }
         
         
+    
+    self.cptArray = cptarray
+
+//    end = DispatchTime.now()
+//    cptRunTime = Double(end.uptimeNanoseconds - start.uptimeNanoseconds) / 1000000000
+//    print ("**********END CPT for \(self.name) \(cptRunTime) seconds.  Array: \(cptarray)")
+
+        
      //END CPT()
+        return 2
     }
     
-    
-//    func CPT() -> Int {
-//        let start = DispatchTime.now()
-//        print ("\n**********START altCPT for \(self.name)")
-//
-//        let appDelegate : AppDelegate = NSApplication.shared().delegate as! AppDelegate
-//        let moc = appDelegate.managedObjectContext
-//
-//        let curModel : Model = self.model
-//
-//
-//        var theEntries = curModel.entry
-//
-//
-//
-//
-//
-//
-//        var end = DispatchTime.now()
-//        var cptRunTime = Double(end.uptimeNanoseconds - start.uptimeNanoseconds) / 1000000000
-//        print ("**********FINISHED fetch CPT for \(self.name) \(cptRunTime) seconds")
-//        let theInfluencedBy = self.infBy(self)
-//
-//        let nInfBy = theInfluencedBy.count
-//        if(nInfBy < 1) { //since 2^0 is 1
-//            self.cptArray = [Float](repeating: -1.0, count: 1)
-//            let end = DispatchTime.now()
-//            let cptRunTime = Double(end.uptimeNanoseconds - start.uptimeNanoseconds) / 1000000000
-//                        print ("**********END CPT for \(self.name) \(cptRunTime) seconds")
-//            return 2
-//        }
-//
-//        var infNames = [String]()
-//        var infNumericData : [String : Bool] = [:]
-//        var infvalue : [String : String] = [:]
-//        var infTolerance : [String : Double] = [:]
-//        var infLowT : [String : Double] = [:]
-//        var infHighT : [String : Double] = [:]
-//        var infTraits  = [String]()
-//        for thisInfluencedBy in theInfluencedBy {
-//            let  curInfluencedBy = thisInfluencedBy as! BNNode
-//            infNames.append(curInfluencedBy.name)
-//            infNumericData[curInfluencedBy.name] = curInfluencedBy.numericData
-//            infTolerance[curInfluencedBy.name] = curInfluencedBy.tolerance as? Double
 
-//            infTraits.append(curTrait.name)
-//            infvalue[curInfluencedBy.node.name] = curTrait.value
-//
-//            //checlk here to make sure data really IS numeric. if not, switch back
-//
-//            if infNumericData[curInfluencedBy.node.name] == true {
-//                let infTraittest = infvalue[curInfluencedBy.node.name]!
-//                if Double(infTraittest) == nil {
-//                    infNumericData[curInfluencedBy.name] = false
-//                    curInfluencedBy.numericData = false
-//
-//                }
-//            }
-//
-//
-//        }
-//
-//
-//        var entryTraits : [String : [Trait]] = [:]
-//        for thisEntry in theEntries {
-//            let curEntry = thisEntry as! Entry
-//            let emptyTraits = [Trait]()
-//            entryTraits[curEntry.name] = emptyTraits
-//        }
-//
-//        for infName in infNames {
-//
-//            if infNumericData[infName] == true {
-//
-//                infLowT[infName] = Double(infvalue[infName]!)! * (1.0 - (infTolerance[infName]!/2.0))
-//                infHighT[infName] = Double(infvalue[infName]!)! * (1.0 + (infTolerance[infName]!/2.0))
-//
-//
-//
-//            }
-//
-//
-//        }
-//
-//
-//        let cptarraysize = Int(pow(2.0,Double(nInfBy)))
-//        var cptarray = [Float](repeating: 0.0, count: cptarraysize)
-//
-//
-//        var total = Float(0.0)
-//        var missing = Float(0.0)
-//
-//
-//        var theTraits = [Trait]()
-//        let request = NSFetchRequest<Trait>(entityName: "Trait")
-//        request.returnsObjectsAsFaults = false
-//        let predicate = NSPredicate(format: "entry IN %@ && name IN %@", argumentArray: [theEntries, infNames])
-//        request.predicate = predicate
-//
-//
-//
-//        do {
-//            theTraits = try moc.fetch(request)
-//            for thisTrait in theTraits {
-//                entryTraits[thisTrait.entry.name]?.append(thisTrait)
-//            }
-//            for thisEntry in theEntries {
-//                var allbins = [String]()
-//                let thisEntryTraits = entryTraits[thisEntry.name]!
-//                for curTrait in infTraits {
-//                    var traitbins = [String]()
-//                    for thisTrait in thisEntryTraits {
-//                        if(thisTrait.name == curTrait){
-//                            if infNumericData[curTrait] == true {
-//                                if(Double(thisTrait.value)! >= infLowT[curTrait]!  && Double(thisTrait.value)! <= infHighT[curTrait]!){
-//                                    traitbins.append("1")
-//                                }
-//                                else {
-//                                    traitbins.append("0")
-//                                }
-//                            }
-//                            else {
-//                                if thisTrait.value == infvalue[curTrait] {
-//                                    traitbins.append("1")
-//                                }
-//                                else {
-//                                   traitbins.append("0")
-//                                }
-//
-//                            }
-//
-//                        }
-//                    }
-//
-//                    if allbins.isEmpty {
-//                        for traitbin in traitbins {
-//                            allbins.append(traitbin)
-//                        }
-//                    }
-//                    else {
-//                        var workbins = [String]()
-//                        for traitbin in traitbins {
-//                            for oldbin in allbins {
-//                                let newbin = oldbin + traitbin
-//                                workbins.append(newbin)
-//                            }
-//                        }
-//                        allbins = workbins
-//                    }
-//                }
-//
-//                for thebin in allbins {
-//                    if thebin.count == nInfBy {
-//                        cptarray[Int(strtoul(thebin, nil, 2))] += 1.0
-//                        total += 1
-//                    }
-//                    else {
-//                        missing += 1
-//                    }
-//
-//
-//                }
-//
-//            }
-//
-//        } catch  {
-//            return -1
-//        }
-//
-//
-//        for i in 0 ..< cptarray.count {
-//            cptarray[i] = cptarray[i]/total
-//        }
-//
-//
-//        self.cptArray = cptarray
-//        end = DispatchTime.now()
-//        cptRunTime = Double(end.uptimeNanoseconds - start.uptimeNanoseconds) / 1000000000
-//        print ("**********END ALT CPT for \(self.node.name) \(cptRunTime) seconds. Usable \(total) missing \(missing) Array: \(cptarray)")
-//
-//        return 2
-//
-//
-//    }
-    
-
-    
-    func getCPTArray(_ sender:AnyObject, mocChanged:Bool, cptReady:Int) -> [cl_float] {
-        if mocChanged == true || cptReady != 2 {
+    func getCPTArray(_ sender:AnyObject, mocChanged:Bool) -> [cl_float] {
+        if mocChanged == true || self.cptReady != 2 {
            _ = self.CPT()
         }
         return self.cptArray

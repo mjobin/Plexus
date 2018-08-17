@@ -20,6 +20,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
     @IBOutlet var mainToolbar : NSToolbar!
     @IBOutlet var testprog : NSProgressIndicator!
     @IBOutlet var metalDevices = MTLCopyAllDevices()
+
     
     
 
@@ -127,7 +128,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
 
         //NSNotificationCenter.defaultCenter().addObserver(self, selector: "contextDidSaveContext:", name: NSManagedObjectContextDidSaveNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(PlexusMainWindowController.contextDidSave(_:)), name: NSNotification.Name.NSManagedObjectContextDidSave, object: nil)
-//        NotificationCenter.default.addObserver(self, selector: #selector(PlexusBNScene.mocDidChange(_:)), name: NSNotification.Name.NSManagedObjectContextObjectsDidChange, object: moc)
+        
         
         
     }
@@ -1055,13 +1056,12 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         //Buffer 7: Cptnet
         var cptnet = [Float]()
         for node in nodesForCalc {
-            let theCPT = node.getCPTArray(self, mocChanged: true, cptReady: 0)
+            let theCPT = node.getCPTArray(self, mocChanged: moc.hasChanges)
             cptnet = cptnet + theCPT
             let leftOver = maxCPTSize-theCPT.count
             for _ in 0..<leftOver {
                 cptnet.append(-1.0)
             }
-            
         }
         let cptnetbuffer = self.device.makeBuffer(bytes: &cptnet, length: nodesForCalc.count*maxCPTSize*MemoryLayout<Float>.stride, options: MTLResourceOptions.cpuCacheModeWriteCombined)
         threadMemSize += nodesForCalc.count*maxCPTSize*MemoryLayout<Float>.stride
