@@ -727,6 +727,8 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
     
     let nodesForTest = firstModel.bnnode.allObjects as! [BNNode]
     if (nodesForTest.count < 2){
+            self.performSelector(onMainThread: #selector(PlexusMainWindowController.endProgInd), with: nil, waitUntilDone: true)
+            self.mainSplitViewController.modelDetailViewController?.calcInProgress = false
             return
     }
         
@@ -767,6 +769,8 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         
         let nodesForTest = firstModel.bnnode.allObjects as! [BNNode]
         if (nodesForTest.count < 2){
+            self.performSelector(onMainThread: #selector(PlexusMainWindowController.endProgInd), with: nil, waitUntilDone: true)
+            self.mainSplitViewController.modelDetailViewController?.calcInProgress = false
             return
         }
         
