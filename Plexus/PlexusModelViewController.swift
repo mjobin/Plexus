@@ -117,11 +117,9 @@ class PlexusModelViewController: NSViewController, NSOutlineViewDelegate, NSOutl
             
             
             
-            let newModel : Model = Model(entity: NSEntityDescription.entity(forEntityName: "Model", in: self.moc)!, insertInto: self.moc)
-            
-            
-            
-            
+            let newModel : Model = curModel.copySelf(self.moc)
+                
+
             // curModel.addChildObject(newModel)
             // newModel.setValue(curModel, forKey: "parent")
             modelTreeController.insert(newModel, atArrangedObjectIndexPath: newPath)
@@ -129,77 +127,79 @@ class PlexusModelViewController: NSViewController, NSOutlineViewDelegate, NSOutl
             newModel.setValue(copyName, forKey: "name")
 
             
-            var tempNodeArray = [BNNode]()
-            
-            let curNodes  = curModel.bnnode.allObjects as! [BNNode]
-            for curNode : BNNode in curNodes {
-                let newNode : BNNode = BNNode(entity: NSEntityDescription.entity(forEntityName: "BNNode", in: self.moc)!, insertInto: self.moc)
-                
-                
-                newNode.setValue(curNode.priorDistType, forKey: "priorDistType")
-                newNode.setValue(curNode.priorV1, forKey: "priorV1")
-                newNode.setValue(curNode.priorV2, forKey: "priorV2")
-                newNode.setValue(curNode.numericData, forKey: "numericData")
-                newNode.setValue(curNode.tolerance, forKey: "tolerance")
-                newNode.setValue(curNode.cptArray, forKey: "cptArray")
-                
-                
-                let blankCount = [Int]()
-                let blankArray = [Float]()
-                newNode.postCount = blankCount
-                newNode.postArray = blankArray
-                newNode.priorCount = blankCount
-                newNode.priorArray = blankArray
-                
-                
-                
-                newNode.setValue(curNode.cptReady, forKey: "cptReady")
-                
-                
-                newNode.setValue(newModel, forKey: "model")
-                newModel.addABNNodeObject(newNode)
-                
-                tempNodeArray.append(newNode)
-                
-                
-                
-            }
-            
-            var infstwod = [[Int]]()
-            
-            
-            //Copy Influences
-            for curNode : BNNode in curNodes {
-                var infsoned = [Int]()
-                let infs : [BNNode] = curNode.influences.array as! [BNNode]
-                for inf : BNNode in infs{
-                    var chk = 0
-                    for chkNode : BNNode in curNodes {
-                        if (chkNode == inf){
-                            infsoned.append(chk)
-                        }
-                        chk += 1
-                    }
-                    
-                }
-                infstwod.append(infsoned)
-                
-            }
-            
-            var i = 0
-            for infsoned : [Int] in infstwod{
-                for thisinf in infsoned{
-                    tempNodeArray[i].addAnInfluencesObject(tempNodeArray[thisinf])
-                    tempNodeArray[thisinf].addAnInfluencedByObject(tempNodeArray[i])
-                }
-                i += 1
-            }
+//            var tempNodeArray = [BNNode]()
+//
+//            let curNodes  = curModel.bnnode.allObjects as! [BNNode]
+//            for curNode : BNNode in curNodes {
+//                let newNode : BNNode = BNNode(entity: NSEntityDescription.entity(forEntityName: "BNNode", in: self.moc)!, insertInto: self.moc)
+//
+//                newNode.setValue(curNode.cptArray, forKey: "cptArray")
+//                newNode.setValue(curNode.cptReady, forKey: "cptReady")
+//                newNode.setValue(curNode.name, forKey: "name")
+//                newNode.setValue(curNode.numericData, forKey: "numericData")
+//                newNode.setValue(curNode.priorDistType, forKey: "priorDistType")
+//                newNode.setValue(curNode.priorDistType, forKey: "priorDistType")
+//                newNode.setValue(curNode.priorV1, forKey: "priorV1")
+//                newNode.setValue(curNode.priorV2, forKey: "priorV2")
+//                newNode.setValue(curNode.savedX, forKey: "savedX")
+//                newNode.setValue(curNode.savedY, forKey: "savedY")
+//                newNode.setValue(curNode.tolerance, forKey: "tolerance")
+//                newNode.setValue(curNode.value, forKey: "value")
+//
+//
+//
+//                let blankCount = [Int]()
+//                let blankArray = [Float]()
+//                newNode.postCount = blankCount
+//                newNode.postArray = blankArray
+//                newNode.priorCount = blankCount
+//                newNode.priorArray = blankArray
+//
+//
+//
+//
+//
+//
+//                newNode.setValue(newModel, forKey: "model")
+//                newModel.addABNNodeObject(newNode)
+//
+//                tempNodeArray.append(newNode)
+//
+//
+//
+//            }
+//
+//            var infstwod = [[Int]]()
+//
+//
+//            //Copy Influences
+//            for curNode : BNNode in curNodes {
+//                var infsoned = [Int]()
+//                let infs : [BNNode] = curNode.influences.array as! [BNNode]
+//                for inf : BNNode in infs{
+//                    var chk = 0
+//                    for chkNode : BNNode in curNodes {
+//                        if (chkNode == inf){
+//                            infsoned.append(chk)
+//                        }
+//                        chk += 1
+//                    }
+//
+//                }
+//                infstwod.append(infsoned)
+//
+//            }
+//            
+//            var i = 0
+//            for infsoned : [Int] in infstwod{
+//                for thisinf in infsoned{
+//                    tempNodeArray[i].addAnInfluencesObject(tempNodeArray[thisinf])
+//                    tempNodeArray[thisinf].addAnInfluencedByObject(tempNodeArray[i])
+//                }
+//                i += 1
+//            }
             
         }
-        
-        
-        
-        
         
         
     }

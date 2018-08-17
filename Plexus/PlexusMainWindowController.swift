@@ -443,12 +443,6 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                             if thisHeader == "Name" {
                                 nameColumn = columnCount
                             }
-                            if thisHeader == "Latitude" {
-                                latitudeColumn = columnCount
-                            }
-                            if thisHeader == "Longitude" {
-                                longitudeColumn = columnCount
-                            }
                             headers.append(thisHeader.trimmingCharacters(in: delimiterCharacterSet as CharacterSet))
                             columnCount += 1
                         }

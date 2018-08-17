@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="14315.2.4" systemVersion="17G65" minimumToolsVersion="Xcode 7.3" sourceLanguage="Objective-C" userDefinedModelVersionIdentifier="">
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="14315.12.1" systemVersion="18A365a" minimumToolsVersion="Xcode 7.3" sourceLanguage="Objective-C" userDefinedModelVersionIdentifier="">
     <entity name="BNNode" representedClassName="Plexus.BNNode" syncable="YES">
         <attribute name="cptArray" optional="YES" attributeType="Transformable" customClassName="[Float]" syncable="YES"/>
         <attribute name="cptFreezeArray" optional="YES" attributeType="Transformable" customClassName="[Float]" syncable="YES"/>
@@ -39,8 +39,6 @@
         <attribute name="dateCreated" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="dateModded" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="hillchains" optional="YES" attributeType="Integer 32" minValueString="1" defaultValueString="100" usesScalarValueType="NO" syncable="YES"/>
-        <attribute name="latitude" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="NO" syncable="YES"/>
-        <attribute name="longitude" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="name" optional="YES" attributeType="String" defaultValueString="New Model" syncable="YES"/>
         <attribute name="runsper" optional="YES" attributeType="Integer 32" minValueString="0" defaultValueString="10000" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="runstarts" optional="YES" attributeType="Integer 32" minValueString="1" defaultValueString="10" usesScalarValueType="NO" syncable="YES"/>
@@ -60,7 +58,7 @@
     <elements>
         <element name="BNNode" positionX="54" positionY="18" width="128" height="420"/>
         <element name="Entry" positionX="-468" positionY="-36" width="128" height="105"/>
-        <element name="Model" positionX="349" positionY="-9" width="128" height="300"/>
+        <element name="Model" positionX="349" positionY="-9" width="128" height="270"/>
         <element name="Trait" positionX="-279" positionY="317" width="128" height="90"/>
     </elements>
 </model>

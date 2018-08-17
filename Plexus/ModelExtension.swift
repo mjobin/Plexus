@@ -43,8 +43,6 @@ extension Model {
         newModel.setValue(Date(), forKey: "dateCreated")
         newModel.setValue(Date(), forKey: "dateModded")
         newModel.setValue(self.hillchains, forKey: "hillchains")
-        newModel.setValue(self.latitude, forKey: "latitude")
-        newModel.setValue(self.longitude, forKey: "longitude")
         newModel.setValue(self.name, forKey: "name")
         newModel.setValue(self.runsper, forKey: "runsper")
         newModel.setValue(self.runstarts, forKey: "runstarts")
@@ -53,9 +51,9 @@ extension Model {
         newModel.setValue(self.thin, forKey: "thin")
 
         
-        
-        let curEntries  = self.entry as! [Entry]
-        for curEntry : Entry in curEntries {
+        let theEntries  = self.entry
+        for theEntry in theEntries {
+            let curEntry = theEntry as! Entry
             newModel.addAnEntryObject(curEntry)
         }
         
@@ -65,24 +63,31 @@ extension Model {
             let newNode : BNNode = BNNode(entity: NSEntityDescription.entity(forEntityName: "BNNode", in: moc)!, insertInto: moc)
             
             
+            newNode.setValue(curNode.cptArray, forKey: "cptArray")
+            newNode.setValue(curNode.cptReady, forKey: "cptReady")
+            newNode.setValue(curNode.name, forKey: "name")
+            newNode.setValue(curNode.numericData, forKey: "numericData")
+            newNode.setValue(curNode.priorDistType, forKey: "priorDistType")
             newNode.setValue(curNode.priorDistType, forKey: "priorDistType")
             newNode.setValue(curNode.priorV1, forKey: "priorV1")
             newNode.setValue(curNode.priorV2, forKey: "priorV2")
-
-            newNode.setValue(curNode.numericData, forKey: "numericData")
+            newNode.setValue(curNode.savedX, forKey: "savedX")
+            newNode.setValue(curNode.savedY, forKey: "savedY")
             newNode.setValue(curNode.tolerance, forKey: "tolerance")
-            newNode.setValue(curNode.cptArray, forKey: "cptArray")
+            newNode.setValue(curNode.value, forKey: "value")
             
         
             
             
             let blankCount = [Int]()
             let blankArray = [Float]()
-            newNode.setValue(blankCount, forKey: "postCount")
-            newNode.setValue(blankArray, forKey: "postArray")
+            newNode.postCount = blankCount
+            newNode.postArray = blankArray
+            newNode.priorCount = blankCount
+            newNode.priorArray = blankArray
             
             
-            newNode.setValue(curNode.cptReady, forKey: "cptReady")
+            
             
             
             newNode.setValue(newModel, forKey: "model")

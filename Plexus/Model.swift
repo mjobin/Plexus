@@ -16,8 +16,6 @@ class Model: NSManagedObject {
     @NSManaged var dateCreated: Date
     @NSManaged var dateModded: Date
     @NSManaged var hillchains: NSNumber
-    @NSManaged var latitude: Double
-    @NSManaged var longitude: Double
     @NSManaged var name: String
     @NSManaged var runsper: NSNumber
     @NSManaged var runstarts: NSNumber
