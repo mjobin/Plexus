@@ -15,7 +15,7 @@ class PlexusBNScene: SKScene {
     var moc : NSManagedObjectContext!
     dynamic var modelTreeController : NSTreeController!
     dynamic var nodesController : NSArrayController!
-    var skView : PlexusBNSKView!
+
 
     
     var firstUpdate = true
@@ -59,7 +59,7 @@ class PlexusBNScene: SKScene {
         self.physicsBody?.friction = 0.0
         startNode = self // so initialized
 
-        
+
 
         
 
@@ -109,7 +109,14 @@ class PlexusBNScene: SKScene {
        // print("mouseDown touched \(touchedNode) parent: \(touchedNode.parent)")
 
         if(touchedNode.isEqual(to: self)) { //pass up to scroll?
-            //  print("miss")
+            if(theEvent.clickCount > 1){
+                
+                if let skView = self.view as! PlexusBNSKView? {
+                    skView.addNode(inTrait: nil)
+                }
+                
+                    
+            }
 
             
         }
@@ -892,6 +899,9 @@ class PlexusBNScene: SKScene {
         
     }
 
+    
+    
+ 
     
 
 

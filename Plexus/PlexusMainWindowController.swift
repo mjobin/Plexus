@@ -413,8 +413,6 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                 var batchCount : Int = 0
                 var columnCount = 0
                 var nameColumn = -1
-                var latitudeColumn = -1
-                var longitudeColumn = -1
                 var headers = [String]()
 
                 
@@ -498,19 +496,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                                 newEntry.setValue(String(i), forKey: "name")
                             }
                             
-                            if latitudeColumn >= 0 {
-                            
-                                newEntry.setValue(Float(theTraits[latitudeColumn]), forKey: "latitude")
-                            }
-                            
-                            if longitudeColumn >= 0 {
-                                newEntry.setValue(Float(theTraits[longitudeColumn]), forKey: "longitude")
-                            }
-                            
-                            
 
-                            
-                            
                             
                             newModel.addAnEntryObject(newEntry)
                             newEntry.addAModelObject(newModel)
@@ -526,7 +512,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                             for thisTrait in theTraits {
 
                                 
-                                if(columnCount != nameColumn && columnCount != longitudeColumn && columnCount != latitudeColumn){
+                                if(columnCount != nameColumn){
                                     
                                     let theSubTraits : [String] = thisTrait.components(separatedBy: "\t")
                                     

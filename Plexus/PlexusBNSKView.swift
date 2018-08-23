@@ -31,6 +31,8 @@ class PlexusBNSKView: SKView {
         
         let appDelegate : AppDelegate = NSApplication.shared().delegate as! AppDelegate
         moc = appDelegate.managedObjectContext
+        
+
     }
 
 
@@ -112,8 +114,7 @@ class PlexusBNSKView: SKView {
                 let mo = moc.object(with: id)
                 
                 if (mo.entity.name == "Trait"){
-                    
-                    self.addNode(object as! URL)
+                    self.addNode(inTrait: mo as? Trait)
                     
                 }
                 
@@ -126,30 +127,28 @@ class PlexusBNSKView: SKView {
         return false
     }
     
-    func addNode(_ mourl: URL){
+
+    
+    func addNode(inTrait: Trait?){
         
         let newNode : BNNode = BNNode(entity: NSEntityDescription.entity(forEntityName: "BNNode", in: moc)!, insertInto: moc)
-
-        if let id : NSManagedObjectID = moc.persistentStoreCoordinator?.managedObjectID(forURIRepresentation: mourl){
-            
-            let mo = moc.object(with: id)
-            
-            if (mo.entity.name == "Trait"){
-                let moTrait = mo as! Trait
-
-//                let curNodes : [BNNode] = nodesController.arrangedObjects as! [BNNode]
-//                for curNode : BNNode in curNodes {
-//                    if(curNode.name == moTrait.name) { //cannot add a node the same as an exisitng node
-//                        return
-//                    }
-//                }
-                newNode.setValue(moTrait.name, forKey: "name")
-                newNode.setValue(moTrait.value, forKey: "value")
-
-            }
-        }
-            
         
+        
+        if inTrait == nil {
+            newNode.setValue("New Name", forKey: "name")
+            newNode.setValue("New Value", forKey: "value")
+        }
+        
+        else {
+            newNode.setValue(inTrait?.name, forKey: "name")
+            newNode.setValue(inTrait?.value, forKey: "value")
+            
+            
+        }
+
+
+
+            
 
         let curModels : [Model] = modelTreeController.selectedObjects as! [Model]
         let curModel : Model = curModels[0]
