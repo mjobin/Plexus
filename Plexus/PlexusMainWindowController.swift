@@ -21,8 +21,33 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
     @IBOutlet var testprog : NSProgressIndicator!
     @IBOutlet var metalDevices = MTLCopyAllDevices()
 
-    
-    
+    struct metalBufs {
+        
+        var calcSpeed: Int
+        var teWidth: Int
+        var mTTPT: Int
+        var maxWSS: Int
+        var mTML: Int
+        var nodesForCalc: [BNNode]
+        var nc: Int
+        var threadMemSize: Int
+        
+        
+        //Buffers
+        var seeds: [UInt32]  //Buffer 0: RNG seeds
+        var bnresults: [Float] //Buffer 1: BN Results
+        var intparams: [UInt32]//Buffer 2: Integer Parameters
+        var priordisttypes: [UInt32] //Buffer 3: Prior Distribution Type
+        var priorV1s: [Float] //Buffer 4: PriorV1
+        var priorV2s: [Float] //Buffer 5: PriorV2
+        var infnet: [Int32] //Buffer 6: Infnet
+        var cptnet: [Float] //Buffer 7: Cptnet
+        var shufflebuffer: [UInt32] //Buffer 8 Shuffle Buffer
+        var bnstatesbuffer: [Float] //Buffer 9: BNStates array num notdes * ntWidth
+        var priors: [Float] //Buffer 10: Prior values
+        var bnstatesout: [Float] //Buffer 11: BNStates output array num notdes * ntWidth
+        
+    }
 
     let queue = DispatchQueue(label: "com.plexus.Plexus.metalQueue")
 
@@ -714,6 +739,9 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         
     let calcQueue = DispatchQueue(label: "calcQueue")
     calcQueue.async {
+        
+//        let yerbufs = self.metalBufferSetup(curModel: firstModel, verbose: true)
+        
         let fmcrun = self.metalCalc(curModel : firstModel, verbose: true)
 
         self.performSelector(onMainThread: #selector(PlexusMainWindowController.endProgInd), with: nil, waitUntilDone: true)
@@ -875,9 +903,205 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
     }
     
     
-
+//
+//    func metalBufferSetup(curModel:Model, verbose:Bool) -> metalBufs {
+//
+//        var outbufs : metalBufs
+//
+//        let start = DispatchTime.now()
+//        //        print ("\n**********START CPT for \(self.name)")
+//
+//        let defaults = UserDefaults.standard
+//
+//        outbufs.calcSpeed = defaults.integer(forKey: "calcSpeed")
+//
+//        let kernelFunction: MTLFunction? = defaultLibrary?.makeFunction(name: "bngibbs")
+//        do {
+//            pipelineState = try device?.makeComputePipelineState(function: kernelFunction!)
+//        }
+//        catch {
+//            fatalError("Cannot set up Metal")
+//        }
+//
+//        outbufs.teWidth = pipelineState.threadExecutionWidth
+//        outbufs.mTTPT = pipelineState.maxTotalThreadsPerThreadgroup
+//
+//
+//        outbufs.maxWSS = 0
+//        if #available(OSX 10.12, *) {
+//            outbufs.maxWSS = Int(device.recommendedMaxWorkingSetSize)
+//
+//        }
+//
+//
+//        outbufs.mTML = 0
+//        if #available(OSX 10.13, *) {
+//            outbufs.mTML = Int(device.maxThreadgroupMemoryLength)
+//
+//        }
+//
+//
+//
+//        outbufs.nodesForCalc = curModel.bnnode.allObjects as! [BNNode]
+//        outbufs.nc = outbufs.nodesForCalc.count
+//
+//        let runstot = curModel.runstot as! Int
+//        var ntWidth = (outbufs.mTTPT/outbufs.teWidth)-1
+//        if outbufs.calcSpeed == 0 {
+//            ntWidth = Int(Double(ntWidth) * 0.5)
+//        }
+//        else if outbufs.calcSpeed == 1 {
+//            ntWidth = Int(Double(ntWidth) * 0.75)
+//        }
+//        //        print ("Number of threadgroups: \(ntWidth)")
+//        let threadsPerThreadgroup : MTLSize = MTLSizeMake(outbufs.mTTPT, 1, 1)
+//        let numThreadgroups = MTLSize(width: outbufs.teWidth, height: 1, depth: 1)
+//        ntWidth = teWidth * mTTPT
+//
+//
+//        //Setup input and output buffers
+//        let resourceOptions = MTLResourceOptions()
+//
+//        outbufs.threadMemSize = 0
+//
+//        var maxInfSize = 0
+//        for node in outbufs.nodesForCalc {
+//            let theInfluencedBy = node.infBy(self)
+//            if(theInfluencedBy.count > maxInfSize) {
+//                maxInfSize = theInfluencedBy.count
+//            }
+//        }
+//
+//        //Maximum CPT size for a node
+//        let maxCPTSize = Int(pow(2.0, Double(maxInfSize)))
+//
+//
+//        //Buffer 0: RNG seeds
+//        var seeds = [UInt32](repeating: 0, count: ntWidth)
+//        let seedsbuffer = self.device.makeBuffer(bytes: &seeds, length: seeds.count*MemoryLayout<UInt32>.stride, options: MTLResourceOptions.cpuCacheModeWriteCombined)
+//        threadMemSize += seeds.count*MemoryLayout<UInt32>.stride
+//
+//
+//        //Buffer 1: BN Results
+//        var bnresults = [Float](repeating: -1.0, count: ntWidth*nodesForCalc.count)
+//        let bnresultsbuffer = self.device.makeBuffer(bytes: &bnresults, length: bnresults.count*MemoryLayout<Float>.stride, options: resourceOptions)
+//        threadMemSize += bnresults.count*MemoryLayout<Float>.stride
+//
+//
+//        //Buffer 2: Integer Parameters
+//        var intparams = [UInt32]()
+//        intparams.append((curModel.runsper as! UInt32) + (curModel.burnins as! UInt32)) //0
+//        intparams.append(curModel.burnins as! UInt32) //1
+//        intparams.append(UInt32(nodesForCalc.count)) //2
+//        intparams.append(UInt32(maxInfSize)) //3
+//        intparams.append(UInt32(maxCPTSize)) //4
+//        intparams.append(curModel.thin as! UInt32) //5
+//        let intparamsbuffer = self.device.makeBuffer(bytes: &intparams, length: intparams.count*MemoryLayout<UInt32>.stride, options: resourceOptions)
+//        threadMemSize += intparams.count*MemoryLayout<UInt32>.stride
+//
+//
+//        //Buffer 3: Prior Distribution Type
+//        var priordisttypes = [UInt32]()
+//        for node in nodesForCalc {
+//            priordisttypes.append(UInt32(node.priorDistType))
+//        }
+//        let priordisttypesbuffer = self.device.makeBuffer(bytes: &priordisttypes, length: priordisttypes.count*MemoryLayout<UInt32>.stride, options: MTLResourceOptions.cpuCacheModeWriteCombined)
+//        threadMemSize += priordisttypes.count*MemoryLayout<UInt32>.stride
+//
+//
+//        //Buffer 4: PriorV1
+//        var priorV1s = [Float]()
+//        for node in nodesForCalc {
+//            priorV1s.append(Float(node.priorV1))
+//        }
+//        let priorV1sbuffer = self.device.makeBuffer(bytes: &priorV1s, length: priorV1s.count*MemoryLayout<Float>.stride, options: MTLResourceOptions.cpuCacheModeWriteCombined)
+//        threadMemSize += priorV1s.count*MemoryLayout<Float>.stride
+//
+//
+//        //Buffer 5: PriorV2
+//        var priorV2s = [Float]()
+//        for node in nodesForCalc {
+//            priorV2s.append(Float(node.priorV2))
+//        }
+//        let priorV2sbuffer = self.device.makeBuffer(bytes: &priorV2s, length: priorV2s.count*MemoryLayout<Float>.stride, options: MTLResourceOptions.cpuCacheModeWriteCombined)
+//        threadMemSize += priorV2s.count*MemoryLayout<Float>.stride
+//
+//
+//        //Buffer 6: Infnet
+//        var sInfNet = [[Int32]]()
+//        var infnet = [Int32]()
+//        for node in nodesForCalc {
+//            var thisinf = [Int32]()
+//            let theInfluencedBy = node.infBy(self)
+//            for thisinfby in theInfluencedBy  {
+//                let tib = thisinfby as! BNNode
+//                thisinf.append(Int32(nodesForCalc.index(of: tib)!))
+//            }
+//            let leftOver = maxInfSize-thisinf.count
+//            for _ in 0..<leftOver {
+//                thisinf.append(Int32(-1.0))
+//            }
+//            infnet = infnet + thisinf
+//            sInfNet.append(thisinf)
+//        }
+//
+//        let infnetbuffer = self.device.makeBuffer(bytes: &infnet, length: nodesForCalc.count*maxInfSize*MemoryLayout<Int32>.stride, options: MTLResourceOptions.cpuCacheModeWriteCombined)
+//        threadMemSize = nodesForCalc.count*maxInfSize*MemoryLayout<Int32>.stride
+//
+//
+//        //Buffer 7: Cptnet
+//        var cptnet = [Float]()
+//        for node in nodesForCalc {
+//            let theCPT = node.getCPTArray(self, mocChanged: moc.hasChanges)
+//            cptnet = cptnet + theCPT
+//            let leftOver = maxCPTSize-theCPT.count
+//            for _ in 0..<leftOver {
+//                cptnet.append(-1.0)
+//            }
+//        }
+//        let cptnetbuffer = self.device.makeBuffer(bytes: &cptnet, length: nodesForCalc.count*maxCPTSize*MemoryLayout<Float>.stride, options: MTLResourceOptions.cpuCacheModeWriteCombined)
+//        threadMemSize += nodesForCalc.count*maxCPTSize*MemoryLayout<Float>.stride
+//
+//
+//        //Buffer 8 Shuffle Buffer
+//        let shufflebuffer = self.device.makeBuffer(length: ntWidth*nodesForCalc.count*MemoryLayout<UInt32>.stride, options: MTLResourceOptions.storageModePrivate)
+//        threadMemSize += ntWidth*nodesForCalc.count*MemoryLayout<UInt32>.stride
+//
+//
+//        //Buffer 9: BNStates array num notdes * ntWidth
+//        let bnstatesbuffer = self.device.makeBuffer(length: ntWidth*nodesForCalc.count*MemoryLayout<Float>.stride, options: MTLResourceOptions.storageModePrivate)
+//        threadMemSize += ntWidth*nodesForCalc.count*MemoryLayout<Float>.stride
+//
+//
+//        //Buffer 10: Prior values
+//        var priors = [Float](repeating: -1.0, count: ntWidth*nodesForCalc.count)
+//        let priorsbuffer = self.device.makeBuffer(bytes: &priors, length: priors.count*MemoryLayout<Float>.stride, options: resourceOptions)
+//        threadMemSize += ntWidth*nodesForCalc.count*MemoryLayout<Float>.stride
+//
+//        //Buffer 11: BNStates output array num notdes * ntWidth
+//        var bnstatesout = [Float](repeating: -1.0, count: ntWidth*nodesForCalc.count)
+//        let bnstatesoutbuffer = self.device.makeBuffer(length: ntWidth*nodesForCalc.count*MemoryLayout<Float>.stride, options: resourceOptions)
+//        threadMemSize += ntWidth*nodesForCalc.count*MemoryLayout<Float>.stride
+//
+//
+//
+//        //        print("ThreadMemSize \(threadMemSize)")
+//
+//        var end = DispatchTime.now()
+//        var cptRunTime = Double(end.uptimeNanoseconds - start.uptimeNanoseconds) / 1000000000
+//        print ("**********END Buffer creation  \(cptRunTime) seconds.")
+//
+//
+//
+//        return outbufs
+//    }
+    
+    
     
     func metalCalc(curModel:Model, verbose:Bool) -> Bool {
+                let start = DispatchTime.now()
+                print ("\n\n**********START")
+        
         let defaults = UserDefaults.standard
         
         let calcSpeed = defaults.integer(forKey: "calcSpeed")
@@ -1102,12 +1326,16 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         
 //        print("ThreadMemSize \(threadMemSize)")
         
+            var end = DispatchTime.now()
+            var cptRunTime = Double(end.uptimeNanoseconds - start.uptimeNanoseconds) / 1000000000
+            print ("**********END Buffer creation  \(cptRunTime) seconds.")
+        
         //RUN LOOP HERE
         var rc = 0
         var resc = 0
         var pesc = 0
         var besc = 0
-        let start = NSDate()
+//        let start = NSDate()
         while (rc<runstot){
             
 
@@ -1141,6 +1369,10 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
             commandBuffer.commit()
             commandBuffer.waitUntilCompleted()
             
+            
+            end = DispatchTime.now()
+            cptRunTime = Double(end.uptimeNanoseconds - start.uptimeNanoseconds) / 1000000000
+            print ("**********END a kernel run  \(cptRunTime) seconds.")
             
             let bnresultsdata = NSData(bytesNoCopy: bnresultsbuffer.contents(), length: bnresults.count*MemoryLayout<Float>.stride, freeWhenDone: false)
             bnresultsdata.getBytes(&bnresults, length:bnresults.count*MemoryLayout<Float>.stride)
@@ -1219,12 +1451,15 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
 
             }
             
+            end = DispatchTime.now()
+            cptRunTime = Double(end.uptimeNanoseconds - start.uptimeNanoseconds) / 1000000000
+            print ("**********END rc loop  \(cptRunTime) seconds.")
             // End rc loop
         }
         
-        if verbose == true {
-            print("Time to run: \(NSDate().timeIntervalSince(start as Date)) seconds.")
-        }
+//        if verbose == true {
+//            print("Time to run: \(NSDate().timeIntervalSince(start as Date)) seconds.")
+//        }
         
         var bins = Int(pow(Float(curModel.runstot), 0.5))
         
@@ -1363,10 +1598,17 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                 
         }
         self.performSelector(onMainThread: #selector(PlexusMainWindowController.betweenRuns), with: nil, waitUntilDone: true)
-        if verbose == true {
-            print("Full run: \(NSDate().timeIntervalSince(start as Date)) seconds.")
-        }
+//        if verbose == true {
+//            print("Full run: \(NSDate().timeIntervalSince(start as Date)) seconds.")
+//        }
+        
+        end = DispatchTime.now()
+        cptRunTime = Double(end.uptimeNanoseconds - start.uptimeNanoseconds) / 1000000000
+        print ("**********END RUN  \(cptRunTime) seconds.")
+        
         return true
+        
+
     }
     
     
