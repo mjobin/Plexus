@@ -2337,20 +2337,19 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
 //                    print(1-(posts[r][s]))
 //                    print(tots[r]-matches[r])
 //                    print(pow(posts[r][s], matches[r]))
+//                    let logmatch = matches[r] * log(posts[r][s]) //log of m^k  = k log m
+//                                    print ("logmatch \(logmatch)")
 //                    print(pow(1-(posts[r][s]), (tots[r]-matches[r])))
+//                    let lognomatch = (tots[r]-matches[r]) * log(1-(posts[r][s])) //log of m^k  = k log m
+//
+//                    print ("lognomatch \(lognomatch)")
+//                    let logsum = logmatch + lognomatch //log M*N = log M + log N
+//                    print ("logsum \(logsum)")
 //                    print(pow(posts[r][s], matches[r]) * pow(1-(posts[r][s]), (tots[r]-matches[r])))
-//                    var ml = [Float]()
-//                    for _ in 0...Int(matches[r]){
-//                        ml.append(posts[r][s])
-//                    }
-//                    for _ in 0...Int(tots[r]-matches[r]){
-//                        ml.append(1-posts[r][s])
-//                    }
-//                    print(ml)
-//                    let newlike = ml.reduce(1, *)
-//                    print(newlike)
-//                    likes.append(pow(posts[r][s], matches[r]) * pow(1-(posts[r][s]), (tots[r]-matches[r]))) //This is likelihood of data given the POSTERIOR
-                    likes.append(pow(matches[r], posts[r][s]) * pow((tots[r]-matches[r]), 1-(posts[r][s]))) //This is likelihood of posterior given the data
+//                    likes.append(pow(matches[r], posts[r][s]) * pow((tots[r]-matches[r]), 1-(posts[r][s]))) //This is likelihood of posterior given the data
+            
+                    likes.append((matches[r] * log(posts[r][s])) + ((tots[r]-matches[r]) * log(1-(posts[r][s])))) //This is likelihood of posterior given the data
+                    
                 }
             
 //                print(likes)
@@ -2416,17 +2415,30 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         var likes = [Float]()
         for r in 0...(nodesForCalc.count-1){
             
-        
             if(tots[r]>0) { // to avoid hidden or data-free nodes in likelihood calc
-//                print("\nname: \(nodesForCalc[r].node.name)")
+//                print("\nname: \(nodesForCalc[r].name)")
 //                print("prior: \(priorProds[r])")
 //                print("matches: \(matches[r])")
 //                print("1-prior: \(1-(priorProds[r]))")
 //                print("nomatches: \(tots[r]-matches[r])")
-//                print("prior^matches \(pow(priorProds[r], matches[r]))")
+//                print("prior^matches \(pow(priorProds[r], matches[r]))") //FIXME zero becasue e.g. 0.5 ^ 290 comes back as a zero
+//                let logmatch = matches[r] * log(priorProds[r]) //log of m^k  = k log m
+//                print ("logmatch \(logmatch)")
+//
 //                print((pow(1-(priorProds[r]), (tots[r]-matches[r]))))
+//                let lognomatch = (tots[r]-matches[r]) * log(1-(priorProds[r])) //log of m^k  = k log m
+//
+//                print ("lognomatch \(lognomatch)")
+//
+//                let logsum = logmatch + lognomatch //log M*N = log M + log N
+//
+//                print ("logsum \(logsum)")
 //                print(log(pow(priorProds[r], matches[r]) * pow(1-(priorProds[r]), (tots[r]-matches[r]))))
-                likes.append(log(pow(priorProds[r], matches[r]) * pow(1-(priorProds[r]), (tots[r]-matches[r])))) //This is likelihood of data given the Priors
+//                likes.append(log(pow(priorProds[r], matches[r]) * pow(1-(priorProds[r]), (tots[r]-matches[r])))) //This is likelihood of data given the Priors
+                
+                likes.append((matches[r] * log(priorProds[r])) + ((tots[r]-matches[r]) * log(1-(priorProds[r]))))
+                
+                
             }
             
         }
@@ -2435,27 +2447,6 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
 //        print("f(y|ϴ) \(likelihood)")
         
         
-//        //Posterior
-//        var postProds = [Float]()
-//        for calcNode in nodesForCalc {
-//            let infBy = calcNode.influencedBy
-//            if infBy.count > 0 { //depednet
-//                let postArray = NSKeyedUnarchiver.unarchiveObject(with: calcNode.value(forKey: "postArray") as! Data) as! [Float]
-//                postProds.append(postArray[maxpos])
-//            }
-//            else { //independent
-//                let priorArray = NSKeyedUnarchiver.unarchiveObject(with: calcNode.value(forKey: "priorArray") as! Data) as! [Float]
-//                postProds.append(priorArray[maxpos])
-//            }
-//
-//        }
-//
-//        print(postProds)
-        
-//        let postterm = (postProds.reduce(1, *))
-//        print("pi theta | y \(postterm)")
-        
-
         return log(priorterm) + likelihood - log(postterm)
         
     }
