@@ -780,13 +780,13 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                 let firstbic = firstModel.score
 
                 
-                for rs in 0...Int(runstarts) {
+                for rs in 0...Int(runstarts)-1 {
                 
                     var firstrun = true
                     var lastbic = NSNumber.init(value: 0.0)
                     var curbic = NSNumber.init(value: 0.0)
                     
-                    for hc in 0...Int(hillchains) {
+                    for hc in 0...Int(hillchains)-1 {
                         if(firstrun == true){
                             
                             firstrun = false
