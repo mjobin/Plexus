@@ -760,7 +760,8 @@ class PlexusBNScene: SKScene {
 //        let shape = PlexusBNNode(path: shapePath)
         let shape = PlexusBNNode(imageNamed: "PlexusNode")
         shape.scale(to: shapeSize)
-        if firstUpdate == true {
+        if inPos.x == (self.frame.width/2) && inPos.y == (self.frame.height/2) {
+
             var xloc = Double(inNode.savedX)
             var yloc = Double(inNode.savedY)
             if xloc < 0 {
@@ -775,6 +776,7 @@ class PlexusBNScene: SKScene {
             if (yloc + Double(nodeHeight)) > Double(self.size.height) {
                 yloc = Double(self.size.height) - Double(nodeHeight)
             }
+
             shape.position = CGPoint(x: xloc,  y: yloc)
         }
         else {
