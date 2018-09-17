@@ -124,7 +124,11 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         }
         
 
-        //NSNotificationCenter.defaultCenter().addObserver(self, selector: "contextDidSaveContext:", name: NSManagedObjectContextDidSaveNotification, object: nil)
+
+//        NotificationCenter.default.addObserver(self, selector: #selector(PlexusMainWindowController.contextDidChange(_:)), name: Notification.Name.NSManagedObjectContextObjectsDidChange, object: nil)
+//        NotificationCenter.default.addObserver(self, selector: #selector(PlexusMainWindowController.contextWillSave(_:)), name: Notification.Name.NSManagedObjectContextWillSave, object: nil)
+        
+        
         NotificationCenter.default.addObserver(self, selector: #selector(PlexusMainWindowController.contextDidSave(_:)), name: NSNotification.Name.NSManagedObjectContextDidSave, object: nil)
         
         
@@ -743,6 +747,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         let curModels : [Model] = mainSplitViewController.modelTreeController?.selectedObjects as! [Model]
         let firstModel : Model = curModels[0]
         let firstModelID = firstModel.objectID
+        var finalModel = firstModel
         
         self.progSheet = self.progHillSetup(self)
         self.window!.beginSheet(self.progSheet, completionHandler: nil)
@@ -762,6 +767,9 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
             return
         }
         
+        
+
+        
         let calcQueue = DispatchQueue(label: "calcQueue")
         calcQueue.async {
 
@@ -773,13 +781,14 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
             do {
                 let cfirstModel = try cmoc.existingObject(with: firstModelID) as! Model
                 
-                var modelPeaks = [Model]()
+                
                 
                 var lastModel = cfirstModel
                 _ = self.metalCalc(curModel : cfirstModel, verbose: true)
 
                 let firstbic = firstModel.score
 
+                    var modelPeaks = [Model]()
                 
                 for rs in 0...Int(runstarts)-1 {
                 
@@ -815,25 +824,34 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
 //                                    print ("keeping: \(curModel.name) and discarding \(discardModel.name)")
                                     lastModel = curModel
                                     lastbic = curbic
-                                    if discardModel != cfirstModel {
-                                        cmoc.delete(discardModel)
-                                    }
+//                                    if discardModel != cfirstModel {
+//                                        cmoc.delete(discardModel)
+//                                    }
                                 }
                                 else {
 //                                    print ("discarding: \(curModel.name)")
-                                    cmoc.delete(curModel)
+//                                    cmoc.delete(curModel)
                                     
                                 }
                             }
                             else {
 //                                print ("error: \(curModel.name)")
-                                cmoc.delete(curModel)
+//                                cmoc.delete(curModel)
                             }
                             
                         }
                         DispatchQueue.main.async {
                             self.hProgInd.increment(by: 1.0)
                         }
+                        
+//                        do {
+//                            try cmoc.save()
+//
+//                        } catch let error as NSError {
+//                            print(error)
+//                            fatalError("Could not save models")
+//                        }
+                        
                     }
                     
                     if lastModel != cfirstModel {
@@ -843,6 +861,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                         self.rProgInd.increment(by: 1.0)
                         self.hProgInd.doubleValue = 0
                     }
+
                 }
                 
                 //Run through all the random restarts and select highest score
@@ -869,7 +888,8 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                         bestname = bestname + formatter.string(from: date)
                         peakModel.setValue(bestname, forKey: "name")
                         print("WINNER \(peakModel.name)")
-                        cfirstModel.addAChildObject(peakModel)
+//                        cfirstModel.addAChildObject(peakModel)
+                        finalModel = peakModel
                     }
                     
                 }
@@ -877,7 +897,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
 
             
                 do {
-                    try cmoc.save() //FIXME why not here?
+                    try cmoc.save()
 
                 } catch let error as NSError {
                     print(error)
@@ -886,7 +906,30 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                 self.performSelector(onMainThread: #selector(PlexusMainWindowController.endProgInd), with: nil, waitUntilDone: true)
                 
                 DispatchQueue.main.sync {
+                    
 
+                    
+                    //then save it and its nodes in self.moc
+                    self.moc.insert(finalModel)
+                    for insNode in finalModel.bnnode {
+                        let thisinsNode : BNNode = insNode as! BNNode
+
+                        
+                        self.moc.insert(thisinsNode)
+                        
+
+                    }
+                    
+                    firstModel.addAChildObject(finalModel)
+                    
+                    
+                    do {
+                        try self.moc.save()
+                        
+                    } catch let error as NSError {
+                        print(error)
+                        fatalError("AIIIIII")
+                    }
 
                     self.mainSplitViewController.modelDetailViewController?.calcInProgress = false
                 }
@@ -2281,11 +2324,104 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
 
     
     
+//    func contextDidChange(_ notification: Notification) {
+//        let savedContext = notification.object as! NSManagedObjectContext
+//        if(savedContext == self.moc) { // ignore change notifications for the main MOC
+//            return
+//        }
+//
+//        print(savedContext)
+//
+//
+//        if let insertedObjects = notification.userInfo?[NSInsertedObjectsKey] as? Set<NSManagedObject>, !insertedObjects.isEmpty {
+//            print(insertedObjects)
+//        }
+////                if let updatedObjects = notification.userInfo?[NSUpdatedObjectsKey] as? Set<NSManagedObject>, !updatedObjects.isEmpty {
+////                    print(updatedObjects)
+////                }
+////                if let deletedObjects = notification.userInfo?[NSDeletedObjectsKey] as? Set<NSManagedObject>, !deletedObjects.isEmpty {
+////                    print(deletedObjects)
+////                }
+////                if let refreshedObjects = notification.userInfo?[NSRefreshedObjectsKey] as? Set<NSManagedObject>, !refreshedObjects.isEmpty {
+////                    print(refreshedObjects)
+////                }
+////                if let invalidatedObjects = notification.userInfo?[NSInvalidatedObjectsKey] as? Set<NSManagedObject>, !invalidatedObjects.isEmpty {
+////                    print(invalidatedObjects)
+////                }
+////                if let areInvalidatedAllObjects = notification.userInfo?[NSInvalidatedAllObjectsKey] as? Bool {
+////                    print(areInvalidatedAllObjects)
+////                }
+//
+//        DispatchQueue.main.sync {
+//            self.moc.mergeChanges(fromContextDidSave: notification)
+//        }
+//
+//
+//    }
+//
+//
+//    func contextWillSave(_ notification: Notification) {
+//        let savedContext = notification.object as! NSManagedObjectContext
+//        if(savedContext == self.moc) { // ignore change notifications for the main MOC
+//            return
+//        }
+//
+//        print(savedContext)
+//
+//
+//        if let insertedObjects = notification.userInfo?[NSInsertedObjectsKey] as? Set<NSManagedObject>, !insertedObjects.isEmpty {
+//            print(insertedObjects)
+//        }
+////        if let updatedObjects = notification.userInfo?[NSUpdatedObjectsKey] as? Set<NSManagedObject>, !updatedObjects.isEmpty {
+////            print(updatedObjects)
+////        }
+////        if let deletedObjects = notification.userInfo?[NSDeletedObjectsKey] as? Set<NSManagedObject>, !deletedObjects.isEmpty {
+////            print(deletedObjects)
+////        }
+////        if let refreshedObjects = notification.userInfo?[NSRefreshedObjectsKey] as? Set<NSManagedObject>, !refreshedObjects.isEmpty {
+////            print(refreshedObjects)
+////        }
+////        if let invalidatedObjects = notification.userInfo?[NSInvalidatedObjectsKey] as? Set<NSManagedObject>, !invalidatedObjects.isEmpty {
+////            print(invalidatedObjects)
+////        }
+////        if let areInvalidatedAllObjects = notification.userInfo?[NSInvalidatedAllObjectsKey] as? Bool {
+////            print(areInvalidatedAllObjects)
+////        }
+//
+//        DispatchQueue.main.sync {
+//            self.moc.mergeChanges(fromContextDidSave: notification)
+//        }
+//
+//
+//    }
+    
+    
     func contextDidSave(_ notification: Notification) {
         let savedContext = notification.object as! NSManagedObjectContext
         if(savedContext == self.moc) { // ignore change notifications for the main MOC
             return
         }
+        
+        
+        if let insertedObjects = notification.userInfo?[NSInsertedObjectsKey] as? Set<NSManagedObject>, !insertedObjects.isEmpty {
+            print(insertedObjects)
+        }
+//        if let updatedObjects = notification.userInfo?[NSUpdatedObjectsKey] as? Set<NSManagedObject>, !updatedObjects.isEmpty {
+//            print(updatedObjects)
+//        }
+//        if let deletedObjects = notification.userInfo?[NSDeletedObjectsKey] as? Set<NSManagedObject>, !deletedObjects.isEmpty {
+//            print(deletedObjects)
+//        }
+//        if let refreshedObjects = notification.userInfo?[NSRefreshedObjectsKey] as? Set<NSManagedObject>, !refreshedObjects.isEmpty {
+//            print(refreshedObjects)
+//        }
+//        if let invalidatedObjects = notification.userInfo?[NSInvalidatedObjectsKey] as? Set<NSManagedObject>, !invalidatedObjects.isEmpty {
+//            print(invalidatedObjects)
+//        }
+//        if let areInvalidatedAllObjects = notification.userInfo?[NSInvalidatedAllObjectsKey] as? Bool {
+//            print(areInvalidatedAllObjects)
+//        }
+        
         DispatchQueue.main.sync {
             self.moc.mergeChanges(fromContextDidSave: notification)
         }
