@@ -28,7 +28,7 @@ class PlexusEntryDetailViewController: NSViewController, NSTableViewDelegate, NS
     {
         
         let appDelegate : AppDelegate = NSApplication.shared().delegate as! AppDelegate
-        moc = appDelegate.managedObjectContext
+        moc = appDelegate.persistentContainer.viewContext
         super.init(coder: aDecoder)
         
     }

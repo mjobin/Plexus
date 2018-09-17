@@ -38,7 +38,7 @@ class PlexusBNScene: SKScene {
         
             
             let appDelegate : AppDelegate = NSApplication.shared().delegate as! AppDelegate
-            moc = appDelegate.managedObjectContext
+            moc = appDelegate.persistentContainer.viewContext
         
         
         NotificationCenter.default.addObserver(self, selector: #selector(PlexusBNScene.mocDidChange(_:)), name: NSNotification.Name.NSManagedObjectContextObjectsDidChange, object: moc)
@@ -88,7 +88,7 @@ class PlexusBNScene: SKScene {
         for selNode : BNNode in selNodes{
             nodesController.removeObject(selNode)
             let appDelegate : AppDelegate = NSApplication.shared().delegate as! AppDelegate
-            moc = appDelegate.managedObjectContext
+            moc = appDelegate.persistentContainer.viewContext
             moc.delete(selNode)
             
         }
@@ -765,16 +765,16 @@ class PlexusBNScene: SKScene {
             var xloc = Double(inNode.savedX)
             var yloc = Double(inNode.savedY)
             if xloc < 0 {
-                xloc = 0
+                xloc = 1
             }
             if yloc < 0 {
-                yloc = 0
+                yloc = 1
             }
             if (xloc + Double(nodeWidth)) > Double(self.size.width) {
-                xloc = Double(self.size.width) - Double(nodeWidth)
+                xloc = Double(self.size.width) - Double(nodeWidth)-1
             }
             if (yloc + Double(nodeHeight)) > Double(self.size.height) {
-                yloc = Double(self.size.height) - Double(nodeHeight)
+                yloc = Double(self.size.height) - Double(nodeHeight)-1
             }
 
             shape.position = CGPoint(x: xloc,  y: yloc)

@@ -87,7 +87,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
 
         //Get MOC from App delegate
         let appDelegate : AppDelegate = NSApplication.shared().delegate as! AppDelegate
-        moc = appDelegate.managedObjectContext
+        moc = appDelegate.persistentContainer.viewContext
         
         let request = NSFetchRequest<Model>(entityName: "Model")
         let fetchedModels: [AnyObject]?
@@ -766,7 +766,8 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         calcQueue.async {
 
             let cmoc = NSManagedObjectContext.init(concurrencyType: .privateQueueConcurrencyType)
-            cmoc.persistentStoreCoordinator = self.moc.persistentStoreCoordinator
+//            cmoc.persistentStoreCoordinator = self.moc.persistentStoreCoordinator
+            cmoc.parent = self.moc
             
 
             do {
@@ -867,6 +868,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                         formatter.dateFormat = "dd.MM.yyyy"
                         bestname = bestname + formatter.string(from: date)
                         peakModel.setValue(bestname, forKey: "name")
+                        print("WINNER \(peakModel.name)")
                         cfirstModel.addAChildObject(peakModel)
                     }
                     
@@ -1897,7 +1899,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         
         
         let appDelegate : AppDelegate = NSApplication.shared().delegate as! AppDelegate
-        let moc = appDelegate.managedObjectContext
+        let moc = appDelegate.persistentContainer.viewContext
 
         var subsamp = curModel.runsper as! Int
         if subsamp < 1000  {
@@ -2019,7 +2021,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
     func calcMarginalLikelihood(curModel:Model, nodesForCalc:[BNNode], infnet:[[Int32]], results : [[Float]], priorresults : [[Float]], bnstatesoutresults : [[Float]]) -> Float {
         
         let appDelegate : AppDelegate = NSApplication.shared().delegate as! AppDelegate
-        let moc = appDelegate.managedObjectContext
+        let moc = appDelegate.persistentContainer.viewContext
         
         var subsamp = curModel.runsper as! Int
         if subsamp < 1000  {

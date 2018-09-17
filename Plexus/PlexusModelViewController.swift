@@ -19,7 +19,7 @@ class PlexusModelViewController: NSViewController, NSOutlineViewDelegate, NSOutl
     {
         
         let appDelegate : AppDelegate = NSApplication.shared().delegate as! AppDelegate
-        moc = appDelegate.managedObjectContext
+        moc = appDelegate.persistentContainer.viewContext
         
         super.init(coder: aDecoder)
     }

@@ -30,7 +30,7 @@ class PlexusBNSKView: SKView {
         
         
         let appDelegate : AppDelegate = NSApplication.shared().delegate as! AppDelegate
-        moc = appDelegate.managedObjectContext
+        moc = appDelegate.persistentContainer.viewContext
         
 
     }
@@ -166,6 +166,9 @@ class PlexusBNSKView: SKView {
         newNode.postArray = blankArray
         newNode.cptFreezeArray = blankArray
         newNode.cptArray = blankArray
+        
+        newNode.savedX = NSNumber(value: Float(self.frame.width/2.0))
+        newNode.savedY = NSNumber(value: Float(self.frame.height/2.0))
 
 
         do {

@@ -141,7 +141,7 @@ extension BNNode {
 //        print ("\n**********START CPT for \(self.name)")
         
         let appDelegate : AppDelegate = NSApplication.shared().delegate as! AppDelegate
-        let moc = appDelegate.managedObjectContext
+        let moc = appDelegate.persistentContainer.viewContext
         let curModel : Model = self.model
         let theEntries = curModel.entry
         

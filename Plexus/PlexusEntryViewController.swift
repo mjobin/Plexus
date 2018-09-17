@@ -22,7 +22,7 @@ class PlexusEntryViewController: NSViewController, NSTableViewDelegate, NSTableV
     {
 
         let appDelegate : AppDelegate = NSApplication.shared().delegate as! AppDelegate
-        moc = appDelegate.managedObjectContext
+        moc = appDelegate.persistentContainer.viewContext
 
         super.init(coder: aDecoder)
     }
@@ -31,7 +31,7 @@ class PlexusEntryViewController: NSViewController, NSTableViewDelegate, NSTableV
         super.viewDidLoad()
 
         let appDelegate : AppDelegate = NSApplication.shared().delegate as! AppDelegate
-        moc = appDelegate.managedObjectContext
+        moc = appDelegate.persistentContainer.viewContext
         
     
         let kString : String = kUTTypeURL as String
