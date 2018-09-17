@@ -32,10 +32,11 @@ extension Model {
     }
     
     
-    func copySelf(_ moc: NSManagedObjectContext) -> Model {
+    func copySelf(moc: NSManagedObjectContext?) -> Model {
         
-        let newModel : Model = Model(entity: NSEntityDescription.entity(forEntityName: "Model", in: moc)!, insertInto: moc)
+//        let newModel : Model = Model(entity: NSEntityDescription.entity(forEntityName: "Model", in: moc)!, insertInto: nil)
         
+        let newModel : Model = Model(entity: Model.entity(), insertInto: moc)
 
         
         newModel.setValue(burnins, forKey: "burnins")
@@ -60,7 +61,7 @@ extension Model {
         var tempNodeArray = [BNNode]()
         let curNodes  = self.bnnode.allObjects as! [BNNode]
         for curNode : BNNode in curNodes {
-            let newNode : BNNode = BNNode(entity: NSEntityDescription.entity(forEntityName: "BNNode", in: moc)!, insertInto: moc)
+            let newNode : BNNode = BNNode(entity: BNNode.entity(), insertInto: moc)
             
             
             newNode.setValue(curNode.cptArray, forKey: "cptArray")

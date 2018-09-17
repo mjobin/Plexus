@@ -117,7 +117,7 @@ class PlexusModelViewController: NSViewController, NSOutlineViewDelegate, NSOutl
             
             
             
-            let newModel : Model = curModel.copySelf(self.moc)
+            let newModel : Model = curModel.copySelf(moc: self.moc)
                 
 
             // curModel.addChildObject(newModel)

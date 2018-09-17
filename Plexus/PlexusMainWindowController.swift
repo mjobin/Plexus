@@ -622,9 +622,9 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         self.breakloop = true
     }
     
-    func randomChildModel(lastModel : Model, thisMOC : NSManagedObjectContext) -> Model {
+    func randomChildModel(lastModel : Model, thisMOC : NSManagedObjectContext?) -> Model {
         
-        let newModel = lastModel.copySelf(thisMOC)
+        let newModel = lastModel.copySelf(moc: thisMOC ?? nil)
         
         let nodesForTest = newModel.bnnode.allObjects as! [BNNode]
         
@@ -805,7 +805,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                         }
                         else {
                             
-                            let curModel = self.randomChildModel(lastModel: lastModel, thisMOC: cmoc)
+                            let curModel = self.randomChildModel(lastModel: lastModel, thisMOC: nil)
                             
                             var curname = cfirstModel.name + "-"
                             curname =  curname + String(rs)
