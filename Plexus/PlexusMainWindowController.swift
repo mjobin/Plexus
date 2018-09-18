@@ -20,23 +20,32 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
     @IBOutlet var mainToolbar : NSToolbar!
     @IBOutlet var testprog : NSProgressIndicator!
     @IBOutlet var metalDevices = MTLCopyAllDevices()
+    @IBOutlet dynamic var devicesController : NSArrayController!
 
 
     let queue = DispatchQueue(label: "com.plexus.Plexus.metalQueue")
 
-    lazy var device: MTLDevice! = {
-        let devices: [MTLDevice] = MTLCopyAllDevices()
-        for metalDevice : MTLDevice in devices {
-            if metalDevice.isHeadless  && !metalDevice.isLowPower { //Select the best device if there are any choices
-                return metalDevice
-            }
-        }
-        return MTLCreateSystemDefaultDevice() //Return default device if no headless
-    }()
-        
+//    lazy var device: MTLDevice! = {
+//
+//        let devices = devicesController?.selectedObjects as! [MTLDevice]
+//        return devices[0]
+//
+////        let devices: [MTLDevice] = MTLCopyAllDevices()
+////        for metalDevice : MTLDevice in devices {
+////            if metalDevice.isHeadless  && !metalDevice.isLowPower { //Select the best device if there are any choices
+////                return metalDevice
+////            }
+////        }
+////        return MTLCreateSystemDefaultDevice() //Return default device if no headless
+//    }()
+    
     
     // choose the device NOT used by monitor
 
+    var device : MTLDevice!
+    var pipelineState : MTLComputePipelineState!
+    var kernelFunction : MTLFunction!
+    
     lazy var defaultLibrary: MTLLibrary! = {
         self.device.newDefaultLibrary()
     }()
@@ -44,7 +53,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         print ("Metal device: \(self.device.name!). Headless: \(self.device.isHeadless). Low Power: \(self.device.isLowPower)")
         return self.device.makeCommandQueue()
     }()
-    var pipelineState: MTLComputePipelineState!
+    
     
     var progSheet : NSWindow!
     var cancelButton : NSButton!
@@ -143,25 +152,25 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
  
         modelTreeController = mainSplitViewController.modelViewController?.modelTreeController
         
-        queue.async {
-            self.setUpMetal()
-        }
+//        queue.async {
+//            self.setUpMetal()
+//        }
         
 
         
     }
     
 
-    func setUpMetal() {
-        if let kernelFunction = defaultLibrary.makeFunction(name: "bngibbs") {
-            do {
-                pipelineState = try device.makeComputePipelineState(function: kernelFunction)
-            }
-            catch {
-                fatalError("Impossible to setup Metal")
-            }
-        }
-    }
+//    func setUpMetal() {
+//        if let kernelFunction = defaultLibrary.makeFunction(name: "bngibbs") {
+//            do {
+//                pipelineState = try device.makeComputePipelineState(function: kernelFunction)
+//            }
+//            catch {
+//                fatalError("Impossible to setup Metal")
+//            }
+//        }
+//    }
     
     @IBAction func  toggleModels(_ x:NSToolbarItem){
 
@@ -703,6 +712,16 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
     
     @IBAction func singleRunPress(_ x:NSToolbarItem) {
     
+    let devices = devicesController?.selectedObjects as! [MTLDevice]
+    device = devices[0]
+    kernelFunction  = defaultLibrary?.makeFunction(name: "bngibbs")
+    do {
+        pipelineState = try device.makeComputePipelineState(function: kernelFunction!)
+    }
+    catch {
+        fatalError("Cannot set up Metal")
+    }
+        
     mainSplitViewController.modelDetailViewController?.calcInProgress = true
     self.breakloop = false
     
@@ -740,6 +759,16 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
     
  
     @IBAction func calcButtonPress(_ x:NSToolbarItem){
+        let devices = devicesController?.selectedObjects as! [MTLDevice]
+        device = devices[0]
+        kernelFunction  = defaultLibrary?.makeFunction(name: "bngibbs")
+        do {
+            pipelineState = try device.makeComputePipelineState(function: kernelFunction!)
+        }
+        catch {
+            fatalError("Cannot set up Metal")
+        }
+        
         mainSplitViewController.modelDetailViewController?.calcInProgress = true
         self.breakloop = false
         
@@ -959,15 +988,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         let defaults = UserDefaults.standard
         
         let calcSpeed = defaults.integer(forKey: "calcSpeed")
-        
-        let kernelFunction: MTLFunction? = defaultLibrary?.makeFunction(name: "bngibbs")
-        do {
-            pipelineState = try device?.makeComputePipelineState(function: kernelFunction!)
-        }
-        catch {
-            fatalError("Cannot set up Metal")
-        }
-        
+
         let teWidth = pipelineState.threadExecutionWidth
         let mTTPT = pipelineState.maxTotalThreadsPerThreadgroup
         

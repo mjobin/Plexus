@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="14313.13.2" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" initialViewController="B8D-0N-5wS">
+<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="14313.18" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" initialViewController="B8D-0N-5wS">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="14313.13.2"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="14313.18"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -810,12 +810,35 @@
                                         <action selector="toggleModels:" target="B8D-0N-5wS" id="Xhg-wl-fCd"/>
                                     </connections>
                                 </toolbarItem>
+                                <toolbarItem implicitItemIdentifier="63CCAD30-35C6-45C8-B097-D0B3BEFCF7EB" label="Device" paletteLabel="Device" sizingBehavior="auto" id="9un-M5-c2D">
+                                    <nil key="toolTip"/>
+                                    <popUpButton key="view" verticalHuggingPriority="750" id="npT-NI-h0m">
+                                        <rect key="frame" x="0.0" y="14" width="100" height="24"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                        <popUpButtonCell key="cell" type="roundTextured" title="Item 1" bezelStyle="texturedRounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" selectedItem="bZO-0b-59T" id="ukU-fY-sPL">
+                                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                            <font key="font" metaFont="menu"/>
+                                            <menu key="menu" id="izc-Pk-cfE">
+                                                <items>
+                                                    <menuItem title="Item 1" state="on" id="bZO-0b-59T"/>
+                                                    <menuItem title="Item 2" id="oL0-5M-wai"/>
+                                                    <menuItem title="Item 3" id="rGd-Ta-6V5"/>
+                                                </items>
+                                            </menu>
+                                        </popUpButtonCell>
+                                        <connections>
+                                            <binding destination="A8W-1z-6C7" name="content" keyPath="arrangedObjects" id="ZJz-AW-wME"/>
+                                            <binding destination="A8W-1z-6C7" name="contentValues" keyPath="arrangedObjects.name" previousBinding="ZJz-AW-wME" id="ct6-4M-RuV"/>
+                                        </connections>
+                                    </popUpButton>
+                                </toolbarItem>
                             </allowedToolbarItems>
                             <defaultToolbarItems>
                                 <toolbarItem reference="cxJ-Ba-9U3"/>
                                 <toolbarItem reference="WTX-aD-8MF"/>
                                 <toolbarItem reference="Pyk-Fc-aOd"/>
                                 <toolbarItem reference="3e1-GX-aR9"/>
+                                <toolbarItem reference="9un-M5-c2D"/>
                                 <toolbarItem reference="k41-Tj-JRN"/>
                                 <toolbarItem reference="EB6-A3-dHZ"/>
                                 <toolbarItem reference="3e1-GX-aR9"/>
@@ -828,12 +851,18 @@
                         </connections>
                     </window>
                     <connections>
+                        <outlet property="devicesController" destination="A8W-1z-6C7" id="Jaw-hH-oVz"/>
                         <outlet property="mainToolbar" destination="pyn-dH-y2N" id="Pzo-nf-9lz"/>
                         <segue destination="vdt-QS-Jtu" kind="relationship" relationship="window.shadowedContentViewController" id="rbE-Ek-Sz7"/>
                     </connections>
                 </windowController>
                 <customObject id="Oky-zY-oP4" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
                 <userDefaultsController representsSharedInstance="YES" id="Zg6-9p-g9G"/>
+                <arrayController id="A8W-1z-6C7" userLabel="Devices Controller">
+                    <connections>
+                        <binding destination="B8D-0N-5wS" name="contentArray" keyPath="metalDevices" id="IIG-wn-Qum"/>
+                    </connections>
+                </arrayController>
             </objects>
             <point key="canvasLocation" x="-243" y="207"/>
         </scene>
@@ -1210,7 +1239,7 @@
                                                     <rect key="frame" x="0.0" y="0.0" width="196" height="260"/>
                                                     <clipView key="contentView" drawsBackground="NO" id="Xhz-Nk-eWl">
                                                         <rect key="frame" x="1" y="1" width="194" height="258"/>
-                                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                        <autoresizingMask key="autoresizingMask"/>
                                                         <subviews>
                                                             <textView verticallyResizable="YES" usesFontPanel="YES" selectionGranularity="word" findStyle="panel" continuousSpellChecking="YES" allowsUndo="YES" allowsImageEditing="YES" usesRuler="YES" allowsNonContiguousLayout="YES" quoteSubstitution="YES" dashSubstitution="YES" spellingCorrection="YES" smartInsertDelete="YES" id="dkI-5s-Loh">
                                                                 <rect key="frame" x="0.0" y="0.0" width="194" height="258"/>
