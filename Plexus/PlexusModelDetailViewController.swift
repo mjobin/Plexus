@@ -411,6 +411,7 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
         if segue.identifier == "nodeInspect" {
             let nodePop : PlexusNodePopoverDetail = segue.destinationController as! PlexusNodePopoverDetail
             nodePop.nodesController = nodesController
+            nodePop.modelTreeController = modelTreeController
         }
         
         if segue.identifier == "postNode" {
