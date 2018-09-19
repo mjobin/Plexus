@@ -700,10 +700,14 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         
         
          //Now make sure the CPT's are recalced
+        var testCPT = 2
         for testNode in nodesForTest{
-            testNode.CPT()
+            testCPT = testNode.CPT()
         }
         
+        if testCPT != 2 {
+            fatalError("Error creating CPT in randomChildModel.")
+        }
 
 
         return newModel
