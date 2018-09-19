@@ -863,7 +863,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
     //                                print("\(lastbic) \(curbic)")
                                     curModel.setValue(curbic, forKey: "score")
                                     if curbic.floatValue > lastbic.floatValue {
-                                        let discardModel = lastModel
+//                                        let discardModel = lastModel
     //                                    print ("keeping: \(curModel.name) and discarding \(discardModel.name)")
                                         lastModel = curModel
                                         lastbic = curbic
@@ -961,11 +961,16 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
 
                         
                         self.moc.insert(thisinsNode)
+                        //Select the new winning node int he tree
+                        
                         
 
                     }
                     
                     firstModel.addAChildObject(finalModel)
+                    let finalIndexPath = self.mainSplitViewController.modelTreeController.indexPathOfModel(model:finalModel)
+                    self.mainSplitViewController.modelTreeController.setSelectionIndexPath(finalIndexPath! as IndexPath)
+                    
                     
                     
                     do {
