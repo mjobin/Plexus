@@ -698,6 +698,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
             fromNode.addAnInfluencesObject(toNode)
         }
         
+        
          //Now make sure the CPT's are recalced
         for testNode in nodesForTest{
             testNode.CPT()
@@ -836,36 +837,49 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                             
                             let curModel = self.randomChildModel(lastModel: lastModel, thisMOC: nil)
                             
+                            var cycleChk = false
+                            let newNodes = curModel.bnnode
+                            for newNode in newNodes {
+                                let curNode = newNode as! BNNode
+                                cycleChk = curNode.DFTcyclechk([curNode])
+                            }
+
+                            
                             var curname = cfirstModel.name + "-"
                             curname =  curname + String(rs)
                             curname = curname + "-"
                             curname = curname + String(hc)
                             curModel.name = curname
 
+                            if cycleChk == false { //If the new model is a cycle, ignore it
                             
-                            let msrun = self.metalCalc(curModel : curModel, verbose: false)
-                            if (msrun == true) {
-                                curbic = curModel.score
-//                                print("\(lastbic) \(curbic)")
-                                curModel.setValue(curbic, forKey: "score")
-                                if curbic.floatValue > lastbic.floatValue {
-                                    let discardModel = lastModel
-//                                    print ("keeping: \(curModel.name) and discarding \(discardModel.name)")
-                                    lastModel = curModel
-                                    lastbic = curbic
-//                                    if discardModel != cfirstModel {
-//                                        cmoc.delete(discardModel)
-//                                    }
+                                let msrun = self.metalCalc(curModel : curModel, verbose: false)
+                                if (msrun == true) {
+                                    curbic = curModel.score
+    //                                print("\(lastbic) \(curbic)")
+                                    curModel.setValue(curbic, forKey: "score")
+                                    if curbic.floatValue > lastbic.floatValue {
+                                        let discardModel = lastModel
+    //                                    print ("keeping: \(curModel.name) and discarding \(discardModel.name)")
+                                        lastModel = curModel
+                                        lastbic = curbic
+    //                                    if discardModel != cfirstModel {
+    //                                        cmoc.delete(discardModel)
+    //                                    }
+                                    }
+                                    else {
+    //                                    print ("discarding: \(curModel.name)")
+    //                                    cmoc.delete(curModel)
+                                        
+                                    }
                                 }
                                 else {
-//                                    print ("discarding: \(curModel.name)")
-//                                    cmoc.delete(curModel)
-                                    
+    //                                print ("error: \(curModel.name)")
+    //                                cmoc.delete(curModel)
                                 }
                             }
                             else {
-//                                print ("error: \(curModel.name)")
-//                                cmoc.delete(curModel)
+//                                print ("\(curModel.name) is cyclic. Ignoring")
                             }
                             
                         }
@@ -916,8 +930,6 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                         formatter.dateFormat = "dd.MM.yyyy"
                         bestname = bestname + formatter.string(from: date)
                         peakModel.setValue(bestname, forKey: "name")
-                        print("WINNER \(peakModel.name)")
-//                        cfirstModel.addAChildObject(peakModel)
                         finalModel = peakModel
                     }
                     
@@ -2424,9 +2436,9 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         }
         
         
-        if let insertedObjects = notification.userInfo?[NSInsertedObjectsKey] as? Set<NSManagedObject>, !insertedObjects.isEmpty {
-            print(insertedObjects)
-        }
+//        if let insertedObjects = notification.userInfo?[NSInsertedObjectsKey] as? Set<NSManagedObject>, !insertedObjects.isEmpty {
+//            print(insertedObjects)
+//        }
 //        if let updatedObjects = notification.userInfo?[NSUpdatedObjectsKey] as? Set<NSManagedObject>, !updatedObjects.isEmpty {
 //            print(updatedObjects)
 //        }
