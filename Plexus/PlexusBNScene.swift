@@ -29,6 +29,7 @@ class PlexusBNScene: SKScene {
 
     var dragStart = CGPoint(x: 0.0, y: 0.0)
     var startNode = SKNode()
+    var movingNode = SKNode()
 
     var d1 : CGFloat = 0.3
     var d2 : CGFloat = 0.8
@@ -37,8 +38,8 @@ class PlexusBNScene: SKScene {
     override func didMove(to view: SKView) {
         
             
-            let appDelegate : AppDelegate = NSApplication.shared().delegate as! AppDelegate
-            moc = appDelegate.persistentContainer.viewContext
+        let appDelegate : AppDelegate = NSApplication.shared().delegate as! AppDelegate
+        moc = appDelegate.persistentContainer.viewContext
         
         
         NotificationCenter.default.addObserver(self, selector: #selector(PlexusBNScene.mocDidChange(_:)), name: NSNotification.Name.NSManagedObjectContextObjectsDidChange, object: moc)
@@ -58,10 +59,8 @@ class PlexusBNScene: SKScene {
         self.physicsBody = borderBody
         self.physicsBody?.friction = 0.0
         startNode = self // so initialized
+        movingNode = self
 
-
-
-        
 
     }
   /*
@@ -106,7 +105,7 @@ class PlexusBNScene: SKScene {
         dragStart = loc
        
         var touchedNode : SKNode = self.atPoint(loc)
-       // print("mouseDown touched \(touchedNode) parent: \(touchedNode.parent)")
+        print("mouseDown touched \(touchedNode.name)      parent: \(String(describing: touchedNode.parent))")
 
         if(touchedNode.isEqual(to: self)) { //pass up to scroll?
             if(theEvent.clickCount > 1){
@@ -123,9 +122,22 @@ class PlexusBNScene: SKScene {
             
         else {//touched existing node, can draw line between
             
+            
+             if(touchedNode.name == "nodeLine"){//passing mouseDown to node if in same area
+                let allNodes : [SKNode] = self.nodes(at: touchedNode.position)
+                for theNode : SKNode in allNodes {
+                    if(theNode.name == "bnNode")
+                    {
+                        touchedNode = theNode //switch to the bnNode in the position of the label
+                    }
+                }
+                
+            }
+            
+            
             if(touchedNode.name == "nodeName"){//passing mouseDown to node beenath
                 let allNodes : [SKNode] = self.nodes(at: touchedNode.position)
-               // print (allNodes)
+
                 for theNode : SKNode in allNodes {
                     
                 //   print("mouseDOWN sknode \(theNode) pos: \(theNode.position)")
@@ -138,7 +150,7 @@ class PlexusBNScene: SKScene {
                 
             }
             
-           // print ("mouseDown now touchedNode is \(touchedNode)")
+            print ("mouseDown now touchedNode is \(touchedNode)")
 
             if(touchedNode.name == "bnNode"){
                 
@@ -150,14 +162,16 @@ class PlexusBNScene: SKScene {
                 self.enumerateChildNodes(withName: "bnNode", using: { thisNode, stop in
                     let noglowNode : SKSpriteNode = thisNode as! SKSpriteNode
                     noglowNode.texture = SKTexture(imageNamed:"PlexusNode")
-                    
-
 
                 })
                 
+                self.enumerateChildNodes(withName: "bnNodeInter", using: { thisNode, stop in
+                    let noglowNode : SKSpriteNode = thisNode as! SKSpriteNode
+                    noglowNode.texture = SKTexture(imageNamed:"PlexusNode")
+                    
+                })
+                
                let idNode : PlexusBNNode = touchedNode as! PlexusBNNode
-
-//                idNode.glowWidth = 5
                 idNode.texture = SKTexture(imageNamed:"PlexusNodeSelected")
                
                 
@@ -170,28 +184,17 @@ class PlexusBNScene: SKScene {
                             object: nil,
                             userInfo: ["message":"nodeDblClick", "date":Date()])
                     
-
-//
-//                    var contextMenu = NSMenu.init(title: "whut")
-//                    NSMenu.popUpContextMenu(contextMenu, with: theEvent, for: self.view!)
                 }
                 
             }
-
+            
+            
 
         }
 
         
                startNode = touchedNode
-        
-//        if(startNode.name == "bnNode"){
-//            let IDNode : PlexusBNNode = startNode as! PlexusBNNode
-//            print("mouseDOWN now startNode is bnnode \(startNode) \(IDNode.node.name)")
-//
-//        }
-//        else {
-//            print ("mouseDown startnode is \(startNode)")
-//        }
+    
  
     }
     
@@ -217,15 +220,43 @@ class PlexusBNScene: SKScene {
     override func rightMouseDragged(with event: NSEvent) {
         print("right mouse dragged")
     }
+    
     override func mouseDragged(with theEvent: NSEvent) {
-        
         
         let loc : CGPoint = theEvent.location(in: self)
         var touchedNode : SKNode = self.atPoint(loc)
         
+        print("mouseDragged touched \(String(describing: touchedNode.name))        moving: \(String(describing: movingNode.name)))")
+        
 //        if(touchedNode.isEqual(to: self)) { //pass up to scroll?
 //            
 //        }
+        
+//        if movingNode != self {
+//            print("mouseDdragged touched \(touchedNode) parent: \(String(describing: touchedNode.parent)) moving \(movingNode)")
+//        }
+
+        
+        if movingNode.name == "bnNode"{
+            let bnNode = movingNode as! PlexusBNNode
+            
+            bnNode.position = loc
+            bnNode.nameLabel.position = loc
+            bnNode.valLabel.position = loc
+            print("\(bnNode.name) position now \(bnNode.position)")
+            return
+        }
+        
+        if(touchedNode.name == "nodeLine"){//passing mouseDown to node if in same area
+            let allNodes : [SKNode] = self.nodes(at: touchedNode.position)
+            for theNode : SKNode in allNodes {
+                if(theNode.name == "bnNode")
+                {
+                    touchedNode = theNode //switch to the bnNode in the position of the label
+                }
+            }
+            
+        }
         
         if(touchedNode.name == "nodeName"){//passing mouseDown to node beenath
             let allNodes : [SKNode] = self.nodes(at: touchedNode.position) 
@@ -240,8 +271,8 @@ class PlexusBNScene: SKScene {
             
         }
         
+        print ("\nmouseDdragged now touchedNode is \(touchedNode)\n")
         
-
         if (theEvent.modifierFlags.intersection(.command) == .command) {
 
             let curModels : [Model] = modelTreeController.selectedObjects as! [Model]
@@ -276,10 +307,15 @@ class PlexusBNScene: SKScene {
             
         }
         else {
-            touchedNode = startNode
-            touchedNode.position = loc
+//            touchedNode = startNode
+//            touchedNode.position = loc
+
+
             if touchedNode.name == "bnNode"{
+                movingNode = touchedNode
+                print("\n**********************mouseDdragged touched \(String(describing: touchedNode.name))     moving: \(movingNode.name))\n")
                 let bnNode = touchedNode as! PlexusBNNode
+                bnNode.position = loc
                 bnNode.nameLabel.position = loc
                 bnNode.valLabel.position = loc
             }
@@ -291,13 +327,17 @@ class PlexusBNScene: SKScene {
     
     override func mouseUp(with theEvent: NSEvent) {
         //let errorPtr : NSErrorPointer = nil
-        /*
+        
+        movingNode = self
+
         let curModels : [Model] = modelTreeController.selectedObjects as! [Model]
         let curModel : Model = curModels[0]
         if(curModel.complete == true){
             return
         }
-        */
+ 
+        
+        
         
         let loc = theEvent.location(in: self)
         
@@ -338,8 +378,10 @@ class PlexusBNScene: SKScene {
             self.physicsWorld.add(theJoint)
             
 
-            startIDNode.node.addAnInfluencesObject(releasedIDNode.node)
-            releasedIDNode.node.addAnInfluencedByObject(startIDNode.node)
+            let interNode = startIDNode.node.addAnInfluencesObject(infBy: releasedIDNode.node, moc : moc)
+            curModel.addABNNodeInterObject(interNode)
+            interNode.model = curModel
+            _ = releasedIDNode.node.addAnInfluencedByObject(inf: startIDNode.node, moc : moc)
 
             
             if(startIDNode.node.DFTcyclechk([startIDNode.node]) || releasedIDNode.node.DFTcyclechk([releasedIDNode.node])){
@@ -448,8 +490,9 @@ class PlexusBNScene: SKScene {
     
     
     override func update(_ currentTime: TimeInterval) {
-//        print(firstUpdate)
-//        print(movingNode)
+        
+
+
         let inset : CGRect = CGRect(x: 25, y: 25, width: self.size.width-50, height: self.size.height-50)
         
         let borderBody = SKPhysicsBody(edgeLoopFrom: inset)
@@ -459,12 +502,18 @@ class PlexusBNScene: SKScene {
         self.enumerateChildNodes(withName: "nodeLine", using: { thisLine, stop in
             thisLine.removeFromParent()
         })
+        
+        self.enumerateChildNodes(withName: "nodeInterName", using: { thisLine, stop in
+            thisLine.removeFromParent()
+        })
+        
+        self.enumerateChildNodes(withName: "bnNodeInter", using: { thisLine, stop in
+            thisLine.removeFromParent()
+        })
 
-    
         self.enumerateChildNodes(withName: "scoreName", using: { thisText, stop in
             thisText.removeFromParent()
         })
-
 
         self.enumerateChildNodes(withName: "noNodesName", using: { thisText, stop in
             thisText.removeFromParent()
@@ -539,22 +588,21 @@ class PlexusBNScene: SKScene {
                     })
                     
 
-
-
-                        let theInfluenced : [BNNode] = curNode.influences.array as! [BNNode]
-
-                        for thisInfluenced : BNNode in theInfluenced as [BNNode] {
+                        let theInfluences : [BNNode] = curNode.infs(self)
+                        for thisInfluences : BNNode in theInfluences as [BNNode] {
                             var infNode : PlexusBNNode!
                             self.enumerateChildNodes(withName: "bnNode", using: { thatNode, stop in
                                 
                                 let thatidNode : PlexusBNNode = thatNode as! PlexusBNNode
                                 
-                                if(thatidNode.node == thisInfluenced){
+                                if(thatidNode.node == thisInfluences){
                                     infNode = thatidNode
                                 }
                             })
                             if (idNode != nil && infNode != nil) {
-                               
+                                
+                                
+                               //Draw Arrow
                                 if(idNode.position.x != infNode.position.x && idNode.position.y != infNode.position.y){ //don't bother drawing the line if nodes right on top of each other. Causes Core Graphics to complain
                                     let arrowPath = CGPath.bezierPathWithArrowFromPoint(CGPoint(x: idNode.position.x,y: idNode.position.y), endPoint: CGPoint(x: infNode.position.x,y: infNode.position.y), tailWidth: 2, headWidth: 10, headLength: 10, d1: 0.25, d2: 0.75)
                                     let joinLine = SKShapeNode(path: arrowPath)
@@ -564,6 +612,45 @@ class PlexusBNScene: SKScene {
 //                                    joinLine.fillColor = NSColor.white
                                     self.addChild(joinLine)
                                 }
+                                
+                                //Create and draw NodeInter
+                                //Find halfway distance along line
+                                //Get lower of the two
+                                var lowX = idNode.position.x
+                                var hiX = infNode.position.x
+                                if infNode.position.x < lowX {
+                                    lowX = infNode.position.x
+                                    hiX = idNode.position.x
+                                }
+                                var lowY = idNode.position.y
+                                var hiY = infNode.position.y
+                                if infNode.position.y < lowY {
+                                    lowY = infNode.position.y
+                                    hiY = idNode.position.y
+                                }
+
+                                let theX = ((hiX - lowX) / 2.0) + lowX
+                                let theY = ((hiY - lowY) / 2.0) + lowY
+                                
+                                
+                                //Get the NodeInter that is between them, or make one if it does not exist
+                                
+
+                                let interNode = idNode.node.addAnInfluencesObject(infBy: infNode.node, moc: moc)
+
+                                //The connection between current model and a new BNNodeInter, guarded against this being attempted before we have curModel
+                                if let curModels : [Model] = modelTreeController.selectedObjects as? [Model] {
+                                    let curModel : Model = curModels[0]
+                                    curModel.addABNNodeInterObject(interNode)
+                                    interNode.model = curModel
+
+                                }
+
+                                //Create display node for this Nodeinter
+                                self.makeNodeInter(interNode, inPos: CGPoint(x: theX,  y: theY))
+                                
+                                
+                                
                             }
                         }
 
@@ -573,7 +660,25 @@ class PlexusBNScene: SKScene {
                 firstUpdate = false
             }
             
+            
+            //Highlight selected node
+            
+            let theSelected = nodesController.selectedObjects as! [BNNode]
+            let selNode = theSelected[0]
+
+            self.enumerateChildNodes(withName: "bnNode", using: { thisKid, stop in
+                let thisPBN = thisKid as! PlexusBNNode
+                if thisPBN.node == selNode {
+                    thisPBN.texture = SKTexture(imageNamed:"PlexusNodeSelected")
+                }
+
+            })
+            
         }
+        
+
+        
+        
 //
 //        var angle : CGFloat = 0.0
         
@@ -722,6 +827,61 @@ class PlexusBNScene: SKScene {
     
     */
 
+    func makeNodeInter(_ inNodeInter : BNNodeInter, inPos: CGPoint){
+        
+        
+        let labelText = (String(format: "%.3f", inNodeInter.ifthen.floatValue))
+        
+        let myLabel = SKLabelNode(text: labelText)
+        myLabel.fontName = "Helvetica-Bold"
+        myLabel.fontSize = 12
+        myLabel.zPosition = 3
+        myLabel.name = "nodeInterName"
+        myLabel.verticalAlignmentMode = SKLabelVerticalAlignmentMode.center
+        
+        
+        let nodeWidth = myLabel.frame.size.width + 15
+        let nodeHeight = myLabel.frame.size.height + 15
+        
+        
+        
+        let shapeSize = CGSize(width: nodeWidth, height: nodeHeight)
+
+        let shape = PlexusBNNodeInter(imageNamed: "PlexusNode")
+        shape.scale(to: shapeSize)
+        shape.name = "bnNodeInter"
+        shape.position = inPos
+        shape.zPosition = 1
+        
+        shape.isUserInteractionEnabled = false
+        shape.physicsBody = SKPhysicsBody(rectangleOf: CGRect(x: -(nodeWidth/2), y: -(nodeHeight/2), width: nodeWidth, height: nodeHeight).size)
+        shape.physicsBody?.mass = 1.0
+        shape.physicsBody?.restitution = 0.3
+        shape.physicsBody?.linearDamping = 0.9
+        shape.physicsBody?.affectedByGravity = false
+        shape.physicsBody?.isDynamic = true
+        shape.physicsBody?.allowsRotation = false
+        shape.physicsBody?.categoryBitMask = ColliderType.node.rawValue
+        shape.physicsBody?.collisionBitMask = ColliderType.node.rawValue
+        
+        shape.nodeInter = inNodeInter
+        
+        self.addChild(shape)
+        
+        myLabel.physicsBody = SKPhysicsBody(rectangleOf: CGRect(x: -(nodeWidth/2), y: -(nodeHeight/2), width: nodeWidth, height: nodeHeight).size)
+        myLabel.position = shape.position
+
+        
+        self.addChild(myLabel)
+        shape.ifthenLabel = myLabel
+        
+        let labelJoint = SKPhysicsJointFixed.joint(withBodyA: shape.physicsBody!, bodyB:  myLabel.physicsBody!, anchor: shape.position)
+        
+        self.physicsWorld.add(labelJoint)
+        
+
+        
+    }
     
     func makeNode(_ inNode : BNNode, inPos: CGPoint){
                

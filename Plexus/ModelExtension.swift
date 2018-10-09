@@ -21,6 +21,11 @@ extension Model {
         items.add(value)
     }
     
+    func addABNNodeInterObject(_ value:BNNodeInter) {
+        let items = self.mutableSetValue(forKey: "bnnodeinter");
+        items.add(value)
+    }
+    
     func addAnEntryObject(_ value:Entry) {
         let items = self.mutableSetValue(forKey: "entry");
         items.add(value)
@@ -106,7 +111,7 @@ extension Model {
         //Copy Influences
         for curNode : BNNode in curNodes {
             var infsoned = [Int]()
-            let infs : [BNNode] = curNode.influences.array as! [BNNode]
+            let infs : [BNNode] = curNode.infs(self)
             for inf : BNNode in infs{
                 var chk = 0
                 for chkNode : BNNode in curNodes {
@@ -124,8 +129,10 @@ extension Model {
         var i = 0
         for infsoned : [Int] in infstwod{
             for thisinf in infsoned{
-                tempNodeArray[i].addAnInfluencesObject(tempNodeArray[thisinf])
-                tempNodeArray[thisinf].addAnInfluencedByObject(tempNodeArray[i])
+                let newInter = tempNodeArray[i].addAnInfluencesObject(infBy: tempNodeArray[thisinf], moc : moc)
+                self.addABNNodeInterObject(newInter)
+                newInter.model = self
+                _ = tempNodeArray[thisinf].addAnInfluencedByObject(inf: tempNodeArray[i], moc : moc)
             }
             i += 1
         }

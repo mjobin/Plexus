@@ -1990,12 +1990,12 @@
                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                                 <connections>
-                                    <binding destination="prD-Zo-0MI" name="editable" keyPath="modelTreeController.selection.complete" id="uIL-Om-LfR">
+                                    <binding destination="prD-Zo-0MI" name="enabled" keyPath="modelTreeController.selection.complete" previousBinding="uIL-Om-LfR" id="PPj-pk-02b">
                                         <dictionary key="options">
                                             <string key="NSValueTransformerName">NSNegateBoolean</string>
                                         </dictionary>
                                     </binding>
-                                    <binding destination="prD-Zo-0MI" name="enabled" keyPath="modelTreeController.selection.complete" previousBinding="uIL-Om-LfR" id="PPj-pk-02b">
+                                    <binding destination="prD-Zo-0MI" name="editable" keyPath="modelTreeController.selection.complete" id="uIL-Om-LfR">
                                         <dictionary key="options">
                                             <string key="NSValueTransformerName">NSNegateBoolean</string>
                                         </dictionary>
@@ -2053,12 +2053,12 @@
                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                                 <connections>
-                                    <binding destination="prD-Zo-0MI" name="editable" keyPath="modelTreeController.selection.complete" id="XVi-8k-sgp">
+                                    <binding destination="prD-Zo-0MI" name="enabled" keyPath="modelTreeController.selection.complete" previousBinding="XVi-8k-sgp" id="Vh3-zE-AA7">
                                         <dictionary key="options">
                                             <string key="NSValueTransformerName">NSNegateBoolean</string>
                                         </dictionary>
                                     </binding>
-                                    <binding destination="prD-Zo-0MI" name="enabled" keyPath="modelTreeController.selection.complete" previousBinding="XVi-8k-sgp" id="Vh3-zE-AA7">
+                                    <binding destination="prD-Zo-0MI" name="editable" keyPath="modelTreeController.selection.complete" id="XVi-8k-sgp">
                                         <dictionary key="options">
                                             <string key="NSValueTransformerName">NSNegateBoolean</string>
                                         </dictionary>
@@ -2136,12 +2136,12 @@
                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                                 <connections>
-                                    <binding destination="52c-kc-j8G" name="editable" keyPath="modelTreeController.selection.complete" id="xD1-Mt-xuH">
+                                    <binding destination="52c-kc-j8G" name="enabled" keyPath="modelTreeController.selection.complete" previousBinding="xD1-Mt-xuH" id="7zD-y7-W4u">
                                         <dictionary key="options">
                                             <string key="NSValueTransformerName">NSNegateBoolean</string>
                                         </dictionary>
                                     </binding>
-                                    <binding destination="52c-kc-j8G" name="enabled" keyPath="modelTreeController.selection.complete" previousBinding="xD1-Mt-xuH" id="7zD-y7-W4u">
+                                    <binding destination="52c-kc-j8G" name="editable" keyPath="modelTreeController.selection.complete" id="xD1-Mt-xuH">
                                         <dictionary key="options">
                                             <string key="NSValueTransformerName">NSNegateBoolean</string>
                                         </dictionary>
@@ -2157,12 +2157,12 @@
                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                                 <connections>
-                                    <binding destination="52c-kc-j8G" name="editable" keyPath="modelTreeController.selection.complete" id="h4K-YV-oSX">
+                                    <binding destination="52c-kc-j8G" name="enabled" keyPath="modelTreeController.selection.complete" previousBinding="h4K-YV-oSX" id="I2b-2p-ipd">
                                         <dictionary key="options">
                                             <string key="NSValueTransformerName">NSNegateBoolean</string>
                                         </dictionary>
                                     </binding>
-                                    <binding destination="52c-kc-j8G" name="enabled" keyPath="modelTreeController.selection.complete" previousBinding="h4K-YV-oSX" id="I2b-2p-ipd">
+                                    <binding destination="52c-kc-j8G" name="editable" keyPath="modelTreeController.selection.complete" id="h4K-YV-oSX">
                                         <dictionary key="options">
                                             <string key="NSValueTransformerName">NSNegateBoolean</string>
                                         </dictionary>
@@ -2250,22 +2250,22 @@
                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                                 <connections>
-                                    <binding destination="52c-kc-j8G" name="editable" keyPath="modelTreeController.selection.complete" id="YK4-e2-y5a">
-                                        <dictionary key="options">
-                                            <string key="NSValueTransformerName">NSNegateBoolean</string>
-                                        </dictionary>
-                                    </binding>
                                     <binding destination="52c-kc-j8G" name="enabled" keyPath="modelTreeController.selection.complete" previousBinding="YK4-e2-y5a" id="294-m4-0CU">
                                         <dictionary key="options">
                                             <string key="NSValueTransformerName">NSNegateBoolean</string>
                                         </dictionary>
                                     </binding>
-                                    <binding destination="Jh7-dX-xVp" name="hidden" keyPath="selection.numericData" previousBinding="294-m4-0CU" id="LJj-Rk-gWD">
+                                    <binding destination="52c-kc-j8G" name="editable" keyPath="modelTreeController.selection.complete" id="YK4-e2-y5a">
                                         <dictionary key="options">
                                             <string key="NSValueTransformerName">NSNegateBoolean</string>
                                         </dictionary>
                                     </binding>
                                     <binding destination="52c-kc-j8G" name="value" keyPath="nodesController.selection.tolerance" id="0GQ-Ux-mWD"/>
+                                    <binding destination="Jh7-dX-xVp" name="hidden" keyPath="selection.numericData" previousBinding="294-m4-0CU" id="LJj-Rk-gWD">
+                                        <dictionary key="options">
+                                            <string key="NSValueTransformerName">NSNegateBoolean</string>
+                                        </dictionary>
+                                    </binding>
                                 </connections>
                             </textField>
                             <button translatesAutoresizingMaskIntoConstraints="NO" id="tgO-gw-wzz">

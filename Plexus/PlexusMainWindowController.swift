@@ -25,22 +25,6 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
 
     let queue = DispatchQueue(label: "com.plexus.Plexus.metalQueue")
 
-//    lazy var device: MTLDevice! = {
-//
-//        let devices = devicesController?.selectedObjects as! [MTLDevice]
-//        return devices[0]
-//
-////        let devices: [MTLDevice] = MTLCopyAllDevices()
-////        for metalDevice : MTLDevice in devices {
-////            if metalDevice.isHeadless  && !metalDevice.isLowPower { //Select the best device if there are any choices
-////                return metalDevice
-////            }
-////        }
-////        return MTLCreateSystemDefaultDevice() //Return default device if no headless
-//    }()
-    
-    
-    // choose the device NOT used by monitor
 
     var device : MTLDevice!
     var pipelineState : MTLComputePipelineState!
@@ -633,6 +617,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
     
     func randomChildModel(lastModel : Model, thisMOC : NSManagedObjectContext?) -> Model {
         
+        
         let newModel = lastModel.copySelf(moc: thisMOC ?? nil)
         
         let nodesForTest = newModel.bnnode.allObjects as! [BNNode]
@@ -647,10 +632,27 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         let fromNode = nodesForTest[frompos]
         let toNode = nodesForTest[topos]
         
+        
+        var nochange = true
+        
         //Check if there is an arc between them
         var isinfArc = false
         var isinfByArc = false
-        let theInfluences : [BNNode] = fromNode.influences.array as! [BNNode]
+        
+        
+        
+//        if let interNode = toNode.getInfInterBetween(infByNode:fromNode, moc: thisMOC ?? nil) { //they are connected
+//            isinfArc = true
+//        }
+//        else if let interNode = fromNode.getInfInterBetween(infByNode:toNode, moc: thisMOC ?? nil) { //they are not
+//            isinfByArc = true
+//        }
+
+        
+        
+
+        
+        let theInfluences : [BNNode] = fromNode.infs(self)
         for thisInfluences in theInfluences {
             if thisInfluences == toNode {
                 isinfArc = true
@@ -659,7 +661,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         }
         
         
-        let theInfluencedBy : [BNNode] = fromNode.influencedBy.array as! [BNNode]
+        let theInfluencedBy : [BNNode] = fromNode.infBy(self)
         for thisInfluencedBy in theInfluencedBy {
             if thisInfluencedBy == toNode {
                 isinfByArc = true
@@ -668,35 +670,117 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         }
         
         
-        if isinfArc == true && isinfByArc == false {
-            let cflip = arc4random_uniform(2)
-            if(cflip == 0) { // delete arc
-                fromNode.removeAnInfluencesObject(toNode)
-            }
-            else { // reverse arc
-                fromNode.removeAnInfluencesObject(toNode)
-                toNode.addAnInfluencesObject(fromNode)
+
+        
+        
+        
+
+
+        
+        
+        //If fromNode has no data, can change the ifthen
+        while nochange {
+            let switchup = Int.random(in: 1 ... 4)
+            switch switchup {
+                case 1: //Change an ifthen if the from node has no data
+                
+                    let request = NSFetchRequest<Trait>(entityName: "Trait")
+                    let predicate = NSPredicate(format: "entry IN %@ && name == %@", argumentArray: [newModel.entry, fromNode.name])
+                    request.predicate = predicate
+                    
+                    do {
+                        let allCount = try moc.count(for: request)
+                        if allCount < 1 {
+                            
+                            if let interNode = toNode.getInfInterBetween(infByNode:fromNode, moc: thisMOC ?? nil) { //they are connected
+                                interNode.ifthen =  NSNumber(value: Float.random(in: 0 ... 1))
+                                nochange = false
+                            }
+      
+                        }
+                        
+                    } catch {
+                        fatalError("Failed request.")
+                }
+                
+                case 2: //Add a hidden node wih no data pointing at toNode
+                    let newNode : BNNode = BNNode(entity: BNNode.entity(), insertInto: thisMOC)
+                    newNode.name = "hidden"
+                    newModel.addABNNodeObject(newNode)
+                    newNode.model = newModel
+                    let newInter = newNode.addAnInfluencesObject(infBy: toNode, moc: thisMOC)
+
+                    newInter.ifthen = 0.5
+                    nochange = false
+                
+                case 3: // Change the direction of an existing arrow
+                    if isinfArc == true && isinfByArc == false {
+
+                        if Bool.random() { // delete arc
+                            fromNode.removeAnInfluencesObject(toNode, moc : thisMOC)
+                        }
+                        else { // reverse arc
+                            fromNode.removeAnInfluencesObject(toNode, moc : thisMOC)
+                            let newInter = toNode.addAnInfluencesObject(infBy : fromNode, moc : thisMOC)
+                            newModel.addABNNodeInterObject(newInter)
+                            newInter.model = newModel
+                        }
+                    }
+                        
+                    else if isinfArc == false && isinfByArc == true {
+                        if Bool.random() { // delete arc
+                            toNode.removeAnInfluencesObject(fromNode, moc : thisMOC)
+                        }
+                        else { // reverse arc
+                            toNode.removeAnInfluencesObject(fromNode, moc : thisMOC)
+                            let newInter = fromNode.addAnInfluencesObject(infBy : toNode, moc : thisMOC)
+                            newModel.addABNNodeInterObject(newInter)
+                            newInter.model = newModel
+                        }
+                    }
+                        
+                    else if isinfArc == true && isinfByArc == true {
+                        fatalError("Error: infleunces in two directions!")
+                    }
+                    else { //both false, no arc
+                        let newInter = fromNode.addAnInfluencesObject(infBy : toNode, moc : thisMOC)
+                        newModel.addABNNodeInterObject(newInter)
+                        newInter.model = newModel
+                }
+                    nochange = false
+            case 4: //Change the traitvalue to another. If numeric, change tolerance
+
+                if toNode.numericData {
+                    toNode.tolerance = NSNumber(value: Float.random(in: 0 ... 1))
+                }
+                else {
+                    let theEntries = lastModel.entry
+                    let predicate = NSPredicate(format: "entry IN %@", theEntries)
+                    let request = NSFetchRequest<Trait>(entityName: "Trait")
+                    request.predicate = predicate
+                    request.propertiesToFetch = ["value"]
+                    do {
+                        let theValues = try moc.fetch(request)
+                        if let picked = theValues.randomElement() {
+                            toNode.value = picked.value
+                        }
+                    } catch let error as NSError {
+                        print (error)
+                    }
+                }
+                nochange = false
+                default:
+                    fatalError("Error: illegal rendom model alteration!")
             }
         }
         
-        else if isinfArc == false && isinfByArc == true {
-            let cflip = arc4random_uniform(2)
-            if(cflip == 0) { // delete arc
-                toNode.removeAnInfluencesObject(fromNode)
-            }
-            else { // reverse arc
-                toNode.removeAnInfluencesObject(fromNode)
-                fromNode.addAnInfluencesObject(toNode)
-            }
-        }
         
-        
-        else if isinfArc == true && isinfByArc == true {
-            fatalError("Error: infleunces in two directions!")
-        }
-        else { //both false, no arc
-            fromNode.addAnInfluencesObject(toNode)
-        }
+
+//        if Bool.random() {
+//        }
+//        else {
+//        }
+
         
         
          //Now make sure the CPT's are recalced
@@ -1036,6 +1120,9 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         
         
         let nodesForCalc = curModel.bnnode.allObjects as! [BNNode]
+        for nforc in nodesForCalc {
+            print(nforc.name)
+        }
         let nc = nodesForCalc.count
         
         let runstot = curModel.runstot as! Int
@@ -1139,10 +1226,12 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         var sInfNet = [[Int32]]()
         var infnet = [Int32]()
         for node in nodesForCalc {
+            print (node.name)
             var thisinf = [Int32]()
             let theInfluencedBy = node.infBy(self)
             for thisinfby in theInfluencedBy  {
-                let tib = thisinfby as! BNNode
+                let tib = thisinfby
+                print(tib)
                 thisinf.append(Int32(nodesForCalc.index(of: tib)!))
             }
             let leftOver = maxInfSize-thisinf.count
@@ -1383,7 +1472,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
             var postCount = [Int](repeating: 0, count: bins)
             let inNode : BNNode = nodesForCalc[fi]
 
-            let theInfluencedBy : [BNNode] = inNode.influencedBy.array as! [BNNode]
+            let theInfluencedBy : [BNNode] = inNode.infBy(self)
             if theInfluencedBy.count > 0 { //if dependent node
             
                 var gi = 0
@@ -2290,7 +2379,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         for r in 0...(nodesForCalc.count-1){
 //            print("Node: \(nodesForCalc[r].name)")
             let thisinfnet = infnet[r]
-            let infBy = nodesForCalc[r].influencedBy
+            let infBy = nodesForCalc[r].infBy(self)
             if infBy.count > 0 { //dependent. Use the conditional probability of this node given the states of the nodes at maxpos. So say T, T, T is binary 111 or decimal 7
                 let cptarray = nodesForCalc[r].cptArray //FIXME easier to pull this at top of funciton
 

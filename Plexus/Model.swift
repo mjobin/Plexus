@@ -25,6 +25,7 @@ class Model: NSManagedObject {
     
 
     @NSManaged var bnnode: NSSet
+    @NSManaged var bnnodeinter: NSSet
     @NSManaged var children: NSOrderedSet
     @NSManaged var entry: NSSet
     @NSManaged var parent: NSSet
