@@ -717,10 +717,10 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                     if isinfArc == true && isinfByArc == false {
 
                         if Bool.random() { // delete arc
-                            fromNode.removeAnInfluencesObject(toNode, moc : thisMOC)
+                            fromNode.removeAnInfluencesObject(value: toNode, moc : thisMOC)
                         }
                         else { // reverse arc
-                            fromNode.removeAnInfluencesObject(toNode, moc : thisMOC)
+                            fromNode.removeAnInfluencesObject(value: toNode, moc : thisMOC)
                             let newInter = toNode.addAnInfluencesObject(infBy : fromNode, moc : thisMOC)
                             newModel.addABNNodeInterObject(newInter)
                             newInter.model = newModel
@@ -729,10 +729,10 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                         
                     else if isinfArc == false && isinfByArc == true {
                         if Bool.random() { // delete arc
-                            toNode.removeAnInfluencesObject(fromNode, moc : thisMOC)
+                            toNode.removeAnInfluencesObject(value: fromNode, moc : thisMOC)
                         }
                         else { // reverse arc
-                            toNode.removeAnInfluencesObject(fromNode, moc : thisMOC)
+                            toNode.removeAnInfluencesObject(value: fromNode, moc : thisMOC)
                             let newInter = fromNode.addAnInfluencesObject(infBy : toNode, moc : thisMOC)
                             newModel.addABNNodeInterObject(newInter)
                             newInter.model = newModel

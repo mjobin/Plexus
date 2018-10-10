@@ -30,12 +30,14 @@ class PlexusBNScene: SKScene {
     var dragStart = CGPoint(x: 0.0, y: 0.0)
     var startNode = SKNode()
     var movingNode = SKNode()
+    var changes = false
 
     var d1 : CGFloat = 0.3
     var d2 : CGFloat = 0.8
     
     
     override func didMove(to view: SKView) {
+
         
             
         let appDelegate : AppDelegate = NSApplication.shared().delegate as! AppDelegate
@@ -63,12 +65,12 @@ class PlexusBNScene: SKScene {
 
 
     }
-  /*
-    override func didChangeSize(oldSize: CGSize) {
-        
-        self.redrawNodes()
+    
+    override func didChangeSize(_ oldSize: CGSize) {
+        changes = true
+//        self.redrawNodes()
     }
-*/
+
     
     override func keyDown(with theEvent: NSEvent) {
         let curModels : [Model] = modelTreeController.selectedObjects as! [Model]
@@ -85,6 +87,36 @@ class PlexusBNScene: SKScene {
         
         let selNodes : [BNNode]  = nodesController.selectedObjects as! [BNNode]
         for selNode : BNNode in selNodes{
+            
+
+
+            
+            
+            let theInfInters = selNode.infsInter(sender: self)
+            for thisinfInter in theInfInters{
+                self.enumerateChildNodes(withName: "bnNodeInter", using: { thisNodeInter, stop in
+                    let thisidNodeInter : PlexusBNNodeInter = thisNodeInter as! PlexusBNNodeInter
+                    if(thisidNodeInter.nodeInter == thisinfInter){
+                        thisidNodeInter.ifthenLabel.removeFromParent()
+                        thisidNodeInter.removeFromParent()
+                    }
+                })
+                moc.delete(thisinfInter)
+            }
+            
+            let theInfByInters = selNode.infByInter (sender : self)
+            for thisinfByInter in theInfByInters{
+                    self.enumerateChildNodes(withName: "bnNodeInter", using: { thisNodeInter, stop in
+                        let thisidNodeInter : PlexusBNNodeInter = thisNodeInter as! PlexusBNNodeInter
+                        if(thisidNodeInter.nodeInter == thisinfByInter){
+                            thisidNodeInter.ifthenLabel.removeFromParent()
+                            thisidNodeInter.removeFromParent()
+                        }
+                    })
+                moc.delete(thisinfByInter)
+            }
+            
+            
             nodesController.removeObject(selNode)
             let appDelegate : AppDelegate = NSApplication.shared().delegate as! AppDelegate
             moc = appDelegate.persistentContainer.viewContext
@@ -225,6 +257,7 @@ class PlexusBNScene: SKScene {
         
         let loc : CGPoint = theEvent.location(in: self)
         var touchedNode : SKNode = self.atPoint(loc)
+        changes = true
         
         print("mouseDragged touched \(String(describing: touchedNode.name))        moving: \(String(describing: movingNode.name)))")
         
@@ -313,7 +346,7 @@ class PlexusBNScene: SKScene {
 
             if touchedNode.name == "bnNode"{
                 movingNode = touchedNode
-                print("\n**********************mouseDdragged touched \(String(describing: touchedNode.name))     moving: \(movingNode.name))\n")
+                print("\n**********************mouseDdragged touched \(String(describing: touchedNode.name))     moving: \(String(describing: movingNode.name)))\n")
                 let bnNode = touchedNode as! PlexusBNNode
                 bnNode.position = loc
                 bnNode.nameLabel.position = loc
@@ -420,6 +453,7 @@ class PlexusBNScene: SKScene {
         //reset startnode
         startNode = self
         releasedNode = self
+        changes = false
     }
     
     
@@ -492,6 +526,9 @@ class PlexusBNScene: SKScene {
     override func update(_ currentTime: TimeInterval) {
         
 
+        if changes == false && firstUpdate == false {
+            return
+        }
 
         let inset : CGRect = CGRect(x: 25, y: 25, width: self.size.width-50, height: self.size.height-50)
         
@@ -503,13 +540,13 @@ class PlexusBNScene: SKScene {
             thisLine.removeFromParent()
         })
         
-        self.enumerateChildNodes(withName: "nodeInterName", using: { thisLine, stop in
-            thisLine.removeFromParent()
-        })
+//        self.enumerateChildNodes(withName: "nodeInterName", using: { thisLine, stop in
+//            thisLine.removeFromParent()
+//        })
         
-        self.enumerateChildNodes(withName: "bnNodeInter", using: { thisLine, stop in
-            thisLine.removeFromParent()
-        })
+//        self.enumerateChildNodes(withName: "bnNodeInter", using: { thisLine, stop in
+//            thisLine.removeFromParent()
+//        })
 
         self.enumerateChildNodes(withName: "scoreName", using: { thisText, stop in
             thisText.removeFromParent()
@@ -635,21 +672,57 @@ class PlexusBNScene: SKScene {
                                 
                                 //Get the NodeInter that is between them, or make one if it does not exist
                                 
+                                
+                                
+                                
 
-                                let interNode = idNode.node.addAnInfluencesObject(infBy: infNode.node, moc: moc)
-
-                                //The connection between current model and a new BNNodeInter, guarded against this being attempted before we have curModel
-                                if let curModels : [Model] = modelTreeController.selectedObjects as? [Model] {
-                                    let curModel : Model = curModels[0]
-                                    curModel.addABNNodeInterObject(interNode)
-                                    interNode.model = curModel
-
+                                if let interNode = idNode.node.getInfInterBetween(infByNode: infNode.node, moc: moc) {
+                                    
+                                    var foundinter = false
+                                    
+                                    self.enumerateChildNodes(withName: "bnNodeInter", using: { thisNodeInter, stop in
+                                        
+                                        let thisidNodeInter : PlexusBNNodeInter = thisNodeInter as! PlexusBNNodeInter
+                                        
+                                        if(thisidNodeInter.nodeInter == interNode){ //Found it, just set its position
+                                            foundinter = true
+                                            thisidNodeInter.position = CGPoint(x: theX,  y: theY)
+                                        }
+ 
+                                    })
+                                    
+                                    if foundinter == false {
+                                        let interNode = idNode.node.addAnInfluencesObject(infBy: infNode.node, moc: moc)
+                                        
+                                        //The connection between current model and a new BNNodeInter, guarded against this being attempted before we have curModel
+                                        if let curModels : [Model] = modelTreeController.selectedObjects as? [Model] {
+                                            let curModel : Model = curModels[0]
+                                            curModel.addABNNodeInterObject(interNode)
+                                            interNode.model = curModel
+                                        }
+                                        
+                                        //Create display node for this Nodeinter
+                                        self.makeNodeInter(interNode, inPos: CGPoint(x: theX,  y: theY))
+                                        
+                                        
+                                    }
+                                    
                                 }
+                                else {
 
-                                //Create display node for this Nodeinter
-                                self.makeNodeInter(interNode, inPos: CGPoint(x: theX,  y: theY))
-                                
-                                
+                                            let interNode = idNode.node.addAnInfluencesObject(infBy: infNode.node, moc: moc)
+
+                                            //The connection between current model and a new BNNodeInter, guarded against this being attempted before we have curModel
+                                            if let curModels : [Model] = modelTreeController.selectedObjects as? [Model] {
+                                                let curModel : Model = curModels[0]
+                                                curModel.addABNNodeInterObject(interNode)
+                                                interNode.model = curModel
+                                            }
+
+                                            //Create display node for this Nodeinter
+                                            self.makeNodeInter(interNode, inPos: CGPoint(x: theX,  y: theY))
+                                    
+                                    }
                                 
                             }
                         }
@@ -664,15 +737,17 @@ class PlexusBNScene: SKScene {
             //Highlight selected node
             
             let theSelected = nodesController.selectedObjects as! [BNNode]
-            let selNode = theSelected[0]
+            if theSelected.count > 0 {
+                let selNode = theSelected[0]
 
-            self.enumerateChildNodes(withName: "bnNode", using: { thisKid, stop in
-                let thisPBN = thisKid as! PlexusBNNode
-                if thisPBN.node == selNode {
-                    thisPBN.texture = SKTexture(imageNamed:"PlexusNodeSelected")
-                }
+                self.enumerateChildNodes(withName: "bnNode", using: { thisKid, stop in
+                    let thisPBN = thisKid as! PlexusBNNode
+                    if thisPBN.node == selNode {
+                        thisPBN.texture = SKTexture(imageNamed:"PlexusNodeSelected")
+                    }
 
-            })
+                })
+            }
             
         }
         
@@ -756,7 +831,7 @@ class PlexusBNScene: SKScene {
         
         
         
-
+        changes = false
         
     }
   
@@ -1043,7 +1118,7 @@ class PlexusBNScene: SKScene {
             }
         }
         */
-        
+        changes = true
         if let _ = (notification as NSNotification).userInfo?[NSDeletedObjectsKey] as? NSSet {
            // justUpdate = false
 

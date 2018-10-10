@@ -17,6 +17,7 @@ extension BNNode {
     
     
     func getInfInterBetween(infByNode:BNNode, moc : NSManagedObjectContext?) -> BNNodeInter? {
+        //self is the influencing node, infByNode is the influencedBy
         
         let influencedByInter = infByNode.mutableOrderedSetValue(forKey: "influencedBy")
         for thisinfByInter in influencedByInter {
@@ -97,13 +98,13 @@ extension BNNode {
     
     
     
-    func removeAnInfluencesObject(_ value:BNNode, moc : NSManagedObjectContext?) {
+    func removeAnInfluencesObject(value:BNNode, moc : NSManagedObjectContext?) {
         let influencesInter = self.mutableOrderedSetValue(forKey: "influences");
         
         var theBNNodeInter : BNNodeInter!
         for thisinfInter in influencesInter {
             let curinfInter = thisinfInter as! BNNodeInter
-            if curinfInter.influences == value{
+            if curinfInter.influencedBy == value{
                 theBNNodeInter = curinfInter
             }
         }
@@ -123,13 +124,13 @@ extension BNNode {
     
     
     
-    func removeAnInfluencedByObject(_ value:BNNode, moc : NSManagedObjectContext?) {
+    func removeAnInfluencedByObject(value:BNNode, moc : NSManagedObjectContext?) {
         let influencedByInter = self.mutableOrderedSetValue(forKey: "influencedBy");
         
         var theBNNodeInter : BNNodeInter!
         for thisinfInter in influencedByInter {
             let curinfInter = thisinfInter as! BNNodeInter
-            if curinfInter.influencedBy == self {
+            if curinfInter.influences == self {
                 theBNNodeInter = curinfInter
             }
         }
@@ -146,12 +147,6 @@ extension BNNode {
         moc?.delete(theBNNodeInter)
         
     }
-    
-    func removeAnInfluencedByObject(_ value:BNNode) {
-        let influencedBy = self.mutableOrderedSetValue(forKey: "influencedBy");
-        influencedBy.remove(value)
-    }
-    
     
     
     
