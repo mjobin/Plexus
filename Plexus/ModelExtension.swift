@@ -21,10 +21,6 @@ extension Model {
         items.add(value)
     }
     
-    func addABNNodeInterObject(_ value:BNNodeInter) {
-        let items = self.mutableSetValue(forKey: "bnnodeinter");
-        items.add(value)
-    }
     
     func addAnEntryObject(_ value:Entry) {
         let items = self.mutableSetValue(forKey: "entry");
@@ -60,7 +56,7 @@ extension Model {
         newModel.setValue(0, forKey: "score")
         newModel.setValue(self.thin, forKey: "thin")
 
-        let start = DispatchTime.now()
+
         if withEntries == true {
             let theEntries  = self.entry
             for theEntry in theEntries {
@@ -69,9 +65,7 @@ extension Model {
                 curEntry.addAModelObject(newModel)
             }
         }
-                    var end = DispatchTime.now()
-                    var cptRunTime = Double(end.uptimeNanoseconds - start.uptimeNanoseconds) / 1000000000
-                    print ("**********Copy entries took \(cptRunTime) seconds.")
+
         
         var tempNodeArray = [BNNode]()
         let curNodes  = self.bnnode.allObjects as! [BNNode]
@@ -118,12 +112,6 @@ extension Model {
         }
         
         
-//        Am i duplicating here?
-//        for curNode : BNNode in curNodes {
-//            theinfs = curNode
-//
-//            
-//        }
         
         var infstwod = [[Int]]()
         
@@ -151,8 +139,6 @@ extension Model {
             for thisinf in infsoned{
 //                print("\(tempNodeArray[i].name) influences \(tempNodeArray[thisinf].name)")
                 let newInter = tempNodeArray[i].addAnInfluencesObject(infBy: tempNodeArray[thisinf], moc : moc)
-                newModel.addABNNodeInterObject(newInter)
-                newInter.model = newModel
                 _ = tempNodeArray[thisinf].addAnInfluencedByObject(inf: tempNodeArray[i], moc : moc)
             }
             i += 1

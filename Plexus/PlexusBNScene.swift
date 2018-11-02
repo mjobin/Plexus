@@ -433,8 +433,6 @@ class PlexusBNScene: SKScene {
             
 
             let interNode = startIDNode.node.addAnInfluencesObject(infBy: releasedIDNode.node, moc : moc)
-            curModel.addABNNodeInterObject(interNode)
-            interNode.model = curModel
             _ = releasedIDNode.node.addAnInfluencedByObject(inf: startIDNode.node, moc : moc)
 
             
@@ -721,14 +719,6 @@ class PlexusBNScene: SKScene {
                                         
                                         if foundinter == false {
                                             let interNode = idNode.node.addAnInfluencesObject(infBy: infNode.node, moc: moc)
-                                            
-                                            //The connection between current model and a new BNNodeInter, guarded against this being attempted before we have curModel
-                                            if let curModels : [Model] = modelTreeController.selectedObjects as? [Model] {
-                                                let curModel : Model = curModels[0]
-                                                curModel.addABNNodeInterObject(interNode)
-                                                interNode.model = curModel
-                                            }
-                                            
                                             //Create display node for this Nodeinter
                                             self.makeNodeInter(interNode, inPos: CGPoint(x: theX,  y: theY))
                                             
@@ -739,14 +729,6 @@ class PlexusBNScene: SKScene {
                                     else {
 
                                                 let interNode = idNode.node.addAnInfluencesObject(infBy: infNode.node, moc: moc)
-
-                                                //The connection between current model and a new BNNodeInter, guarded against this being attempted before we have curModel
-                                                if let curModels : [Model] = modelTreeController.selectedObjects as? [Model] {
-                                                    let curModel : Model = curModels[0]
-                                                    curModel.addABNNodeInterObject(interNode)
-                                                    interNode.model = curModel
-                                                }
-
                                                 //Create display node for this Nodeinter
                                                 self.makeNodeInter(interNode, inPos: CGPoint(x: theX,  y: theY))
                                         

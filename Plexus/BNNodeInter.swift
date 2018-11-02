@@ -17,6 +17,5 @@ class BNNodeInter: NSManagedObject {
     
     @NSManaged var influencedBy: BNNode
     @NSManaged var influences: BNNode
-    @NSManaged var model: Model
 
 }

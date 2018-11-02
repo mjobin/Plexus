@@ -760,9 +760,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                             else { // reverse arc
 //                                print ("Reversing arrow between \(fromNode.name) and \(toNode.name)")
                                 fromNode.removeAnInfluencesObject(value: toNode, moc : thisMOC)
-                                let newInter = toNode.addAnInfluencesObject(infBy : fromNode, moc : thisMOC)
-                                newModel.addABNNodeInterObject(newInter)
-                                newInter.model = newModel
+                                _ = toNode.addAnInfluencesObject(infBy : fromNode, moc : thisMOC)
                             }
                         }
                             
@@ -774,9 +772,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                             else { // reverse arc
 //                                print ("Reversing arrow between \(toNode.name) and \(fromNode.name)")
                                 toNode.removeAnInfluencesObject(value: fromNode, moc : thisMOC)
-                                let newInter = fromNode.addAnInfluencesObject(infBy : toNode, moc : thisMOC)
-                                newModel.addABNNodeInterObject(newInter)
-                                newInter.model = newModel
+                                _ = fromNode.addAnInfluencesObject(infBy : toNode, moc : thisMOC)
                             }
                         }
                             
@@ -785,9 +781,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                         }
                         else { //both false, no arc
 //                            print ("Deleting arrow between \(fromNode.name) and \(toNode.name)")
-                            let newInter = fromNode.addAnInfluencesObject(infBy : toNode, moc : thisMOC)
-                            newModel.addABNNodeInterObject(newInter)
-                            newInter.model = newModel
+                            _ = fromNode.addAnInfluencesObject(infBy : toNode, moc : thisMOC)
                     }
                         nochange = false
                 }
@@ -1033,32 +1027,20 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
             do {
                 let cfirstModel = try cmoc.existingObject(with: firstModelID) as! Model
                 
-//                var entryIDs = [NSManagedObjectID]()
-                
                 let theEntries = cfirstModel.entry
                 
                 
-                let faultpredicate = NSPredicate(format:"self IN %@", theEntries)
+                let faultpredicate = NSPredicate(format:"self IN %@", theEntries) //This should fire the faults for all the entries in the model
                 let faultrequest = NSFetchRequest<Entry>(entityName: "Entry")
                 faultrequest.predicate = faultpredicate
                 faultrequest.returnsObjectsAsFaults = false
                 do {
                     _ = try cmoc.fetch(faultrequest)
                     
-
                 } catch let error as NSError {
                     print (error)
                 }
                 
-                for theEntry in theEntries {
-                    let curEntry = theEntry as! Entry
-//                    print(curEntry.managedObjectContext)
-//                    print(curEntry.isFault)
-//                    print(curEntry.name)
-//                    print(curEntry.isFault)
-                                                print(curEntry.model.count) //should be 1
-//                        entryIDs.append(curEntry.objectID)
-                }
                 
                 
                 
@@ -1066,7 +1048,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                 _ = self.metalCalc(curModel: cfirstModel, inEntries: theEntries, verbose: true)
 
                 let firstbic = cfirstModel.score
-                print ("firstbic \(firstbic)")
+//                print ("firstbic \(firstbic)")
 
                     var modelPeaks = [Model]()
                 
@@ -1106,7 +1088,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                                 let msrun = self.metalCalc(curModel : curModel, inEntries: theEntries, verbose: false)
                                 if (msrun == true) {
                                     curbic = curModel.score
-                                    print("\(lastbic) \(curbic)")
+//                                    print("\(lastbic) \(curbic)")
                                     curModel.setValue(curbic, forKey: "score")
                                     if curbic.floatValue > lastbic.floatValue {
 //                                        let discardModel = lastModel
@@ -1137,13 +1119,6 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                             self.hProgInd.increment(by: 1.0)
                         }
                         
-//                        do {
-//                            try cmoc.save()
-//
-//                        } catch let error as NSError {
-//                            print(error)
-//                            fatalError("Could not save models")
-//                        }
                         
                     }
                     
@@ -1181,95 +1156,16 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                         bestname = bestname + formatter.string(from: date)
                         peakModel.setValue(bestname, forKey: "name")
                         finalModel = peakModel
-                        
-                        
-//                        print("\n\nTEH WINNAR: \(finalModel.name)")
-//                        cmoc.insert(finalModel)
-//                        for insNode in finalModel.bnnode {
-//                            let thisinsNode : BNNode = insNode as! BNNode
-//                            print ("\(thisinsNode.name)")
-//
-//                            cmoc.insert(thisinsNode)
-//                            //Select the new winning node int he tree
-//                            for thisinfinter in thisinsNode.infsInter(sender: self) {
-//                                print("  -> \(thisinfinter.influences.name)")
-//                                cmoc.insert(thisinfinter)
-//                            }
-//                        }
-                        
-//                        for theEntry in theEntries {
-//                            let curEntry = theEntry as! Entry
-//                            finalModel.addAnEntryObject(curEntry)
-//                            curEntry.addAModelObject(finalModel)
-//
-//                            print(curEntry.model.count) //should be 2
-//                        }
-                        
-                        
                     }
                     
                 }
                 
                 else {
-                    finalModel = firstModel //FIXME this is crashing
+                    finalModel = firstModel
                 }
                 
 
-                
-            //FIXME not workign here either
-//                for theEntry in theEntries  {
-//                    let curEntry = theEntry as! Entry
-//                    finalModel.addAnEntryObject(curEntry)
-////                    curEntry.addAModelObject(finalModel)
-//                    FIXME why the hell will the above line not work? It seems to go fine the other way...
-//                }
-                
-//                for theEntryID in entryIDs {
-//                    let curEntryID = theEntryID as! NSManagedObjectID
-//                    let theEntry = try cmoc.existingObject(with: curEntryID) as! Entry
-//                    finalModel.addAnEntryObject(theEntry)
-//                    theEntry.addAModelObject(finalModel)
-//
-//                }
-
-                
-                
-                //insert final model and its nodes into moc
-                //FIXME looking at finalModel
-                
-//                for testnode in finalModel.bnnode {
-//                    let tnode = testnode as! BNNode
-//
-//                    for thisinf in tnode.infs(self){
-//                        print("influences: \((thisinf.name))")
-//                    }
-//
-//
-//                    for thisinfby in tnode.infBy(self){
-//                        print("influenced by: \(thisinfby.name)")
-//                    }
-//
-//                }
-                
-                
-                
-//                print("\n\nWINNAR: \(finalModel.name)")
-//                cmoc.insert(finalModel)
-//                for insNode in finalModel.bnnode {
-//                    let thisinsNode : BNNode = insNode as! BNNode
-//                    print ("\(thisinsNode.name)")
-//
-//                    cmoc.insert(thisinsNode)
-//                    //Select the new winning node int he tree
-//                    for thisinfinter in thisinsNode.infsInter(sender: self) {
-//                        print("  -> \(thisinfinter.influences.name)")
-//                        cmoc.insert(thisinfinter)
-//
-//                    }
-//
-//
-//                }
-            
+  
                 do {
                     try cmoc.save()
 
@@ -1284,123 +1180,49 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                 
                 DispatchQueue.main.sync {
                     
-//                    print (firstModelID)
-//                    print (finalModelID)
-//
-//                    if finalModelID != firstModelID {
-//
-//                        do {
-//                            finalModel = try self.moc.existingObject(with: finalModelID) as! Model
-//                            print (finalModel.name)
-//                            firstModel.addAChildObject(finalModel)
-//                            let finalIndexPath = self.mainSplitViewController.modelTreeController.indexPathOfModel(model:finalModel)
-//                            self.mainSplitViewController.modelTreeController.setSelectionIndexPath(finalIndexPath! as IndexPath)
-//
-//                        }
-//                        catch let error as NSError {
-//                            print(error)
-//                            fatalError("Error in calcQueue.")
-//                        }
-//
-//                    }
                     
                     if finalModel != firstModel {
-                        print(firstModel.managedObjectContext)
-                        print(finalModel.managedObjectContext)
-                                            print (finalModel.name)
-
-//                        print (finalModel.entry.count)
-//                        finalModel.entry = NSSet()
-
-                        print (finalModel.entry.count)
-                        
-
-                        
-
-                        //                    The error of unique is being caused byt eh commeted code below, but there has to be some way to connect the entires to the final model
-
-
-                        //
 
                         for theEntry in firstModel.entry  {
                             let curEntry = theEntry as! Entry
-                            print (curEntry.name)
                             finalModel.addAnEntryObject(curEntry)
                             curEntry.addAModelObject(finalModel)
                         }
 
-                        print (finalModel.entry.count)
-
-//                                            then save it and its nodes in self.moc
-                        print("\n\nWINNAR: \(finalModel.name)")
                         self.moc.insert(finalModel)
                         for insNode in finalModel.bnnode {
                             let thisinsNode : BNNode = insNode as! BNNode
-                            print ("\(thisinsNode.name)")
+//                            print ("\(thisinsNode.name)")
 
                             self.moc.insert(thisinsNode)
                             //Select the new winning node int he tree
                             for thisinfinter in thisinsNode.infsInter(sender: self) {
-                                print("  -> \(thisinfinter.influences.name)")
+//                                print("  -> \(thisinfinter.influences.name)")
                                 self.moc.insert(thisinfinter)
-
                             }
-
-
                         }
                         
                         do {
                             try self.moc.save()
-                            
                         } catch let error as NSError {
                             print(error)
-                            fatalError("AIIIIII")
+                            fatalError("ERROR saving to primary MOC.")
                         }
                         
-
                         firstModel.addAChildObject(finalModel)
                         let finalIndexPath = self.mainSplitViewController.modelTreeController.indexPathOfModel(model:finalModel)
                         self.mainSplitViewController.modelTreeController.setSelectionIndexPath(finalIndexPath! as IndexPath)
-                        
-
-
+                    
                     }
-
-                    else
-
-                    {
-                        print("no winner")
-                    }
-                    
-
-                    
-                    //reset connction to entries
-
-                    
-                    
-                
-                    do {
-                        try self.moc.save()
-                        
-                    } catch let error as NSError {
-                        print(error)
-                        fatalError("AIIIIII")
-                    }
-
                     self.mainSplitViewController.modelDetailViewController?.calcInProgress = false
                 }
-                
-
-                
                 
             }
             catch {
                 fatalError("Error in calcQueue.")
             }
  
-            
         } // end calcQueue.async dispatch
-  
         
     }
     
@@ -1410,7 +1232,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
     
     func metalCalc(curModel:Model, inEntries: NSSet, verbose:Bool) -> Bool {
 //            func metalCalc(curModel:Model,  verbose:Bool) -> Bool {
-                let start = DispatchTime.now()
+//                let start = DispatchTime.now()
 //                print ("\n\n**********START")
         
         let defaults = UserDefaults.standard
@@ -1912,9 +1734,9 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
 //            print("Full run: \(NSDate().timeIntervalSince(start as Date)) seconds.")
 //        }
         
-        var end = DispatchTime.now()
-        var cptRunTime = Double(end.uptimeNanoseconds - start.uptimeNanoseconds) / 1000000000
-        print ("**********END RUN  \(cptRunTime) seconds.")
+//        var end = DispatchTime.now()
+//        var cptRunTime = Double(end.uptimeNanoseconds - start.uptimeNanoseconds) / 1000000000
+//        print ("**********END RUN  \(cptRunTime) seconds.")
         
         return true
         
@@ -2432,9 +2254,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                 return -999
             }
             
-            
-            
-            print ("\(calcNode.name)  \(theTraits.count)")
+//            print ("\(calcNode.name)  \(theTraits.count)")
             
             var mTraits = [Trait]()
             
