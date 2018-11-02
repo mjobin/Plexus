@@ -97,14 +97,14 @@ extension BNNode {
     }
     
     
-    
+    //self->valye
     func removeAnInfluencesObject(value:BNNode, moc : NSManagedObjectContext?) {
         let influencesInter = self.mutableOrderedSetValue(forKey: "influences");
         
         var theBNNodeInter : BNNodeInter!
         for thisinfInter in influencesInter {
             let curinfInter = thisinfInter as! BNNodeInter
-            if curinfInter.influencedBy == value{
+            if curinfInter.influences == value {
                 theBNNodeInter = curinfInter
             }
         }
@@ -123,14 +123,14 @@ extension BNNode {
     }
     
     
-    
+    //value -> self
     func removeAnInfluencedByObject(value:BNNode, moc : NSManagedObjectContext?) {
         let influencedByInter = self.mutableOrderedSetValue(forKey: "influencedBy");
         
         var theBNNodeInter : BNNodeInter!
         for thisinfInter in influencedByInter {
             let curinfInter = thisinfInter as! BNNodeInter
-            if curinfInter.influences == self {
+            if curinfInter.influencedBy == value {
                 theBNNodeInter = curinfInter
             }
         }
@@ -138,72 +138,14 @@ extension BNNode {
         if theBNNodeInter == nil { //Should not happen
             return
         }
-        
+//        
+//        print ("Remove infBy found. inter inf: \(theBNNodeInter.influences.name)  infBy:\(theBNNodeInter.influencedBy.name)")
         influencedByInter.remove(theBNNodeInter)
         let influencesInter = self.mutableOrderedSetValue(forKey: "influences");
         
         influencesInter.remove(theBNNodeInter)
         
         moc?.delete(theBNNodeInter)
-        
-    }
-    
-    
-    
-    func freqForCPT(_ sender:AnyObject) -> cl_float {
-        
-        var lidum : CLong = 1
-        
-        var chk = 0
-        var pVal : cl_float = -999
-        
-        while pVal < 0 || pVal > 1 {
-            
-            switch (priorDistType) {
-            case 0://prior/expert
-                pVal = cl_float(priorV1)
-                // return cl_float(priorV1)
-                
-            case 1://uniform
-                let r = Double(arc4random())/Double(UInt32.max)
-                
-                // println("uniform \(u)")
-                pVal = cl_float((r*(priorV2.doubleValue - priorV1.doubleValue)) + priorV1.doubleValue)
-                //return cl_float((r*(priorV2.doubleValue - priorV1.doubleValue)) + priorV1.doubleValue)
-                
-            case 2: //gaussian
-                
-                let gd = cl_float(gasdev(&lidum))
-                let gdv = cl_float(priorV2) * gd + cl_float(priorV1)
-                //  println("gaussdev \(gd) \(gdv)")
-                pVal = gdv
-            //return gdv
-            case 3: //beta
-                let bd = cl_float(beta_dev(priorV1.doubleValue, priorV2.doubleValue))
-                //  println("betadev \(bd)")
-                pVal = bd
-            //return bd
-            case 4: //gamma
-                let gd = cl_float(gamma_dev(priorV1.doubleValue)/priorV2.doubleValue)
-                //  println("gammadev \(gd)")
-                pVal = gd
-                //                return gd
-                
-                
-                
-            default:
-                return cl_float.nan //uh oh
-            }
-            
-            
-            chk += 1
-            if(chk > 1000){
-                return cl_float.nan
-            }
-        }
-        
-        return pVal
-        
         
     }
     
@@ -243,8 +185,8 @@ extension BNNode {
     
     
     func CPT() -> Int {
-        let start = DispatchTime.now()
-        print ("\n**********START CPT for \(self.name)")
+//        let start = DispatchTime.now()
+//        print ("\n**********START CPT for \(self.name)")
         
         let appDelegate : AppDelegate = NSApplication.shared().delegate as! AppDelegate
         let moc = appDelegate.persistentContainer.viewContext
@@ -253,16 +195,16 @@ extension BNNode {
         
         var ifthens = [Float]()
         
-        var end = DispatchTime.now()
-        var cptRunTime = Double(end.uptimeNanoseconds - start.uptimeNanoseconds) / 1000000000
+//        var end = DispatchTime.now()
+//        var cptRunTime = Double(end.uptimeNanoseconds - start.uptimeNanoseconds) / 1000000000
         
         let theInfluencedBy = self.infBy(self)
         let nInfBy = theInfluencedBy.count
         if(nInfBy < 1) { //since 2^0 is 1
             self.cptArray = [Float](repeating: -1.0, count: 1)
-            let end = DispatchTime.now()
-            let cptRunTime = Double(end.uptimeNanoseconds - start.uptimeNanoseconds) / 1000000000
-            print ("**********END CPT for \(self.name) \(cptRunTime) seconds.")
+//            let end = DispatchTime.now()
+//            let cptRunTime = Double(end.uptimeNanoseconds - start.uptimeNanoseconds) / 1000000000
+//            print ("**********END CPT for \(self.name) \(cptRunTime) seconds.")
             
             return 2
         }
@@ -320,7 +262,7 @@ extension BNNode {
                             do {
                                 
                                 let matchCount = try moc.count(for: matchRequest)
-                                print("\(Float(matchCount)) \(Float(allCount)) \((Float(matchCount) / Float(allCount)))")
+//                                print("\(Float(matchCount)) \(Float(allCount)) \((Float(matchCount) / Float(allCount)))")
                                 ifthens.append(Float(matchCount) / Float(allCount))
                                 curNodeInter.ifthen = NSNumber.init(value: (Float(matchCount) / Float(allCount)))
                                 
@@ -378,9 +320,9 @@ extension BNNode {
         
         self.cptArray = cptarray
         
-        end = DispatchTime.now()
-        cptRunTime = Double(end.uptimeNanoseconds - start.uptimeNanoseconds) / 1000000000
-        print ("**********END CPT for \(self.name) \(cptRunTime) seconds.  Array: \(cptarray)")
+//        end = DispatchTime.now()
+//        cptRunTime = Double(end.uptimeNanoseconds - start.uptimeNanoseconds) / 1000000000
+//        print ("**********END CPT for \(self.name) \(cptRunTime) seconds.  Array: \(cptarray)")
         
         
         //END CPT()

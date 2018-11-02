@@ -36,10 +36,14 @@ extension Model {
         items.remove(value)
     }
     
+    func removeABNNodeObject(_ value:BNNode) {
+        let items = self.mutableSetValue(forKey: "bnnode");
+        items.remove(value)
+    }
     
-    func copySelf(moc: NSManagedObjectContext?) -> Model {
+    
+    func copySelf(moc: NSManagedObjectContext?, withEntries: Bool) -> Model {
         
-//        let newModel : Model = Model(entity: NSEntityDescription.entity(forEntityName: "Model", in: moc)!, insertInto: nil)
         
         let newModel : Model = Model(entity: Model.entity(), insertInto: moc)
 
@@ -56,12 +60,18 @@ extension Model {
         newModel.setValue(0, forKey: "score")
         newModel.setValue(self.thin, forKey: "thin")
 
-        
-        let theEntries  = self.entry
-        for theEntry in theEntries {
-            let curEntry = theEntry as! Entry
-            newModel.addAnEntryObject(curEntry)
+        let start = DispatchTime.now()
+        if withEntries == true {
+            let theEntries  = self.entry
+            for theEntry in theEntries {
+                let curEntry = theEntry as! Entry
+                newModel.addAnEntryObject(curEntry)
+                curEntry.addAModelObject(newModel)
+            }
         }
+                    var end = DispatchTime.now()
+                    var cptRunTime = Double(end.uptimeNanoseconds - start.uptimeNanoseconds) / 1000000000
+                    print ("**********Copy entries took \(cptRunTime) seconds.")
         
         var tempNodeArray = [BNNode]()
         let curNodes  = self.bnnode.allObjects as! [BNNode]
@@ -71,6 +81,7 @@ extension Model {
             
             newNode.setValue(curNode.cptArray, forKey: "cptArray")
             newNode.setValue(curNode.cptReady, forKey: "cptReady")
+            newNode.setValue(curNode.hidden, forKey: "hidden")
             newNode.setValue(curNode.name, forKey: "name")
             newNode.setValue(curNode.numericData, forKey: "numericData")
             newNode.setValue(curNode.priorDistType, forKey: "priorDistType")
@@ -81,6 +92,7 @@ extension Model {
             newNode.setValue(curNode.savedY, forKey: "savedY")
             newNode.setValue(curNode.tolerance, forKey: "tolerance")
             newNode.setValue(curNode.value, forKey: "value")
+
             
         
             
@@ -105,9 +117,17 @@ extension Model {
             
         }
         
+        
+//        Am i duplicating here?
+//        for curNode : BNNode in curNodes {
+//            theinfs = curNode
+//
+//            
+//        }
+        
         var infstwod = [[Int]]()
         
-        
+
         //Copy Influences
         for curNode : BNNode in curNodes {
             var infsoned = [Int]()
@@ -123,15 +143,16 @@ extension Model {
                 
             }
             infstwod.append(infsoned)
-            
         }
-        
+//        print("\ncopying influences \(newModel.name)")
+
         var i = 0
         for infsoned : [Int] in infstwod{
             for thisinf in infsoned{
+//                print("\(tempNodeArray[i].name) influences \(tempNodeArray[thisinf].name)")
                 let newInter = tempNodeArray[i].addAnInfluencesObject(infBy: tempNodeArray[thisinf], moc : moc)
-                self.addABNNodeInterObject(newInter)
-                newInter.model = self
+                newModel.addABNNodeInterObject(newInter)
+                newInter.model = newModel
                 _ = tempNodeArray[thisinf].addAnInfluencedByObject(inf: tempNodeArray[i], moc : moc)
             }
             i += 1

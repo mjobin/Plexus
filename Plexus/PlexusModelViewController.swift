@@ -115,11 +115,8 @@ class PlexusModelViewController: NSViewController, NSOutlineViewDelegate, NSOutl
         if let curPath : IndexPath = modelTreeController.selectionIndexPath {
             let newPath :IndexPath = curPath.appending(curModel.children.count)
             
+            let newModel : Model = curModel.copySelf(moc: self.moc, withEntries: true)
             
-            
-            let newModel : Model = curModel.copySelf(moc: self.moc)
-                
-
             // curModel.addChildObject(newModel)
             // newModel.setValue(curModel, forKey: "parent")
             modelTreeController.insert(newModel, atArrangedObjectIndexPath: newPath)
@@ -132,5 +129,6 @@ class PlexusModelViewController: NSViewController, NSOutlineViewDelegate, NSOutl
         
         
     }
+    
     
 }

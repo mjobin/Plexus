@@ -4,6 +4,7 @@
         <attribute name="cptArray" optional="YES" attributeType="Transformable" customClassName="[Float]" syncable="YES"/>
         <attribute name="cptFreezeArray" optional="YES" attributeType="Transformable" customClassName="[Float]" syncable="YES"/>
         <attribute name="cptReady" optional="YES" attributeType="Integer 16" minValueString="0" maxValueString="2" defaultValueString="NO" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="hidden" optional="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="name" optional="YES" attributeType="String" defaultValueString="New Node" syncable="YES"/>
         <attribute name="numericData" optional="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="postArray" optional="YES" attributeType="Transformable" customClassName="[Float]" syncable="YES"/>
@@ -34,6 +35,8 @@
         <relationship name="model" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Model" inverseName="bnnodeinter" inverseEntity="Model" syncable="YES"/>
     </entity>
     <entity name="Entry" representedClassName="Plexus.Entry" syncable="YES">
+        <attribute name="latitude" optional="YES" attributeType="Double" minValueString="0" maxValueString="90" defaultValueString="0" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="longitude" optional="YES" attributeType="Double" minValueString="0" maxValueString="1" defaultValueString="0.0" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="name" optional="YES" attributeType="String" defaultValueString="New Entry" syncable="YES"/>
         <attribute name="notes" optional="YES" attributeType="Binary" syncable="YES"/>
         <relationship name="model" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Model" inverseName="entry" inverseEntity="Model" syncable="YES"/>
@@ -63,9 +66,9 @@
         <relationship name="entry" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Entry" inverseName="trait" inverseEntity="Entry" syncable="YES"/>
     </entity>
     <elements>
-        <element name="BNNode" positionX="-21.91015625" positionY="290.09375" width="128" height="418"/>
+        <element name="BNNode" positionX="-21.91015625" positionY="290.09375" width="128" height="433"/>
         <element name="BNNodeInter" positionX="399.38671875" positionY="475.5390625" width="128" height="103"/>
-        <element name="Entry" positionX="-468" positionY="-36" width="128" height="105"/>
+        <element name="Entry" positionX="-468" positionY="-36" width="128" height="133"/>
         <element name="Model" positionX="349" positionY="-9" width="128" height="283"/>
         <element name="Trait" positionX="-279" positionY="317" width="128" height="90"/>
     </elements>

@@ -573,9 +573,6 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                 
                 
                 
-
-                
-                
                     do {
                         try inMOC.save()
                     } catch let error as NSError {
@@ -615,24 +612,38 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         self.breakloop = true
     }
     
-    func randomChildModel(lastModel : Model, thisMOC : NSManagedObjectContext?) -> Model {
+    func randomChildModel(lastModel : Model, allTraits: [Trait], initusedTraitNames: Set<String>, thisMOC : NSManagedObjectContext?) -> Model {
         
         
-        let newModel = lastModel.copySelf(moc: thisMOC ?? nil)
+        var usedTraitNames = initusedTraitNames
+//        print ("\n\n**** Starting random")
+        let newModel = lastModel.copySelf(moc: thisMOC ?? nil, withEntries: false)
         
         let nodesForTest = newModel.bnnode.allObjects as! [BNNode]
+//        print("before changes node count : \(nodesForTest.count)")
         
-        let frompos = (Int(arc4random_uniform(UInt32(nodesForTest.count))))
-        
-        var topos = frompos
-        while(topos == frompos){
-            topos = (Int(arc4random_uniform(UInt32(nodesForTest.count))))
+        if nodesForTest.count < 2 {
+            return lastModel
         }
         
-        let fromNode = nodesForTest[frompos]
-        let toNode = nodesForTest[topos]
         
+        let fromPos = Int.random(in: 0..<nodesForTest.count)
+        var toPos = fromPos
         
+        while toPos == fromPos {
+            toPos = Int.random(in: 0..<nodesForTest.count)
+        }
+
+        
+//        print("")
+//        print (fromPos)
+//        print(toPos)
+        
+        let fromNode = nodesForTest[fromPos]
+        let toNode = nodesForTest[toPos]
+
+//        print (fromNode.name)
+//        print (toNode.name)
         var nochange = true
         
         //Check if there is an arc between them
@@ -640,17 +651,6 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         var isinfByArc = false
         
         
-        
-//        if let interNode = toNode.getInfInterBetween(infByNode:fromNode, moc: thisMOC ?? nil) { //they are connected
-//            isinfArc = true
-//        }
-//        else if let interNode = fromNode.getInfInterBetween(infByNode:toNode, moc: thisMOC ?? nil) { //they are not
-//            isinfByArc = true
-//        }
-
-        
-        
-
         
         let theInfluences : [BNNode] = fromNode.infs(self)
         for thisInfluences in theInfluences {
@@ -670,19 +670,16 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         }
         
         
-
-        
-        
         
 
-
-        
-        
-        //If fromNode has no data, can change the ifthen
         while nochange {
-            let switchup = Int.random(in: 1 ... 4)
+            
+            let switchup = Int.random(in: 1 ... 4) //FIXME back to 5
+//            print ("rolled \(switchup)")
             switch switchup {
                 case 1: //Change an ifthen if the from node has no data
+                    
+
                 
                     let request = NSFetchRequest<Trait>(entityName: "Trait")
                     let predicate = NSPredicate(format: "entry IN %@ && name == %@", argumentArray: [newModel.entry, fromNode.name])
@@ -691,7 +688,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                     do {
                         let allCount = try moc.count(for: request)
                         if allCount < 1 {
-                            
+//                            print ("Changing ifthen")
                             if let interNode = toNode.getInfInterBetween(infByNode:fromNode, moc: thisMOC ?? nil) { //they are connected
                                 interNode.ifthen =  NSNumber(value: Float.random(in: 0 ... 1))
                                 nochange = false
@@ -703,85 +700,205 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                         fatalError("Failed request.")
                 }
                 
-                case 2: //Add a hidden node wih no data pointing at toNode
-                    let newNode : BNNode = BNNode(entity: BNNode.entity(), insertInto: thisMOC)
-                    newNode.name = "hidden"
-                    newModel.addABNNodeObject(newNode)
-                    newNode.model = newModel
-                    let newInter = newNode.addAnInfluencesObject(infBy: toNode, moc: thisMOC)
-
-                    newInter.ifthen = 0.5
-                    nochange = false
-                
-                case 3: // Change the direction of an existing arrow
-                    if isinfArc == true && isinfByArc == false {
-
-                        if Bool.random() { // delete arc
-                            fromNode.removeAnInfluencesObject(value: toNode, moc : thisMOC)
+                case 2: //Add a hidden node wih no data pointing at toNode, or if it is hidden, remove it
+//                    print ("option 2 name: \(toNode.name) hidden: \(toNode.hidden)")
+                    if toNode.hidden == true {
+//                        print("\n***Removing \(toNode.name)")
+                        for thisInfBy in toNode.infBy(self){
+//                            print("   <-\(thisInfBy.name)")
+                            thisInfBy.removeAnInfluencesObject(value: toNode, moc: thisMOC)
                         }
-                        else { // reverse arc
-                            fromNode.removeAnInfluencesObject(value: toNode, moc : thisMOC)
-                            let newInter = toNode.addAnInfluencesObject(infBy : fromNode, moc : thisMOC)
-                            newModel.addABNNodeInterObject(newInter)
-                            newInter.model = newModel
+                        for thisInf in toNode.infs(self){
+//                            print("   ->\(thisInf.name)")
+                            thisInf.removeAnInfluencedByObject(value: toNode, moc: thisMOC)
+                        }
+                        newModel.removeABNNodeObject(toNode)
+                        nochange = false
+                    }
+                    
+                    else {
+                        //Create a hidden node pointing to this node UNLESS it already has one
+                        
+                        var hashidden = false
+                        
+                        for thisInfBy in toNode.infBy(self){
+//                            print("   <-\(thisInfBy.name)  \(thisInfBy.hidden)")
+                            if thisInfBy.hidden == true {
+//                                print("arready")
+                                hashidden = true
+                            }
+                        }
+                        
+                        if hashidden == false {
+//                            print("\n***Adding hidden pointing to \(toNode.name)")
+                            let newNode : BNNode = BNNode(entity: BNNode.entity(), insertInto: thisMOC)
+                            newNode.name = "hidden"
+                            newNode.hidden = true
+                            newModel.addABNNodeObject(newNode)
+                            newNode.model = newModel
+                            newNode.priorDistType = 1 //Set uniform prior
+                            newNode.priorV1 = 0.0
+                            newNode.priorV2 = 1.0
+                            let newInter = newNode.addAnInfluencesObject(infBy: toNode, moc: thisMOC)
+
+                            newInter.ifthen = 0.5
+                            nochange = false
+                            
+//                            print ("new hidden node: \(newNode.name) hidden: \(newNode.hidden)")
                         }
                     }
-                        
-                    else if isinfArc == false && isinfByArc == true {
-                        if Bool.random() { // delete arc
-                            toNode.removeAnInfluencesObject(value: fromNode, moc : thisMOC)
+                
+                case 3: // Change the direction of an existing arrow
+                    
+                    if fromNode.hidden == false && toNode.hidden == false { //Do not remove or reverse arrows for hidden nodes
+                        if isinfArc == true && isinfByArc == false {
+
+                            if Bool.random() { // delete arc
+//                                print ("Deleting arrow between \(fromNode.name) and \(toNode.name)")
+                                fromNode.removeAnInfluencesObject(value: toNode, moc : thisMOC)
+                            }
+                            else { // reverse arc
+//                                print ("Reversing arrow between \(fromNode.name) and \(toNode.name)")
+                                fromNode.removeAnInfluencesObject(value: toNode, moc : thisMOC)
+                                let newInter = toNode.addAnInfluencesObject(infBy : fromNode, moc : thisMOC)
+                                newModel.addABNNodeInterObject(newInter)
+                                newInter.model = newModel
+                            }
                         }
-                        else { // reverse arc
-                            toNode.removeAnInfluencesObject(value: fromNode, moc : thisMOC)
+                            
+                        else if isinfArc == false && isinfByArc == true {
+                            if Bool.random() { // delete arc
+//                                print ("Deleting arrow between \(toNode.name) and \(fromNode.name)")
+                                toNode.removeAnInfluencesObject(value: fromNode, moc : thisMOC)
+                            }
+                            else { // reverse arc
+//                                print ("Reversing arrow between \(toNode.name) and \(fromNode.name)")
+                                toNode.removeAnInfluencesObject(value: fromNode, moc : thisMOC)
+                                let newInter = fromNode.addAnInfluencesObject(infBy : toNode, moc : thisMOC)
+                                newModel.addABNNodeInterObject(newInter)
+                                newInter.model = newModel
+                            }
+                        }
+                            
+                        else if isinfArc == true && isinfByArc == true {
+                            fatalError("Error: infleunces in two directions!")
+                        }
+                        else { //both false, no arc
+//                            print ("Deleting arrow between \(fromNode.name) and \(toNode.name)")
                             let newInter = fromNode.addAnInfluencesObject(infBy : toNode, moc : thisMOC)
                             newModel.addABNNodeInterObject(newInter)
                             newInter.model = newModel
-                        }
                     }
-                        
-                    else if isinfArc == true && isinfByArc == true {
-                        fatalError("Error: infleunces in two directions!")
-                    }
-                    else { //both false, no arc
-                        let newInter = fromNode.addAnInfluencesObject(infBy : toNode, moc : thisMOC)
-                        newModel.addABNNodeInterObject(newInter)
-                        newInter.model = newModel
+                        nochange = false
                 }
-                    nochange = false
             case 4: //Change the traitvalue to another. If numeric, change tolerance
-
-                if toNode.numericData {
-                    toNode.tolerance = NSNumber(value: Float.random(in: 0 ... 1))
-                }
-                else {
-                    let theEntries = lastModel.entry
-                    let predicate = NSPredicate(format: "entry IN %@", theEntries)
-                    let request = NSFetchRequest<Trait>(entityName: "Trait")
-                    request.predicate = predicate
-                    request.propertiesToFetch = ["value"]
-                    do {
-                        let theValues = try moc.fetch(request)
-                        if let picked = theValues.randomElement() {
-                            toNode.value = picked.value
-                        }
-                    } catch let error as NSError {
-                        print (error)
+                
+                if  toNode.hidden == false {
+                    if toNode.numericData {
+                        toNode.tolerance = NSNumber(value: Float.random(in: 0 ... 1))
                     }
+                    else {
+                        let theEntries = lastModel.entry
+                        let predicate = NSPredicate(format: "entry IN %@", theEntries)
+                        let request = NSFetchRequest<Trait>(entityName: "Trait")
+                        request.predicate = predicate
+                        request.propertiesToFetch = ["value"]
+                        do {
+                            let theValues = try moc.fetch(request)
+                            if let picked = theValues.randomElement() {
+                                toNode.value = picked.value
+                            }
+                        } catch let error as NSError {
+                            print (error)
+                        }
+                    }
+                    nochange = false
                 }
-                nochange = false
-                default:
+            case 5: //Add a trait in the model that is not yet used, or remove an instance of it if it is
+                let pickedTrait = allTraits.randomElement() as! Trait
+                let pickedTraitName = pickedTrait.name
+                if usedTraitNames.contains(pickedTraitName) { //Exists, remove an instance
+                    
+                    var neverdeleted = true
+                    var numwithname = 0
+                    for chkNode in nodesForTest {
+                        if chkNode.name == pickedTraitName {
+//                            print("Found \(pickedTraitName)")
+                            numwithname += 1
+                            if neverdeleted == true {
+                                neverdeleted = false
+                                
+//                                print("\n***Removing \(chkNode.name)")
+                                for thisInfBy in chkNode.infBy(self){
+                                    thisInfBy.removeAnInfluencesObject(value: chkNode, moc: thisMOC)
+                                }
+                                for thisInf in chkNode.infs(self){
+
+                                    thisInf.removeAnInfluencedByObject(value: chkNode, moc: thisMOC)
+                                }
+                                newModel.removeABNNodeObject(chkNode)
+                                numwithname = numwithname - 1
+                                nochange = false
+                                
+                                
+                            }
+                            
+                        }
+                    }
+                    if numwithname < 1 {
+                            usedTraitNames.remove(pickedTraitName)
+                    }
+                    
+                    
+                }
+                else{ //Add node, point it to or from toNode
+                    
+                    
+//                    print("\n***Adding new node \(pickedTraitName)" )
+                    let newNode : BNNode = BNNode(entity: BNNode.entity(), insertInto: thisMOC)
+                    newNode.name = pickedTraitName
+                    newNode.value = pickedTrait.value
+                    newNode.hidden = false
+                    newModel.addABNNodeObject(newNode)
+                    newNode.model = newModel
+                    newNode.priorDistType = 1 //Set uniform prior
+                    newNode.priorV1 = 0.0
+                    newNode.priorV2 = 1.0
+                    
+                    if Bool.random() {
+                        _ = newNode.addAnInfluencesObject(infBy: toNode, moc: thisMOC)
+                    }
+                    else {
+                        _ = newNode.addAnInfluencedByObject(inf: toNode, moc: thisMOC)
+                    }
+                    usedTraitNames.insert(pickedTraitName)
+                    nochange = false
+
+                    
+                }
+                
+            default:
                     fatalError("Error: illegal rendom model alteration!")
             }
         }
         
         
-
-//        if Bool.random() {
+//        print("\n\n*****NEW RANDO: \(newModel.name)")
+//        for testnode in newModel.bnnode {
+//            let tnode = testnode as! BNNode
+//            print (tnode.name)
+//            for thisinf in tnode.infs(self){
+//                print("   ->\((thisinf.name))")
+//            }
+//            for thisinfby in tnode.infBy(self){
+//                print("   <-\(thisinfby.name)")
+//            }
+//
 //        }
-//        else {
-//        }
-
         
+        
+        
+
         
          //Now make sure the CPT's are recalced
         var testCPT = 2
@@ -800,50 +917,51 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
     
     
     @IBAction func singleRunPress(_ x:NSToolbarItem) {
-    
-    let devices = devicesController?.selectedObjects as! [MTLDevice]
-    device = devices[0]
-    kernelFunction  = defaultLibrary?.makeFunction(name: "bngibbs")
-    do {
-        pipelineState = try device.makeComputePipelineState(function: kernelFunction!)
-    }
-    catch {
-        fatalError("Cannot set up Metal")
-    }
         
-    mainSplitViewController.modelDetailViewController?.calcInProgress = true
-    self.breakloop = false
-    
-    self.progSheet = self.progSetup(self)
-    self.window!.beginSheet(self.progSheet, completionHandler: nil)
-    self.progSheet.makeKeyAndOrderFront(self)
-    
-    let curModels : [Model] = mainSplitViewController.modelTreeController?.selectedObjects as! [Model]
-    let firstModel : Model = curModels[0]
-    
-    let nodesForTest = firstModel.bnnode.allObjects as! [BNNode]
-    if (nodesForTest.count < 2){
-            self.performSelector(onMainThread: #selector(PlexusMainWindowController.endProgInd), with: nil, waitUntilDone: true)
-            self.mainSplitViewController.modelDetailViewController?.calcInProgress = false
-            return
-    }
-        
-    let calcQueue = DispatchQueue(label: "calcQueue")
-    calcQueue.async {
-        
-        let fmcrun = self.metalCalc(curModel : firstModel, verbose: true)
-
-        self.performSelector(onMainThread: #selector(PlexusMainWindowController.endProgInd), with: nil, waitUntilDone: true)
-        
-        DispatchQueue.main.async {
-            if(fmcrun == true){
-                firstModel.complete = true
-            }
-            self.mainSplitViewController.modelDetailViewController?.calcInProgress = false
-            }
-                            //end calcQ
+        let devices = devicesController?.selectedObjects as! [MTLDevice]
+        device = devices[0]
+        kernelFunction  = defaultLibrary?.makeFunction(name: "bngibbs")
+        do {
+            pipelineState = try device.makeComputePipelineState(function: kernelFunction!)
         }
-    
+        catch {
+            fatalError("Cannot set up Metal")
+        }
+        
+        mainSplitViewController.modelDetailViewController?.calcInProgress = true
+        self.breakloop = false
+        
+        self.progSheet = self.progSetup(self)
+        self.window!.beginSheet(self.progSheet, completionHandler: nil)
+        self.progSheet.makeKeyAndOrderFront(self)
+        
+        let curModels : [Model] = mainSplitViewController.modelTreeController?.selectedObjects as! [Model]
+        let firstModel : Model = curModels[0]
+        let theEntries = firstModel.entry
+        
+        let nodesForTest = firstModel.bnnode.allObjects as! [BNNode]
+        if (nodesForTest.count < 2){
+                self.performSelector(onMainThread: #selector(PlexusMainWindowController.endProgInd), with: nil, waitUntilDone: true)
+                self.mainSplitViewController.modelDetailViewController?.calcInProgress = false
+                return
+        }
+        
+        let calcQueue = DispatchQueue(label: "calcQueue")
+        calcQueue.async {
+            
+            let fmcrun = self.metalCalc(curModel : firstModel, inEntries: theEntries, verbose: true)
+
+            self.performSelector(onMainThread: #selector(PlexusMainWindowController.endProgInd), with: nil, waitUntilDone: true)
+            
+            DispatchQueue.main.async {
+                if(fmcrun == true){
+                    firstModel.complete = true
+                }
+                self.mainSplitViewController.modelDetailViewController?.calcInProgress = false
+                }
+                                //end calcQ
+            }
+        
 }
     
  
@@ -866,6 +984,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         let firstModel : Model = curModels[0]
         let firstModelID = firstModel.objectID
         var finalModel = firstModel
+        var finalModelID = finalModel.objectID
         
         self.progSheet = self.progHillSetup(self)
         self.window!.beginSheet(self.progSheet, completionHandler: nil)
@@ -877,17 +996,32 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         let hillchains = firstModel.hillchains
         
 
-        
+        var usedTraitNames = Set<String>()
         let nodesForTest = firstModel.bnnode.allObjects as! [BNNode]
         if (nodesForTest.count < 2){
             self.performSelector(onMainThread: #selector(PlexusMainWindowController.endProgInd), with: nil, waitUntilDone: true)
             self.mainSplitViewController.modelDetailViewController?.calcInProgress = false
             return
         }
+        for firstNode in nodesForTest {
+            usedTraitNames.insert(firstNode.name)
+        
+        }
         
         
+        //The Traits and Entries involved in a run do not change, so they can be fetched just once
+        var allTraits = [Trait]()
+        let request = NSFetchRequest<Trait>(entityName: "Trait")
+        let predicate = NSPredicate(format: "entry IN %@", argumentArray: [firstModel.entry])
+        request.predicate = predicate
+        do {
+            allTraits = try moc.fetch (request)
+            
+        } catch {
+            fatalError("Failed request searching for all Traits of \(firstModel).")
+        }
 
-        
+
         let calcQueue = DispatchQueue(label: "calcQueue")
         calcQueue.async {
 
@@ -899,12 +1033,40 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
             do {
                 let cfirstModel = try cmoc.existingObject(with: firstModelID) as! Model
                 
+//                var entryIDs = [NSManagedObjectID]()
+                
+                let theEntries = cfirstModel.entry
+                
+                
+                let faultpredicate = NSPredicate(format:"self IN %@", theEntries)
+                let faultrequest = NSFetchRequest<Entry>(entityName: "Entry")
+                faultrequest.predicate = faultpredicate
+                faultrequest.returnsObjectsAsFaults = false
+                do {
+                    _ = try cmoc.fetch(faultrequest)
+                    
+
+                } catch let error as NSError {
+                    print (error)
+                }
+                
+                for theEntry in theEntries {
+                    let curEntry = theEntry as! Entry
+//                    print(curEntry.managedObjectContext)
+//                    print(curEntry.isFault)
+//                    print(curEntry.name)
+//                    print(curEntry.isFault)
+                                                print(curEntry.model.count) //should be 1
+//                        entryIDs.append(curEntry.objectID)
+                }
+                
                 
                 
                 var lastModel = cfirstModel
-                _ = self.metalCalc(curModel : cfirstModel, verbose: true)
+                _ = self.metalCalc(curModel: cfirstModel, inEntries: theEntries, verbose: true)
 
-                let firstbic = firstModel.score
+                let firstbic = cfirstModel.score
+                print ("firstbic \(firstbic)")
 
                     var modelPeaks = [Model]()
                 
@@ -923,7 +1085,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                         }
                         else {
                             
-                            let curModel = self.randomChildModel(lastModel: lastModel, thisMOC: nil)
+                            let curModel = self.randomChildModel(lastModel: lastModel, allTraits: allTraits, initusedTraitNames: usedTraitNames, thisMOC: nil)
                             
                             var cycleChk = false
                             let newNodes = curModel.bnnode
@@ -941,10 +1103,10 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
 
                             if cycleChk == false { //If the new model is a cycle, ignore it
                             
-                                let msrun = self.metalCalc(curModel : curModel, verbose: false)
+                                let msrun = self.metalCalc(curModel : curModel, inEntries: theEntries, verbose: false)
                                 if (msrun == true) {
                                     curbic = curModel.score
-    //                                print("\(lastbic) \(curbic)")
+                                    print("\(lastbic) \(curbic)")
                                     curModel.setValue(curbic, forKey: "score")
                                     if curbic.floatValue > lastbic.floatValue {
 //                                        let discardModel = lastModel
@@ -994,7 +1156,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                     }
 
                 }
-                
+
                 //Run through all the random restarts and select highest score
                 if(modelPeaks.count > 0){
                     var peakModel = modelPeaks[0]
@@ -1019,11 +1181,94 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                         bestname = bestname + formatter.string(from: date)
                         peakModel.setValue(bestname, forKey: "name")
                         finalModel = peakModel
+                        
+                        
+//                        print("\n\nTEH WINNAR: \(finalModel.name)")
+//                        cmoc.insert(finalModel)
+//                        for insNode in finalModel.bnnode {
+//                            let thisinsNode : BNNode = insNode as! BNNode
+//                            print ("\(thisinsNode.name)")
+//
+//                            cmoc.insert(thisinsNode)
+//                            //Select the new winning node int he tree
+//                            for thisinfinter in thisinsNode.infsInter(sender: self) {
+//                                print("  -> \(thisinfinter.influences.name)")
+//                                cmoc.insert(thisinfinter)
+//                            }
+//                        }
+                        
+//                        for theEntry in theEntries {
+//                            let curEntry = theEntry as! Entry
+//                            finalModel.addAnEntryObject(curEntry)
+//                            curEntry.addAModelObject(finalModel)
+//
+//                            print(curEntry.model.count) //should be 2
+//                        }
+                        
+                        
                     }
                     
                 }
                 
+                else {
+                    finalModel = firstModel //FIXME this is crashing
+                }
+                
 
+                
+            //FIXME not workign here either
+//                for theEntry in theEntries  {
+//                    let curEntry = theEntry as! Entry
+//                    finalModel.addAnEntryObject(curEntry)
+////                    curEntry.addAModelObject(finalModel)
+//                    FIXME why the hell will the above line not work? It seems to go fine the other way...
+//                }
+                
+//                for theEntryID in entryIDs {
+//                    let curEntryID = theEntryID as! NSManagedObjectID
+//                    let theEntry = try cmoc.existingObject(with: curEntryID) as! Entry
+//                    finalModel.addAnEntryObject(theEntry)
+//                    theEntry.addAModelObject(finalModel)
+//
+//                }
+
+                
+                
+                //insert final model and its nodes into moc
+                //FIXME looking at finalModel
+                
+//                for testnode in finalModel.bnnode {
+//                    let tnode = testnode as! BNNode
+//
+//                    for thisinf in tnode.infs(self){
+//                        print("influences: \((thisinf.name))")
+//                    }
+//
+//
+//                    for thisinfby in tnode.infBy(self){
+//                        print("influenced by: \(thisinfby.name)")
+//                    }
+//
+//                }
+                
+                
+                
+//                print("\n\nWINNAR: \(finalModel.name)")
+//                cmoc.insert(finalModel)
+//                for insNode in finalModel.bnnode {
+//                    let thisinsNode : BNNode = insNode as! BNNode
+//                    print ("\(thisinsNode.name)")
+//
+//                    cmoc.insert(thisinsNode)
+//                    //Select the new winning node int he tree
+//                    for thisinfinter in thisinsNode.infsInter(sender: self) {
+//                        print("  -> \(thisinfinter.influences.name)")
+//                        cmoc.insert(thisinfinter)
+//
+//                    }
+//
+//
+//                }
             
                 do {
                     try cmoc.save()
@@ -1032,31 +1277,108 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                     print(error)
                     fatalError("Could not save models")
                 }
+                
+                                finalModelID = finalModel.objectID
+                
                 self.performSelector(onMainThread: #selector(PlexusMainWindowController.endProgInd), with: nil, waitUntilDone: true)
                 
                 DispatchQueue.main.sync {
                     
-
+//                    print (firstModelID)
+//                    print (finalModelID)
+//
+//                    if finalModelID != firstModelID {
+//
+//                        do {
+//                            finalModel = try self.moc.existingObject(with: finalModelID) as! Model
+//                            print (finalModel.name)
+//                            firstModel.addAChildObject(finalModel)
+//                            let finalIndexPath = self.mainSplitViewController.modelTreeController.indexPathOfModel(model:finalModel)
+//                            self.mainSplitViewController.modelTreeController.setSelectionIndexPath(finalIndexPath! as IndexPath)
+//
+//                        }
+//                        catch let error as NSError {
+//                            print(error)
+//                            fatalError("Error in calcQueue.")
+//                        }
+//
+//                    }
                     
-                    //then save it and its nodes in self.moc
-                    self.moc.insert(finalModel)
-                    for insNode in finalModel.bnnode {
-                        let thisinsNode : BNNode = insNode as! BNNode
+                    if finalModel != firstModel {
+                        print(firstModel.managedObjectContext)
+                        print(finalModel.managedObjectContext)
+                                            print (finalModel.name)
+
+//                        print (finalModel.entry.count)
+//                        finalModel.entry = NSSet()
+
+                        print (finalModel.entry.count)
+                        
 
                         
-                        self.moc.insert(thisinsNode)
-                        //Select the new winning node int he tree
+
+                        //                    The error of unique is being caused byt eh commeted code below, but there has to be some way to connect the entires to the final model
+
+
+                        //
+
+                        for theEntry in firstModel.entry  {
+                            let curEntry = theEntry as! Entry
+                            print (curEntry.name)
+                            finalModel.addAnEntryObject(curEntry)
+                            curEntry.addAModelObject(finalModel)
+                        }
+
+                        print (finalModel.entry.count)
+
+//                                            then save it and its nodes in self.moc
+                        print("\n\nWINNAR: \(finalModel.name)")
+                        self.moc.insert(finalModel)
+                        for insNode in finalModel.bnnode {
+                            let thisinsNode : BNNode = insNode as! BNNode
+                            print ("\(thisinsNode.name)")
+
+                            self.moc.insert(thisinsNode)
+                            //Select the new winning node int he tree
+                            for thisinfinter in thisinsNode.infsInter(sender: self) {
+                                print("  -> \(thisinfinter.influences.name)")
+                                self.moc.insert(thisinfinter)
+
+                            }
+
+
+                        }
                         
+                        do {
+                            try self.moc.save()
+                            
+                        } catch let error as NSError {
+                            print(error)
+                            fatalError("AIIIIII")
+                        }
                         
+
+                        firstModel.addAChildObject(finalModel)
+                        let finalIndexPath = self.mainSplitViewController.modelTreeController.indexPathOfModel(model:finalModel)
+                        self.mainSplitViewController.modelTreeController.setSelectionIndexPath(finalIndexPath! as IndexPath)
+                        
+
 
                     }
+
+                    else
+
+                    {
+                        print("no winner")
+                    }
                     
-                    firstModel.addAChildObject(finalModel)
-                    let finalIndexPath = self.mainSplitViewController.modelTreeController.indexPathOfModel(model:finalModel)
-                    self.mainSplitViewController.modelTreeController.setSelectionIndexPath(finalIndexPath! as IndexPath)
+
+                    
+                    //reset connction to entries
+
                     
                     
-                    
+                
                     do {
                         try self.moc.save()
                         
@@ -1086,8 +1408,9 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
     
     
     
-    func metalCalc(curModel:Model, verbose:Bool) -> Bool {
-//                let start = DispatchTime.now()
+    func metalCalc(curModel:Model, inEntries: NSSet, verbose:Bool) -> Bool {
+//            func metalCalc(curModel:Model,  verbose:Bool) -> Bool {
+                let start = DispatchTime.now()
 //                print ("\n\n**********START")
         
         let defaults = UserDefaults.standard
@@ -1105,6 +1428,11 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         }
 
         
+//            let theEntries = [Entry]() //FIXME
+//        let theEntries = curModel.entry //FIXME
+//        let theEntries = NSSet()
+        let theEntries = inEntries
+        
         var mTML = 0
         if #available(OSX 10.13, *) {
             mTML = Int(device.maxThreadgroupMemoryLength)
@@ -1120,10 +1448,8 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         
         
         let nodesForCalc = curModel.bnnode.allObjects as! [BNNode]
-        for nforc in nodesForCalc {
-            print(nforc.name)
-        }
         let nc = nodesForCalc.count
+
         
         let runstot = curModel.runstot as! Int
         var ntWidth = (mTTPT/teWidth)-1
@@ -1223,15 +1549,17 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         
         
         //Buffer 6: Infnet
+//        print ("\nINFNET")
         var sInfNet = [[Int32]]()
         var infnet = [Int32]()
         for node in nodesForCalc {
-            print (node.name)
+//            print(node.name)
             var thisinf = [Int32]()
             let theInfluencedBy = node.infBy(self)
             for thisinfby in theInfluencedBy  {
+//                print("  <- \(thisinfby.name)")
                 let tib = thisinfby
-                print(tib)
+//                print(nodesForCalc.index(of: tib))
                 thisinf.append(Int32(nodesForCalc.index(of: tib)!))
             }
             let leftOver = maxInfSize-thisinf.count
@@ -1328,7 +1656,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
             let commandEncoder = commandBuffer.makeComputeCommandEncoder()
             commandEncoder.setComputePipelineState(self.pipelineState)
             
-
+//let randomArray = Array(0..<30).map { _ in generateUniqueInt() }
             seeds = (0..<ntWidth).map{_ in arc4random()}
             seedsbuffer.contents().copyBytes(from: seeds, count: seeds.count * MemoryLayout<UInt32>.stride)
             
@@ -1571,10 +1899,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                 
         }
         
-        let score = self.calcMarginalLikelihood(curModel: curModel, nodesForCalc: nodesForCalc, infnet : sInfNet, results : results, priorresults : priorresults, bnstatesoutresults : bnstatesoutresults)
-//                let lscore = self.calcLikelihood(curModel: curModel, nodesForCalc: nodesForCalc)
-//        print("score \(score)")
-//        print("bic \(lscore)")
+        let score = self.calcMarginalLikelihood(curModel: curModel, inEntries: theEntries, nodesForCalc: nodesForCalc, infnet : sInfNet, results : results, priorresults : priorresults, bnstatesoutresults : bnstatesoutresults)
         curModel.setValue(score, forKey: "score")
         
             DispatchQueue.main.async {
@@ -1587,9 +1912,9 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
 //            print("Full run: \(NSDate().timeIntervalSince(start as Date)) seconds.")
 //        }
         
-//        end = DispatchTime.now()
-//        cptRunTime = Double(end.uptimeNanoseconds - start.uptimeNanoseconds) / 1000000000
-//        print ("**********END RUN  \(cptRunTime) seconds.")
+        var end = DispatchTime.now()
+        var cptRunTime = Double(end.uptimeNanoseconds - start.uptimeNanoseconds) / 1000000000
+        print ("**********END RUN  \(cptRunTime) seconds.")
         
         return true
         
@@ -1934,7 +2259,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                         
 
                         let titleStyle = CPTMutableTextStyle()
-                        titleStyle.fontName = "Helvetica-Bold"
+                        titleStyle.fontName = "SFProDisplay-Bold"
                         titleStyle.fontSize = 18.0
                         titleStyle.color = CPTColor.black()
                         graph?.titleTextStyle = titleStyle
@@ -2069,130 +2394,8 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
     
 /*************************** Likelihood functions  ****/
     
-    func calcLikelihood(curModel:Model, nodesForCalc:[BNNode]) -> Float {
-        
-        
-        let appDelegate : AppDelegate = NSApplication.shared().delegate as! AppDelegate
-        let moc = appDelegate.persistentContainer.viewContext
-
-        var subsamp = curModel.runsper as! Int
-        if subsamp < 1000  {
-            subsamp = 1000
-        }
-        if subsamp > curModel.runstot as! Int {
-            subsamp = curModel.runstot as! Int
-        }
-        // Get the yes-no's within the scope of the data
-        let theEntries = curModel.entry
-
-        var dataratios = [Float]()
-        var matches = [Float]()
-        var tots = [Float]()
-        
-        for calcNode in nodesForCalc {
-            let calcValue = calcNode.value
-            
-            var theTraits = [Trait]()
-            let predicate = NSPredicate(format: "entry IN %@ && name == %@", theEntries, calcNode.name)
-            let request = NSFetchRequest<Trait>(entityName: "Trait")
-            request.predicate = predicate
-            do {
-                theTraits = try moc.fetch(request)
-            } catch let error as NSError {
-                print (error)
-                return -999
-            }
-            
-            
-            var mTraits = [Trait]()
-            
-            if calcNode.numericData == true {
-                let calcNumVal = Double(calcValue)
-                let tol = calcNode.tolerance as! Double
-                let lowT = calcNumVal! * (1.0 - (tol/2.0))
-                let highT = calcNumVal! * (1.0 + (tol/2.0))
-                
-                for chkTrait in theTraits {
-                    if ((Double(chkTrait.value)!) < highT || (Double(chkTrait.value)!) > lowT) {
-                        mTraits.append(chkTrait)
-                    }
-                }
-                
-            }
-            else {
-                let mpredicate = NSPredicate(format: "entry IN %@ && name == %@ && value == %@", theEntries, calcNode.name, calcValue)
-                let mrequest = NSFetchRequest<Trait>(entityName: "Trait")
-                mrequest.predicate = mpredicate
-                do {
-                    mTraits = try moc.fetch(mrequest)
-                } catch let error as NSError {
-                    print (error)
-                    return -999
-                }
-            }
-            matches.append(Float(mTraits.count))
-            tots.append(Float(theTraits.count))
-            dataratios.append(Float(mTraits.count) / Float(theTraits.count))
-        
-        }
-        
-        //Check that all post arrays are same length
-        //Subsample from the posteriors
-        var firstnode = true
-        var postlength = -1
-        var sampS = [Int]()
-        var posts = [[Float]]()
-        
-        for calcNode in nodesForCalc {
-            let postArray = calcNode.postArray
-            if(firstnode == true){
-                firstnode = false
-                postlength = postArray.count
-                for _ in 0...postlength {
-                    sampS.append(Int(arc4random_uniform(UInt32(postlength))))
-                }
-            }
-            else {
-                if postlength != postArray.count{
-                    print("post array lengths do not match!")
-                    
-                }
-            }
-            var thisposts = [Float]()
-            for sp in sampS{
-                thisposts.append(postArray[sp])
-            }
-            posts.append(thisposts)
-        }
-        
-        //Pick index where likelihood of the posterior is the highest
-        var maxlike = Float(0.0)
-        var firsttime = true
-        for s in 0...(postlength-1) {
-            var likes = [Float]()
-            for r in 0...(nodesForCalc.count-1){
-                likes.append( pow(posts[r][s], matches[r]) * pow(1-(posts[r][s]), (tots[r]-matches[r])))
-                let likelihood = log(likes.reduce(1, *)) // Should not the likelihood of the data be the product of the likelihoods of the parzmeters assumig they ate indepent?
-                if firsttime == true {
-                    maxlike = likelihood
-                    firsttime = false
-                }
-                    else{
-                    if (likelihood > maxlike) {
-                        maxlike = likelihood
-                    }
-                }
-                
-
-            }
-        }
-        
-        return maxlike - ((Float(nodesForCalc.count) / 2.0) * log(Float(postlength)))
-        
-    }
-
-    
-    func calcMarginalLikelihood(curModel:Model, nodesForCalc:[BNNode], infnet:[[Int32]], results : [[Float]], priorresults : [[Float]], bnstatesoutresults : [[Float]]) -> Float {
+  
+    func calcMarginalLikelihood(curModel:Model, inEntries: NSSet, nodesForCalc:[BNNode], infnet:[[Int32]], results : [[Float]], priorresults : [[Float]], bnstatesoutresults : [[Float]]) -> Float {
         
         let appDelegate : AppDelegate = NSApplication.shared().delegate as! AppDelegate
         let moc = appDelegate.persistentContainer.viewContext
@@ -2205,7 +2408,10 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
             subsamp = curModel.runstot as! Int
         }
         // Get the yes-no's within the scope of the data
-        let theEntries = curModel.entry
+//        let theEntries = curModel.entry
+//        let theEntries = inEntries
+//        let theEntries = NSSet() //FIXME
+        let theEntries = inEntries
         
         var dataratios = [Float]()
         var matches = [Float]()
@@ -2226,6 +2432,9 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                 return -999
             }
             
+            
+            
+            print ("\(calcNode.name)  \(theTraits.count)")
             
             var mTraits = [Trait]()
             
@@ -2330,8 +2539,8 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
 //                    print ("lognomatch \(lognomatch)")
 //                    let logsum = logmatch + lognomatch //log M*N = log M + log N
 //                    print ("logsum \(logsum)")
-//                    print(pow(posts[r][s], matches[r]) * pow(1-(posts[r][s]), (tots[r]-matches[r])))
-//                    likes.append(pow(matches[r], posts[r][s]) * pow((tots[r]-matches[r]), 1-(posts[r][s]))) //This is likelihood of posterior given the data
+
+                    //This is likelihood of posterior given the data
             
                     
                     likes.append((matches[r] * log(posts[r][s])) + ((tots[r]-matches[r]) * log(1-(posts[r][s]))))//log of m^k  = k log m
@@ -2415,6 +2624,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         
         var likes = [Float]()
         for r in 0...(nodesForCalc.count-1){
+//            print ("\(nodesForCalc[r].name)")
             
             if(tots[r]>0) { // to avoid hidden or data-free nodes in likelihood calc
 //                print("\nname: \(nodesForCalc[r].name)")
@@ -2434,7 +2644,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
 //                let logsum = logmatch + lognomatch //log M*N = log M + log N
 //
 //                print ("logsum \(logsum)")
-//                print(log(pow(priorProds[r], matches[r]) * pow(1-(priorProds[r]), (tots[r]-matches[r]))))
+//                print((matches[r] * log(priorProds[r])) + ((tots[r]-matches[r]) * log(1-(priorProds[r]))))
 //                likes.append(log(pow(priorProds[r], matches[r]) * pow(1-(priorProds[r]), (tots[r]-matches[r])))) //This is likelihood of data given the Priors
                 
                 likes.append((matches[r] * log(priorProds[r])) + ((tots[r]-matches[r]) * log(1-(priorProds[r]))))
