@@ -1004,7 +1004,6 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         let firstModel : Model = curModels[0]
         let firstModelID = firstModel.objectID
         var finalModel = firstModel
-        var finalModelID = finalModel.objectID
         
         self.progSheet = self.progHillSetup(self)
         self.window!.beginSheet(self.progSheet, completionHandler: nil)
@@ -1213,7 +1212,6 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                     fatalError("Could not save models")
                 }
                 
-                                finalModelID = finalModel.objectID
                 
                 self.performSelector(onMainThread: #selector(PlexusMainWindowController.endProgInd), with: nil, waitUntilDone: true)
                 

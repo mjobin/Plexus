@@ -138,7 +138,7 @@ extension Model {
         for infsoned : [Int] in infstwod{
             for thisinf in infsoned{
 //                print("\(tempNodeArray[i].name) influences \(tempNodeArray[thisinf].name)")
-                let newInter = tempNodeArray[i].addAnInfluencesObject(infBy: tempNodeArray[thisinf], moc : moc)
+                _ = tempNodeArray[i].addAnInfluencesObject(infBy: tempNodeArray[thisinf], moc : moc)
                 _ = tempNodeArray[thisinf].addAnInfluencedByObject(inf: tempNodeArray[i], moc : moc)
             }
             i += 1

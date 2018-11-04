@@ -432,7 +432,7 @@ class PlexusBNScene: SKScene {
             self.physicsWorld.add(theJoint)
             
 
-            let interNode = startIDNode.node.addAnInfluencesObject(infBy: releasedIDNode.node, moc : moc)
+            _ = startIDNode.node.addAnInfluencesObject(infBy: releasedIDNode.node, moc : moc)
             _ = releasedIDNode.node.addAnInfluencedByObject(inf: startIDNode.node, moc : moc)
 
             

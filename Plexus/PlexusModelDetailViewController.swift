@@ -835,7 +835,6 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
     func catchNotification(notification:Notification) -> Void {
 
         let message  = notification.userInfo!["message"] as? String
-        print(message)
         if(message == "nodeDblClick"){
             self.dblClickNode()
         }

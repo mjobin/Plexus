@@ -27,7 +27,7 @@ class PlexusPostPopoverDetail: NSViewController, NSTableViewDelegate, NSTableVie
         for curColumn in cptTableView.tableColumns{
             cptTableView.removeTableColumn(curColumn)
         }
-        let theInfBy : [BNNode] = curNode.infBy(self) as! [BNNode]
+        let theInfBy : [BNNode] = curNode.infBy(self)
         for thisInfBy in theInfBy {
             let cptcolumn = NSTableColumn(identifier: thisInfBy.name)
             cptcolumn.headerCell.stringValue = thisInfBy.name
