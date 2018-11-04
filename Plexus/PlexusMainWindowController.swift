@@ -106,6 +106,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
             newModel.setValue("newmodel", forKey: "name")
             newModel.setValue(Date(), forKey: "dateCreated")
             newModel.setValue(Date(), forKey: "dateModded")
+            newModel.setValue(NSNumber.init(floatLiteral: -Double.infinity), forKey: "score")
             do {
                 try moc.save()
             } catch let error as NSError {
@@ -143,16 +144,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
     }
     
 
-//    func setUpMetal() {
-//        if let kernelFunction = defaultLibrary.makeFunction(name: "bngibbs") {
-//            do {
-//                pipelineState = try device.makeComputePipelineState(function: kernelFunction)
-//            }
-//            catch {
-//                fatalError("Impossible to setup Metal")
-//            }
-//        }
-//    }
+
     
     @IBAction func  toggleModels(_ x:NSToolbarItem){
 
@@ -386,15 +378,13 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
 
             DispatchQueue.global().async {
                 
-                
-                //create moc
-
                 let inMOC = NSManagedObjectContext(concurrencyType: .privateQueueConcurrencyType)
                 inMOC.undoManager = nil
                 inMOC.persistentStoreCoordinator = self.moc.persistentStoreCoordinator
                 
                 let newModel : Model = Model(entity: NSEntityDescription.entity(forEntityName: "Model", in: self.moc)!, insertInto: inMOC)
                 newModel.setValue(inFileBase?.lastPathComponent, forKey: "name")
+                newModel.setValue(NSNumber.init(floatLiteral: -Double.infinity), forKey: "score")
                 
                 let fileContents : String = (try! NSString(contentsOfFile: inFile!.path, encoding: String.Encoding.utf8.rawValue)) as String
                 let fileLines : [String] = fileContents.components(separatedBy: "\n")
@@ -963,15 +953,29 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
             self.performSelector(onMainThread: #selector(PlexusMainWindowController.endProgInd), with: nil, waitUntilDone: true)
             
             DispatchQueue.main.async {
-                if(fmcrun == true){
-                    firstModel.complete = true
+                
+                if self.breakloop == true {
+                    firstModel.score = NSNumber.init(floatLiteral: -Double.infinity)
+                    let cancelAlert = NSAlert()
+                    cancelAlert.alertStyle = .informational
+                    cancelAlert.messageText = "Run cancelled."
+                    cancelAlert.addButton(withTitle: "OK")
+                    _ = cancelAlert.runModal()
+                    self.breakloop = false
                 }
                 
-                let scoreAlert = NSAlert()
-                scoreAlert.alertStyle = .informational
-                scoreAlert.messageText = "Model \(firstModel.name) scored \(firstModel.score)"
-                scoreAlert.addButton(withTitle: "OK")
-                _ = scoreAlert.runModal()
+                else {
+                    if(fmcrun == true){
+                        firstModel.complete = true
+                    }
+                    
+                    let scoreAlert = NSAlert()
+                    scoreAlert.alertStyle = .informational
+                    scoreAlert.messageText = "Model \(firstModel.name) scored \(firstModel.score)"
+                    scoreAlert.addButton(withTitle: "OK")
+                    _ = scoreAlert.runModal()
+                    
+                }
                 
                 self.mainSplitViewController.modelDetailViewController?.calcInProgress = false
                 }
@@ -1075,12 +1079,22 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                     var modelPeaks = [Model]()
                 
                 for rs in 0...Int(runstarts)-1 {
+                    
+                    if(self.breakloop){
+                        break
+                    }
+                    
                 
                     var firstrun = true
                     var lastbic = NSNumber.init(value: 0.0)
                     var curbic = NSNumber.init(value: 0.0)
                     
                     for hc in 0...Int(hillchains)-1 {
+                        
+                        if(self.breakloop){
+                            break
+                        }
+                        
                         if(firstrun == true){
                             
                             firstrun = false
@@ -1186,6 +1200,9 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                     finalModel = firstModel
                 }
                 
+                if(self.breakloop){
+                    finalModel = firstModel
+                }
 
   
                 do {
@@ -1202,50 +1219,60 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                 
                 DispatchQueue.main.sync {
                     
-                    let scoreAlert = NSAlert()
-                    scoreAlert.alertStyle = .informational
-                    scoreAlert.messageText = "Highest scoring model: \(finalModel.name) with score \(finalModel.score)"
-                    if finalModel != firstModel {
-                        scoreAlert.informativeText = "Plexus will select the new model."
-                        for theEntry in firstModel.entry  {
-                            let curEntry = theEntry as! Entry
-                            finalModel.addAnEntryObject(curEntry)
-                            curEntry.addAModelObject(finalModel)
-                        }
-
-                        self.moc.insert(finalModel)
-                        for insNode in finalModel.bnnode {
-                            let thisinsNode : BNNode = insNode as! BNNode
-//                            print ("\(thisinsNode.name)")
-
-                            self.moc.insert(thisinsNode)
-                            //Select the new winning node int he tree
-                            for thisinfinter in thisinsNode.infsInter(sender: self) {
-//                                print("  -> \(thisinfinter.influences.name)")
-                                self.moc.insert(thisinfinter)
-                            }
-                        }
-                        
-                        do {
-                            try self.moc.save()
-                        } catch let error as NSError {
-                            print(error)
-                            fatalError("ERROR saving to primary MOC.")
-                        }
-                        
-                        firstModel.addAChildObject(finalModel)
-                        let finalIndexPath = self.mainSplitViewController.modelTreeController.indexPathOfModel(model:finalModel)
-                        self.mainSplitViewController.modelTreeController.setSelectionIndexPath(finalIndexPath! as IndexPath)
-                    
+                    if self.breakloop == true {
+                        firstModel.score = NSNumber.init(floatLiteral: -Double.infinity)
+                        let cancelAlert = NSAlert()
+                        cancelAlert.alertStyle = .informational
+                        cancelAlert.messageText = "Run cancelled."
+                        cancelAlert.addButton(withTitle: "OK")
+                        _ = cancelAlert.runModal()
+                        self.breakloop = false
                     }
+                    
                     else {
-                     scoreAlert.informativeText = "No model scored higher than the original."
+                        let scoreAlert = NSAlert()
+                        scoreAlert.alertStyle = .informational
+                        scoreAlert.messageText = "Highest scoring model: \(finalModel.name) with score \(finalModel.score)"
+                        if finalModel != firstModel {
+                            scoreAlert.informativeText = "Plexus will select the new model."
+                            for theEntry in firstModel.entry  {
+                                let curEntry = theEntry as! Entry
+                                finalModel.addAnEntryObject(curEntry)
+                                curEntry.addAModelObject(finalModel)
+                            }
+
+                            self.moc.insert(finalModel)
+                            for insNode in finalModel.bnnode {
+                                let thisinsNode : BNNode = insNode as! BNNode
+    //                            print ("\(thisinsNode.name)")
+
+                                self.moc.insert(thisinsNode)
+                                //Select the new winning node int he tree
+                                for thisinfinter in thisinsNode.infsInter(sender: self) {
+    //                                print("  -> \(thisinfinter.influences.name)")
+                                    self.moc.insert(thisinfinter)
+                                }
+                            }
+                            
+                            do {
+                                try self.moc.save()
+                            } catch let error as NSError {
+                                print(error)
+                                fatalError("ERROR saving to primary MOC.")
+                            }
+                            
+                            firstModel.addAChildObject(finalModel)
+                            let finalIndexPath = self.mainSplitViewController.modelTreeController.indexPathOfModel(model:finalModel)
+                            self.mainSplitViewController.modelTreeController.setSelectionIndexPath(finalIndexPath! as IndexPath)
+                        
+                        }
+                        else {
+                         scoreAlert.informativeText = "No model scored higher than the original."
+                        }
+                        self.mainSplitViewController.modelDetailViewController?.calcInProgress = false
+                        scoreAlert.addButton(withTitle: "OK")
+                        _ = scoreAlert.runModal()
                     }
-                    
-                    
-                    self.mainSplitViewController.modelDetailViewController?.calcInProgress = false
-                    scoreAlert.addButton(withTitle: "OK")
-                    _ = scoreAlert.runModal()
                 }
                 
             }

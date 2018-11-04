@@ -114,19 +114,33 @@ class PlexusModelViewController: NSViewController, NSOutlineViewDelegate, NSOutl
     }
 
     
+    @IBAction func addModel(_ sender : AnyObject){
+
+        var inPath = IndexPath()
+        if let curPath : IndexPath = modelTreeController.selectionIndexPath {
+            inPath = curPath
+        }
+        
+        
+        let newModel : Model = Model(entity: NSEntityDescription.entity(forEntityName: "Model", in: self.moc)!, insertInto: self.moc)
+        newModel.setValue("New Model", forKey: "name")
+        newModel.setValue(NSNumber.init(floatLiteral: -Double.infinity), forKey: "score")
+        
+        modelTreeController.insert(newModel, atArrangedObjectIndexPath: inPath)
+        
+        
+    }
+    
     @IBAction func childModel(_ sender : AnyObject){
         
         let curModels : [Model] = modelTreeController.selectedObjects as! [Model]
         let curModel : Model = curModels[0]
         
-        
-        //print ("curmodel \(curModel)")
-        
-        
         if let curPath : IndexPath = modelTreeController.selectionIndexPath {
             let newPath :IndexPath = curPath.appending(curModel.children.count)
             
             let newModel : Model = curModel.copySelf(moc: self.moc, withEntries: true)
+            newModel.setValue(NSNumber.init(floatLiteral: -Double.infinity), forKey: "score")
             
             // curModel.addChildObject(newModel)
             // newModel.setValue(curModel, forKey: "parent")
