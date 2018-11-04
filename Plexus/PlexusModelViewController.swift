@@ -14,6 +14,8 @@ class PlexusModelViewController: NSViewController, NSOutlineViewDelegate, NSOutl
     @IBOutlet dynamic var modelTreeController : NSTreeController!
     @IBOutlet weak var modelOutlineView : NSOutlineView!
     
+    var firstrun = true
+    
     
     required init?(coder aDecoder: NSCoder)
     {
@@ -29,6 +31,15 @@ class PlexusModelViewController: NSViewController, NSOutlineViewDelegate, NSOutl
         let kString : String = kUTTypeURL as String
         let registeredTypes:[String] = [kString]
         modelOutlineView.register(forDraggedTypes: registeredTypes)
+        
+        let options: NSKeyValueObservingOptions = [NSKeyValueObservingOptions.new, NSKeyValueObservingOptions.old]
+        modelTreeController.addObserver(self, forKeyPath: "arrangedObjects", options: options, context: nil)
+        
+    }
+    
+    
+    override func viewWillDisappear() {
+        UserDefaults.standard.set(NSKeyedArchiver.archivedData(withRootObject: modelTreeController.selectionIndexPaths), forKey: "plexusModelSelectionIndexPaths")
     }
 
     //NSOutlineView delegate functions
@@ -128,6 +139,22 @@ class PlexusModelViewController: NSViewController, NSOutlineViewDelegate, NSOutl
         }
         
         
+    }
+    
+    
+    override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
+
+        if let yerob = object as? NSTreeController {
+            if yerob == modelTreeController {
+                if firstrun {
+                    let savedSIData = UserDefaults.standard.data(forKey: "plexusModelSelectionIndexPaths")
+                    let savedSI = NSKeyedUnarchiver.unarchiveObject(with: savedSIData ?? Data())
+                    _ = modelTreeController.setSelectionIndexPaths(savedSI as! [IndexPath])
+                    firstrun = false
+                }
+            }
+        }
+
     }
     
     
