@@ -951,6 +951,13 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                 if(fmcrun == true){
                     firstModel.complete = true
                 }
+                
+                let scoreAlert = NSAlert()
+                scoreAlert.alertStyle = .informational
+                scoreAlert.messageText = "Model \(firstModel.name) scored \(firstModel.score)"
+                scoreAlert.addButton(withTitle: "OK")
+                _ = scoreAlert.runModal()
+                
                 self.mainSplitViewController.modelDetailViewController?.calcInProgress = false
                 }
                                 //end calcQ
@@ -959,7 +966,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
 }
     
  
-    @IBAction func calcButtonPress(_ x:NSToolbarItem){
+    @IBAction func hillClimbing(_ x:NSToolbarItem){
         let devices = devicesController?.selectedObjects as! [MTLDevice]
         device = devices[0]
         kernelFunction  = defaultLibrary?.makeFunction(name: "bngibbs")
@@ -1180,9 +1187,11 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                 
                 DispatchQueue.main.sync {
                     
-                    
+                    let scoreAlert = NSAlert()
+                    scoreAlert.alertStyle = .informational
+                    scoreAlert.messageText = "Highest scoring model: \(finalModel.name) with score \(finalModel.score)"
                     if finalModel != firstModel {
-
+                        scoreAlert.informativeText = "Plexus will select the new model."
                         for theEntry in firstModel.entry  {
                             let curEntry = theEntry as! Entry
                             finalModel.addAnEntryObject(curEntry)
@@ -1214,7 +1223,14 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                         self.mainSplitViewController.modelTreeController.setSelectionIndexPath(finalIndexPath! as IndexPath)
                     
                     }
+                    else {
+                     scoreAlert.informativeText = "No model scored higher than the original."
+                    }
+                    
+                    
                     self.mainSplitViewController.modelDetailViewController?.calcInProgress = false
+                    scoreAlert.addButton(withTitle: "OK")
+                    _ = scoreAlert.runModal()
                 }
                 
             }
