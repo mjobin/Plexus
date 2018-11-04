@@ -9,8 +9,6 @@
 import Cocoa
 import CoreData
 import Metal
-import GameKit
-
 
 class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
     
@@ -408,6 +406,8 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                 var batchCount : Int = 0
                 var columnCount = 0
                 var nameColumn = -1
+                var latitudeColumn = -1
+                var longitudeColumn = -1
                 var headers = [String]()
 
                 
@@ -435,6 +435,12 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                         for thisHeader in theHeader {
                             if thisHeader == "Name" {
                                 nameColumn = columnCount
+                            }
+                            if thisHeader == "Latitude" {
+                                latitudeColumn = columnCount
+                            }
+                            if thisHeader == "Longitude" {
+                                longitudeColumn = columnCount
                             }
                             headers.append(thisHeader.trimmingCharacters(in: delimiterCharacterSet as CharacterSet))
                             columnCount += 1
@@ -489,6 +495,15 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                             }
                             else {
                                 newEntry.setValue(String(i), forKey: "name")
+                            }
+                            
+                            if latitudeColumn >= 0 {
+                            
+                                newEntry.setValue(Float(theTraits[latitudeColumn]), forKey: "latitude")
+                            }
+                            
+                            if longitudeColumn >= 0 {
+                                newEntry.setValue(Float(theTraits[longitudeColumn]), forKey: "longitude")
                             }
                             
 
