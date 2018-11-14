@@ -10,180 +10,257 @@ import Foundation
 import CoreData
 
 
-
-
 extension BNNode {
+    //Down is along the path of an arrow. Up is against the path of a arrow.
     
     
+    /**
+     Gets BNNodeInters downstream of this BNNode.
+     
+     - Parameters:
+     - sender: Calling object.
+     
+     - Returns: Array of BNNodeInters.
+     */
+    func downInters (sender : AnyObject) -> [BNNodeInter] {
+        return self.down.array as! [BNNodeInter]
+    }
     
-    func getInfInterBetween(infByNode:BNNode, moc : NSManagedObjectContext?) -> BNNodeInter? {
-        //self is the influencing node, infByNode is the influencedBy
-        
-        let influencedByInter = infByNode.mutableOrderedSetValue(forKey: "influencedBy")
-        for thisinfByInter in influencedByInter {
-            let curinfByInter = thisinfByInter as! BNNodeInter
-            
-            if curinfByInter.influencedBy == self {
-                return curinfByInter
+    
+    /**
+     Gets BNNodeInters upstream of this BNNode.
+     
+     - Parameters:
+     - sender: Calling object.
+     
+     - Returns: Array of BNNodeInters.
+     */
+    func upInters (sender : AnyObject) -> [BNNodeInter] {
+        return self.up.array as! [BNNodeInter]
+    }
+    
+    /**
+     Gets BNNodes downstream of this BNNode.
+     
+     - Parameters:
+     - sender: Calling object.
+     
+     - Returns: Array of BNNodes.
+     */
+    func downNodes(_ sender:AnyObject) -> [BNNode] {
+        var targets = [BNNode]()
+        for thisDownInter in self.downInters(sender: self) {
+            targets.append(thisDownInter.down)
+        }
+        return targets
+    }
+    
+    /**
+     Gets BNNodes downstream of this BNNode.
+     
+     - Parameters:
+     - sender: Calling object.
+     
+     - Returns: Array of BNNodes.
+     */
+    func upNodes(_ sender:AnyObject) -> [BNNode] {
+        var targets = [BNNode]()
+        for thisUpInter in self.upInters(sender: self) {
+            targets.append(thisUpInter.up)
+        }
+        return targets
+    }
+    
+    
+    /**
+     Gets BNNodeInter between this node and a specified downstream node.
+     
+     - Parameters:
+    - downNode: The downstream node sought.
+     
+     - Returns: The found node, else nil.
+     */
+    func getDownInterBetween(downNode:BNNode) -> BNNodeInter? {
+        //self is the upstream node, downNode is the node pointed at by the arrow
+        for thisDownInter in self.downInters(sender: self) {
+            if thisDownInter.up == self && thisDownInter.down == downNode {
+                return thisDownInter
             }
         }
-        
         return nil
     }
     
 
-    
-    
-    
-    func getInfByInterBetween(infNode:BNNode, moc : NSManagedObjectContext?) -> BNNodeInter? {
-        //infNode is the influencing node, self is the influencedBy
-        let influencesInter = infNode.mutableOrderedSetValue(forKey: "influences")
-        for thisinfInter in influencesInter {
-            let curinfInter = thisinfInter as! BNNodeInter
-            
-            if curinfInter.influences == self {
-                
-                return curinfInter
+    /**
+     Gets BNNodeInter between this node and a specified upstream node.
+     
+     - Parameters:
+     - upNode: The upstream node sought.
+     
+     - Returns: The found node, else nil.
+     */
+    func getUpInterBetween(upNode:BNNode) -> BNNodeInter? {
+        //upNode is the upstream node, self is the node pointed at by the arrow
+        for thisUpInter in self.upInters(sender: self) {
+            if thisUpInter.down == self && thisUpInter.up == upNode {
+                return thisUpInter
             }
         }
-        
         return nil
-        
     }
     
     
-    
-    func addAnInfluencesObject(infBy:BNNode, moc : NSManagedObjectContext?) -> BNNodeInter { //Add an arrow from self to the other
-        
-        if let infInterBetween = self.getInfInterBetween(infByNode: infBy, moc: moc ?? nil) {
-            return infInterBetween
+    /**
+     Checks if a BNNodeInter already exists between this node and a downstream node. Creates one if not.
+     
+     - Parameters:
+     - downNode: The downstream node to be connected.
+     - moc: Managed object context where new BNNodeInter should be inserted.
+     
+     - Returns: The the exisiting nodeInter if found, or a new nodeInter.
+     */
+    func addADownObject(downNode:BNNode, moc : NSManagedObjectContext?) -> BNNodeInter { //Add an arrow from self to the other
+        if let downInterBetween = self.getDownInterBetween(downNode: downNode) {
+            _ = self.CPT() //once added, start calculating CPT right away FIXME necessary?
+            return downInterBetween
         }
         
-        //if no such node exists, create it
-        let influencedByInter = infBy.mutableOrderedSetValue(forKey: "influencedBy")
+        let downNodeUpInters = downNode.mutableOrderedSetValue(forKey: "up") //The upstream connections of the downstream node
         let newBNNodeInter: BNNodeInter = BNNodeInter(entity: BNNodeInter.entity(), insertInto: moc)
-        influencedByInter.add(newBNNodeInter)
-        newBNNodeInter.influences = infBy
+        downNodeUpInters.add(newBNNodeInter)
+        newBNNodeInter.down = downNode
         
-        let influencesInter = self.mutableOrderedSetValue(forKey: "influences")
-        influencesInter.add(newBNNodeInter)
-        newBNNodeInter.influencedBy = self
+        let downInters = self.mutableOrderedSetValue(forKey: "down") //The downstream connections of this node
+        downInters.add(newBNNodeInter)
+        newBNNodeInter.up = self
+        
+                _ = self.CPT() //once added, start calculating CPT right away FIXME necessary?
         
         return newBNNodeInter
-        
     }
     
     
-    func addAnInfluencedByObject(inf:BNNode, moc : NSManagedObjectContext?) -> BNNodeInter { //Add an arrow from other to self
-        if let infbyinter = self.getInfByInterBetween(infNode: inf, moc:  moc ?? nil) {
-            _ = self.CPT() //once added, start calculating CPT right away
-            return infbyinter
+    /**
+     Checks if a BNNodeInter already exists between this node and an upstream node. Creates one if not.
+     
+     - Parameters:
+     - upNode: The upstream node to be connected.
+     - moc: Managed object context where new BNNodeInter should be inserted.
+     
+     - Returns: The the exisiting nodeInter if found, or a new nodeInter.
+     */
+    func addAnUpObject(upNode:BNNode, moc : NSManagedObjectContext?) -> BNNodeInter { //Add an arrow from other to self
+        if let upInterBetween = self.getUpInterBetween(upNode: upNode) {
+            _ = self.CPT() //once added, start calculating CPT right away FIXME necessary?
+            return upInterBetween
         }
 
         //if no such node exists, create it
-        let influencesInter = inf.mutableOrderedSetValue(forKey: "influences")
+        let upNodeDownInters = upNode.mutableOrderedSetValue(forKey: "down") //The downstream connections of the upstream node
         let newBNNodeInter: BNNodeInter = BNNodeInter(entity: BNNodeInter.entity(), insertInto: moc)
-        influencesInter.add(newBNNodeInter)
-        newBNNodeInter.influencedBy = inf
+        upNodeDownInters.add(newBNNodeInter)
+        newBNNodeInter.up = upNode
         
-        let influencedByInter = self.mutableOrderedSetValue(forKey: "influencedBy")
-        influencedByInter.add(newBNNodeInter)
-        newBNNodeInter.influences = self
+        let upInters = self.mutableOrderedSetValue(forKey: "up") //The upstream connections of this node
+        upInters.add(newBNNodeInter)
+        newBNNodeInter.down = self
+        
+        _ = self.CPT() //once added, start calculating CPT right away FIXME necessary?
         
         return newBNNodeInter
-        
-        
+    }
+    
+    
+    /**
+     Removes the arrow between this BNNode and a downstream BNNode.
+     
+     - Parameters:
+     - downNode: The downstream node to be disconnected.
+     - moc: Managed object context where new BNNodeInter should be.
+     
+     */
+    func removeADownObject(downNode:BNNode, moc : NSManagedObjectContext?) {
+        if let theBNNodeInter = self.getDownInterBetween(downNode: downNode){
+            let downInters = self.mutableOrderedSetValue(forKey: "down")
+            downInters.remove(theBNNodeInter)
+            
+            let downNodeUpInters = downNode.mutableOrderedSetValue(forKey: "up");
+            downNodeUpInters.remove(theBNNodeInter)
+            
+            moc?.delete(theBNNodeInter)
+        }
+    }
+    
+    
+    /**
+     Removes the arrow between this BNNode and an upstream BNNode.
+     
+     - Parameters:
+     - upNode: The upstream node to be disconnected.
+     - moc: Managed object context where new BNNodeInter should be.
+     
+     */
+    func removeAnUpObject(upNode:BNNode, moc : NSManagedObjectContext?) {
+        if let theBNNodeInter = self.getUpInterBetween(upNode: upNode){
+            let upInters = self.mutableOrderedSetValue(forKey: "up")
+            upInters.remove(theBNNodeInter)
+            
+            let upNodeDownInters = upNode.mutableOrderedSetValue(forKey: "down");
+            upNodeDownInters.remove(theBNNodeInter)
+            
+            moc?.delete(theBNNodeInter)
+        }
         
     }
     
     
-    //self->valye
-    func removeAnInfluencesObject(value:BNNode, moc : NSManagedObjectContext?) {
-        let influencesInter = self.mutableOrderedSetValue(forKey: "influences");
-        
-        var theBNNodeInter : BNNodeInter!
-        for thisinfInter in influencesInter {
-            let curinfInter = thisinfInter as! BNNodeInter
-            if curinfInter.influences == value {
-                theBNNodeInter = curinfInter
-            }
+    
+    func removeSelfFromNeighbors(moc : NSManagedObjectContext?){
+        for upNode in self.upNodes(self){
+            upNode.removeADownObject(downNode: self, moc: moc)
         }
-        
-        if theBNNodeInter == nil { //Should not happen
-            return
+        for downNode in self.downNodes(self){
+            downNode.removeAnUpObject(upNode: self, moc: moc)
         }
-        
-        influencesInter.remove(theBNNodeInter)
-        let influenceByInter = value.mutableOrderedSetValue(forKey: "influencedBy");
-        
-        influenceByInter.remove(theBNNodeInter)
-        
-        moc?.delete(theBNNodeInter)
-        
     }
-    
-    
-    //value -> self
-    func removeAnInfluencedByObject(value:BNNode, moc : NSManagedObjectContext?) {
-        let influencedByInter = self.mutableOrderedSetValue(forKey: "influencedBy");
-        
-        var theBNNodeInter : BNNodeInter!
-        for thisinfInter in influencedByInter {
-            let curinfInter = thisinfInter as! BNNodeInter
-            if curinfInter.influencedBy == value {
-                theBNNodeInter = curinfInter
-            }
-        }
-        
-        if theBNNodeInter == nil { //Should not happen
-            return
-        }
-//        
-//        print ("Remove infBy found. inter inf: \(theBNNodeInter.influences.name)  infBy:\(theBNNodeInter.influencedBy.name)")
-        influencedByInter.remove(theBNNodeInter)
-        let influencesInter = self.mutableOrderedSetValue(forKey: "influences");
-        
-        influencesInter.remove(theBNNodeInter)
-        
-        moc?.delete(theBNNodeInter)
-        
-    }
-    
-    
+
+    /**
+     Checks to ensure nodes in a model are a Directed Acyclic Graph.
+     
+     - Parameters:
+     - nodeStack: Array of BNNodes to be checked
+
+     - Returns: Boolean telling whether a cycle has been found (which means the nodes do not form a DAG).
+     */
     func DFTcyclechk(_ nodeStack:[BNNode]) -> Bool {
-        
-        // print("checking \(self.node.name)")
         var tmpnodeStack = nodeStack
-        
-        //check if any two in the array are the same, if so return true
         for chknode in tmpnodeStack {
-            
             var chkcount = 0
             for chkchknode in tmpnodeStack{
                 if(chknode == chkchknode){
                     chkcount += 1
                 }
             }
-            //print("chknode \(chknode.name) has \(chkcount) copies")
             if(chkcount > 1) {
                 return true
             }
         }
-        //
-        let theInfluences : [BNNode] = self.infs(self)
-        for thisInfluences in theInfluences {
-            tmpnodeStack.append(thisInfluences)
-            if(thisInfluences.DFTcyclechk(tmpnodeStack) == true){
+
+        for thisDownNode in self.downNodes(self) {
+            tmpnodeStack.append(thisDownNode)
+            if(thisDownNode.DFTcyclechk(tmpnodeStack) == true){
                 return true;
             }
         }
-        
-        
         return false;
     }
     
     
-    
+    /**
+     Calculates a Conditional Probability Table for this BNNode.
+     
+     - Returns: 2 if successfully completed.
+     */
     func CPT() -> Int {
 //        let start = DispatchTime.now()
 //        print ("\n**********START CPT for \(self.name)")
@@ -195,68 +272,51 @@ extension BNNode {
         
         var ifthens = [Float]()
         
-//        var end = DispatchTime.now()
-//        var cptRunTime = Double(end.uptimeNanoseconds - start.uptimeNanoseconds) / 1000000000
-        
-        let theInfluencedBy = self.infBy(self)
-        let nInfBy = theInfluencedBy.count
-        if(nInfBy < 1) { //since 2^0 is 1
+        let theUpNodes = self.upNodes(self)
+        let nUp = theUpNodes.count
+        if(nUp < 1) { //since 2^0 is 1
             self.cptArray = [Float](repeating: -1.0, count: 1)
-//            let end = DispatchTime.now()
-//            let cptRunTime = Double(end.uptimeNanoseconds - start.uptimeNanoseconds) / 1000000000
-//            print ("**********END CPT for \(self.name) \(cptRunTime) seconds.")
-            
             return 2
         }
         else {
-            let theInfluencedBy = self.infBy(self)
-            for thisInfluencedBy in theInfluencedBy {
-                let  curInfluencedBy = thisInfluencedBy
+            for thisUpNode in theUpNodes {
                 //Which of the entries contain a trait matching the name of the node trait
-                
                 //get the interbetwene or make if it does nto exist
-                if let curNodeInter = self.getInfByInterBetween(infNode: thisInfluencedBy, moc: moc) {
-                    
-                    
+                if let curUpNodeInter = self.getUpInterBetween(upNode: thisUpNode){
+
                     let request = NSFetchRequest<Trait>(entityName: "Trait")
-                    let predicate = NSPredicate(format: "entry IN %@ && name == %@", argumentArray: [theEntries, curInfluencedBy.name])
+                    let predicate = NSPredicate(format: "entry IN %@ && name == %@", argumentArray: [theEntries, thisUpNode.name])
                     request.predicate = predicate
                     
                     do {
                         let allCount = try moc.count(for: request)
-                        //                    print("allCount \(allCount)")
                         
                         if allCount < 1 {
                             ifthens.append(0.5)
-                            curNodeInter.ifthen = 0.5
+                            curUpNodeInter.ifthen = 0.5
                         }
                         else {
-                            
                             let matchRequest = NSFetchRequest<Trait>(entityName: "Trait")
                             var matchPredicate = NSPredicate()
                             var chkNumeric = true
-                            if curInfluencedBy.numericData {
-                                if Double(curInfluencedBy.value) == nil {
+                            if thisUpNode.numericData {
+                                if Double(thisUpNode.value) == nil {
                                     chkNumeric = false
                                 }
                                 
                             }
                             
-                            
-                            //If data is numeric, need to invoke tolerance
-                            if curInfluencedBy.numericData && chkNumeric == true {
-                                
-                                let calcNumVal = Double(curInfluencedBy.value)
-                                let tol = curInfluencedBy.tolerance as! Double
+                            //If data is numeric, need to calculate based on tolerance value.
+                            if thisUpNode.numericData && chkNumeric == true {
+                                let calcNumVal = Double(thisUpNode.value)
+                                let tol = thisUpNode.tolerance as! Double
                                 let lowT = calcNumVal! * (1.0 - (tol/2.0))
                                 let highT = calcNumVal! * (1.0 + (tol/2.0))
                                 
-                                matchPredicate = NSPredicate(format: "entry IN %@ && name == %@ && value >= %f && value <= %f", argumentArray: [theEntries, curInfluencedBy.name, lowT, highT])
-                                
+                                matchPredicate = NSPredicate(format: "entry IN %@ && name == %@ && value >= %f && value <= %f", argumentArray: [theEntries, thisUpNode.name, lowT, highT])
                             }
                             else{
-                                
-                                matchPredicate = NSPredicate(format: "entry IN %@ && name == %@ && value == %@", argumentArray: [theEntries, curInfluencedBy.name, curInfluencedBy.value])
+                                matchPredicate = NSPredicate(format: "entry IN %@ && name == %@ && value == %@", argumentArray: [theEntries, thisUpNode.name, thisUpNode.value])
                             }
                             matchRequest.predicate = matchPredicate
                             do {
@@ -264,7 +324,7 @@ extension BNNode {
                                 let matchCount = try moc.count(for: matchRequest)
 //                                print("\(Float(matchCount)) \(Float(allCount)) \((Float(matchCount) / Float(allCount)))")
                                 ifthens.append(Float(matchCount) / Float(allCount))
-                                curNodeInter.ifthen = NSNumber.init(value: (Float(matchCount) / Float(allCount)))
+                                curUpNodeInter.ifthen = NSNumber.init(value: (Float(matchCount) / Float(allCount)))
                                 
                             } catch {
                                 print("Failed")
@@ -288,14 +348,14 @@ extension BNNode {
         
         
         
-        let cptarraysize = Int(pow(2.0,Double(nInfBy)))
+        let cptarraysize = Int(pow(2.0,Double(nUp)))
         var cptarray = [Float](repeating: 0.0, count: cptarraysize)
         
         for i in 0..<cptarraysize {
             let poststr = String(i, radix: 2)
             
             var prestr = String()
-            for _ in poststr.count..<nInfBy {
+            for _ in poststr.count..<nUp {
                 prestr += "0"
             }
             let bin = prestr + poststr
@@ -316,20 +376,20 @@ extension BNNode {
             
         }
         
-        
-        
         self.cptArray = cptarray
         
-//        end = DispatchTime.now()
-//        cptRunTime = Double(end.uptimeNanoseconds - start.uptimeNanoseconds) / 1000000000
-//        print ("**********END CPT for \(self.name) \(cptRunTime) seconds.  Array: \(cptarray)")
-        
-        
-        //END CPT()
         return 2
     }
     
-    
+    /**
+     Calculates then gets Conditional Probability Table for this BNNode.
+     
+     - Parameters:
+     - sender:
+     - mocChanged: Whether the Managed Object Context has changed.
+     
+     - Returns: CPT as an array.
+     */
     func getCPTArray(_ sender:AnyObject, mocChanged:Bool) -> [cl_float] {
         //FIXME only change this back if you feel really safe about it
         _ = self.CPT()
@@ -341,38 +401,4 @@ extension BNNode {
         return self.cptArray
     }
     
-    
-    func infsInter (sender : AnyObject) -> [BNNodeInter] {
-        return self.influences.array as! [BNNodeInter]
-    }
-    
-    
-    func infByInter (sender : AnyObject) -> [BNNodeInter] {
-        return self.influencedBy.array as! [BNNodeInter]
-    }
-    
-    
-
-    
-    func infs(_ sender:AnyObject) -> [BNNode] {
-        let infinters = self.infsInter(sender: self)
-        var inftargets = [BNNode]()
-        for thisInfinter in infinters {
-            inftargets.append(thisInfinter.influences)
-        }
-        return inftargets
-    }
-    
-    func infBy(_ sender:AnyObject) -> [BNNode] {
-        let infByinters = self.infByInter(sender: self)
-        var inftargets = [BNNode]()
-        for thisInfByinter in infByinters {
-            inftargets.append(thisInfByinter.influencedBy)
-        }
-        return inftargets
-    }
-    
-
-    
-    
-}
+} //END BNNode extension

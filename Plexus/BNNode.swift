@@ -38,8 +38,8 @@ class BNNode: NSManagedObject {
     
     
     
-    @NSManaged var influencedBy: NSOrderedSet
-    @NSManaged var influences: NSOrderedSet
+    @NSManaged var up: NSOrderedSet // Against direction of arrow
+    @NSManaged var down: NSOrderedSet // Along direction of arrow
     @NSManaged var model: Model
     
 }

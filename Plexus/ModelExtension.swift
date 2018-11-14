@@ -111,35 +111,30 @@ extension Model {
             
         }
         
-        
-        
         var infstwod = [[Int]]()
         
-
         //Copy Influences
         for curNode : BNNode in curNodes {
             var infsoned = [Int]()
-            let infs : [BNNode] = curNode.infs(self)
-            for inf : BNNode in infs{
+            let downNodes = curNode.downNodes(self)
+            for downNode in downNodes {
                 var chk = 0
                 for chkNode : BNNode in curNodes {
-                    if (chkNode == inf){
+                    if (chkNode == downNode){
                         infsoned.append(chk)
                     }
                     chk += 1
                 }
-                
             }
             infstwod.append(infsoned)
         }
-//        print("\ncopying influences \(newModel.name)")
 
         var i = 0
         for infsoned : [Int] in infstwod{
             for thisinf in infsoned{
 //                print("\(tempNodeArray[i].name) influences \(tempNodeArray[thisinf].name)")
-                _ = tempNodeArray[i].addAnInfluencesObject(infBy: tempNodeArray[thisinf], moc : moc)
-                _ = tempNodeArray[thisinf].addAnInfluencedByObject(inf: tempNodeArray[i], moc : moc)
+                _ = tempNodeArray[i].addADownObject(downNode: tempNodeArray[thisinf], moc: moc)
+                _ = tempNodeArray[thisinf].addAnUpObject(upNode: tempNodeArray[i], moc: moc)
             }
             i += 1
         }

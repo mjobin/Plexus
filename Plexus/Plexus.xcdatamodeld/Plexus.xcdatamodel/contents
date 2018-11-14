@@ -24,14 +24,14 @@
         <attribute name="savedY" optional="YES" attributeType="Double" minValueString="0" defaultValueString="0.0" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="tolerance" optional="YES" attributeType="Double" minValueString="0" maxValueString="1" defaultValueString="0.05" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="value" optional="YES" attributeType="String" defaultValueString="No Value" syncable="YES"/>
-        <relationship name="influencedBy" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="BNNodeInter" inverseName="influences" inverseEntity="BNNodeInter" syncable="YES"/>
-        <relationship name="influences" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="BNNodeInter" inverseName="influencedBy" inverseEntity="BNNodeInter" syncable="YES"/>
+        <relationship name="down" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="BNNodeInter" inverseName="up" inverseEntity="BNNodeInter" syncable="YES"/>
         <relationship name="model" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Model" inverseName="bnnode" inverseEntity="Model" syncable="YES"/>
+        <relationship name="up" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="BNNodeInter" inverseName="down" inverseEntity="BNNodeInter" syncable="YES"/>
     </entity>
     <entity name="BNNodeInter" representedClassName="Plexus.BNNodeInter" syncable="YES">
         <attribute name="ifthen" optional="YES" attributeType="Double" minValueString="0" maxValueString="1" defaultValueString="0.5" usesScalarValueType="NO" syncable="YES"/>
-        <relationship name="influencedBy" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="BNNode" inverseName="influences" inverseEntity="BNNode" syncable="YES"/>
-        <relationship name="influences" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="BNNode" inverseName="influencedBy" inverseEntity="BNNode" syncable="YES"/>
+        <relationship name="down" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="BNNode" inverseName="up" inverseEntity="BNNode" syncable="YES"/>
+        <relationship name="up" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="BNNode" inverseName="down" inverseEntity="BNNode" syncable="YES"/>
     </entity>
     <entity name="Entry" representedClassName="Plexus.Entry" syncable="YES">
         <attribute name="latitude" optional="YES" attributeType="Double" minValueString="0" maxValueString="90" defaultValueString="0" usesScalarValueType="NO" syncable="YES"/>

@@ -93,35 +93,6 @@ class PlexusBNScene: SKScene {
         let selNodes : [BNNode]  = nodesController.selectedObjects as! [BNNode]
         for selNode : BNNode in selNodes{
             
-
-
-            
-            
-            let theInfInters = selNode.infsInter(sender: self)
-            for thisinfInter in theInfInters{
-                self.enumerateChildNodes(withName: "bnNodeInter", using: { thisNodeInter, stop in
-                    let thisidNodeInter : PlexusBNNodeInter = thisNodeInter as! PlexusBNNodeInter
-                    if(thisidNodeInter.nodeInter == thisinfInter){
-                        thisidNodeInter.ifthenLabel.removeFromParent()
-                        thisidNodeInter.removeFromParent()
-                    }
-                })
-                moc.delete(thisinfInter)
-            }
-            
-            let theInfByInters = selNode.infByInter (sender : self)
-            for thisinfByInter in theInfByInters{
-                    self.enumerateChildNodes(withName: "bnNodeInter", using: { thisNodeInter, stop in
-                        let thisidNodeInter : PlexusBNNodeInter = thisNodeInter as! PlexusBNNodeInter
-                        if(thisidNodeInter.nodeInter == thisinfByInter){
-                            thisidNodeInter.ifthenLabel.removeFromParent()
-                            thisidNodeInter.removeFromParent()
-                        }
-                    })
-                moc.delete(thisinfByInter)
-            }
-            
-            
             nodesController.removeObject(selNode)
             let appDelegate : AppDelegate = NSApplication.shared().delegate as! AppDelegate
             moc = appDelegate.persistentContainer.viewContext
@@ -431,18 +402,14 @@ class PlexusBNScene: SKScene {
 
             self.physicsWorld.add(theJoint)
             
-
-            _ = startIDNode.node.addAnInfluencesObject(infBy: releasedIDNode.node, moc : moc)
-            _ = releasedIDNode.node.addAnInfluencedByObject(inf: startIDNode.node, moc : moc)
+            _ = startIDNode.node.addADownObject(downNode: releasedIDNode.node, moc: moc)
+            _ = releasedIDNode.node.addAnUpObject(upNode: startIDNode.node, moc: moc)
 
             
             if(startIDNode.node.DFTcyclechk([startIDNode.node]) || releasedIDNode.node.DFTcyclechk([releasedIDNode.node])){
                 
-                let startinfluences = startIDNode.node.mutableSetValue(forKey: "influences");
-                startinfluences.remove(releasedIDNode.node)
-                
-                let releasedinfluences = releasedIDNode.node.mutableSetValue(forKey: "influencedBy");
-                releasedinfluences.remove(startIDNode.node)
+                startIDNode.node.removeADownObject(downNode: releasedIDNode.node, moc: moc)
+                releasedIDNode.node.removeAnUpObject(upNode: startIDNode.node, moc: moc)
                 
             }
             
@@ -655,15 +622,14 @@ class PlexusBNScene: SKScene {
                         
                     })
                     
-
-                        let theInfluences : [BNNode] = curNode.infs(self)
-                        for thisInfluences : BNNode in theInfluences as [BNNode] {
+                        let theDownNodes = curNode.downNodes(self)
+                        for thisDownNode in theDownNodes {
                             var infNode : PlexusBNNode!
                             self.enumerateChildNodes(withName: "bnNode", using: { thatNode, stop in
                                 
                                 let thatidNode : PlexusBNNode = thatNode as! PlexusBNNode
                                 
-                                if(thatidNode.node == thisInfluences){
+                                if(thatidNode.node == thisDownNode){
                                     infNode = thatidNode
                                 }
                             })
@@ -702,14 +668,13 @@ class PlexusBNScene: SKScene {
                                     let theX = ((hiX - lowX) / 2.0) + lowX
                                     let theY = ((hiY - lowY) / 2.0) + lowY
 
-                                    if let interNode = idNode.node.getInfInterBetween(infByNode: infNode.node, moc: moc) {
+                                    if let interNode = idNode.node.getDownInterBetween(downNode: infNode.node){
                                         var foundinter = false
                                         
                                         self.enumerateChildNodes(withName: "bnNodeInter", using: { thisNodeInter, stop in
                                             
                                             let thisidNodeInter : PlexusBNNodeInter = thisNodeInter as! PlexusBNNodeInter
                                             
-
                                             if(thisidNodeInter.nodeInter == interNode){ //Found it, just set its position
                                                 foundinter = true
                                                 thisidNodeInter.position = CGPoint(x: theX,  y: theY)
@@ -718,7 +683,8 @@ class PlexusBNScene: SKScene {
                                         })
                                         
                                         if foundinter == false {
-                                            let interNode = idNode.node.addAnInfluencesObject(infBy: infNode.node, moc: moc)
+                                            let interNode = idNode.node.addADownObject(downNode: infNode.node, moc: moc)
+
                                             //Create display node for this Nodeinter
                                             self.makeNodeInter(interNode, inPos: CGPoint(x: theX,  y: theY))
                                             
@@ -727,8 +693,7 @@ class PlexusBNScene: SKScene {
                                         
                                     }
                                     else {
-
-                                                let interNode = idNode.node.addAnInfluencesObject(infBy: infNode.node, moc: moc)
+                                                let interNode = idNode.node.addADownObject(downNode: infNode.node, moc: moc)
                                                 //Create display node for this Nodeinter
                                                 self.makeNodeInter(interNode, inPos: CGPoint(x: theX,  y: theY))
                                         

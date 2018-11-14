@@ -617,20 +617,25 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         self.breakloop = true
     }
     
+    /**
+     Creates a copied, then randomly altered Model based on an exisitng Model.
+     
+     - Parameters:
+     - lastModel: Initial Model to be altered.
+     - allTraits: List of all Traits connected to the Model. Here for convenience, since he Traits will not change model to model.
+     - inituserTraitNames: List of Trait names already in the Model, to avoid duplication.
+     - thisMOC: Currently used Managed Object context. Can be nil.
+     
+     - Returns: A copy of lastModel, randomly altered.
+     */
     func randomChildModel(lastModel : Model, allTraits: [Trait], initusedTraitNames: Set<String>, thisMOC : NSManagedObjectContext?) -> Model {
-        
-        
         var usedTraitNames = initusedTraitNames
-//        print ("\n\n**** Starting random")
         let newModel = lastModel.copySelf(moc: thisMOC ?? nil, withEntries: false)
         
         let nodesForTest = newModel.bnnode.allObjects as! [BNNode]
-//        print("before changes node count : \(nodesForTest.count)")
-        
         if nodesForTest.count < 2 {
-            return lastModel
+            return lastModel //This should not happen, but if the intila model already has less than two nodes, do not proceed. This allows the random node selection below to work.
         }
-        
         
         let fromPos = Int.random(in: 0..<nodesForTest.count)
         var toPos = fromPos
@@ -638,104 +643,70 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         while toPos == fromPos {
             toPos = Int.random(in: 0..<nodesForTest.count)
         }
-
-        
-//        print("")
-//        print (fromPos)
-//        print(toPos)
         
         let fromNode = nodesForTest[fromPos]
         let toNode = nodesForTest[toPos]
 
-//        print (fromNode.name)
-//        print (toNode.name)
         var nochange = true
         
         //Check if there is an arc between them
         var isinfArc = false
         var isinfByArc = false
         
-        
-        
-        let theInfluences : [BNNode] = fromNode.infs(self)
-        for thisInfluences in theInfluences {
-            if thisInfluences == toNode {
+        for thisDownNode in fromNode.downNodes(self) {
+            if thisDownNode == toNode {
                 isinfArc = true
                 break
             }
         }
         
-        
-        let theInfluencedBy : [BNNode] = fromNode.infBy(self)
-        for thisInfluencedBy in theInfluencedBy {
-            if thisInfluencedBy == toNode {
+        for thisUpNode in fromNode.upNodes(self) {
+            if thisUpNode == toNode {
                 isinfByArc = true
                 break
             }
         }
         
         
-        
-
         while nochange {
             
-            let switchup = Int.random(in: 1 ... 4) //FIXME back to 5
-//            print ("rolled \(switchup)")
+            let switchup = Int.random(in: 1 ... 5)
             switch switchup {
-                case 1: //Change an ifthen if the from node has no data
-                    
-
-                
+                //Change an ifthen if the from node has no data
+                case 1:
                     let request = NSFetchRequest<Trait>(entityName: "Trait")
                     let predicate = NSPredicate(format: "entry IN %@ && name == %@", argumentArray: [newModel.entry, fromNode.name])
                     request.predicate = predicate
-                    
                     do {
                         let allCount = try moc.count(for: request)
                         if allCount < 1 {
-//                            print ("Changing ifthen")
-                            if let interNode = toNode.getInfInterBetween(infByNode:fromNode, moc: thisMOC ?? nil) { //they are connected
+                            if let interNode = fromNode.getDownInterBetween(downNode: toNode){
                                 interNode.ifthen =  NSNumber(value: Float.random(in: 0 ... 1))
                                 nochange = false
                             }
-      
                         }
                         
                     } catch {
                         fatalError("Failed request.")
                 }
-                
-                case 2: //Add a hidden node wih no data pointing at toNode, or if it is hidden, remove it
-//                    print ("option 2 name: \(toNode.name) hidden: \(toNode.hidden)")
+                //Add a hidden node wih no data pointing at toNode, or if it is hidden, remove it
+                case 2:
                     if toNode.hidden == true {
-//                        print("\n***Removing \(toNode.name)")
-                        for thisInfBy in toNode.infBy(self){
-//                            print("   <-\(thisInfBy.name)")
-                            thisInfBy.removeAnInfluencesObject(value: toNode, moc: thisMOC)
-                        }
-                        for thisInf in toNode.infs(self){
-//                            print("   ->\(thisInf.name)")
-                            thisInf.removeAnInfluencedByObject(value: toNode, moc: thisMOC)
-                        }
                         newModel.removeABNNodeObject(toNode)
+                        toNode.removeSelfFromNeighbors(moc: thisMOC)
+                        thisMOC?.delete(toNode)
                         nochange = false
                     }
                     
                     else {
-                        //Create a hidden node pointing to this node UNLESS it already has one
-                        
                         var hashidden = false
-                        
-                        for thisInfBy in toNode.infBy(self){
-//                            print("   <-\(thisInfBy.name)  \(thisInfBy.hidden)")
-                            if thisInfBy.hidden == true {
-//                                print("arready")
+                        for thisUpNode in toNode.upNodes(self){
+                            if thisUpNode.hidden == true {
                                 hashidden = true
                             }
                         }
                         
                         if hashidden == false {
-//                            print("\n***Adding hidden pointing to \(toNode.name)")
                             let newNode : BNNode = BNNode(entity: BNNode.entity(), insertInto: thisMOC)
                             newNode.name = "hidden"
                             newNode.hidden = true
@@ -744,12 +715,10 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                             newNode.priorDistType = 1 //Set uniform prior
                             newNode.priorV1 = 0.0
                             newNode.priorV2 = 1.0
-                            let newInter = newNode.addAnInfluencesObject(infBy: toNode, moc: thisMOC)
-
+                            
+                            let newInter = newNode.addADownObject(downNode: toNode, moc: thisMOC)
                             newInter.ifthen = 0.5
                             nochange = false
-                            
-//                            print ("new hidden node: \(newNode.name) hidden: \(newNode.hidden)")
                         }
                     }
                 
@@ -759,25 +728,22 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                         if isinfArc == true && isinfByArc == false {
 
                             if Bool.random() { // delete arc
-//                                print ("Deleting arrow between \(fromNode.name) and \(toNode.name)")
-                                fromNode.removeAnInfluencesObject(value: toNode, moc : thisMOC)
+                                fromNode.removeADownObject(downNode: toNode, moc: thisMOC)
                             }
                             else { // reverse arc
-//                                print ("Reversing arrow between \(fromNode.name) and \(toNode.name)")
-                                fromNode.removeAnInfluencesObject(value: toNode, moc : thisMOC)
-                                _ = toNode.addAnInfluencesObject(infBy : fromNode, moc : thisMOC)
+                                fromNode.removeADownObject(downNode: toNode, moc: thisMOC)
+                                _ = toNode.addADownObject(downNode: fromNode, moc: thisMOC)
                             }
                         }
                             
                         else if isinfArc == false && isinfByArc == true {
                             if Bool.random() { // delete arc
-//                                print ("Deleting arrow between \(toNode.name) and \(fromNode.name)")
-                                toNode.removeAnInfluencesObject(value: fromNode, moc : thisMOC)
+                                toNode.removeADownObject(downNode: fromNode, moc: thisMOC)
+
                             }
                             else { // reverse arc
-//                                print ("Reversing arrow between \(toNode.name) and \(fromNode.name)")
-                                toNode.removeAnInfluencesObject(value: fromNode, moc : thisMOC)
-                                _ = fromNode.addAnInfluencesObject(infBy : toNode, moc : thisMOC)
+                                toNode.removeADownObject(downNode: fromNode, moc: thisMOC)
+                                _ = fromNode.addADownObject(downNode: toNode, moc: thisMOC)
                             }
                         }
                             
@@ -785,12 +751,13 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                             fatalError("Error: infleunces in two directions!")
                         }
                         else { //both false, no arc
-//                            print ("Deleting arrow between \(fromNode.name) and \(toNode.name)")
-                            _ = fromNode.addAnInfluencesObject(infBy : toNode, moc : thisMOC)
+                            _ = fromNode.addADownObject(downNode: toNode, moc: thisMOC)
                     }
                         nochange = false
                 }
-            case 4: //Change the traitvalue to another. If numeric, change tolerance
+                
+            //Change the traitvalue to another. If numeric, change tolerance
+            case 4:
                 
                 if  toNode.hidden == false {
                     if toNode.numericData {
@@ -813,47 +780,36 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                     }
                     nochange = false
                 }
-            case 5: //Add a trait in the model that is not yet used, or remove an instance of it if it is
+                
+            //Add a trait in the model that is not yet used, or remove an instance of it if it is
+            case 5:
                 let pickedTrait = allTraits.randomElement() as! Trait
                 let pickedTraitName = pickedTrait.name
                 if usedTraitNames.contains(pickedTraitName) { //Exists, remove an instance
-                    
-                    var neverdeleted = true
-                    var numwithname = 0
-                    for chkNode in nodesForTest {
-                        if chkNode.name == pickedTraitName {
-//                            print("Found \(pickedTraitName)")
-                            numwithname += 1
-                            if neverdeleted == true {
-                                neverdeleted = false
-                                
-//                                print("\n***Removing \(chkNode.name)")
-                                for thisInfBy in chkNode.infBy(self){
-                                    thisInfBy.removeAnInfluencesObject(value: chkNode, moc: thisMOC)
+                    if nodesForTest.count > 2 {//Do not reduce the number of nodes to less than 2
+                        var neverdeleted = true
+                        var numwithname = 0
+                        for chkNode in nodesForTest {
+                            if chkNode.name == pickedTraitName {
+                                numwithname += 1
+                                if neverdeleted == true {
+                                    neverdeleted = false
+                                    newModel.removeABNNodeObject(chkNode)
+                                    chkNode.removeSelfFromNeighbors(moc: thisMOC)
+                                    thisMOC?.delete(chkNode)
+                                    numwithname = numwithname - 1
+                                    nochange = false
                                 }
-                                for thisInf in chkNode.infs(self){
-
-                                    thisInf.removeAnInfluencedByObject(value: chkNode, moc: thisMOC)
-                                }
-                                newModel.removeABNNodeObject(chkNode)
-                                numwithname = numwithname - 1
-                                nochange = false
-                                
                                 
                             }
-                            
+                        }
+                        if numwithname < 1 {
+                                usedTraitNames.remove(pickedTraitName)
                         }
                     }
-                    if numwithname < 1 {
-                            usedTraitNames.remove(pickedTraitName)
-                    }
-                    
-                    
                 }
-                else{ //Add node, point it to or from toNode
-                    
-                    
-//                    print("\n***Adding new node \(pickedTraitName)" )
+                //Add node, point it to or from toNode
+                else{
                     let newNode : BNNode = BNNode(entity: BNNode.entity(), insertInto: thisMOC)
                     newNode.name = pickedTraitName
                     newNode.value = pickedTrait.value
@@ -865,10 +821,11 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                     newNode.priorV2 = 1.0
                     
                     if Bool.random() {
-                        _ = newNode.addAnInfluencesObject(infBy: toNode, moc: thisMOC)
+                        _ = newNode.addADownObject(downNode: toNode, moc: thisMOC)
+
                     }
                     else {
-                        _ = newNode.addAnInfluencedByObject(inf: toNode, moc: thisMOC)
+                        _ = newNode.addAnUpObject(upNode: toNode, moc: thisMOC)
                     }
                     usedTraitNames.insert(pickedTraitName)
                     nochange = false
@@ -877,38 +834,20 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                 }
                 
             default:
-                    fatalError("Error: illegal rendom model alteration!")
+                    fatalError("Error: illegal random model alteration!")
             }
         }
         
-        
-//        print("\n\n*****NEW RANDO: \(newModel.name)")
-//        for testnode in newModel.bnnode {
-//            let tnode = testnode as! BNNode
-//            print (tnode.name)
-//            for thisinf in tnode.infs(self){
-//                print("   ->\((thisinf.name))")
-//            }
-//            for thisinfby in tnode.infBy(self){
-//                print("   <-\(thisinfby.name)")
-//            }
-//
-//        }
-        
-        
-        
-
-        
          //Now make sure the CPT's are recalced
+        let afterNodes = newModel.bnnode.allObjects as! [BNNode]
         var testCPT = 2
-        for testNode in nodesForTest{
+        for testNode in afterNodes {
             testCPT = testNode.CPT()
         }
         
         if testCPT != 2 {
             fatalError("Error creating CPT in randomChildModel.")
         }
-
 
         return newModel
     }
@@ -940,6 +879,13 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         
         let nodesForTest = firstModel.bnnode.allObjects as! [BNNode]
         if (nodesForTest.count < 2){
+            let cancelAlert = NSAlert()
+            cancelAlert.alertStyle = .informational
+            cancelAlert.messageText = "Need at least two nodes with at least one connection between them."
+            cancelAlert.addButton(withTitle: "OK")
+            _ = cancelAlert.runModal()
+
+            
                 self.performSelector(onMainThread: #selector(PlexusMainWindowController.endProgInd), with: nil, waitUntilDone: true)
                 self.mainSplitViewController.modelDetailViewController?.calcInProgress = false
                 return
@@ -1018,13 +964,17 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         var usedTraitNames = Set<String>()
         let nodesForTest = firstModel.bnnode.allObjects as! [BNNode]
         if (nodesForTest.count < 2){
+            let cancelAlert = NSAlert()
+            cancelAlert.alertStyle = .informational
+            cancelAlert.messageText = "Need at least two nodes with at least one connection between them."
+            cancelAlert.addButton(withTitle: "OK")
+            _ = cancelAlert.runModal()
             self.performSelector(onMainThread: #selector(PlexusMainWindowController.endProgInd), with: nil, waitUntilDone: true)
             self.mainSplitViewController.modelDetailViewController?.calcInProgress = false
             return
         }
         for firstNode in nodesForTest {
             usedTraitNames.insert(firstNode.name)
-        
         }
         
         
@@ -1102,7 +1052,11 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                         }
                         else {
                             
+
+                            
+                            
                             let curModel = self.randomChildModel(lastModel: lastModel, allTraits: allTraits, initusedTraitNames: usedTraitNames, thisMOC: nil)
+                            
                             
                             var cycleChk = false
                             let newNodes = curModel.bnnode
@@ -1125,6 +1079,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                                     curbic = curModel.score
 //                                    print("\(lastbic) \(curbic)")
                                     curModel.setValue(curbic, forKey: "score")
+
                                     if curbic.floatValue > lastbic.floatValue {
 //                                        let discardModel = lastModel
     //                                    print ("keeping: \(curModel.name) and discarding \(discardModel.name)")
@@ -1133,6 +1088,16 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
     //                                    if discardModel != cfirstModel {
     //                                        cmoc.delete(discardModel)
     //                                    }
+                                        
+                                        usedTraitNames = Set<String>()
+                                        let lastNodes = lastModel.bnnode.allObjects as! [BNNode]
+                                        for lastNode in lastNodes {
+                                            usedTraitNames.insert(lastNode.name)
+                                        }
+                                        
+
+                                        
+                                        
                                     }
                                     else {
     //                                    print ("discarding: \(curModel.name)")
@@ -1246,9 +1211,8 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
 
                                 self.moc.insert(thisinsNode)
                                 //Select the new winning node int he tree
-                                for thisinfinter in thisinsNode.infsInter(sender: self) {
-    //                                print("  -> \(thisinfinter.influences.name)")
-                                    self.moc.insert(thisinfinter)
+                                for thisDownInter in thisinsNode.downInters(sender: self){
+                                    self.moc.insert(thisDownInter)
                                 }
                             }
                             
@@ -1327,7 +1291,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         
         let nodesForCalc = curModel.bnnode.allObjects as! [BNNode]
         let nc = nodesForCalc.count
-
+        
         
         let runstot = curModel.runstot as! Int
         var ntWidth = (mTTPT/teWidth)-1
@@ -1362,13 +1326,15 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         
         var maxInfSize = 0
         for node in nodesForCalc {
-            let theInfluencedBy = node.infBy(self)
-            if(theInfluencedBy.count > maxInfSize) {
-                maxInfSize = theInfluencedBy.count
+            let theUpNodes = node.upNodes(self)
+            if(theUpNodes.count > maxInfSize) {
+                maxInfSize = theUpNodes.count
             }
         }
-        if(maxInfSize<1){
-            return false //so that we don't work with completely unlinked graphs
+        
+        //So that we don't work with completely unlinked graphs
+        if(maxInfSize<1){ //FIXME
+            return false
         }
         
         //Maximum CPT size for a node
@@ -1427,18 +1393,13 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         
         
         //Buffer 6: Infnet
-//        print ("\nINFNET")
         var sInfNet = [[Int32]]()
         var infnet = [Int32]()
         for node in nodesForCalc {
-//            print(node.name)
             var thisinf = [Int32]()
-            let theInfluencedBy = node.infBy(self)
-            for thisinfby in theInfluencedBy  {
-//                print("  <- \(thisinfby.name)")
-                let tib = thisinfby
-//                print(nodesForCalc.index(of: tib))
-                thisinf.append(Int32(nodesForCalc.index(of: tib)!))
+            let theUpNodes = node.upNodes(self)
+            for thisUpNode in theUpNodes  {
+                thisinf.append(Int32(nodesForCalc.index(of: thisUpNode)!))
             }
             let leftOver = maxInfSize-thisinf.count
             for _ in 0..<leftOver {
@@ -1678,9 +1639,9 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
             var postCount = [Int](repeating: 0, count: bins)
             let inNode : BNNode = nodesForCalc[fi]
 
-            let theInfluencedBy : [BNNode] = inNode.infBy(self)
-            if theInfluencedBy.count > 0 { //if dependent node
-            
+            let theUpNodes = inNode.upNodes(self)
+            //If a dependent node
+            if theUpNodes.count > 0 {
                 var gi = 0
                 var flinetot : Float = 0.0
                 var flinecount : Float = 0.0
@@ -2464,8 +2425,8 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         for r in 0...(nodesForCalc.count-1){
 //            print("Node: \(nodesForCalc[r].name)")
             let thisinfnet = infnet[r]
-            let infBy = nodesForCalc[r].infBy(self)
-            if infBy.count > 0 { //dependent. Use the conditional probability of this node given the states of the nodes at maxpos. So say T, T, T is binary 111 or decimal 7
+            let upNodes = nodesForCalc[r].upNodes(self)
+            if upNodes.count > 0 { //dependent. Use the conditional probability of this node given the states of the nodes at maxpos. So say T, T, T is binary 111 or decimal 7
                 let cptarray = nodesForCalc[r].cptArray //FIXME easier to pull this at top of funciton
 
 
