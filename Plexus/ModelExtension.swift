@@ -68,6 +68,7 @@ extension Model {
 
         
         var tempNodeArray = [BNNode]()
+        var curNodeArray = [BNNode]()
         let curNodes  = self.bnnode.allObjects as! [BNNode]
         for curNode : BNNode in curNodes {
             let newNode : BNNode = BNNode(entity: BNNode.entity(), insertInto: moc)
@@ -106,10 +107,13 @@ extension Model {
             newModel.addABNNodeObject(newNode)
             
             tempNodeArray.append(newNode)
+            curNodeArray.append(curNode)
             
             
             
         }
+        
+        
         
         var infstwod = [[Int]]()
         
@@ -132,13 +136,37 @@ extension Model {
         var i = 0
         for infsoned : [Int] in infstwod{
             for thisinf in infsoned{
-//                print("\(tempNodeArray[i].name) influences \(tempNodeArray[thisinf].name)")
-                _ = tempNodeArray[i].addADownObject(downNode: tempNodeArray[thisinf], moc: moc)
-                _ = tempNodeArray[thisinf].addAnUpObject(upNode: tempNodeArray[i], moc: moc)
+//                print("\(tempNodeArray[i].name) -> \(tempNodeArray[thisinf].name)")
+                let newInter = tempNodeArray[i].addADownObject(downNode: tempNodeArray[thisinf], moc: moc)
+                if let curInter = curNodeArray[i].getDownInterBetween(downNode: curNodeArray[thisinf]){
+                    newInter.ifthen = curInter.ifthen
+//                    print(newInter.ifthen)
+                }
+//                _ = tempNodeArray[thisinf].addAnUpObject(upNode: tempNodeArray[i], moc: moc)
             }
             i += 1
         }
         
+        
+
+        
+//        print("newmodel: \(newModel.name) \(newModel.managedObjectContext)")
+//        
+//        for insNode in newModel.bnnode {
+//            let thisinsNode : BNNode = insNode as! BNNode
+//            print ("\(thisinsNode.name) \(thisinsNode.value) \(thisinsNode.managedObjectContext)")
+//
+//            for thisDown in thisinsNode.downNodes(self){
+//                print(" -> \(thisDown.name)")
+//                if let thisDI = thisinsNode.getDownInterBetween(downNode: thisDown){
+//                    print("\(thisDI.up.name) \(thisDI.down.name) \(thisDI.ifthen) \(thisDI.isFault) \(thisDI.managedObjectContext)")
+//
+//                }
+//                
+//            }
+//            
+//        }
+//        print("")
     
         
         return newModel

@@ -630,7 +630,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
      */
     func randomChildModel(lastModel : Model, allTraits: [Trait], initusedTraitNames: Set<String>, thisMOC : NSManagedObjectContext?) -> Model {
         var usedTraitNames = initusedTraitNames
-        let newModel = lastModel.copySelf(moc: thisMOC ?? nil, withEntries: false)
+        let newModel = lastModel.copySelf(moc: thisMOC ?? nil, withEntries: true)
         
         let nodesForTest = newModel.bnnode.allObjects as! [BNNode]
         if nodesForTest.count < 2 {
@@ -834,17 +834,26 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                 }
                 
             default:
-                    fatalError("Error: illegal random model alteration!")
+//                    fatalError("Error: illegal random model alteration!")
+
+                nochange = false //FIXME remove
             }
         }
         
          //Now make sure the CPT's are recalced
         let afterNodes = newModel.bnnode.allObjects as! [BNNode]
         var testCPT = 2
+//        print("\nrandom done")
         for testNode in afterNodes {
+//            print("FOR: \(testNode.name)")
+            for testDownNode in testNode.downNodes(self){
+//                print(" -> \(testDownNode.name)")
+              let iN = testNode.addADownObject(downNode: testDownNode, moc: thisMOC)
+//                print ("      \(iN.ifthen)   \(iN.isFault)")
+            }
             testCPT = testNode.CPT()
         }
-        
+//        print(" ")
         if testCPT != 2 {
             fatalError("Error creating CPT in randomChildModel.")
         }
@@ -950,6 +959,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         let firstModel : Model = curModels[0]
         let firstModelID = firstModel.objectID
         var finalModel = firstModel
+        var finalModelID = firstModelID
         
         self.progSheet = self.progHillSetup(self)
         self.window!.beginSheet(self.progSheet, completionHandler: nil)
@@ -1052,10 +1062,52 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                         }
                         else {
                             
+                            
+//                            print("Lastmodel: \(lastModel.name) \(lastModel.managedObjectContext)")
+//
+//                            for insNode in lastModel.bnnode {
+//                                let thisinsNode : BNNode = insNode as! BNNode
+//                                print ("\(thisinsNode.name) \(thisinsNode.value) \(thisinsNode.managedObjectContext)")
+//
+//
+//                                //Select the new winning node int he tree
+//                                for thisDown in thisinsNode.downNodes(self){
+//                                    print(" -> \(thisDown.name)")
+//                                    if let thisDI = thisinsNode.getDownInterBetween(downNode: thisDown){
+//                                        print("\(thisDI.up.name) \(thisDI.down.name) \(thisDI.ifthen) \(thisDI.isFault) \(thisDI.managedObjectContext)")
+//
+//                                    }
+//
+//                                }
+//
+//                            }
+//                            print("")
 
                             
                             
                             let curModel = self.randomChildModel(lastModel: lastModel, allTraits: allTraits, initusedTraitNames: usedTraitNames, thisMOC: nil)
+                            //FIXME fthen lost HERE
+                            var discardModel = curModel
+                            
+//                            print("Curmodel: \(curModel.name) \(curModel.managedObjectContext)")
+//
+//                            for insNode in curModel.bnnode {
+//                                let thisinsNode : BNNode = insNode as! BNNode
+//                                print ("\(thisinsNode.name) \(thisinsNode.value) \(thisinsNode.managedObjectContext)")
+//
+//
+//                                //Select the new winning node int he tree
+//                                for thisDown in thisinsNode.downNodes(self){
+//                                    print(" -> \(thisDown.name)")
+//                                    if let thisDI = thisinsNode.getDownInterBetween(downNode: thisDown){
+//                                        print("\(thisDI.up.name) \(thisDI.down.name) \(thisDI.ifthen) \(thisDI.isFault) \(thisDI.managedObjectContext)")
+//
+//                                    }
+//
+//                                }
+//
+//                            }
+//                            print("")
                             
                             
                             var cycleChk = false
@@ -1079,10 +1131,10 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                                     curbic = curModel.score
 //                                    print("\(lastbic) \(curbic)")
                                     curModel.setValue(curbic, forKey: "score")
-
+//                                    if 2 > 1 { //FIXME remove
                                     if curbic.floatValue > lastbic.floatValue {
-//                                        let discardModel = lastModel
-    //                                    print ("keeping: \(curModel.name) and discarding \(discardModel.name)")
+                                        discardModel = lastModel
+//                                        print ("keeping: \(curModel.name) and discarding \(discardModel.name)")
                                         lastModel = curModel
                                         lastbic = curbic
     //                                    if discardModel != cfirstModel {
@@ -1100,19 +1152,29 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                                         
                                     }
                                     else {
-    //                                    print ("discarding: \(curModel.name)")
+//                                        print ("discarding: \(curModel.name)")
     //                                    cmoc.delete(curModel)
+                                        discardModel = curModel
                                         
                                     }
                                 }
                                 else {
-    //                                print ("error: \(curModel.name)")
+//                                    print ("error: \(curModel.name)")
     //                                cmoc.delete(curModel)
                                 }
                             }
                             else {
 //                                print ("\(curModel.name) is cyclic. Ignoring")
                             }
+                            
+                            
+                            //Delete the discarded model unless it is the first model
+                            if discardModel != cfirstModel {
+                                for theEntry in theEntries.allObjects as! [Entry] {
+                                    theEntry.removeAModelObject(discardModel)
+                                }
+                            }
+                            
                             
                         }
                         DispatchQueue.main.async {
@@ -1143,6 +1205,14 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                     
                     for thisPeak in modelPeaks {
                         if thisPeak != peakModel{
+                            
+                            if thisPeak != cfirstModel {
+                                for theEntry in theEntries.allObjects as! [Entry] {
+                                    theEntry.removeAModelObject(thisPeak)
+                                }
+                            }
+                            
+                            
                             cmoc.delete(thisPeak)
                         }
                     }
@@ -1168,6 +1238,35 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                     finalModel = firstModel
                 }
 
+                
+                
+
+//                cmoc.insert(finalModel)
+//                for insNode in finalModel.bnnode {
+//                    let thisinsNode : BNNode = insNode as! BNNode
+//                    cmoc.insert(thisinsNode)
+//                    for thisDown in thisinsNode.downNodes(self){
+//                        if let thisDI = thisinsNode.getDownInterBetween(downNode: thisDown){
+//                            cmoc.insert(thisDI)
+//                        }
+//
+//                    }
+//                }
+                
+                //FIXME checking where models are connected by here
+                
+                
+                
+//                print ("finalmodel \(finalModel.name)")
+//                print ("selfmoc \(self.moc)")
+//                print ("cmoc \(cmoc)")
+//                for theEntry in theEntries.allObjects as! [Entry] {
+//                    print("\(theEntry.name) \(theEntry.managedObjectContext)")
+//                    for chkModel in theEntry.model.allObjects as! [Model] {
+//                        print ("\(chkModel.name) \(chkModel.managedObjectContext)")
+//                    }
+//                }
+                
   
                 do {
                     try cmoc.save()
@@ -1177,6 +1276,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                     fatalError("Could not save models")
                 }
                 
+                finalModelID = finalModel.objectID
                 
                 self.performSelector(onMainThread: #selector(PlexusMainWindowController.endProgInd), with: nil, waitUntilDone: true)
                 
@@ -1198,23 +1298,31 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                         scoreAlert.messageText = "Highest scoring model: \(finalModel.name) with score \(finalModel.score)"
                         if finalModel != firstModel {
                             scoreAlert.informativeText = "Plexus will select the new model."
-                            for theEntry in firstModel.entry  {
-                                let curEntry = theEntry as! Entry
-                                finalModel.addAnEntryObject(curEntry)
-                                curEntry.addAModelObject(finalModel)
-                            }
 
                             self.moc.insert(finalModel)
                             for insNode in finalModel.bnnode {
                                 let thisinsNode : BNNode = insNode as! BNNode
-    //                            print ("\(thisinsNode.name)")
 
                                 self.moc.insert(thisinsNode)
                                 //Select the new winning node int he tree
-                                for thisDownInter in thisinsNode.downInters(sender: self){
-                                    self.moc.insert(thisDownInter)
+                                for thisDown in thisinsNode.downNodes(self){
+
+                                    if let thisDI = thisinsNode.getDownInterBetween(downNode: thisDown){
+
+                                        self.moc.insert(thisDI)
+                                    }
+
                                 }
+
                             }
+
+                            
+                            
+
+                            
+                            
+
+                            
                             
                             do {
                                 try self.moc.save()
@@ -1226,6 +1334,30 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                             firstModel.addAChildObject(finalModel)
                             let finalIndexPath = self.mainSplitViewController.modelTreeController.indexPathOfModel(model:finalModel)
                             self.mainSplitViewController.modelTreeController.setSelectionIndexPath(finalIndexPath! as IndexPath)
+                            
+//                            self.moc.refreshAllObjects()
+                            //FIXME from the above, the inters exist, but here they do not
+//                            let afterNodes = finalModel.bnnode
+//                            print("Testing for inters")
+//                            for testtNode in afterNodes {
+//                                let testNode : BNNode = testtNode as! BNNode
+//                                print("FOR \(testNode.name) \(testNode.value) \(testNode.managedObjectContext)")
+//
+//
+//                                for testUpNode in testNode.upNodes(self){
+//                                    print(" <- \(testUpNode.name)")
+//                                    let thisDI = testNode.getUpInterBetween(upNode: testUpNode)
+//                                        print("\(thisDI?.up.name) \(thisDI?.down.name) \(thisDI?.ifthen) \(thisDI?.managedObjectContext)")
+//                                }
+//
+//                                for testDownNode in testNode.downNodes(self){
+//                                    print(" -> \(testDownNode.name)")
+//                                    let thisDI = testNode.getDownInterBetween(downNode: testDownNode)
+//                                        print("\(thisDI?.up.name) \(thisDI?.down.name) \(thisDI?.ifthen) \(thisDI?.managedObjectContext)")
+//                                }
+//
+//                            }
+                            
                         
                         }
                         else {
@@ -1270,9 +1402,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         }
 
         
-//            let theEntries = [Entry]() //FIXME
-//        let theEntries = curModel.entry //FIXME
-//        let theEntries = NSSet()
+
         let theEntries = inEntries
         
         var mTML = 0
@@ -2247,9 +2377,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
             subsamp = curModel.runstot as! Int
         }
         // Get the yes-no's within the scope of the data
-//        let theEntries = curModel.entry
-//        let theEntries = inEntries
-//        let theEntries = NSSet() //FIXME
+
         let theEntries = inEntries
         
         var dataratios = [Float]()

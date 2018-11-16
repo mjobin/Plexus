@@ -49,7 +49,9 @@ extension BNNode {
      */
     func downNodes(_ sender:AnyObject) -> [BNNode] {
         var targets = [BNNode]()
+//        print("downNodes for \(self.name) downinters \(self.downInters(sender: self).count)")
         for thisDownInter in self.downInters(sender: self) {
+//            print("in downNodes \(thisDownInter.up.name) -> \(thisDownInter.down.name)")
             targets.append(thisDownInter.down)
         }
         return targets
@@ -82,6 +84,8 @@ extension BNNode {
      */
     func getDownInterBetween(downNode:BNNode) -> BNNodeInter? {
         //self is the upstream node, downNode is the node pointed at by the arrow
+//        print("get down for \(self.name) downinters \(self.downInters(sender: self).count)")
+        
         for thisDownInter in self.downInters(sender: self) {
             if thisDownInter.up == self && thisDownInter.down == downNode {
                 return thisDownInter
@@ -117,11 +121,10 @@ extension BNNode {
      - downNode: The downstream node to be connected.
      - moc: Managed object context where new BNNodeInter should be inserted.
      
-     - Returns: The the exisiting nodeInter if found, or a new nodeInter.
+     - Returns: The the existing nodeInter if found, or a new nodeInter.
      */
     func addADownObject(downNode:BNNode, moc : NSManagedObjectContext?) -> BNNodeInter { //Add an arrow from self to the other
         if let downInterBetween = self.getDownInterBetween(downNode: downNode) {
-            _ = self.CPT() //once added, start calculating CPT right away FIXME necessary?
             return downInterBetween
         }
         
@@ -134,8 +137,6 @@ extension BNNode {
         downInters.add(newBNNodeInter)
         newBNNodeInter.up = self
         
-                _ = self.CPT() //once added, start calculating CPT right away FIXME necessary?
-        
         return newBNNodeInter
     }
     
@@ -147,11 +148,10 @@ extension BNNode {
      - upNode: The upstream node to be connected.
      - moc: Managed object context where new BNNodeInter should be inserted.
      
-     - Returns: The the exisiting nodeInter if found, or a new nodeInter.
+     - Returns: The the existing nodeInter if found, or a new nodeInter.
      */
     func addAnUpObject(upNode:BNNode, moc : NSManagedObjectContext?) -> BNNodeInter { //Add an arrow from other to self
         if let upInterBetween = self.getUpInterBetween(upNode: upNode) {
-            _ = self.CPT() //once added, start calculating CPT right away FIXME necessary?
             return upInterBetween
         }
 
@@ -164,8 +164,6 @@ extension BNNode {
         let upInters = self.mutableOrderedSetValue(forKey: "up") //The upstream connections of this node
         upInters.add(newBNNodeInter)
         newBNNodeInter.down = self
-        
-        _ = self.CPT() //once added, start calculating CPT right away FIXME necessary?
         
         return newBNNodeInter
     }
