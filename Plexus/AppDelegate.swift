@@ -90,7 +90,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
     }
     
-    //WAUGH
     
     
     func windowWillReturnUndoManager(window: NSWindow) -> UndoManager? {

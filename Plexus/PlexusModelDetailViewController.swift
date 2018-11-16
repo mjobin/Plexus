@@ -398,7 +398,9 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
     func dblClickNode () {
         let curNodes : [BNNode] = nodesController.selectedObjects as! [BNNode]
         let curNode = curNodes[0]
-        if(curNode.influencedBy.count > 0) {
+        
+        let theUpNodes = curNode.upNodes(self)
+        if(theUpNodes.count > 0) {
             self.performSegue(withIdentifier: "postNode", sender: self)
         }
         else {
@@ -442,8 +444,8 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
             priorDist = Int(curNode.priorDistType)
             V1 = Double(curNode.priorV1)
             V2 = Double(curNode.priorV2)
-//            print ("\(curnode.name) infbys: \(curNode.influencedBy.count)")
-            if(curNode.influencedBy.count > 0) {
+            let theUpNodes = curNode.upNodes(self)
+            if(theUpNodes.count > 0) {
                 nodeDetailPriorView.isHidden = true
                 nodeDetailCPTView.isHidden = false
 
@@ -465,10 +467,10 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
                     for curColumn in cptTableView.tableColumns{
                         cptTableView.removeTableColumn(curColumn)
                     }
-                    let theInfBy : [BNNode] = curNode.infBy(self) as! [BNNode]
-                    for thisInfBy in theInfBy {
-                        let cptcolumn = NSTableColumn(identifier: thisInfBy.name)
-                        cptcolumn.headerCell.stringValue = thisInfBy.name
+
+                    for thisUpNode in theUpNodes {
+                        let cptcolumn = NSTableColumn(identifier: thisUpNode.name)
+                        cptcolumn.headerCell.stringValue = thisUpNode.name
                         cptTableView.addTableColumn(cptcolumn)
                         
                     }
@@ -618,7 +620,7 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
                     self.priorDataForChart = [Double](repeating: 0.0, count: 100) as [NSNumber]
             }
             
-            if(curNode.influencedBy.count > 0 && curNode.postCount.count > 0) {
+            if(theUpNodes.count > 0 && curNode.postCount.count > 0) {
 
                 let postCount = curNode.postCount
                 var postData = [NSNumber]()
@@ -836,6 +838,9 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
         if(message == "nodeDblClick"){
             self.dblClickNode()
         }
+        else if (message == "nodeDblClick"){
+         print ("inter double click")
+        }
  
     }
  
@@ -886,9 +891,10 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
             else{
                 let poststr = String(row, radix: 2)
                 //add chars to pad out
-                let theInfBy = curNode.infBy(self)
+                
+                let theUpNodes = curNode.upNodes(self)
                 var prestr = String()
-                for _ in poststr.count..<theInfBy.count {
+                for _ in poststr.count..<theUpNodes.count {
                     prestr += "0"
                 }
                 let str = prestr + poststr
@@ -898,7 +904,7 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
                 let index = tableView.tableColumns.index(of: tableColumn!)
                 //print ("index \(index): revstr \(revstr)")
                 if ( index! > revstr.count) {
-                    print ("Error. curNode \(curNode.name) infBy \(theInfBy) index \(String(describing: index)): revstr \(revstr)")
+                    print ("Error. curNode \(curNode.name) upstreamNodes \(theUpNodes) index \(String(describing: index)): revstr \(revstr)")
                 }
                 let index2 = revstr.index(revstr.startIndex, offsetBy: index!)
                 if(revstr[index2] == "1"){

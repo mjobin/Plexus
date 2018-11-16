@@ -21,6 +21,7 @@ extension Model {
         items.add(value)
     }
     
+    
     func addAnEntryObject(_ value:Entry) {
         let items = self.mutableSetValue(forKey: "entry");
         items.add(value)
@@ -31,10 +32,14 @@ extension Model {
         items.remove(value)
     }
     
+    func removeABNNodeObject(_ value:BNNode) {
+        let items = self.mutableSetValue(forKey: "bnnode");
+        items.remove(value)
+    }
     
-    func copySelf(moc: NSManagedObjectContext?) -> Model {
+    
+    func copySelf(moc: NSManagedObjectContext?, withEntries: Bool) -> Model {
         
-//        let newModel : Model = Model(entity: NSEntityDescription.entity(forEntityName: "Model", in: moc)!, insertInto: nil)
         
         let newModel : Model = Model(entity: Model.entity(), insertInto: moc)
 
@@ -51,14 +56,19 @@ extension Model {
         newModel.setValue(0, forKey: "score")
         newModel.setValue(self.thin, forKey: "thin")
 
-        
-        let theEntries  = self.entry
-        for theEntry in theEntries {
-            let curEntry = theEntry as! Entry
-            newModel.addAnEntryObject(curEntry)
+
+        if withEntries == true {
+            let theEntries  = self.entry
+            for theEntry in theEntries {
+                let curEntry = theEntry as! Entry
+                newModel.addAnEntryObject(curEntry)
+                curEntry.addAModelObject(newModel)
+            }
         }
+
         
         var tempNodeArray = [BNNode]()
+        var curNodeArray = [BNNode]()
         let curNodes  = self.bnnode.allObjects as! [BNNode]
         for curNode : BNNode in curNodes {
             let newNode : BNNode = BNNode(entity: BNNode.entity(), insertInto: moc)
@@ -66,6 +76,7 @@ extension Model {
             
             newNode.setValue(curNode.cptArray, forKey: "cptArray")
             newNode.setValue(curNode.cptReady, forKey: "cptReady")
+            newNode.setValue(curNode.hidden, forKey: "hidden")
             newNode.setValue(curNode.name, forKey: "name")
             newNode.setValue(curNode.numericData, forKey: "numericData")
             newNode.setValue(curNode.priorDistType, forKey: "priorDistType")
@@ -76,6 +87,7 @@ extension Model {
             newNode.setValue(curNode.savedY, forKey: "savedY")
             newNode.setValue(curNode.tolerance, forKey: "tolerance")
             newNode.setValue(curNode.value, forKey: "value")
+
             
         
             
@@ -95,41 +107,66 @@ extension Model {
             newModel.addABNNodeObject(newNode)
             
             tempNodeArray.append(newNode)
+            curNodeArray.append(curNode)
             
             
             
         }
         
-        var infstwod = [[Int]]()
         
+        
+        var infstwod = [[Int]]()
         
         //Copy Influences
         for curNode : BNNode in curNodes {
             var infsoned = [Int]()
-            let infs : [BNNode] = curNode.influences.array as! [BNNode]
-            for inf : BNNode in infs{
+            let downNodes = curNode.downNodes(self)
+            for downNode in downNodes {
                 var chk = 0
                 for chkNode : BNNode in curNodes {
-                    if (chkNode == inf){
+                    if (chkNode == downNode){
                         infsoned.append(chk)
                     }
                     chk += 1
                 }
-                
             }
             infstwod.append(infsoned)
-            
         }
-        
+
         var i = 0
         for infsoned : [Int] in infstwod{
             for thisinf in infsoned{
-                tempNodeArray[i].addAnInfluencesObject(tempNodeArray[thisinf])
-                tempNodeArray[thisinf].addAnInfluencedByObject(tempNodeArray[i])
+//                print("\(tempNodeArray[i].name) -> \(tempNodeArray[thisinf].name)")
+                let newInter = tempNodeArray[i].addADownObject(downNode: tempNodeArray[thisinf], moc: moc)
+                if let curInter = curNodeArray[i].getDownInterBetween(downNode: curNodeArray[thisinf]){
+                    newInter.ifthen = curInter.ifthen
+//                    print(newInter.ifthen)
+                }
+//                _ = tempNodeArray[thisinf].addAnUpObject(upNode: tempNodeArray[i], moc: moc)
             }
             i += 1
         }
         
+        
+
+        
+//        print("newmodel: \(newModel.name) \(newModel.managedObjectContext)")
+//        
+//        for insNode in newModel.bnnode {
+//            let thisinsNode : BNNode = insNode as! BNNode
+//            print ("\(thisinsNode.name) \(thisinsNode.value) \(thisinsNode.managedObjectContext)")
+//
+//            for thisDown in thisinsNode.downNodes(self){
+//                print(" -> \(thisDown.name)")
+//                if let thisDI = thisinsNode.getDownInterBetween(downNode: thisDown){
+//                    print("\(thisDI.up.name) \(thisDI.down.name) \(thisDI.ifthen) \(thisDI.isFault) \(thisDI.managedObjectContext)")
+//
+//                }
+//                
+//            }
+//            
+//        }
+//        print("")
     
         
         return newModel

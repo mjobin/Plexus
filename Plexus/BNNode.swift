@@ -15,6 +15,7 @@ class BNNode: NSManagedObject {
     @NSManaged var cptArray: [Float]
     @NSManaged var cptFreezeArray: [Float]
     @NSManaged var cptReady: NSNumber
+    @NSManaged var hidden: Bool
     @NSManaged var name: String
     @NSManaged var numericData: Bool
     @NSManaged var postArray: [Float]
@@ -37,8 +38,8 @@ class BNNode: NSManagedObject {
     
     
     
-    @NSManaged var influencedBy: NSOrderedSet
-    @NSManaged var influences: NSOrderedSet
+    @NSManaged var up: NSOrderedSet // Against direction of arrow
+    @NSManaged var down: NSOrderedSet // Along direction of arrow
     @NSManaged var model: Model
     
 }

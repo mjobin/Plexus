@@ -14,6 +14,8 @@ class PlexusModelViewController: NSViewController, NSOutlineViewDelegate, NSOutl
     @IBOutlet dynamic var modelTreeController : NSTreeController!
     @IBOutlet weak var modelOutlineView : NSOutlineView!
     
+    var firstrun = true
+    
     
     required init?(coder aDecoder: NSCoder)
     {
@@ -29,6 +31,15 @@ class PlexusModelViewController: NSViewController, NSOutlineViewDelegate, NSOutl
         let kString : String = kUTTypeURL as String
         let registeredTypes:[String] = [kString]
         modelOutlineView.register(forDraggedTypes: registeredTypes)
+        
+        let options: NSKeyValueObservingOptions = [NSKeyValueObservingOptions.new, NSKeyValueObservingOptions.old]
+        modelTreeController.addObserver(self, forKeyPath: "arrangedObjects", options: options, context: nil)
+        
+    }
+    
+    
+    override func viewWillDisappear() {
+        UserDefaults.standard.set(NSKeyedArchiver.archivedData(withRootObject: modelTreeController.selectionIndexPaths), forKey: "plexusModelSelectionIndexPaths")
     }
 
     //NSOutlineView delegate functions
@@ -103,105 +114,62 @@ class PlexusModelViewController: NSViewController, NSOutlineViewDelegate, NSOutl
     }
 
     
+    @IBAction func addModel(_ sender : AnyObject){
+
+        var inPath = IndexPath()
+        if let curPath : IndexPath = modelTreeController.selectionIndexPath {
+            inPath = curPath
+        }
+        
+        
+        let newModel : Model = Model(entity: NSEntityDescription.entity(forEntityName: "Model", in: self.moc)!, insertInto: self.moc)
+        newModel.setValue("New Model", forKey: "name")
+        newModel.setValue(NSNumber.init(floatLiteral: -Double.infinity), forKey: "score")
+        
+        modelTreeController.insert(newModel, atArrangedObjectIndexPath: inPath)
+        
+        
+    }
+    
     @IBAction func childModel(_ sender : AnyObject){
         
         let curModels : [Model] = modelTreeController.selectedObjects as! [Model]
         let curModel : Model = curModels[0]
         
-        
-        //print ("curmodel \(curModel)")
-        
-        
         if let curPath : IndexPath = modelTreeController.selectionIndexPath {
             let newPath :IndexPath = curPath.appending(curModel.children.count)
             
+            let newModel : Model = curModel.copySelf(moc: self.moc, withEntries: true)
+            newModel.setValue(NSNumber.init(floatLiteral: -Double.infinity), forKey: "score")
             
-            
-            let newModel : Model = curModel.copySelf(moc: self.moc)
-                
-
             // curModel.addChildObject(newModel)
             // newModel.setValue(curModel, forKey: "parent")
             modelTreeController.insert(newModel, atArrangedObjectIndexPath: newPath)
             let copyName : String = curModel.name + " copy"
             newModel.setValue(copyName, forKey: "name")
 
-            
-//            var tempNodeArray = [BNNode]()
-//
-//            let curNodes  = curModel.bnnode.allObjects as! [BNNode]
-//            for curNode : BNNode in curNodes {
-//                let newNode : BNNode = BNNode(entity: NSEntityDescription.entity(forEntityName: "BNNode", in: self.moc)!, insertInto: self.moc)
-//
-//                newNode.setValue(curNode.cptArray, forKey: "cptArray")
-//                newNode.setValue(curNode.cptReady, forKey: "cptReady")
-//                newNode.setValue(curNode.name, forKey: "name")
-//                newNode.setValue(curNode.numericData, forKey: "numericData")
-//                newNode.setValue(curNode.priorDistType, forKey: "priorDistType")
-//                newNode.setValue(curNode.priorDistType, forKey: "priorDistType")
-//                newNode.setValue(curNode.priorV1, forKey: "priorV1")
-//                newNode.setValue(curNode.priorV2, forKey: "priorV2")
-//                newNode.setValue(curNode.savedX, forKey: "savedX")
-//                newNode.setValue(curNode.savedY, forKey: "savedY")
-//                newNode.setValue(curNode.tolerance, forKey: "tolerance")
-//                newNode.setValue(curNode.value, forKey: "value")
-//
-//
-//
-//                let blankCount = [Int]()
-//                let blankArray = [Float]()
-//                newNode.postCount = blankCount
-//                newNode.postArray = blankArray
-//                newNode.priorCount = blankCount
-//                newNode.priorArray = blankArray
-//
-//
-//
-//
-//
-//
-//                newNode.setValue(newModel, forKey: "model")
-//                newModel.addABNNodeObject(newNode)
-//
-//                tempNodeArray.append(newNode)
-//
-//
-//
-//            }
-//
-//            var infstwod = [[Int]]()
-//
-//
-//            //Copy Influences
-//            for curNode : BNNode in curNodes {
-//                var infsoned = [Int]()
-//                let infs : [BNNode] = curNode.influences.array as! [BNNode]
-//                for inf : BNNode in infs{
-//                    var chk = 0
-//                    for chkNode : BNNode in curNodes {
-//                        if (chkNode == inf){
-//                            infsoned.append(chk)
-//                        }
-//                        chk += 1
-//                    }
-//
-//                }
-//                infstwod.append(infsoned)
-//
-//            }
-//            
-//            var i = 0
-//            for infsoned : [Int] in infstwod{
-//                for thisinf in infsoned{
-//                    tempNodeArray[i].addAnInfluencesObject(tempNodeArray[thisinf])
-//                    tempNodeArray[thisinf].addAnInfluencedByObject(tempNodeArray[i])
-//                }
-//                i += 1
-//            }
+  
             
         }
         
         
     }
+    
+    
+    override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
+
+        if let yerob = object as? NSTreeController {
+            if yerob == modelTreeController {
+                if firstrun {
+                    let savedSIData = UserDefaults.standard.data(forKey: "plexusModelSelectionIndexPaths")
+                    let savedSI = NSKeyedUnarchiver.unarchiveObject(with: savedSIData ?? Data())
+                    _ = modelTreeController.setSelectionIndexPaths(savedSI as! [IndexPath])
+                    firstrun = false
+                }
+            }
+        }
+
+    }
+    
     
 }

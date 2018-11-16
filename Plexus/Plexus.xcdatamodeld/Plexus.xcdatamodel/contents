@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="14315.12.1" systemVersion="18A365a" minimumToolsVersion="Xcode 7.3" sourceLanguage="Objective-C" userDefinedModelVersionIdentifier="">
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="14315.18" systemVersion="18A389" minimumToolsVersion="Xcode 7.3" sourceLanguage="Objective-C" userDefinedModelVersionIdentifier="">
     <entity name="BNNode" representedClassName="Plexus.BNNode" syncable="YES">
         <attribute name="cptArray" optional="YES" attributeType="Transformable" customClassName="[Float]" syncable="YES"/>
         <attribute name="cptFreezeArray" optional="YES" attributeType="Transformable" customClassName="[Float]" syncable="YES"/>
         <attribute name="cptReady" optional="YES" attributeType="Integer 16" minValueString="0" maxValueString="2" defaultValueString="NO" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="hidden" optional="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="name" optional="YES" attributeType="String" defaultValueString="New Node" syncable="YES"/>
         <attribute name="numericData" optional="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="postArray" optional="YES" attributeType="Transformable" customClassName="[Float]" syncable="YES"/>
@@ -23,11 +24,18 @@
         <attribute name="savedY" optional="YES" attributeType="Double" minValueString="0" defaultValueString="0.0" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="tolerance" optional="YES" attributeType="Double" minValueString="0" maxValueString="1" defaultValueString="0.05" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="value" optional="YES" attributeType="String" defaultValueString="No Value" syncable="YES"/>
-        <relationship name="influencedBy" optional="YES" toMany="YES" deletionRule="Nullify" ordered="YES" destinationEntity="BNNode" inverseName="influences" inverseEntity="BNNode" syncable="YES"/>
-        <relationship name="influences" optional="YES" toMany="YES" deletionRule="Nullify" ordered="YES" destinationEntity="BNNode" inverseName="influencedBy" inverseEntity="BNNode" syncable="YES"/>
+        <relationship name="down" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="BNNodeInter" inverseName="up" inverseEntity="BNNodeInter" syncable="YES"/>
         <relationship name="model" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Model" inverseName="bnnode" inverseEntity="Model" syncable="YES"/>
+        <relationship name="up" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="BNNodeInter" inverseName="down" inverseEntity="BNNodeInter" syncable="YES"/>
+    </entity>
+    <entity name="BNNodeInter" representedClassName="Plexus.BNNodeInter" syncable="YES">
+        <attribute name="ifthen" optional="YES" attributeType="Double" minValueString="0" maxValueString="1" defaultValueString="0.5" usesScalarValueType="NO" syncable="YES"/>
+        <relationship name="down" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="BNNode" inverseName="up" inverseEntity="BNNode" syncable="YES"/>
+        <relationship name="up" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="BNNode" inverseName="down" inverseEntity="BNNode" syncable="YES"/>
     </entity>
     <entity name="Entry" representedClassName="Plexus.Entry" syncable="YES">
+        <attribute name="latitude" optional="YES" attributeType="Double" minValueString="0" maxValueString="90" defaultValueString="0" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="longitude" optional="YES" attributeType="Double" minValueString="0" maxValueString="1" defaultValueString="0.0" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="name" optional="YES" attributeType="String" defaultValueString="New Entry" syncable="YES"/>
         <attribute name="notes" optional="YES" attributeType="Binary" syncable="YES"/>
         <relationship name="model" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Model" inverseName="entry" inverseEntity="Model" syncable="YES"/>
@@ -43,7 +51,7 @@
         <attribute name="runsper" optional="YES" attributeType="Integer 32" minValueString="0" defaultValueString="10000" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="runstarts" optional="YES" attributeType="Integer 32" minValueString="1" defaultValueString="10" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="runstot" optional="YES" attributeType="Integer 32" minValueString="0" defaultValueString="10000" usesScalarValueType="NO" syncable="YES"/>
-        <attribute name="score" optional="YES" attributeType="Float" defaultValueString="0.0" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="score" optional="YES" attributeType="Float" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="thin" optional="YES" attributeType="Integer 32" minValueString="1" defaultValueString="10" usesScalarValueType="NO" syncable="YES"/>
         <relationship name="bnnode" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="BNNode" inverseName="model" inverseEntity="BNNode" syncable="YES"/>
         <relationship name="children" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="Model" inverseName="parent" inverseEntity="Model" syncable="YES"/>
@@ -56,9 +64,10 @@
         <relationship name="entry" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Entry" inverseName="trait" inverseEntity="Entry" syncable="YES"/>
     </entity>
     <elements>
-        <element name="BNNode" positionX="54" positionY="18" width="128" height="420"/>
-        <element name="Entry" positionX="-468" positionY="-36" width="128" height="105"/>
-        <element name="Model" positionX="349" positionY="-9" width="128" height="270"/>
+        <element name="BNNode" positionX="-21.91015625" positionY="290.09375" width="128" height="433"/>
+        <element name="BNNodeInter" positionX="-439.91796875" positionY="620.0859375" width="128" height="88"/>
+        <element name="Entry" positionX="-468" positionY="-36" width="128" height="133"/>
+        <element name="Model" positionX="349" positionY="-9" width="128" height="268"/>
         <element name="Trait" positionX="-279" positionY="317" width="128" height="90"/>
     </elements>
 </model>

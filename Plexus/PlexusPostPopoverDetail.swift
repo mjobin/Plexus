@@ -27,10 +27,10 @@ class PlexusPostPopoverDetail: NSViewController, NSTableViewDelegate, NSTableVie
         for curColumn in cptTableView.tableColumns{
             cptTableView.removeTableColumn(curColumn)
         }
-        let theInfBy : [BNNode] = curNode.infBy(self) as! [BNNode]
-        for thisInfBy in theInfBy {
-            let cptcolumn = NSTableColumn(identifier: thisInfBy.name)
-            cptcolumn.headerCell.stringValue = thisInfBy.name
+        let theUpNodes = curNode.upNodes(self)
+        for thisUpNode in theUpNodes {
+            let cptcolumn = NSTableColumn(identifier: thisUpNode.name)
+            cptcolumn.headerCell.stringValue = thisUpNode.name
             cptcolumn.sizeToFit()
 
             tableWidth += Double(cptcolumn.width)
@@ -109,9 +109,10 @@ class PlexusPostPopoverDetail: NSViewController, NSTableViewDelegate, NSTableVie
             else{
                 let poststr = String(row, radix: 2)
                 //add chars to pad out
-                let theInfBy = curNode.infBy(self)
+
+                let theUpNodes = curNode.upNodes(self)
                 var prestr = String()
-                for _ in poststr.count..<theInfBy.count {
+                for _ in poststr.count..<theUpNodes.count {
                     prestr += "0"
                 }
                 let str = prestr + poststr
@@ -121,7 +122,7 @@ class PlexusPostPopoverDetail: NSViewController, NSTableViewDelegate, NSTableVie
                 let index = tableView.tableColumns.index(of: tableColumn!)
                 //print ("index \(index): revstr \(revstr)")
                 if ( index! > revstr.count) {
-                    print ("Error. curNode \(curNode.name) infBy \(theInfBy) index \(String(describing: index)): revstr \(revstr)")
+                    print ("Error. curNode \(curNode.name) infBy \(theUpNodes) index \(String(describing: index)): revstr \(revstr)")
                 }
                 let index2 = revstr.index(revstr.startIndex, offsetBy: index!)
                 if(revstr[index2] == "1"){

@@ -9,8 +9,6 @@
 import Cocoa
 import CoreData
 import Metal
-import GameKit
-
 
 class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
     
@@ -25,22 +23,6 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
 
     let queue = DispatchQueue(label: "com.plexus.Plexus.metalQueue")
 
-//    lazy var device: MTLDevice! = {
-//
-//        let devices = devicesController?.selectedObjects as! [MTLDevice]
-//        return devices[0]
-//
-////        let devices: [MTLDevice] = MTLCopyAllDevices()
-////        for metalDevice : MTLDevice in devices {
-////            if metalDevice.isHeadless  && !metalDevice.isLowPower { //Select the best device if there are any choices
-////                return metalDevice
-////            }
-////        }
-////        return MTLCreateSystemDefaultDevice() //Return default device if no headless
-//    }()
-    
-    
-    // choose the device NOT used by monitor
 
     var device : MTLDevice!
     var pipelineState : MTLComputePipelineState!
@@ -124,6 +106,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
             newModel.setValue("newmodel", forKey: "name")
             newModel.setValue(Date(), forKey: "dateCreated")
             newModel.setValue(Date(), forKey: "dateModded")
+            newModel.setValue(NSNumber.init(floatLiteral: -Double.infinity), forKey: "score")
             do {
                 try moc.save()
             } catch let error as NSError {
@@ -161,16 +144,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
     }
     
 
-//    func setUpMetal() {
-//        if let kernelFunction = defaultLibrary.makeFunction(name: "bngibbs") {
-//            do {
-//                pipelineState = try device.makeComputePipelineState(function: kernelFunction)
-//            }
-//            catch {
-//                fatalError("Impossible to setup Metal")
-//            }
-//        }
-//    }
+
     
     @IBAction func  toggleModels(_ x:NSToolbarItem){
 
@@ -404,15 +378,13 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
 
             DispatchQueue.global().async {
                 
-                
-                //create moc
-
                 let inMOC = NSManagedObjectContext(concurrencyType: .privateQueueConcurrencyType)
                 inMOC.undoManager = nil
                 inMOC.persistentStoreCoordinator = self.moc.persistentStoreCoordinator
                 
                 let newModel : Model = Model(entity: NSEntityDescription.entity(forEntityName: "Model", in: self.moc)!, insertInto: inMOC)
                 newModel.setValue(inFileBase?.lastPathComponent, forKey: "name")
+                newModel.setValue(NSNumber.init(floatLiteral: -Double.infinity), forKey: "score")
                 
                 let fileContents : String = (try! NSString(contentsOfFile: inFile!.path, encoding: String.Encoding.utf8.rawValue)) as String
                 let fileLines : [String] = fileContents.components(separatedBy: "\n")
@@ -424,6 +396,8 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                 var batchCount : Int = 0
                 var columnCount = 0
                 var nameColumn = -1
+                var latitudeColumn = -1
+                var longitudeColumn = -1
                 var headers = [String]()
 
                 
@@ -451,6 +425,12 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                         for thisHeader in theHeader {
                             if thisHeader == "Name" {
                                 nameColumn = columnCount
+                            }
+                            if thisHeader == "Latitude" {
+                                latitudeColumn = columnCount
+                            }
+                            if thisHeader == "Longitude" {
+                                longitudeColumn = columnCount
                             }
                             headers.append(thisHeader.trimmingCharacters(in: delimiterCharacterSet as CharacterSet))
                             columnCount += 1
@@ -505,6 +485,15 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                             }
                             else {
                                 newEntry.setValue(String(i), forKey: "name")
+                            }
+                            
+                            if latitudeColumn >= 0 {
+                            
+                                newEntry.setValue(Float(theTraits[latitudeColumn]), forKey: "latitude")
+                            }
+                            
+                            if longitudeColumn >= 0 {
+                                newEntry.setValue(Float(theTraits[longitudeColumn]), forKey: "longitude")
                             }
                             
 
@@ -589,9 +578,6 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                 
                 
                 
-
-                
-                
                     do {
                         try inMOC.save()
                     } catch let error as NSError {
@@ -631,84 +617,246 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         self.breakloop = true
     }
     
-    func randomChildModel(lastModel : Model, thisMOC : NSManagedObjectContext?) -> Model {
-        
-        let newModel = lastModel.copySelf(moc: thisMOC ?? nil)
+    /**
+     Creates a copied, then randomly altered Model based on an exisitng Model.
+     
+     - Parameters:
+     - lastModel: Initial Model to be altered.
+     - allTraits: List of all Traits connected to the Model. Here for convenience, since he Traits will not change model to model.
+     - inituserTraitNames: List of Trait names already in the Model, to avoid duplication.
+     - thisMOC: Currently used Managed Object context. Can be nil.
+     
+     - Returns: A copy of lastModel, randomly altered.
+     */
+    func randomChildModel(lastModel : Model, allTraits: [Trait], initusedTraitNames: Set<String>, thisMOC : NSManagedObjectContext?) -> Model {
+        var usedTraitNames = initusedTraitNames
+        let newModel = lastModel.copySelf(moc: thisMOC ?? nil, withEntries: true)
         
         let nodesForTest = newModel.bnnode.allObjects as! [BNNode]
-        
-        let frompos = (Int(arc4random_uniform(UInt32(nodesForTest.count))))
-        
-        var topos = frompos
-        while(topos == frompos){
-            topos = (Int(arc4random_uniform(UInt32(nodesForTest.count))))
+        if nodesForTest.count < 2 {
+            return lastModel //This should not happen, but if the intila model already has less than two nodes, do not proceed. This allows the random node selection below to work.
         }
         
-        let fromNode = nodesForTest[frompos]
-        let toNode = nodesForTest[topos]
+        let fromPos = Int.random(in: 0..<nodesForTest.count)
+        var toPos = fromPos
+        
+        while toPos == fromPos {
+            toPos = Int.random(in: 0..<nodesForTest.count)
+        }
+        
+        let fromNode = nodesForTest[fromPos]
+        let toNode = nodesForTest[toPos]
+
+        var nochange = true
         
         //Check if there is an arc between them
         var isinfArc = false
         var isinfByArc = false
-        let theInfluences : [BNNode] = fromNode.influences.array as! [BNNode]
-        for thisInfluences in theInfluences {
-            if thisInfluences == toNode {
+        
+        for thisDownNode in fromNode.downNodes(self) {
+            if thisDownNode == toNode {
                 isinfArc = true
                 break
             }
         }
         
-        
-        let theInfluencedBy : [BNNode] = fromNode.influencedBy.array as! [BNNode]
-        for thisInfluencedBy in theInfluencedBy {
-            if thisInfluencedBy == toNode {
+        for thisUpNode in fromNode.upNodes(self) {
+            if thisUpNode == toNode {
                 isinfByArc = true
                 break
             }
         }
         
         
-        if isinfArc == true && isinfByArc == false {
-            let cflip = arc4random_uniform(2)
-            if(cflip == 0) { // delete arc
-                fromNode.removeAnInfluencesObject(toNode)
-            }
-            else { // reverse arc
-                fromNode.removeAnInfluencesObject(toNode)
-                toNode.addAnInfluencesObject(fromNode)
+        while nochange {
+            
+            let switchup = Int.random(in: 1 ... 5)
+            switch switchup {
+                //Change an ifthen if the from node has no data
+                case 1:
+                    let request = NSFetchRequest<Trait>(entityName: "Trait")
+                    let predicate = NSPredicate(format: "entry IN %@ && name == %@", argumentArray: [newModel.entry, fromNode.name])
+                    request.predicate = predicate
+                    do {
+                        let allCount = try moc.count(for: request)
+                        if allCount < 1 {
+                            if let interNode = fromNode.getDownInterBetween(downNode: toNode){
+                                interNode.ifthen =  NSNumber(value: Float.random(in: 0 ... 1))
+                                nochange = false
+                            }
+                        }
+                        
+                    } catch {
+                        fatalError("Failed request.")
+                }
+                //Add a hidden node wih no data pointing at toNode, or if it is hidden, remove it
+                case 2:
+                    if toNode.hidden == true {
+                        newModel.removeABNNodeObject(toNode)
+                        toNode.removeSelfFromNeighbors(moc: thisMOC)
+                        thisMOC?.delete(toNode)
+                        nochange = false
+                    }
+                    
+                    else {
+                        var hashidden = false
+                        for thisUpNode in toNode.upNodes(self){
+                            if thisUpNode.hidden == true {
+                                hashidden = true
+                            }
+                        }
+                        
+                        if hashidden == false {
+                            let newNode : BNNode = BNNode(entity: BNNode.entity(), insertInto: thisMOC)
+                            newNode.name = "hidden"
+                            newNode.hidden = true
+                            newModel.addABNNodeObject(newNode)
+                            newNode.model = newModel
+                            newNode.priorDistType = 1 //Set uniform prior
+                            newNode.priorV1 = 0.0
+                            newNode.priorV2 = 1.0
+                            
+                            let newInter = newNode.addADownObject(downNode: toNode, moc: thisMOC)
+                            newInter.ifthen = 0.5
+                            nochange = false
+                        }
+                    }
+                
+                case 3: // Change the direction of an existing arrow
+                    
+                    if fromNode.hidden == false && toNode.hidden == false { //Do not remove or reverse arrows for hidden nodes
+                        if isinfArc == true && isinfByArc == false {
+
+                            if Bool.random() { // delete arc
+                                fromNode.removeADownObject(downNode: toNode, moc: thisMOC)
+                            }
+                            else { // reverse arc
+                                fromNode.removeADownObject(downNode: toNode, moc: thisMOC)
+                                _ = toNode.addADownObject(downNode: fromNode, moc: thisMOC)
+                            }
+                        }
+                            
+                        else if isinfArc == false && isinfByArc == true {
+                            if Bool.random() { // delete arc
+                                toNode.removeADownObject(downNode: fromNode, moc: thisMOC)
+
+                            }
+                            else { // reverse arc
+                                toNode.removeADownObject(downNode: fromNode, moc: thisMOC)
+                                _ = fromNode.addADownObject(downNode: toNode, moc: thisMOC)
+                            }
+                        }
+                            
+                        else if isinfArc == true && isinfByArc == true {
+                            fatalError("Error: infleunces in two directions!")
+                        }
+                        else { //both false, no arc
+                            _ = fromNode.addADownObject(downNode: toNode, moc: thisMOC)
+                    }
+                        nochange = false
+                }
+                
+            //Change the traitvalue to another. If numeric, change tolerance
+            case 4:
+                
+                if  toNode.hidden == false {
+                    if toNode.numericData {
+                        toNode.tolerance = NSNumber(value: Float.random(in: 0 ... 1))
+                    }
+                    else {
+                        let theEntries = lastModel.entry
+                        let predicate = NSPredicate(format: "entry IN %@", theEntries)
+                        let request = NSFetchRequest<Trait>(entityName: "Trait")
+                        request.predicate = predicate
+                        request.propertiesToFetch = ["value"]
+                        do {
+                            let theValues = try moc.fetch(request)
+                            if let picked = theValues.randomElement() {
+                                toNode.value = picked.value
+                            }
+                        } catch let error as NSError {
+                            print (error)
+                        }
+                    }
+                    nochange = false
+                }
+                
+            //Add a trait in the model that is not yet used, or remove an instance of it if it is
+            case 5:
+                let pickedTrait = allTraits.randomElement() as! Trait
+                let pickedTraitName = pickedTrait.name
+                if usedTraitNames.contains(pickedTraitName) { //Exists, remove an instance
+                    if nodesForTest.count > 2 {//Do not reduce the number of nodes to less than 2
+                        var neverdeleted = true
+                        var numwithname = 0
+                        for chkNode in nodesForTest {
+                            if chkNode.name == pickedTraitName {
+                                numwithname += 1
+                                if neverdeleted == true {
+                                    neverdeleted = false
+                                    newModel.removeABNNodeObject(chkNode)
+                                    chkNode.removeSelfFromNeighbors(moc: thisMOC)
+                                    thisMOC?.delete(chkNode)
+                                    numwithname = numwithname - 1
+                                    nochange = false
+                                }
+                                
+                            }
+                        }
+                        if numwithname < 1 {
+                                usedTraitNames.remove(pickedTraitName)
+                        }
+                    }
+                }
+                //Add node, point it to or from toNode
+                else{
+                    let newNode : BNNode = BNNode(entity: BNNode.entity(), insertInto: thisMOC)
+                    newNode.name = pickedTraitName
+                    newNode.value = pickedTrait.value
+                    newNode.hidden = false
+                    newModel.addABNNodeObject(newNode)
+                    newNode.model = newModel
+                    newNode.priorDistType = 1 //Set uniform prior
+                    newNode.priorV1 = 0.0
+                    newNode.priorV2 = 1.0
+                    
+                    if Bool.random() {
+                        _ = newNode.addADownObject(downNode: toNode, moc: thisMOC)
+
+                    }
+                    else {
+                        _ = newNode.addAnUpObject(upNode: toNode, moc: thisMOC)
+                    }
+                    usedTraitNames.insert(pickedTraitName)
+                    nochange = false
+
+                    
+                }
+                
+            default:
+//                    fatalError("Error: illegal random model alteration!")
+
+                nochange = false //FIXME remove
             }
         }
-        
-        else if isinfArc == false && isinfByArc == true {
-            let cflip = arc4random_uniform(2)
-            if(cflip == 0) { // delete arc
-                toNode.removeAnInfluencesObject(fromNode)
-            }
-            else { // reverse arc
-                toNode.removeAnInfluencesObject(fromNode)
-                fromNode.addAnInfluencesObject(toNode)
-            }
-        }
-        
-        
-        else if isinfArc == true && isinfByArc == true {
-            fatalError("Error: infleunces in two directions!")
-        }
-        else { //both false, no arc
-            fromNode.addAnInfluencesObject(toNode)
-        }
-        
         
          //Now make sure the CPT's are recalced
+        let afterNodes = newModel.bnnode.allObjects as! [BNNode]
         var testCPT = 2
-        for testNode in nodesForTest{
+//        print("\nrandom done")
+        for testNode in afterNodes {
+//            print("FOR: \(testNode.name)")
+            for testDownNode in testNode.downNodes(self){
+//                print(" -> \(testDownNode.name)")
+              let iN = testNode.addADownObject(downNode: testDownNode, moc: thisMOC)
+//                print ("      \(iN.ifthen)   \(iN.isFault)")
+            }
             testCPT = testNode.CPT()
         }
-        
+//        print(" ")
         if testCPT != 2 {
             fatalError("Error creating CPT in randomChildModel.")
         }
-
 
         return newModel
     }
@@ -716,54 +864,83 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
     
     
     @IBAction func singleRunPress(_ x:NSToolbarItem) {
-    
-    let devices = devicesController?.selectedObjects as! [MTLDevice]
-    device = devices[0]
-    kernelFunction  = defaultLibrary?.makeFunction(name: "bngibbs")
-    do {
-        pipelineState = try device.makeComputePipelineState(function: kernelFunction!)
-    }
-    catch {
-        fatalError("Cannot set up Metal")
-    }
         
-    mainSplitViewController.modelDetailViewController?.calcInProgress = true
-    self.breakloop = false
-    
-    self.progSheet = self.progSetup(self)
-    self.window!.beginSheet(self.progSheet, completionHandler: nil)
-    self.progSheet.makeKeyAndOrderFront(self)
-    
-    let curModels : [Model] = mainSplitViewController.modelTreeController?.selectedObjects as! [Model]
-    let firstModel : Model = curModels[0]
-    
-    let nodesForTest = firstModel.bnnode.allObjects as! [BNNode]
-    if (nodesForTest.count < 2){
-            self.performSelector(onMainThread: #selector(PlexusMainWindowController.endProgInd), with: nil, waitUntilDone: true)
-            self.mainSplitViewController.modelDetailViewController?.calcInProgress = false
-            return
-    }
-        
-    let calcQueue = DispatchQueue(label: "calcQueue")
-    calcQueue.async {
-        
-        let fmcrun = self.metalCalc(curModel : firstModel, verbose: true)
-
-        self.performSelector(onMainThread: #selector(PlexusMainWindowController.endProgInd), with: nil, waitUntilDone: true)
-        
-        DispatchQueue.main.async {
-            if(fmcrun == true){
-                firstModel.complete = true
-            }
-            self.mainSplitViewController.modelDetailViewController?.calcInProgress = false
-            }
-                            //end calcQ
+        let devices = devicesController?.selectedObjects as! [MTLDevice]
+        device = devices[0]
+        kernelFunction  = defaultLibrary?.makeFunction(name: "bngibbs")
+        do {
+            pipelineState = try device.makeComputePipelineState(function: kernelFunction!)
         }
-    
+        catch {
+            fatalError("Cannot set up Metal")
+        }
+        
+        mainSplitViewController.modelDetailViewController?.calcInProgress = true
+        self.breakloop = false
+        
+        self.progSheet = self.progSetup(self)
+        self.window!.beginSheet(self.progSheet, completionHandler: nil)
+        self.progSheet.makeKeyAndOrderFront(self)
+        
+        let curModels : [Model] = mainSplitViewController.modelTreeController?.selectedObjects as! [Model]
+        let firstModel : Model = curModels[0]
+        let theEntries = firstModel.entry
+        
+        let nodesForTest = firstModel.bnnode.allObjects as! [BNNode]
+        if (nodesForTest.count < 2){
+            let cancelAlert = NSAlert()
+            cancelAlert.alertStyle = .informational
+            cancelAlert.messageText = "Need at least two nodes with at least one connection between them."
+            cancelAlert.addButton(withTitle: "OK")
+            _ = cancelAlert.runModal()
+
+            
+                self.performSelector(onMainThread: #selector(PlexusMainWindowController.endProgInd), with: nil, waitUntilDone: true)
+                self.mainSplitViewController.modelDetailViewController?.calcInProgress = false
+                return
+        }
+        
+        let calcQueue = DispatchQueue(label: "calcQueue")
+        calcQueue.async {
+            
+            let fmcrun = self.metalCalc(curModel : firstModel, inEntries: theEntries, verbose: true)
+
+            self.performSelector(onMainThread: #selector(PlexusMainWindowController.endProgInd), with: nil, waitUntilDone: true)
+            
+            DispatchQueue.main.async {
+                
+                if self.breakloop == true {
+                    firstModel.score = NSNumber.init(floatLiteral: -Double.infinity)
+                    let cancelAlert = NSAlert()
+                    cancelAlert.alertStyle = .informational
+                    cancelAlert.messageText = "Run cancelled."
+                    cancelAlert.addButton(withTitle: "OK")
+                    _ = cancelAlert.runModal()
+                    self.breakloop = false
+                }
+                
+                else {
+                    if(fmcrun == true){
+                        firstModel.complete = true
+                    }
+                    
+                    let scoreAlert = NSAlert()
+                    scoreAlert.alertStyle = .informational
+                    scoreAlert.messageText = "Model \(firstModel.name) scored \(firstModel.score)"
+                    scoreAlert.addButton(withTitle: "OK")
+                    _ = scoreAlert.runModal()
+                    
+                }
+                
+                self.mainSplitViewController.modelDetailViewController?.calcInProgress = false
+                }
+                                //end calcQ
+            }
+        
 }
     
  
-    @IBAction func calcButtonPress(_ x:NSToolbarItem){
+    @IBAction func hillClimbing(_ x:NSToolbarItem){
         let devices = devicesController?.selectedObjects as! [MTLDevice]
         device = devices[0]
         kernelFunction  = defaultLibrary?.makeFunction(name: "bngibbs")
@@ -782,6 +959,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         let firstModel : Model = curModels[0]
         let firstModelID = firstModel.objectID
         var finalModel = firstModel
+        var finalModelID = firstModelID
         
         self.progSheet = self.progHillSetup(self)
         self.window!.beginSheet(self.progSheet, completionHandler: nil)
@@ -793,17 +971,36 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         let hillchains = firstModel.hillchains
         
 
-        
+        var usedTraitNames = Set<String>()
         let nodesForTest = firstModel.bnnode.allObjects as! [BNNode]
         if (nodesForTest.count < 2){
+            let cancelAlert = NSAlert()
+            cancelAlert.alertStyle = .informational
+            cancelAlert.messageText = "Need at least two nodes with at least one connection between them."
+            cancelAlert.addButton(withTitle: "OK")
+            _ = cancelAlert.runModal()
             self.performSelector(onMainThread: #selector(PlexusMainWindowController.endProgInd), with: nil, waitUntilDone: true)
             self.mainSplitViewController.modelDetailViewController?.calcInProgress = false
             return
         }
-        
+        for firstNode in nodesForTest {
+            usedTraitNames.insert(firstNode.name)
+        }
         
 
-        
+        //The Traits and Entries involved in a run do not change, so they can be fetched just once
+        var allTraits = [Trait]()
+        let request = NSFetchRequest<Trait>(entityName: "Trait")
+        let predicate = NSPredicate(format: "entry IN %@", argumentArray: [firstModel.entry])
+        request.predicate = predicate
+        do {
+            allTraits = try moc.fetch (request)
+            
+        } catch {
+            fatalError("Failed request searching for all Traits of \(firstModel).")
+        }
+
+
         let calcQueue = DispatchQueue(label: "calcQueue")
         calcQueue.async {
 
@@ -815,22 +1012,52 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
             do {
                 let cfirstModel = try cmoc.existingObject(with: firstModelID) as! Model
                 
+                let theEntries = cfirstModel.entry
                 
                 
-                var lastModel = cfirstModel
-                _ = self.metalCalc(curModel : cfirstModel, verbose: true)
+                let faultpredicate = NSPredicate(format:"self IN %@", theEntries) //This should fire the faults for all the entries in the model
+                let faultrequest = NSFetchRequest<Entry>(entityName: "Entry")
+                faultrequest.predicate = faultpredicate
+                faultrequest.returnsObjectsAsFaults = false
+                do {
+                    _ = try cmoc.fetch(faultrequest)
+                    
+                } catch let error as NSError {
+                    print (error)
+                }
+                
+                
 
-                let firstbic = firstModel.score
+                
+                if cfirstModel.score.floatValue <= -Float.infinity {
+                    _ = self.metalCalc(curModel: cfirstModel, inEntries: theEntries, verbose: true)
+                }
+
+                var lastModel = cfirstModel
+                
+
+                let firstbic = cfirstModel.score
+//                print ("firstbic \(firstbic)")
 
                     var modelPeaks = [Model]()
                 
                 for rs in 0...Int(runstarts)-1 {
+                    
+                    if(self.breakloop){
+                        break
+                    }
+                    
                 
                     var firstrun = true
                     var lastbic = NSNumber.init(value: 0.0)
                     var curbic = NSNumber.init(value: 0.0)
                     
                     for hc in 0...Int(hillchains)-1 {
+                        
+                        if(self.breakloop){
+                            break
+                        }
+                        
                         if(firstrun == true){
                             
                             firstrun = false
@@ -838,8 +1065,15 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                             
                         }
                         else {
+    
                             
-                            let curModel = self.randomChildModel(lastModel: lastModel, thisMOC: nil)
+                            
+                            let curModel = self.randomChildModel(lastModel: lastModel, allTraits: allTraits, initusedTraitNames: usedTraitNames, thisMOC: nil)
+
+                            var discardModel = curModel
+                            
+
+                            
                             
                             var cycleChk = false
                             let newNodes = curModel.bnnode
@@ -857,28 +1091,39 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
 
                             if cycleChk == false { //If the new model is a cycle, ignore it
                             
-                                let msrun = self.metalCalc(curModel : curModel, verbose: false)
+                                let msrun = self.metalCalc(curModel : curModel, inEntries: theEntries, verbose: false)
                                 if (msrun == true) {
                                     curbic = curModel.score
-    //                                print("\(lastbic) \(curbic)")
+//                                    print("\(lastbic) \(curbic)")
                                     curModel.setValue(curbic, forKey: "score")
                                     if curbic.floatValue > lastbic.floatValue {
-//                                        let discardModel = lastModel
-    //                                    print ("keeping: \(curModel.name) and discarding \(discardModel.name)")
+                                        discardModel = lastModel
+//                                        print ("keeping: \(curModel.name) and discarding \(discardModel.name)")
                                         lastModel = curModel
                                         lastbic = curbic
     //                                    if discardModel != cfirstModel {
     //                                        cmoc.delete(discardModel)
     //                                    }
+                                        
+                                        usedTraitNames = Set<String>()
+                                        let lastNodes = lastModel.bnnode.allObjects as! [BNNode]
+                                        for lastNode in lastNodes {
+                                            usedTraitNames.insert(lastNode.name)
+                                        }
+                                        
+
+                                        
+                                        
                                     }
                                     else {
-    //                                    print ("discarding: \(curModel.name)")
+//                                        print ("discarding: \(curModel.name)")
     //                                    cmoc.delete(curModel)
+                                        discardModel = curModel
                                         
                                     }
                                 }
                                 else {
-    //                                print ("error: \(curModel.name)")
+//                                    print ("error: \(curModel.name)")
     //                                cmoc.delete(curModel)
                                 }
                             }
@@ -886,18 +1131,20 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
 //                                print ("\(curModel.name) is cyclic. Ignoring")
                             }
                             
+                            
+                            //Delete the discarded model unless it is the first model
+                            if discardModel != cfirstModel {
+                                for theEntry in theEntries.allObjects as! [Entry] {
+                                    theEntry.removeAModelObject(discardModel)
+                                }
+                            }
+                            
+                            
                         }
                         DispatchQueue.main.async {
                             self.hProgInd.increment(by: 1.0)
                         }
                         
-//                        do {
-//                            try cmoc.save()
-//
-//                        } catch let error as NSError {
-//                            print(error)
-//                            fatalError("Could not save models")
-//                        }
                         
                     }
                     
@@ -910,7 +1157,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                     }
 
                 }
-                
+
                 //Run through all the random restarts and select highest score
                 if(modelPeaks.count > 0){
                     var peakModel = modelPeaks[0]
@@ -922,6 +1169,14 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                     
                     for thisPeak in modelPeaks {
                         if thisPeak != peakModel{
+                            
+                            if thisPeak != cfirstModel {
+                                for theEntry in theEntries.allObjects as! [Entry] {
+                                    theEntry.removeAModelObject(thisPeak)
+                                }
+                            }
+                            
+                            
                             cmoc.delete(thisPeak)
                         }
                     }
@@ -939,8 +1194,18 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                     
                 }
                 
+                else {
+                    finalModel = firstModel
+                }
+                
+                if(self.breakloop){
+                    finalModel = firstModel
+                }
 
-            
+                
+                
+                
+  
                 do {
                     try cmoc.save()
 
@@ -948,53 +1213,85 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                     print(error)
                     fatalError("Could not save models")
                 }
+                
+                finalModelID = finalModel.objectID
+                
                 self.performSelector(onMainThread: #selector(PlexusMainWindowController.endProgInd), with: nil, waitUntilDone: true)
                 
                 DispatchQueue.main.sync {
                     
-
-                    
-                    //then save it and its nodes in self.moc
-                    self.moc.insert(finalModel)
-                    for insNode in finalModel.bnnode {
-                        let thisinsNode : BNNode = insNode as! BNNode
-
-                        
-                        self.moc.insert(thisinsNode)
-                        //Select the new winning node int he tree
-                        
-                        
-
+                    if self.breakloop == true {
+                        firstModel.score = NSNumber.init(floatLiteral: -Double.infinity)
+                        let cancelAlert = NSAlert()
+                        cancelAlert.alertStyle = .informational
+                        cancelAlert.messageText = "Run cancelled."
+                        cancelAlert.addButton(withTitle: "OK")
+                        _ = cancelAlert.runModal()
+                        self.breakloop = false
                     }
                     
-                    firstModel.addAChildObject(finalModel)
-                    let finalIndexPath = self.mainSplitViewController.modelTreeController.indexPathOfModel(model:finalModel)
-                    self.mainSplitViewController.modelTreeController.setSelectionIndexPath(finalIndexPath! as IndexPath)
-                    
-                    
-                    
-                    do {
-                        try self.moc.save()
-                        
-                    } catch let error as NSError {
-                        print(error)
-                        fatalError("AIIIIII")
-                    }
+                    else {
+                        let scoreAlert = NSAlert()
+                        scoreAlert.alertStyle = .informational
+                        scoreAlert.messageText = "Highest scoring model: \(finalModel.name) with score \(finalModel.score)"
+                        if finalModel != firstModel {
+                            scoreAlert.informativeText = "Plexus will select the new model."
 
-                    self.mainSplitViewController.modelDetailViewController?.calcInProgress = false
+                            self.moc.insert(finalModel)
+                            for insNode in finalModel.bnnode {
+                                let thisinsNode : BNNode = insNode as! BNNode
+
+                                self.moc.insert(thisinsNode)
+                                //Select the new winning node int he tree
+                                for thisDown in thisinsNode.downNodes(self){
+
+                                    if let thisDI = thisinsNode.getDownInterBetween(downNode: thisDown){
+
+                                        self.moc.insert(thisDI)
+                                    }
+
+                                }
+
+                            }
+                            
+                            
+                            let firstEntries = firstModel.entry
+                            
+                            for theEntry in firstEntries.allObjects as! [Entry] {
+                                theEntry.addAModelObject(finalModel)
+                                finalModel.addAnEntryObject(theEntry)
+                            }
+
+                            
+                            do {
+                                try self.moc.save()
+                            } catch let error as NSError {
+                                print(error)
+                                fatalError("ERROR saving to primary MOC.")
+                            }
+                            
+                            firstModel.addAChildObject(finalModel)
+                            let finalIndexPath = self.mainSplitViewController.modelTreeController.indexPathOfModel(model:finalModel)
+                            self.mainSplitViewController.modelTreeController.setSelectionIndexPath(finalIndexPath! as IndexPath)
+ 
+                        
+                        
+                        }
+                        else {
+                         scoreAlert.informativeText = "No model scored higher than the original."
+                        }
+                        self.mainSplitViewController.modelDetailViewController?.calcInProgress = false
+                        scoreAlert.addButton(withTitle: "OK")
+                        _ = scoreAlert.runModal()
+                    }
                 }
-                
-
-                
                 
             }
             catch {
                 fatalError("Error in calcQueue.")
             }
  
-            
         } // end calcQueue.async dispatch
-  
         
     }
     
@@ -1002,7 +1299,8 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
     
     
     
-    func metalCalc(curModel:Model, verbose:Bool) -> Bool {
+    func metalCalc(curModel:Model, inEntries: NSSet, verbose:Bool) -> Bool {
+//            func metalCalc(curModel:Model,  verbose:Bool) -> Bool {
 //                let start = DispatchTime.now()
 //                print ("\n\n**********START")
         
@@ -1021,6 +1319,9 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         }
 
         
+
+        let theEntries = inEntries
+        
         var mTML = 0
         if #available(OSX 10.13, *) {
             mTML = Int(device.maxThreadgroupMemoryLength)
@@ -1037,6 +1338,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         
         let nodesForCalc = curModel.bnnode.allObjects as! [BNNode]
         let nc = nodesForCalc.count
+        
         
         let runstot = curModel.runstot as! Int
         var ntWidth = (mTTPT/teWidth)-1
@@ -1071,13 +1373,15 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         
         var maxInfSize = 0
         for node in nodesForCalc {
-            let theInfluencedBy = node.infBy(self)
-            if(theInfluencedBy.count > maxInfSize) {
-                maxInfSize = theInfluencedBy.count
+            let theUpNodes = node.upNodes(self)
+            if(theUpNodes.count > maxInfSize) {
+                maxInfSize = theUpNodes.count
             }
         }
-        if(maxInfSize<1){
-            return false //so that we don't work with completely unlinked graphs
+        
+        //So that we don't work with completely unlinked graphs
+        if(maxInfSize<1){ //FIXME
+            return false
         }
         
         //Maximum CPT size for a node
@@ -1140,10 +1444,9 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         var infnet = [Int32]()
         for node in nodesForCalc {
             var thisinf = [Int32]()
-            let theInfluencedBy = node.infBy(self)
-            for thisinfby in theInfluencedBy  {
-                let tib = thisinfby as! BNNode
-                thisinf.append(Int32(nodesForCalc.index(of: tib)!))
+            let theUpNodes = node.upNodes(self)
+            for thisUpNode in theUpNodes  {
+                thisinf.append(Int32(nodesForCalc.index(of: thisUpNode)!))
             }
             let leftOver = maxInfSize-thisinf.count
             for _ in 0..<leftOver {
@@ -1239,7 +1542,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
             let commandEncoder = commandBuffer.makeComputeCommandEncoder()
             commandEncoder.setComputePipelineState(self.pipelineState)
             
-
+//let randomArray = Array(0..<30).map { _ in generateUniqueInt() }
             seeds = (0..<ntWidth).map{_ in arc4random()}
             seedsbuffer.contents().copyBytes(from: seeds, count: seeds.count * MemoryLayout<UInt32>.stride)
             
@@ -1383,9 +1686,9 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
             var postCount = [Int](repeating: 0, count: bins)
             let inNode : BNNode = nodesForCalc[fi]
 
-            let theInfluencedBy : [BNNode] = inNode.influencedBy.array as! [BNNode]
-            if theInfluencedBy.count > 0 { //if dependent node
-            
+            let theUpNodes = inNode.upNodes(self)
+            //If a dependent node
+            if theUpNodes.count > 0 {
                 var gi = 0
                 var flinetot : Float = 0.0
                 var flinecount : Float = 0.0
@@ -1482,10 +1785,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                 
         }
         
-        let score = self.calcMarginalLikelihood(curModel: curModel, nodesForCalc: nodesForCalc, infnet : sInfNet, results : results, priorresults : priorresults, bnstatesoutresults : bnstatesoutresults)
-//                let lscore = self.calcLikelihood(curModel: curModel, nodesForCalc: nodesForCalc)
-//        print("score \(score)")
-//        print("bic \(lscore)")
+        let score = self.calcMarginalLikelihood(curModel: curModel, inEntries: theEntries, nodesForCalc: nodesForCalc, infnet : sInfNet, results : results, priorresults : priorresults, bnstatesoutresults : bnstatesoutresults)
         curModel.setValue(score, forKey: "score")
         
             DispatchQueue.main.async {
@@ -1498,8 +1798,8 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
 //            print("Full run: \(NSDate().timeIntervalSince(start as Date)) seconds.")
 //        }
         
-//        end = DispatchTime.now()
-//        cptRunTime = Double(end.uptimeNanoseconds - start.uptimeNanoseconds) / 1000000000
+//        var end = DispatchTime.now()
+//        var cptRunTime = Double(end.uptimeNanoseconds - start.uptimeNanoseconds) / 1000000000
 //        print ("**********END RUN  \(cptRunTime) seconds.")
         
         return true
@@ -1845,7 +2145,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                         
 
                         let titleStyle = CPTMutableTextStyle()
-                        titleStyle.fontName = "Helvetica-Bold"
+                        titleStyle.fontName = "SFProDisplay-Bold"
                         titleStyle.fontSize = 18.0
                         titleStyle.color = CPTColor.black()
                         graph?.titleTextStyle = titleStyle
@@ -1980,130 +2280,8 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
     
 /*************************** Likelihood functions  ****/
     
-    func calcLikelihood(curModel:Model, nodesForCalc:[BNNode]) -> Float {
-        
-        
-        let appDelegate : AppDelegate = NSApplication.shared().delegate as! AppDelegate
-        let moc = appDelegate.persistentContainer.viewContext
-
-        var subsamp = curModel.runsper as! Int
-        if subsamp < 1000  {
-            subsamp = 1000
-        }
-        if subsamp > curModel.runstot as! Int {
-            subsamp = curModel.runstot as! Int
-        }
-        // Get the yes-no's within the scope of the data
-        let theEntries = curModel.entry
-
-        var dataratios = [Float]()
-        var matches = [Float]()
-        var tots = [Float]()
-        
-        for calcNode in nodesForCalc {
-            let calcValue = calcNode.value
-            
-            var theTraits = [Trait]()
-            let predicate = NSPredicate(format: "entry IN %@ && name == %@", theEntries, calcNode.name)
-            let request = NSFetchRequest<Trait>(entityName: "Trait")
-            request.predicate = predicate
-            do {
-                theTraits = try moc.fetch(request)
-            } catch let error as NSError {
-                print (error)
-                return -999
-            }
-            
-            
-            var mTraits = [Trait]()
-            
-            if calcNode.numericData == true {
-                let calcNumVal = Double(calcValue)
-                let tol = calcNode.tolerance as! Double
-                let lowT = calcNumVal! * (1.0 - (tol/2.0))
-                let highT = calcNumVal! * (1.0 + (tol/2.0))
-                
-                for chkTrait in theTraits {
-                    if ((Double(chkTrait.value)!) < highT || (Double(chkTrait.value)!) > lowT) {
-                        mTraits.append(chkTrait)
-                    }
-                }
-                
-            }
-            else {
-                let mpredicate = NSPredicate(format: "entry IN %@ && name == %@ && value == %@", theEntries, calcNode.name, calcValue)
-                let mrequest = NSFetchRequest<Trait>(entityName: "Trait")
-                mrequest.predicate = mpredicate
-                do {
-                    mTraits = try moc.fetch(mrequest)
-                } catch let error as NSError {
-                    print (error)
-                    return -999
-                }
-            }
-            matches.append(Float(mTraits.count))
-            tots.append(Float(theTraits.count))
-            dataratios.append(Float(mTraits.count) / Float(theTraits.count))
-        
-        }
-        
-        //Check that all post arrays are same length
-        //Subsample from the posteriors
-        var firstnode = true
-        var postlength = -1
-        var sampS = [Int]()
-        var posts = [[Float]]()
-        
-        for calcNode in nodesForCalc {
-            let postArray = calcNode.postArray
-            if(firstnode == true){
-                firstnode = false
-                postlength = postArray.count
-                for _ in 0...postlength {
-                    sampS.append(Int(arc4random_uniform(UInt32(postlength))))
-                }
-            }
-            else {
-                if postlength != postArray.count{
-                    print("post array lengths do not match!")
-                    
-                }
-            }
-            var thisposts = [Float]()
-            for sp in sampS{
-                thisposts.append(postArray[sp])
-            }
-            posts.append(thisposts)
-        }
-        
-        //Pick index where likelihood of the posterior is the highest
-        var maxlike = Float(0.0)
-        var firsttime = true
-        for s in 0...(postlength-1) {
-            var likes = [Float]()
-            for r in 0...(nodesForCalc.count-1){
-                likes.append( pow(posts[r][s], matches[r]) * pow(1-(posts[r][s]), (tots[r]-matches[r])))
-                let likelihood = log(likes.reduce(1, *)) // Should not the likelihood of the data be the product of the likelihoods of the parzmeters assumig they ate indepent?
-                if firsttime == true {
-                    maxlike = likelihood
-                    firsttime = false
-                }
-                    else{
-                    if (likelihood > maxlike) {
-                        maxlike = likelihood
-                    }
-                }
-                
-
-            }
-        }
-        
-        return maxlike - ((Float(nodesForCalc.count) / 2.0) * log(Float(postlength)))
-        
-    }
-
-    
-    func calcMarginalLikelihood(curModel:Model, nodesForCalc:[BNNode], infnet:[[Int32]], results : [[Float]], priorresults : [[Float]], bnstatesoutresults : [[Float]]) -> Float {
+  
+    func calcMarginalLikelihood(curModel:Model, inEntries: NSSet, nodesForCalc:[BNNode], infnet:[[Int32]], results : [[Float]], priorresults : [[Float]], bnstatesoutresults : [[Float]]) -> Float {
         
         let appDelegate : AppDelegate = NSApplication.shared().delegate as! AppDelegate
         let moc = appDelegate.persistentContainer.viewContext
@@ -2116,7 +2294,8 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
             subsamp = curModel.runstot as! Int
         }
         // Get the yes-no's within the scope of the data
-        let theEntries = curModel.entry
+
+        let theEntries = inEntries
         
         var dataratios = [Float]()
         var matches = [Float]()
@@ -2137,6 +2316,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                 return -999
             }
             
+//            print ("\(calcNode.name)  \(theTraits.count)")
             
             var mTraits = [Trait]()
             
@@ -2241,8 +2421,8 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
 //                    print ("lognomatch \(lognomatch)")
 //                    let logsum = logmatch + lognomatch //log M*N = log M + log N
 //                    print ("logsum \(logsum)")
-//                    print(pow(posts[r][s], matches[r]) * pow(1-(posts[r][s]), (tots[r]-matches[r])))
-//                    likes.append(pow(matches[r], posts[r][s]) * pow((tots[r]-matches[r]), 1-(posts[r][s]))) //This is likelihood of posterior given the data
+
+                    //This is likelihood of posterior given the data
             
                     
                     likes.append((matches[r] * log(posts[r][s])) + ((tots[r]-matches[r]) * log(1-(posts[r][s]))))//log of m^k  = k log m
@@ -2290,8 +2470,8 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         for r in 0...(nodesForCalc.count-1){
 //            print("Node: \(nodesForCalc[r].name)")
             let thisinfnet = infnet[r]
-            let infBy = nodesForCalc[r].influencedBy
-            if infBy.count > 0 { //dependent. Use the conditional probability of this node given the states of the nodes at maxpos. So say T, T, T is binary 111 or decimal 7
+            let upNodes = nodesForCalc[r].upNodes(self)
+            if upNodes.count > 0 { //dependent. Use the conditional probability of this node given the states of the nodes at maxpos. So say T, T, T is binary 111 or decimal 7
                 let cptarray = nodesForCalc[r].cptArray //FIXME easier to pull this at top of funciton
 
 
@@ -2326,6 +2506,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         
         var likes = [Float]()
         for r in 0...(nodesForCalc.count-1){
+//            print ("\(nodesForCalc[r].name)")
             
             if(tots[r]>0) { // to avoid hidden or data-free nodes in likelihood calc
 //                print("\nname: \(nodesForCalc[r].name)")
@@ -2345,7 +2526,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
 //                let logsum = logmatch + lognomatch //log M*N = log M + log N
 //
 //                print ("logsum \(logsum)")
-//                print(log(pow(priorProds[r], matches[r]) * pow(1-(priorProds[r]), (tots[r]-matches[r]))))
+//                print((matches[r] * log(priorProds[r])) + ((tots[r]-matches[r]) * log(1-(priorProds[r]))))
 //                likes.append(log(pow(priorProds[r], matches[r]) * pow(1-(priorProds[r]), (tots[r]-matches[r])))) //This is likelihood of data given the Priors
                 
                 likes.append((matches[r] * log(priorProds[r])) + ((tots[r]-matches[r]) * log(1-(priorProds[r]))))
