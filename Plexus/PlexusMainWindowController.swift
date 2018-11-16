@@ -988,6 +988,10 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         }
         
         
+        
+        for thisEntry in firstModel.entry.allObjects as! [Entry] {
+                print(thisEntry.name)
+        }
         //The Traits and Entries involved in a run do not change, so they can be fetched just once
         var allTraits = [Trait]()
         let request = NSFetchRequest<Trait>(entityName: "Trait")
@@ -1315,14 +1319,17 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                                 }
 
                             }
+                            
+                            
+                            
+                            let firstEntries = firstModel.entry
+                            
+                            for theEntry in firstEntries.allObjects as! [Entry] {
+                                  theEntry.addAModelObject(finalModel)
+                                    finalModel.addAnEntryObject(theEntry)
+                                
+                            }
 
-                            
-                            
-
-                            
-                            
-
-                            
                             
                             do {
                                 try self.moc.save()
