@@ -987,11 +987,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
             usedTraitNames.insert(firstNode.name)
         }
         
-        
-        
-        for thisEntry in firstModel.entry.allObjects as! [Entry] {
-                print(thisEntry.name)
-        }
+
         //The Traits and Entries involved in a run do not change, so they can be fetched just once
         var allTraits = [Trait]()
         let request = NSFetchRequest<Trait>(entityName: "Trait")
@@ -1031,10 +1027,14 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                 }
                 
                 
+
                 
-                
+                if cfirstModel.score.floatValue <= -Float.infinity {
+                    _ = self.metalCalc(curModel: cfirstModel, inEntries: theEntries, verbose: true)
+                }
+
                 var lastModel = cfirstModel
-                _ = self.metalCalc(curModel: cfirstModel, inEntries: theEntries, verbose: true)
+                
 
                 let firstbic = cfirstModel.score
 //                print ("firstbic \(firstbic)")
@@ -1065,53 +1065,14 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                             
                         }
                         else {
-                            
-                            
-//                            print("Lastmodel: \(lastModel.name) \(lastModel.managedObjectContext)")
-//
-//                            for insNode in lastModel.bnnode {
-//                                let thisinsNode : BNNode = insNode as! BNNode
-//                                print ("\(thisinsNode.name) \(thisinsNode.value) \(thisinsNode.managedObjectContext)")
-//
-//
-//                                //Select the new winning node int he tree
-//                                for thisDown in thisinsNode.downNodes(self){
-//                                    print(" -> \(thisDown.name)")
-//                                    if let thisDI = thisinsNode.getDownInterBetween(downNode: thisDown){
-//                                        print("\(thisDI.up.name) \(thisDI.down.name) \(thisDI.ifthen) \(thisDI.isFault) \(thisDI.managedObjectContext)")
-//
-//                                    }
-//
-//                                }
-//
-//                            }
-//                            print("")
-
+    
                             
                             
                             let curModel = self.randomChildModel(lastModel: lastModel, allTraits: allTraits, initusedTraitNames: usedTraitNames, thisMOC: nil)
-                            //FIXME fthen lost HERE
+
                             var discardModel = curModel
                             
-//                            print("Curmodel: \(curModel.name) \(curModel.managedObjectContext)")
-//
-//                            for insNode in curModel.bnnode {
-//                                let thisinsNode : BNNode = insNode as! BNNode
-//                                print ("\(thisinsNode.name) \(thisinsNode.value) \(thisinsNode.managedObjectContext)")
-//
-//
-//                                //Select the new winning node int he tree
-//                                for thisDown in thisinsNode.downNodes(self){
-//                                    print(" -> \(thisDown.name)")
-//                                    if let thisDI = thisinsNode.getDownInterBetween(downNode: thisDown){
-//                                        print("\(thisDI.up.name) \(thisDI.down.name) \(thisDI.ifthen) \(thisDI.isFault) \(thisDI.managedObjectContext)")
-//
-//                                    }
-//
-//                                }
-//
-//                            }
-//                            print("")
+
                             
                             
                             var cycleChk = false
@@ -1135,7 +1096,6 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                                     curbic = curModel.score
 //                                    print("\(lastbic) \(curbic)")
                                     curModel.setValue(curbic, forKey: "score")
-//                                    if 2 > 1 { //FIXME remove
                                     if curbic.floatValue > lastbic.floatValue {
                                         discardModel = lastModel
 //                                        print ("keeping: \(curModel.name) and discarding \(discardModel.name)")
@@ -1244,32 +1204,6 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
 
                 
                 
-
-//                cmoc.insert(finalModel)
-//                for insNode in finalModel.bnnode {
-//                    let thisinsNode : BNNode = insNode as! BNNode
-//                    cmoc.insert(thisinsNode)
-//                    for thisDown in thisinsNode.downNodes(self){
-//                        if let thisDI = thisinsNode.getDownInterBetween(downNode: thisDown){
-//                            cmoc.insert(thisDI)
-//                        }
-//
-//                    }
-//                }
-                
-                //FIXME checking where models are connected by here
-                
-                
-                
-//                print ("finalmodel \(finalModel.name)")
-//                print ("selfmoc \(self.moc)")
-//                print ("cmoc \(cmoc)")
-//                for theEntry in theEntries.allObjects as! [Entry] {
-//                    print("\(theEntry.name) \(theEntry.managedObjectContext)")
-//                    for chkModel in theEntry.model.allObjects as! [Model] {
-//                        print ("\(chkModel.name) \(chkModel.managedObjectContext)")
-//                    }
-//                }
                 
   
                 do {
@@ -1321,13 +1255,11 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                             }
                             
                             
-                            
                             let firstEntries = firstModel.entry
                             
                             for theEntry in firstEntries.allObjects as! [Entry] {
-                                  theEntry.addAModelObject(finalModel)
-                                    finalModel.addAnEntryObject(theEntry)
-                                
+                                theEntry.addAModelObject(finalModel)
+                                finalModel.addAnEntryObject(theEntry)
                             }
 
                             
@@ -1341,30 +1273,8 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                             firstModel.addAChildObject(finalModel)
                             let finalIndexPath = self.mainSplitViewController.modelTreeController.indexPathOfModel(model:finalModel)
                             self.mainSplitViewController.modelTreeController.setSelectionIndexPath(finalIndexPath! as IndexPath)
-                            
-//                            self.moc.refreshAllObjects()
-                            //FIXME from the above, the inters exist, but here they do not
-//                            let afterNodes = finalModel.bnnode
-//                            print("Testing for inters")
-//                            for testtNode in afterNodes {
-//                                let testNode : BNNode = testtNode as! BNNode
-//                                print("FOR \(testNode.name) \(testNode.value) \(testNode.managedObjectContext)")
-//
-//
-//                                for testUpNode in testNode.upNodes(self){
-//                                    print(" <- \(testUpNode.name)")
-//                                    let thisDI = testNode.getUpInterBetween(upNode: testUpNode)
-//                                        print("\(thisDI?.up.name) \(thisDI?.down.name) \(thisDI?.ifthen) \(thisDI?.managedObjectContext)")
-//                                }
-//
-//                                for testDownNode in testNode.downNodes(self){
-//                                    print(" -> \(testDownNode.name)")
-//                                    let thisDI = testNode.getDownInterBetween(downNode: testDownNode)
-//                                        print("\(thisDI?.up.name) \(thisDI?.down.name) \(thisDI?.ifthen) \(thisDI?.managedObjectContext)")
-//                                }
-//
-//                            }
-                            
+ 
+                        
                         
                         }
                         else {
