@@ -765,7 +765,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                     }
                     else {
                         let theEntries = lastModel.entry
-                        let predicate = NSPredicate(format: "entry IN %@", theEntries)
+                        let predicate = NSPredicate(format: "entry IN %@ && name == %@", theEntries, toNode.name)
                         let request = NSFetchRequest<Trait>(entityName: "Trait")
                         request.predicate = predicate
                         request.propertiesToFetch = ["value"]
@@ -778,6 +778,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                             print (error)
                         }
                     }
+                    
                     nochange = false
                 }
                 
@@ -959,7 +960,6 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         let firstModel : Model = curModels[0]
         let firstModelID = firstModel.objectID
         var finalModel = firstModel
-        var finalModelID = firstModelID
         
         self.progSheet = self.progHillSetup(self)
         self.window!.beginSheet(self.progSheet, completionHandler: nil)
@@ -1202,9 +1202,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                     finalModel = firstModel
                 }
 
-                
-                
-                
+
   
                 do {
                     try cmoc.save()
@@ -1214,7 +1212,6 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                     fatalError("Could not save models")
                 }
                 
-                finalModelID = finalModel.objectID
                 
                 self.performSelector(onMainThread: #selector(PlexusMainWindowController.endProgInd), with: nil, waitUntilDone: true)
                 
