@@ -1814,7 +1814,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         let curModels : [Model] = modelTreeController.selectedObjects as! [Model]
         let curModel : Model = curModels[0]
         if(curModel.complete == true){
-           print ("locked")
+//           print ("locked")
         }
         else {
 
