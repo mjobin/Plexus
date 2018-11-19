@@ -153,6 +153,8 @@ class PlexusBNSKView: SKView {
         let curModels : [Model] = modelTreeController.selectedObjects as! [Model]
         let curModel : Model = curModels[0]
 
+
+        curModel.setValue(NSNumber.init(floatLiteral: -Double.infinity), forKey: "score")
         
         curModel.addABNNodeObject(newNode)
 
