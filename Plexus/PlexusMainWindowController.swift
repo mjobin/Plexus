@@ -637,38 +637,40 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
             return lastModel //This should not happen, but if the intila model already has less than two nodes, do not proceed. This allows the random node selection below to work.
         }
         
-        let fromPos = Int.random(in: 0..<nodesForTest.count)
-        var toPos = fromPos
-        
-        while toPos == fromPos {
-            toPos = Int.random(in: 0..<nodesForTest.count)
-        }
-        
-        let fromNode = nodesForTest[fromPos]
-        let toNode = nodesForTest[toPos]
 
         var nochange = true
         
-        //Check if there is an arc between them
-        var isinfArc = false
-        var isinfByArc = false
-        
-        for thisDownNode in fromNode.downNodes(self) {
-            if thisDownNode == toNode {
-                isinfArc = true
-                break
-            }
-        }
-        
-        for thisUpNode in fromNode.upNodes(self) {
-            if thisUpNode == toNode {
-                isinfByArc = true
-                break
-            }
-        }
-        
-        
         while nochange {
+            
+            let fromPos = Int.random(in: 0..<nodesForTest.count)
+            var toPos = fromPos
+            
+            while toPos == fromPos {
+                toPos = Int.random(in: 0..<nodesForTest.count)
+            }
+            
+            let fromNode = nodesForTest[fromPos]
+            let toNode = nodesForTest[toPos]
+            
+
+            
+            //Check if there is an arc between them
+            var isinfArc = false
+            var isinfByArc = false
+            
+            for thisDownNode in fromNode.downNodes(self) {
+                if thisDownNode == toNode {
+                    isinfArc = true
+                    break
+                }
+            }
+            
+            for thisUpNode in fromNode.upNodes(self) {
+                if thisUpNode == toNode {
+                    isinfByArc = true
+                    break
+                }
+            }
             
             let switchup = Int.random(in: 1 ... 5)
             switch switchup {
@@ -692,6 +694,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                 //Add a hidden node wih no data pointing at toNode, or if it is hidden, remove it
                 case 2:
                     if toNode.hidden == true {
+//                        print("Removing hidden")
                         newModel.removeABNNodeObject(toNode)
                         toNode.removeSelfFromNeighbors(moc: thisMOC)
                         thisMOC?.delete(toNode)
@@ -707,6 +710,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                         }
                         
                         if hashidden == false {
+//                            print("Adding hidden")
                             let newNode : BNNode = BNNode(entity: BNNode.entity(), insertInto: thisMOC)
                             newNode.name = "hidden"
                             newNode.hidden = true
@@ -723,7 +727,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                     }
                 
                 case 3: // Change the direction of an existing arrow
-                    
+                    print("Changing arrow")
                     if fromNode.hidden == false && toNode.hidden == false { //Do not remove or reverse arrows for hidden nodes
                         if isinfArc == true && isinfByArc == false {
 
@@ -758,7 +762,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                 
             //Change the traitvalue to another. If numeric, change tolerance
             case 4:
-                
+                print("Changing value")
                 if  toNode.hidden == false {
                     if toNode.numericData {
                         toNode.tolerance = NSNumber(value: Float.random(in: 0 ... 1))
@@ -794,6 +798,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                             if chkNode.name == pickedTraitName {
                                 numwithname += 1
                                 if neverdeleted == true {
+                                    print("Removing a node")
                                     neverdeleted = false
                                     newModel.removeABNNodeObject(chkNode)
                                     chkNode.removeSelfFromNeighbors(moc: thisMOC)
@@ -811,6 +816,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                 }
                 //Add node, point it to or from toNode
                 else{
+                    print("Adding a node")
                     let newNode : BNNode = BNNode(entity: BNNode.entity(), insertInto: thisMOC)
                     newNode.name = pickedTraitName
                     newNode.value = pickedTrait.value
@@ -2525,7 +2531,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
 //                print ("logsum \(logsum)")
 //                print((matches[r] * log(priorProds[r])) + ((tots[r]-matches[r]) * log(1-(priorProds[r]))))
 //                likes.append(log(pow(priorProds[r], matches[r]) * pow(1-(priorProds[r]), (tots[r]-matches[r])))) //This is likelihood of data given the Priors
-                
+//                print("SCORE: \((matches[r] * log(priorProds[r])) + ((tots[r]-matches[r]) * log(1-(priorProds[r]))))")
                 likes.append((matches[r] * log(priorProds[r])) + ((tots[r]-matches[r]) * log(1-(priorProds[r]))))
                 
 
@@ -2537,6 +2543,8 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
 //        print("f(y|ϴ) \(likelihood)")
         
         
+        print (log(priorterm) + likelihood - log(postterm))
+//        print ("score: \(log(priorterm) + likelihood - log(postterm))")
         return log(priorterm) + likelihood - log(postterm)
         
     }
