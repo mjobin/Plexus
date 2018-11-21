@@ -114,7 +114,6 @@ extension Model {
         }
         
         
-        
         var infstwod = [[Int]]()
         
         //Copy Influences
@@ -136,37 +135,16 @@ extension Model {
         var i = 0
         for infsoned : [Int] in infstwod{
             for thisinf in infsoned{
-//                print("\(tempNodeArray[i].name) -> \(tempNodeArray[thisinf].name)")
                 let newInter = tempNodeArray[i].addADownObject(downNode: tempNodeArray[thisinf], moc: moc)
                 if let curInter = curNodeArray[i].getDownInterBetween(downNode: curNodeArray[thisinf]){
                     newInter.ifthen = curInter.ifthen
-//                    print(newInter.ifthen)
                 }
-//                _ = tempNodeArray[thisinf].addAnUpObject(upNode: tempNodeArray[i], moc: moc)
+
             }
             i += 1
         }
         
-        
 
-        
-//        print("newmodel: \(newModel.name) \(newModel.managedObjectContext)")
-//        
-//        for insNode in newModel.bnnode {
-//            let thisinsNode : BNNode = insNode as! BNNode
-//            print ("\(thisinsNode.name) \(thisinsNode.value) \(thisinsNode.managedObjectContext)")
-//
-//            for thisDown in thisinsNode.downNodes(self){
-//                print(" -> \(thisDown.name)")
-//                if let thisDI = thisinsNode.getDownInterBetween(downNode: thisDown){
-//                    print("\(thisDI.up.name) \(thisDI.down.name) \(thisDI.ifthen) \(thisDI.isFault) \(thisDI.managedObjectContext)")
-//
-//                }
-//                
-//            }
-//            
-//        }
-//        print("")
     
         
         return newModel

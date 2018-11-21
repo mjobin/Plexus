@@ -259,7 +259,7 @@ extension BNNode {
      
      - Returns: 2 if successfully completed.
      */
-    func CPT() -> Int {
+    func CPT(fake:Bool) -> Int {
 //        let start = DispatchTime.now()
 //        print ("\n**********START CPT for \(self.name)")
         
@@ -281,6 +281,11 @@ extension BNNode {
                 //Which of the entries contain a trait matching the name of the node trait
                 //get the interbetwene or make if it does nto exist
                 if let curUpNodeInter = self.getUpInterBetween(upNode: thisUpNode){
+                    
+                    if fake {
+                        ifthens.append(curUpNodeInter.ifthen.floatValue)
+                    }
+                    else{
 
                     let request = NSFetchRequest<Trait>(entityName: "Trait")
                     let predicate = NSPredicate(format: "entry IN %@ && name == %@", argumentArray: [theEntries, thisUpNode.name])
@@ -320,7 +325,6 @@ extension BNNode {
                             do {
                                 
                                 let matchCount = try moc.count(for: matchRequest)
-//                                print("\(Float(matchCount)) \(Float(allCount)) \((Float(matchCount) / Float(allCount)))")
                                 ifthens.append(Float(matchCount) / Float(allCount))
                                 curUpNodeInter.ifthen = NSNumber.init(value: (Float(matchCount) / Float(allCount)))
                                 
@@ -334,6 +338,8 @@ extension BNNode {
                         
                         print("Failed")
                     }
+                    
+                }
                     
                 }//END if let curNodeInter
                 
@@ -388,9 +394,9 @@ extension BNNode {
      
      - Returns: CPT as an array.
      */
-    func getCPTArray(_ sender:AnyObject, mocChanged:Bool) -> [cl_float] {
+    func getCPTArray(_ sender:AnyObject, mocChanged:Bool, fake : Bool) -> [cl_float] {
         //FIXME only change this back if you feel really safe about it
-        _ = self.CPT()
+        _ = self.CPT(fake: fake)
         
         //        print ("getCPTArray \(self.name) \(self.cptReady)")
         //        if mocChanged == true || self.cptReady != 2 {

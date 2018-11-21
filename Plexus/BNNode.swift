@@ -15,6 +15,7 @@ class BNNode: NSManagedObject {
     @NSManaged var cptArray: [Float]
     @NSManaged var cptFreezeArray: [Float]
     @NSManaged var cptReady: NSNumber
+    @NSManaged var finalStates: [Float]
     @NSManaged var hidden: Bool
     @NSManaged var name: String
     @NSManaged var numericData: Bool

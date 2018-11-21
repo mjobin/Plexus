@@ -4,6 +4,7 @@
         <attribute name="cptArray" optional="YES" attributeType="Transformable" customClassName="[Float]" syncable="YES"/>
         <attribute name="cptFreezeArray" optional="YES" attributeType="Transformable" customClassName="[Float]" syncable="YES"/>
         <attribute name="cptReady" optional="YES" attributeType="Integer 16" minValueString="0" maxValueString="2" defaultValueString="NO" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="finalStates" optional="YES" attributeType="Transformable" customClassName="[Float]" syncable="YES"/>
         <attribute name="hidden" optional="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="name" optional="YES" attributeType="String" defaultValueString="New Node" syncable="YES"/>
         <attribute name="numericData" optional="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="NO" syncable="YES"/>
@@ -64,7 +65,7 @@
         <relationship name="entry" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Entry" inverseName="trait" inverseEntity="Entry" syncable="YES"/>
     </entity>
     <elements>
-        <element name="BNNode" positionX="-21.91015625" positionY="290.09375" width="128" height="433"/>
+        <element name="BNNode" positionX="-21.91015625" positionY="290.09375" width="128" height="448"/>
         <element name="BNNodeInter" positionX="-439.91796875" positionY="620.0859375" width="128" height="88"/>
         <element name="Entry" positionX="-468" positionY="-36" width="128" height="133"/>
         <element name="Model" positionX="349" positionY="-9" width="128" height="268"/>

@@ -775,6 +775,27 @@
                                         </binding>
                                     </connections>
                                 </toolbarItem>
+                                <toolbarItem implicitItemIdentifier="A329C1F0-C742-475F-99B0-1357AADDC194" label="GenRand" paletteLabel="GenRand" id="pLY-AX-dvL">
+                                    <nil key="toolTip"/>
+                                    <size key="minSize" width="38" height="32"/>
+                                    <size key="maxSize" width="72" height="32"/>
+                                    <button key="view" verticalHuggingPriority="750" id="jIk-co-O9R">
+                                        <rect key="frame" x="0.0" y="14" width="72" height="32"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                        <buttonCell key="cell" type="push" title="p(θ|x)=" bezelStyle="rounded" imagePosition="overlaps" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Hh3-zg-1V3">
+                                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                            <font key="font" metaFont="systemSemibold" size="13"/>
+                                        </buttonCell>
+                                    </button>
+                                    <connections>
+                                        <action selector="genRandData:" target="B8D-0N-5wS" id="v0X-Ne-yi8"/>
+                                        <binding destination="B8D-0N-5wS" name="enabled" keyPath="modelTreeController.selection.complete" id="1ln-Pg-gJb">
+                                            <dictionary key="options">
+                                                <string key="NSValueTransformerName">NSNegateBoolean</string>
+                                            </dictionary>
+                                        </binding>
+                                    </connections>
+                                </toolbarItem>
                                 <toolbarItem implicitItemIdentifier="D521ED6E-A777-407F-A119-FCD03A58B33D" label="Hill" paletteLabel="Hill" id="w3a-q3-YGU">
                                     <nil key="toolTip"/>
                                     <size key="minSize" width="38" height="32"/>
@@ -844,6 +865,7 @@
                                 <toolbarItem reference="3e1-GX-aR9"/>
                                 <toolbarItem reference="w3a-q3-YGU"/>
                                 <toolbarItem reference="lYj-Xm-flT"/>
+                                <toolbarItem reference="pLY-AX-dvL"/>
                             </defaultToolbarItems>
                         </toolbar>
                         <connections>

@@ -858,7 +858,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
               let iN = testNode.addADownObject(downNode: testDownNode, moc: thisMOC)
 //                print ("      \(iN.ifthen)   \(iN.isFault)")
             }
-            testCPT = testNode.CPT()
+            testCPT = testNode.CPT(fake: false)
         }
 //        print(" ")
         if testCPT != 2 {
@@ -910,7 +910,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         let calcQueue = DispatchQueue(label: "calcQueue")
         calcQueue.async {
             
-            let fmcrun = self.metalCalc(curModel : firstModel, inEntries: theEntries, verbose: true)
+            let fmcrun = self.metalCalc(curModel : firstModel,  fake : false, verbose: true)
 
             self.performSelector(onMainThread: #selector(PlexusMainWindowController.endProgInd), with: nil, waitUntilDone: true)
             
@@ -1036,7 +1036,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
 
                 
                 if cfirstModel.score.floatValue <= -Float.infinity {
-                    _ = self.metalCalc(curModel: cfirstModel, inEntries: theEntries, verbose: true)
+                    _ = self.metalCalc(curModel: cfirstModel, fake : false, verbose: true)
                 }
 
                 var lastModel = cfirstModel
@@ -1097,7 +1097,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
 
                             if cycleChk == false { //If the new model is a cycle, ignore it
                             
-                                let msrun = self.metalCalc(curModel : curModel, inEntries: theEntries, verbose: false)
+                                let msrun = self.metalCalc(curModel : curModel, fake : false, verbose: false)
                                 if (msrun == true) {
                                     curbic = curModel.score
 //                                    print("\(lastbic) \(curbic)")
@@ -1302,7 +1302,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
     
     
     
-    func metalCalc(curModel:Model, inEntries: NSSet, verbose:Bool) -> Bool {
+    func metalCalc(curModel:Model, fake: Bool, verbose:Bool) -> Bool {
 //            func metalCalc(curModel:Model,  verbose:Bool) -> Bool {
 //                let start = DispatchTime.now()
 //                print ("\n\n**********START")
@@ -1323,7 +1323,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
 
         
 
-        let theEntries = inEntries
+        let theEntries = curModel.entry
         
         var mTML = 0
         if #available(OSX 10.13, *) {
@@ -1466,7 +1466,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         //Buffer 7: Cptnet
         var cptnet = [Float]()
         for node in nodesForCalc {
-            let theCPT = node.getCPTArray(self, mocChanged: moc.hasChanges)
+            let theCPT = node.getCPTArray(self, mocChanged: moc.hasChanges, fake : fake)
             cptnet = cptnet + theCPT
             let leftOver = maxCPTSize-theCPT.count
             for _ in 0..<leftOver {
@@ -1492,7 +1492,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         let priorsbuffer = self.device.makeBuffer(bytes: &priors, length: priors.count*MemoryLayout<Float>.stride, options: resourceOptions)
         threadMemSize += ntWidth*nodesForCalc.count*MemoryLayout<Float>.stride
         
-        //Buffer 11: BNStates output array num notdes * ntWidth
+        //Buffer 11: BNStates output array num nodes * ntWidth
         var bnstatesout = [Float](repeating: -1.0, count: ntWidth*nodesForCalc.count)
         let bnstatesoutbuffer = self.device.makeBuffer(length: ntWidth*nodesForCalc.count*MemoryLayout<Float>.stride, options: resourceOptions)
         threadMemSize += ntWidth*nodesForCalc.count*MemoryLayout<Float>.stride
@@ -1683,6 +1683,17 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
             
         }
         
+        
+        fi = 0
+        for bnstateoutresult in bnstatesoutresults {
+            let inNode : BNNode = nodesForCalc[fi]
+            inNode.finalStates = bnstateoutresult
+            fi += 1
+        }
+        
+        
+
+        
         fi = 0
         for result in results {
 
@@ -1811,7 +1822,145 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
     }
     
     
-  
+  @IBAction func genRandData(_ x:NSToolbarItem){
+    
+    let devices = devicesController?.selectedObjects as! [MTLDevice]
+    device = devices[0]
+    kernelFunction  = defaultLibrary?.makeFunction(name: "bngibbs")
+    do {
+        pipelineState = try device.makeComputePipelineState(function: kernelFunction!)
+    }
+    catch {
+        fatalError("Cannot set up Metal")
+        
+    }
+    
+    mainSplitViewController.modelDetailViewController?.calcInProgress = true
+    self.breakloop = false
+    
+    self.progSheet = self.progSetup(self)
+    self.window!.beginSheet(self.progSheet, completionHandler: nil)
+    self.progSheet.makeKeyAndOrderFront(self)
+    
+    
+    let curModels : [Model] = modelTreeController.selectedObjects as! [Model]
+    let curModel : Model = curModels[0]
+    
+    let newModel = curModel.copySelf(moc: self.moc, withEntries: false)
+    var simname = curModel.name
+    simname += "-randomdata"
+    newModel.name = simname
+    
+    
+    let allNodes = newModel.bnnode.allObjects as! [BNNode]
+    
+
+    var nodecounter = 1
+    //Prepare the independnt nodes
+    for thisNode in allNodes {
+        thisNode.name = String(nodecounter)
+        thisNode.value = "yes"
+        let upNodes = thisNode.upNodes(self)
+        if upNodes.count < 1 { //Independent nodes need to
+            
+            thisNode.priorDistType =  NSNumber.init(integerLiteral: Int.random(in: 0 ... 4))
+            thisNode.priorV1 = NSNumber.init(floatLiteral: Double.random(in: 0.0 ... 1.0))
+            thisNode.priorV2 = NSNumber.init(floatLiteral: Double.random(in: 0.0 ... 1.0))
+            
+        }
+        else {
+            for upNode in upNodes {
+            
+                if let thisInter = thisNode.getUpInterBetween(upNode: upNode){
+                    thisInter.ifthen = NSNumber.init(floatLiteral: Double.random(in: 0.0 ... 1.0))
+                }
+            }
+        }
+        
+        nodecounter += 1
+    }
+    
+    
+    let okok = self.metalCalc(curModel: newModel, fake : true, verbose: true)
+    
+    
+    if okok == true {
+        
+        newModel.setValue(NSNumber.init(floatLiteral: -Double.infinity), forKey: "score")
+        
+        
+        for thisNode in allNodes {
+                let blankCount = [Int]()
+                let blankArray = [Float]()
+                thisNode.postCount = blankCount
+                thisNode.postArray = blankArray
+                thisNode.priorCount = blankCount
+                thisNode.priorArray = blankArray
+        }
+        
+        
+        for i in 0..<curModel.runstot.intValue{
+            let newEntry : Entry = Entry(entity: NSEntityDescription.entity(forEntityName: "Entry", in: self.moc)!, insertInto: self.moc)
+            newEntry.name = String(i)
+
+            for thisNode in allNodes {
+
+                let newTrait : Trait = Trait(entity: NSEntityDescription.entity(forEntityName: "Trait", in: self.moc)!, insertInto: self.moc)
+                newTrait.name = thisNode.name
+                let final = thisNode.finalStates
+
+                if i < final.count{
+                    if final[i] >= 1.0 {
+                        newTrait.value = "yes"
+                    }
+                    else {
+                        newTrait.value = "no"
+                    }
+                }
+                else {
+                    fatalError("Error in genRand. Either there are no finalStates for \(thisNode.name) or \(i) is larger than \(thisNode.finalStates.count).")
+                }
+                newEntry.addATraitObject(newTrait)
+                newTrait.entry = newEntry
+            }
+            
+            newModel.addAnEntryObject(newEntry)
+            newEntry.addAModelObject(newModel)
+            
+            self.progInd.increment(by: 1)
+            self.curLabel.stringValue = String(i)
+            
+        }
+        
+        do {
+            try self.moc.save()
+        } catch let error as NSError {
+            print(error)
+            fatalError("ERROR saving to primary MOC.")
+        }
+        
+        for thisNode in allNodes {
+            _ = thisNode.CPT(fake: false)
+        
+        }
+        do {
+            try self.moc.save()
+        } catch let error as NSError {
+            print(error)
+            fatalError("ERROR saving to primary MOC.")
+        }
+
+        
+        curModel.addAChildObject(newModel)
+        let newIndexPath = self.mainSplitViewController.modelTreeController.indexPathOfModel(model:newModel)
+        self.mainSplitViewController.modelTreeController.setSelectionIndexPath(newIndexPath! as IndexPath)
+    
+    }
+    
+    self.performSelector(onMainThread: #selector(PlexusMainWindowController.endProgInd), with: nil, waitUntilDone: true)
+    self.mainSplitViewController.modelDetailViewController?.calcInProgress = false
+    
+    } //end genRandData
     
 
     

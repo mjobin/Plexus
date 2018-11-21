@@ -971,7 +971,7 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
                 self.cptReady[key] = 1 //while processing
                 DispatchQueue.global().async {
 
-                  self.cptReady[key] = key.CPT()
+                    self.cptReady[key] = key.CPT(fake: false)
 
                     
                     self.performSelector(onMainThread: #selector(PlexusModelDetailViewController.reloadData), with: nil, waitUntilDone: false)
