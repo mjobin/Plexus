@@ -28,7 +28,7 @@ extension Model {
     }
     
     func removeAnEntryObject(_ value:Entry) {
-        let items = self.mutableOrderedSetValue(forKey: "entry");
+        let items = self.mutableSetValue(forKey: "entry");
         items.remove(value)
     }
     
