@@ -727,7 +727,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                     }
                 
                 case 3: // Change the direction of an existing arrow
-                    print("Changing arrow")
+//                    print("Changing arrow")
                     if fromNode.hidden == false && toNode.hidden == false { //Do not remove or reverse arrows for hidden nodes
                         if isinfArc == true && isinfByArc == false {
 
@@ -762,7 +762,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                 
             //Change the traitvalue to another. If numeric, change tolerance
             case 4:
-                print("Changing value")
+//                print("Changing value")
                 if  toNode.hidden == false {
                     if toNode.numericData {
                         toNode.tolerance = NSNumber(value: Float.random(in: 0 ... 1))
@@ -798,7 +798,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                             if chkNode.name == pickedTraitName {
                                 numwithname += 1
                                 if neverdeleted == true {
-                                    print("Removing a node")
+//                                    print("Removing a node")
                                     neverdeleted = false
                                     newModel.removeABNNodeObject(chkNode)
                                     chkNode.removeSelfFromNeighbors(moc: thisMOC)
@@ -816,7 +816,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                 }
                 //Add node, point it to or from toNode
                 else{
-                    print("Adding a node")
+//                    print("Adding a node")
                     let newNode : BNNode = BNNode(entity: BNNode.entity(), insertInto: thisMOC)
                     newNode.name = pickedTraitName
                     newNode.value = pickedTrait.value
@@ -948,6 +948,8 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
     
  
     @IBAction func hillClimbing(_ x:NSToolbarItem){
+        let start = DispatchTime.now()
+
         let devices = devicesController?.selectedObjects as! [MTLDevice]
         device = devices[0]
         kernelFunction  = defaultLibrary?.makeFunction(name: "bngibbs")
@@ -1006,7 +1008,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
             fatalError("Failed request searching for all Traits of \(firstModel).")
         }
 
-
+        var hcount = 0
         let calcQueue = DispatchQueue(label: "calcQueue")
         calcQueue.async {
 
@@ -1047,6 +1049,8 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
 
                     var modelPeaks = [Model]()
                 
+                let rstart = DispatchTime.now()
+
                 for rs in 0...Int(runstarts)-1 {
                     
                     if(self.breakloop){
@@ -1075,7 +1079,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                             
                             
                             let curModel = self.randomChildModel(lastModel: lastModel, allTraits: allTraits, initusedTraitNames: usedTraitNames, thisMOC: nil)
-
+                            print(curModel.entry.count)
                             var discardModel = curModel
                             
 
@@ -1160,6 +1164,12 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                     DispatchQueue.main.async {
                         self.rProgInd.increment(by: 1.0)
                         self.hProgInd.doubleValue = 0
+                        var rstep = DispatchTime.now()
+                        var rRunTime = Double(rstep.uptimeNanoseconds - start.uptimeNanoseconds) / 1000000000
+                        hcount += 1
+                        var howLongPer = rRunTime / Double(hcount)
+                        print ("Averaging \(howLongPer)  per ")
+                        
                     }
 
                 }
@@ -1182,7 +1192,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                                 }
                             }
                             
-                            
+                            print("dleeting \(thisPeak.name)")
                             cmoc.delete(thisPeak)
                         }
                     }
@@ -1204,19 +1214,62 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                     finalModel = firstModel
                 }
                 
-                if(self.breakloop){
-                    finalModel = firstModel
-                }
+                
+                //FIXME put winning model into this context
+//                cmoc.insert(finalModel)
+//                for theNode in finalModel.bnnode.allObjects as! [BNNode] {
+//                        cmoc.insert(theNode)
+//                    for downNode in theNode.downNodes(self) {
+//                        if let theInter = theNode.getDownInterBetween(downNode: downNode) {
+//                            cmoc.insert(theInter)
+//                        }
+//                    }
+//                }
+                
+//                if(self.breakloop){
+//                    var wouldHaveBeen = finalModel
+//                    finalModel = firstModel
+//
+//                    for theEntry in theEntries.allObjects as! [Entry] {
+//                        theEntry.removeAModelObject(wouldHaveBeen)
+//                    }
+//
+//                    cmoc.delete(wouldHaveBeen)
+//                }
+//
+//                else {
+//                    if finalModel != cfirstModel {
+//                        let firstEntries = cfirstModel.entry
+//
+//                        for theEntry in firstEntries.allObjects as! [Entry] {
+//                            print("entry: \(theEntry.name)   model count \(theEntry.model.count) contect: \(theEntry.managedObjectContext)  model context: \(finalModel.managedObjectContext)")
+//                        }
+//
+//
+//                        for theEntry in firstEntries.allObjects as! [Entry] {
+//                            theEntry.addAModelObject(finalModel)
+//                            finalModel.addAnEntryObject(theEntry)
+//                        }
+//
+//                        for theEntry in firstEntries.allObjects as! [Entry] {
+//                            print("entry: \(theEntry.name)   model count \(theEntry.model.count)")
+//                        }
+//
+//                    }
+//
+//
+//                }
 
-
-  
-                do {
-                    try cmoc.save()
-
-                } catch let error as NSError {
-                    print(error)
-                    fatalError("Could not save models")
-                }
+//                print (cfirstModel.name)
+//                print(finalModel.name)
+//
+//                do {
+//                    try cmoc.save()
+//
+//                } catch let error as NSError {
+//                    print(error)
+//                    fatalError("Could not save models")
+//                }
                 
                 
                 self.performSelector(onMainThread: #selector(PlexusMainWindowController.endProgInd), with: nil, waitUntilDone: true)
@@ -1259,7 +1312,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                             
                             
                             let firstEntries = firstModel.entry
-                            
+
                             for theEntry in firstEntries.allObjects as! [Entry] {
                                 theEntry.addAModelObject(finalModel)
                                 finalModel.addAnEntryObject(theEntry)
@@ -1303,7 +1356,6 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
     
     
     func metalCalc(curModel:Model, fake: Bool, verbose:Bool) -> Bool {
-//            func metalCalc(curModel:Model,  verbose:Bool) -> Bool {
 //                let start = DispatchTime.now()
 //                print ("\n\n**********START")
         
@@ -2692,7 +2744,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
 //        print("f(y|ϴ) \(likelihood)")
         
         
-        print (log(priorterm) + likelihood - log(postterm))
+//        print (log(priorterm) + likelihood - log(postterm))
 //        print ("score: \(log(priorterm) + likelihood - log(postterm))")
         return log(priorterm) + likelihood - log(postterm)
         
