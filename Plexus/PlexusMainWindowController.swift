@@ -241,27 +241,6 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         curLabel.isBezeled = false
         curLabel.stringValue = String(0)
         
-        self.timeLabel = NSTextField(frame: NSRect(x: 10, y: 12, width: 24, height: 20))
-        timeLabel.isEditable = false
-        timeLabel.drawsBackground = false
-        timeLabel.isSelectable = false
-        timeLabel.isBezeled = false
-        timeLabel.stringValue = String(0.0)
-        
-        self.timeOfLabel = NSTextField(frame: NSRect(x: 34, y: 12, width: 24, height: 20))
-        timeOfLabel.isEditable = false
-        timeOfLabel.drawsBackground = false
-        timeOfLabel.isSelectable = false
-        timeOfLabel.isBezeled = false
-        timeOfLabel.stringValue = "of"
-        
-        
-        self.timeMaxLabel = NSTextField(frame: NSRect(x: 54, y: 12, width: 128, height: 20))
-        timeMaxLabel.isEditable = false
-        timeMaxLabel.drawsBackground = false
-        timeMaxLabel.isSelectable = false
-        timeMaxLabel.isBezeled = false
-        timeMaxLabel.stringValue = String(0.0)
         
         contentView.addSubview(workLabel)
         contentView.addSubview(curLabel)
@@ -270,9 +249,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         contentView.addSubview(progInd)
         contentView.addSubview(cancelButton)
         
-        contentView.addSubview(timeLabel)
-        contentView.addSubview(timeOfLabel)
-        contentView.addSubview(timeMaxLabel)
+
         
         retWin.contentView = contentView
         
@@ -1362,7 +1339,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
 //
 //                            }
                             
-//                            print("check check")
+                            print("Complete.")
 
                             
                             do {
