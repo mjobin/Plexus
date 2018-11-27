@@ -59,6 +59,11 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
     var rofLabel : NSTextField!
     var rcurLabel : NSTextField!
     var rmaxLabel : NSTextField!
+    
+
+    var timeLabel : NSTextField!
+    var timeOfLabel : NSTextField!
+    var timeMaxLabel : NSTextField!
      
 
     
@@ -155,7 +160,39 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
     
 
     
-
+    func secondsConvert(secs : Double, retUnit:Bool) -> String {
+        var retString = String()
+        if secs > 43200 {
+            retString += String(secs.rounded()/43200.00)
+            if retUnit {
+                retString += " days"
+            }
+            
+        }
+        else if secs > 3600 {
+            retString += String(secs.rounded()/3600.00)
+            if retUnit {
+                retString += " hours"
+            }
+        }
+        else if secs > 60 {
+            retString += String(secs.rounded()/60.00)
+            if retUnit {
+                retString += " minutes"
+            }
+        }
+        else {
+            retString += String(secs.rounded())
+            if retUnit {
+                retString += " seconds"
+            }
+        }
+        
+        if retUnit {
+        retString += "."
+        }
+        return retString
+    }
 
     
     func progSetup(_ sender: AnyObject) -> NSWindow {
@@ -204,12 +241,38 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         curLabel.isBezeled = false
         curLabel.stringValue = String(0)
         
+        self.timeLabel = NSTextField(frame: NSRect(x: 10, y: 12, width: 24, height: 20))
+        timeLabel.isEditable = false
+        timeLabel.drawsBackground = false
+        timeLabel.isSelectable = false
+        timeLabel.isBezeled = false
+        timeLabel.stringValue = String(0.0)
+        
+        self.timeOfLabel = NSTextField(frame: NSRect(x: 34, y: 12, width: 24, height: 20))
+        timeOfLabel.isEditable = false
+        timeOfLabel.drawsBackground = false
+        timeOfLabel.isSelectable = false
+        timeOfLabel.isBezeled = false
+        timeOfLabel.stringValue = "of"
+        
+        
+        self.timeMaxLabel = NSTextField(frame: NSRect(x: 54, y: 12, width: 128, height: 20))
+        timeMaxLabel.isEditable = false
+        timeMaxLabel.drawsBackground = false
+        timeMaxLabel.isSelectable = false
+        timeMaxLabel.isBezeled = false
+        timeMaxLabel.stringValue = String(0.0)
+        
         contentView.addSubview(workLabel)
         contentView.addSubview(curLabel)
         contentView.addSubview(ofLabel)
         contentView.addSubview(maxLabel)
         contentView.addSubview(progInd)
         contentView.addSubview(cancelButton)
+        
+        contentView.addSubview(timeLabel)
+        contentView.addSubview(timeOfLabel)
+        contentView.addSubview(timeMaxLabel)
         
         retWin.contentView = contentView
         
@@ -299,6 +362,29 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         rworkLabel.stringValue = "Hill"
         
         
+        self.timeLabel = NSTextField(frame: NSRect(x: 10, y: 12, width: 24, height: 20))
+        timeLabel.isEditable = false
+        timeLabel.drawsBackground = false
+        timeLabel.isSelectable = false
+        timeLabel.isBezeled = false
+        timeLabel.stringValue = String(0.0)
+        
+        self.timeOfLabel = NSTextField(frame: NSRect(x: 34, y: 12, width: 24, height: 20))
+        timeOfLabel.isEditable = false
+        timeOfLabel.drawsBackground = false
+        timeOfLabel.isSelectable = false
+        timeOfLabel.isBezeled = false
+        timeOfLabel.stringValue = "of"
+        
+    
+        self.timeMaxLabel = NSTextField(frame: NSRect(x: 54, y: 12, width: 128, height: 20))
+        timeMaxLabel.isEditable = false
+        timeMaxLabel.drawsBackground = false
+        timeMaxLabel.isSelectable = false
+        timeMaxLabel.isBezeled = false
+        timeMaxLabel.stringValue = String(0.0)
+        
+        
         contentView.addSubview(workLabel)
         contentView.addSubview(curLabel)
         contentView.addSubview(ofLabel)
@@ -306,6 +392,9 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         contentView.addSubview(progInd)
         contentView.addSubview(cancelButton)
         
+        contentView.addSubview(timeLabel)
+        contentView.addSubview(timeOfLabel)
+        contentView.addSubview(timeMaxLabel)
         
         contentView.addSubview(hProgInd)
         contentView.addSubview(hworkLabel)
@@ -978,6 +1067,8 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         let runstarts = firstModel.runstarts
         let hillchains = firstModel.hillchains
         
+        let allHillRuns = runstarts.doubleValue * hillchains.doubleValue
+        
 
         var usedTraitNames = Set<String>()
         let nodesForTest = firstModel.bnnode.allObjects as! [BNNode]
@@ -1079,7 +1170,6 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                             
                             
                             let curModel = self.randomChildModel(lastModel: lastModel, allTraits: allTraits, initusedTraitNames: usedTraitNames, thisMOC: nil)
-                            print(curModel.entry.count)
                             var discardModel = curModel
                             
 
@@ -1153,6 +1243,13 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                         }
                         DispatchQueue.main.async {
                             self.hProgInd.increment(by: 1.0)
+                            let rstep = DispatchTime.now()
+                            let rRunTime = Double(rstep.uptimeNanoseconds - start.uptimeNanoseconds) / 1000000000
+                            hcount += 1
+                            let howLongPer = rRunTime / Double(hcount)
+                            let estTimeTotal = allHillRuns * howLongPer
+                            self.timeLabel.stringValue = self.secondsConvert(secs: rRunTime, retUnit: false)
+                            self.timeMaxLabel.stringValue = self.secondsConvert(secs: estTimeTotal, retUnit: true)
                         }
                         
                         
@@ -1164,11 +1261,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                     DispatchQueue.main.async {
                         self.rProgInd.increment(by: 1.0)
                         self.hProgInd.doubleValue = 0
-                        var rstep = DispatchTime.now()
-                        var rRunTime = Double(rstep.uptimeNanoseconds - start.uptimeNanoseconds) / 1000000000
-                        hcount += 1
-                        var howLongPer = rRunTime / Double(hcount)
-                        print ("Averaging \(howLongPer)  per ")
+
                         
                     }
 
@@ -1192,7 +1285,6 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                                 }
                             }
                             
-                            print("dleeting \(thisPeak.name)")
                             cmoc.delete(thisPeak)
                         }
                     }
@@ -1214,62 +1306,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                     finalModel = firstModel
                 }
                 
-                
-                //FIXME put winning model into this context
-//                cmoc.insert(finalModel)
-//                for theNode in finalModel.bnnode.allObjects as! [BNNode] {
-//                        cmoc.insert(theNode)
-//                    for downNode in theNode.downNodes(self) {
-//                        if let theInter = theNode.getDownInterBetween(downNode: downNode) {
-//                            cmoc.insert(theInter)
-//                        }
-//                    }
-//                }
-                
-//                if(self.breakloop){
-//                    var wouldHaveBeen = finalModel
-//                    finalModel = firstModel
-//
-//                    for theEntry in theEntries.allObjects as! [Entry] {
-//                        theEntry.removeAModelObject(wouldHaveBeen)
-//                    }
-//
-//                    cmoc.delete(wouldHaveBeen)
-//                }
-//
-//                else {
-//                    if finalModel != cfirstModel {
-//                        let firstEntries = cfirstModel.entry
-//
-//                        for theEntry in firstEntries.allObjects as! [Entry] {
-//                            print("entry: \(theEntry.name)   model count \(theEntry.model.count) contect: \(theEntry.managedObjectContext)  model context: \(finalModel.managedObjectContext)")
-//                        }
-//
-//
-//                        for theEntry in firstEntries.allObjects as! [Entry] {
-//                            theEntry.addAModelObject(finalModel)
-//                            finalModel.addAnEntryObject(theEntry)
-//                        }
-//
-//                        for theEntry in firstEntries.allObjects as! [Entry] {
-//                            print("entry: \(theEntry.name)   model count \(theEntry.model.count)")
-//                        }
-//
-//                    }
-//
-//
-//                }
 
-//                print (cfirstModel.name)
-//                print(finalModel.name)
-//
-//                do {
-//                    try cmoc.save()
-//
-//                } catch let error as NSError {
-//                    print(error)
-//                    fatalError("Could not save models")
-//                }
                 
                 
                 self.performSelector(onMainThread: #selector(PlexusMainWindowController.endProgInd), with: nil, waitUntilDone: true)
@@ -1314,9 +1351,18 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                             let firstEntries = firstModel.entry
 
                             for theEntry in firstEntries.allObjects as! [Entry] {
+//                                print("entry name \(theEntry.name) entry moc: \(theEntry.managedObjectContext)    model moc : \(finalModel.managedObjectContext)")
                                 theEntry.addAModelObject(finalModel)
                                 finalModel.addAnEntryObject(theEntry)
                             }
+                            
+                            
+//                            for theEntry in firstEntries.allObjects as! [Entry] {
+//                                print("entry name \(theEntry.name) entry moc: \(theEntry.managedObjectContext)    model moc : \(finalModel.managedObjectContext)  model entry count: \(finalModel.entry.count)")
+//
+//                            }
+                            
+//                            print("check check")
 
                             
                             do {
@@ -1702,7 +1748,6 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
             DispatchQueue.main.async {
                 self.progInd.increment(by: Double(ntWidth))
                 self.curLabel.stringValue = String(resc)
-
             }
             
 //            end = DispatchTime.now()
