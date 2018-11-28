@@ -131,6 +131,12 @@ class PlexusModelViewController: NSViewController, NSOutlineViewDelegate, NSOutl
         
     }
     
+    
+    @IBAction func removeModel(_ sender : AnyObject){
+        
+        
+    }
+    
     @IBAction func childModel(_ sender : AnyObject){
         
         let curModels : [Model] = modelTreeController.selectedObjects as! [Model]

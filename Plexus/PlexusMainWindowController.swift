@@ -705,9 +705,10 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         
 
         var nochange = true
+        var finalString = String()
         
         while nochange {
-            
+            finalString = ""
             let fromPos = Int.random(in: 0..<nodesForTest.count)
             var toPos = fromPos
             
@@ -741,7 +742,9 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
             let switchup = Int.random(in: 1 ... 5)
             switch switchup {
                 //Change an ifthen if the from node has no data
+               
                 case 1:
+                   finalString += "Ifthen: "
                     let request = NSFetchRequest<Trait>(entityName: "Trait")
                     let predicate = NSPredicate(format: "entry IN %@ && name == %@", argumentArray: [newModel.entry, fromNode.name])
                     request.predicate = predicate
@@ -760,7 +763,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                 //Add a hidden node wih no data pointing at toNode, or if it is hidden, remove it
                 case 2:
                     if toNode.hidden == true {
-//                        print("Removing hidden")
+                        finalString += "Removing hidden: "
                         newModel.removeABNNodeObject(toNode)
                         toNode.removeSelfFromNeighbors(moc: thisMOC)
                         thisMOC?.delete(toNode)
@@ -776,7 +779,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                         }
                         
                         if hashidden == false {
-//                            print("Adding hidden")
+                            finalString += "Adding hidden: "
                             let newNode : BNNode = BNNode(entity: BNNode.entity(), insertInto: thisMOC)
                             newNode.name = "hidden"
                             newNode.hidden = true
@@ -793,7 +796,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                     }
                 
                 case 3: // Change the direction of an existing arrow
-//                    print("Changing arrow")
+                    finalString +=  "Changing arrow: "
                     if fromNode.hidden == false && toNode.hidden == false { //Do not remove or reverse arrows for hidden nodes
                         if isinfArc == true && isinfByArc == false {
 
@@ -828,7 +831,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                 
             //Change the traitvalue to another. If numeric, change tolerance
             case 4:
-//                print("Changing value")
+               finalString += "Changing value: "
                 if  toNode.hidden == false {
                     if toNode.numericData {
                         toNode.tolerance = NSNumber(value: Float.random(in: 0 ... 1))
@@ -857,6 +860,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                 let pickedTrait = allTraits.randomElement() as! Trait
                 let pickedTraitName = pickedTrait.name
                 if usedTraitNames.contains(pickedTraitName) { //Exists, remove an instance
+                    finalString +=  "Removing node: "
                     if nodesForTest.count > 2 {//Do not reduce the number of nodes to less than 2
                         var neverdeleted = true
                         var numwithname = 0
@@ -882,7 +886,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                 }
                 //Add node, point it to or from toNode
                 else{
-//                    print("Adding a node")
+                    finalString +=  "Adding node: "
                     let newNode : BNNode = BNNode(entity: BNNode.entity(), insertInto: thisMOC)
                     newNode.name = pickedTraitName
                     newNode.value = pickedTrait.value
@@ -931,6 +935,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
             fatalError("Error creating CPT in randomChildModel.")
         }
 
+//        print(finalString, terminator:"\t")
         return newModel
     }
     
@@ -1170,11 +1175,13 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                             
                                 let msrun = self.metalCalc(curModel : curModel, fake : false, verbose: false)
                                 if (msrun == true) {
+//                                    print (curModel.score)
                                     curbic = curModel.score
 //                                    print("\(lastbic) \(curbic)")
                                     curModel.setValue(curbic, forKey: "score")
                                     if curbic.floatValue > lastbic.floatValue {
                                         discardModel = lastModel
+
 //                                        print ("keeping: \(curModel.name) and discarding \(discardModel.name)")
                                         lastModel = curModel
                                         lastbic = curbic
@@ -1193,19 +1200,20 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                                         
                                     }
                                     else {
-//                                        print ("discarding: \(curModel.name)")
+//                                        print ("discarded.")
+//                                                                            print (curModel.score)
     //                                    cmoc.delete(curModel)
                                         discardModel = curModel
                                         
                                     }
                                 }
                                 else {
-//                                    print ("error: \(curModel.name)")
+//                                    print ("error")
     //                                cmoc.delete(curModel)
                                 }
                             }
                             else {
-//                                print ("\(curModel.name) is cyclic. Ignoring")
+//                                print ("cyclic")
                             }
                             
                             
@@ -1339,7 +1347,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
 //
 //                            }
                             
-                            print("Complete.")
+//                            print("Complete.")
 
                             
                             do {
@@ -2686,7 +2694,10 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
 //            print(posts[r][maxpos])
         }
         let postterm = (postvals.reduce(1, *)) //This is the posterior
-//        print("π(ϴ|y) \(postterm)")
+        if postterm == 0.0 {
+            return -Float.infinity
+        }
+//        print("π(ϴ|y) \(postterm)", terminator:"\t")
         
         
         //Prior
@@ -2727,7 +2738,10 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
 
 //        print(priorProds)
         let priorterm = (priorProds.reduce(1, *)) //This is the prior term
-//        print("π(ϴ) \(priorterm)")
+        if priorterm == 0.0 {
+            return -Float.infinity
+        }
+//        print("π(ϴ) \(priorterm)", terminator:"\t")
 
         
         var likes = [Float]()
@@ -2763,7 +2777,10 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         }
 
         let likelihood = likes.reduce(1, +) //This is the likelihood of the data given the priors
-//        print("f(y|ϴ) \(likelihood)")
+        if likelihood == 0.0 {
+            return -Float.infinity
+        }
+//        print("f(y|ϴ) \(likelihood)", terminator:"\t")
         
         
 //        print (log(priorterm) + likelihood - log(postterm))
