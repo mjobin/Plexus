@@ -1332,7 +1332,15 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
 
                             }
                             
+
                             
+                            for theEntry in finalModel.entry.allObjects as! [Entry] { //This is necessary to make sure nil-context models do not have relationships to the entries, which they sometimes seem to do at this point and sometimes not.
+                                theEntry.removeAModelObject(finalModel)
+                                finalModel.removeAnEntryObject(theEntry)
+
+                            }
+                            
+
                             let firstEntries = firstModel.entry
 
                             for theEntry in firstEntries.allObjects as! [Entry] {
@@ -1341,13 +1349,6 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                                 finalModel.addAnEntryObject(theEntry)
                             }
                             
-                            
-//                            for theEntry in firstEntries.allObjects as! [Entry] {
-//                                print("entry name \(theEntry.name) entry moc: \(theEntry.managedObjectContext)    model moc : \(finalModel.managedObjectContext)  model entry count: \(finalModel.entry.count)")
-//
-//                            }
-                            
-//                            print("Complete.")
 
                             
                             do {
