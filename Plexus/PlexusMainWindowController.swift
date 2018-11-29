@@ -935,7 +935,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
             fatalError("Error creating CPT in randomChildModel.")
         }
 
-//        print(finalString, terminator:"\t")
+        print(finalString, terminator:"\t")
         return newModel
     }
     
@@ -1175,7 +1175,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                             
                                 let msrun = self.metalCalc(curModel : curModel, fake : false, verbose: false)
                                 if (msrun == true) {
-//                                    print (curModel.score)
+                                    print (curModel.score)
                                     curbic = curModel.score
 //                                    print("\(lastbic) \(curbic)")
                                     curModel.setValue(curbic, forKey: "score")
@@ -1201,19 +1201,19 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                                     }
                                     else {
 //                                        print ("discarded.")
-//                                                                            print (curModel.score)
+                                                                            print (curModel.score)
     //                                    cmoc.delete(curModel)
                                         discardModel = curModel
                                         
                                     }
                                 }
                                 else {
-//                                    print ("error")
+                                    print ("error")
     //                                cmoc.delete(curModel)
                                 }
                             }
                             else {
-//                                print ("cyclic")
+                                print ("cyclic")
                             }
                             
                             
