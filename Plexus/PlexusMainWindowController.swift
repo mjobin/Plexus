@@ -168,28 +168,33 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
 
     
     func secondsConvert(secs : Double, retUnit:Bool) -> String {
+        
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        formatter.maximumFractionDigits = 2
+        
         var retString = String()
         if secs > 43200 {
-            retString += String(secs.rounded()/43200.00)
+            retString +=  formatter.string(from: (secs/43200.00) as NSNumber)!
             if retUnit {
                 retString += " days"
             }
             
         }
         else if secs > 3600 {
-            retString += String(secs.rounded()/3600.00)
+            retString += formatter.string(from: (secs/3600.00) as NSNumber)!
             if retUnit {
                 retString += " hours"
             }
         }
         else if secs > 60 {
-            retString += String(secs.rounded()/60.00)
+            retString += formatter.string(from: (secs/60.00) as NSNumber)!
             if retUnit {
                 retString += " minutes"
             }
         }
         else {
-            retString += String(secs.rounded())
+            retString += formatter.string(from: secs as NSNumber)!
             if retUnit {
                 retString += " seconds"
             }
