@@ -17,6 +17,7 @@ class Model: NSManagedObject {
     @NSManaged var dateModded: Date
     @NSManaged var hillchains: NSNumber
     @NSManaged var name: String
+    @NSManaged var runlog: String
     @NSManaged var runsper: NSNumber
     @NSManaged var runstarts: NSNumber
     @NSManaged var runstot: NSNumber

@@ -121,6 +121,11 @@
                                                 <action selector="print:" target="Ady-hI-5gd" id="qaZ-4w-aoO"/>
                                             </connections>
                                         </menuItem>
+                                        <menuItem title="Output Log" keyEquivalent="l" id="RY9-2y-yZ7">
+                                            <connections>
+                                                <action selector="outputRunLog" target="Ady-hI-5gd" id="mK7-LM-9k7"/>
+                                            </connections>
+                                        </menuItem>
                                     </items>
                                 </menu>
                             </menuItem>
@@ -775,14 +780,35 @@
                                         </binding>
                                     </connections>
                                 </toolbarItem>
+                                <toolbarItem implicitItemIdentifier="FCDA8462-D033-4985-AF4A-F945679B582A" label="Many" paletteLabel="Many" id="PcQ-Jx-jzD">
+                                    <nil key="toolTip"/>
+                                    <size key="minSize" width="48" height="32"/>
+                                    <size key="maxSize" width="72" height="32"/>
+                                    <button key="view" verticalHuggingPriority="750" id="Dek-Zy-hgU">
+                                        <rect key="frame" x="0.0" y="14" width="72" height="32"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                        <buttonCell key="cell" type="push" title="∑" bezelStyle="rounded" imagePosition="overlaps" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Isr-ek-XIT">
+                                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                            <font key="font" metaFont="systemSemibold" size="13"/>
+                                        </buttonCell>
+                                    </button>
+                                    <connections>
+                                        <action selector="comparisonRun:" target="B8D-0N-5wS" id="Y3j-g8-h0e"/>
+                                        <binding destination="B8D-0N-5wS" name="enabled" keyPath="modelTreeController.selection.complete" id="3HW-mO-Nwy">
+                                            <dictionary key="options">
+                                                <string key="NSValueTransformerName">NSNegateBoolean</string>
+                                            </dictionary>
+                                        </binding>
+                                    </connections>
+                                </toolbarItem>
                                 <toolbarItem implicitItemIdentifier="A329C1F0-C742-475F-99B0-1357AADDC194" label="GenRand" paletteLabel="GenRand" id="pLY-AX-dvL">
                                     <nil key="toolTip"/>
-                                    <size key="minSize" width="38" height="32"/>
+                                    <size key="minSize" width="48" height="32"/>
                                     <size key="maxSize" width="72" height="32"/>
                                     <button key="view" verticalHuggingPriority="750" id="jIk-co-O9R">
                                         <rect key="frame" x="0.0" y="14" width="72" height="32"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="push" title="p(θ|x)=" bezelStyle="rounded" imagePosition="overlaps" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Hh3-zg-1V3">
+                                        <buttonCell key="cell" type="push" title="?" bezelStyle="rounded" imagePosition="overlaps" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Hh3-zg-1V3">
                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                             <font key="font" metaFont="systemSemibold" size="13"/>
                                         </buttonCell>
@@ -862,10 +888,11 @@
                                 <toolbarItem reference="9un-M5-c2D"/>
                                 <toolbarItem reference="k41-Tj-JRN"/>
                                 <toolbarItem reference="EB6-A3-dHZ"/>
+                                <toolbarItem reference="pLY-AX-dvL"/>
                                 <toolbarItem reference="3e1-GX-aR9"/>
                                 <toolbarItem reference="w3a-q3-YGU"/>
                                 <toolbarItem reference="lYj-Xm-flT"/>
-                                <toolbarItem reference="pLY-AX-dvL"/>
+                                <toolbarItem reference="PcQ-Jx-jzD"/>
                             </defaultToolbarItems>
                         </toolbar>
                         <connections>
@@ -2790,9 +2817,9 @@
         <image name="NSLockLockedTemplate" width="10" height="14"/>
         <image name="NSLockUnlockedTemplate" width="10" height="14"/>
         <image name="NSRemoveTemplate" width="11" height="11"/>
-        <image name="Plexus Export Icon" width="24" height="24"/>
-        <image name="Plexus Import Icon" width="24" height="24"/>
-        <image name="PlexusAddChild" width="24" height="24"/>
+        <image name="Plexus Export Icon" width="48" height="48"/>
+        <image name="Plexus Import Icon" width="48" height="48"/>
+        <image name="PlexusAddChild" width="48" height="48"/>
         <image name="toolbarItem:WkY-d0-2fX:image" width="18" height="18">
             <mutableData key="keyedArchiveRepresentation">
 YnBsaXN0MDDUAQIDBAUGbW5YJHZlcnNpb25YJG9iamVjdHNZJGFyY2hpdmVyVCR0b3ASAAGGoK8QGQcI

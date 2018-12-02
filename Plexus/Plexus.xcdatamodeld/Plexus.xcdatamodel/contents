@@ -49,6 +49,7 @@
         <attribute name="dateModded" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="hillchains" optional="YES" attributeType="Integer 32" minValueString="1" defaultValueString="100" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="name" optional="YES" attributeType="String" defaultValueString="New Model" syncable="YES"/>
+        <attribute name="runlog" optional="YES" attributeType="String" defaultValueString="No Log." syncable="YES"/>
         <attribute name="runsper" optional="YES" attributeType="Integer 32" minValueString="0" defaultValueString="10000" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="runstarts" optional="YES" attributeType="Integer 32" minValueString="1" defaultValueString="10" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="runstot" optional="YES" attributeType="Integer 32" minValueString="0" defaultValueString="10000" usesScalarValueType="NO" syncable="YES"/>
@@ -68,7 +69,7 @@
         <element name="BNNode" positionX="-21.91015625" positionY="290.09375" width="128" height="448"/>
         <element name="BNNodeInter" positionX="-439.91796875" positionY="620.0859375" width="128" height="88"/>
         <element name="Entry" positionX="-468" positionY="-36" width="128" height="133"/>
-        <element name="Model" positionX="349" positionY="-9" width="128" height="268"/>
+        <element name="Model" positionX="349" positionY="-9" width="128" height="283"/>
         <element name="Trait" positionX="-279" positionY="317" width="128" height="90"/>
     </elements>
 </model>
