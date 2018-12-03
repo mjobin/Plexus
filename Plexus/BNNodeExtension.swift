@@ -259,12 +259,11 @@ extension BNNode {
      
      - Returns: 2 if successfully completed.
      */
-    func CPT(fake:Bool) -> Int {
+    func CPT(fake:Bool, thisMOC : NSManagedObjectContext) -> Int {
 //        let start = DispatchTime.now()
 //        print ("\n**********START CPT for \(self.name)")
         
-        let appDelegate : AppDelegate = NSApplication.shared().delegate as! AppDelegate
-        let moc = appDelegate.persistentContainer.viewContext
+
         let curModel : Model = self.model
         let theEntries = curModel.entry
         
@@ -282,6 +281,8 @@ extension BNNode {
                 //get the interbetwene or make if it does nto exist
                 if let curUpNodeInter = self.getUpInterBetween(upNode: thisUpNode){
                     
+
+                    
                     if fake {
                         ifthens.append(curUpNodeInter.ifthen.floatValue)
                     }
@@ -292,7 +293,7 @@ extension BNNode {
                     request.predicate = predicate
                     
                     do {
-                        let allCount = try moc.count(for: request)
+                        let allCount = try thisMOC.count(for: request)
                         
                         if allCount < 1 {
                             ifthens.append(0.5)
@@ -324,7 +325,7 @@ extension BNNode {
                             matchRequest.predicate = matchPredicate
                             do {
                                 
-                                let matchCount = try moc.count(for: matchRequest)
+                                let matchCount = try thisMOC.count(for: matchRequest)
                                 ifthens.append(Float(matchCount) / Float(allCount))
                                 curUpNodeInter.ifthen = NSNumber.init(value: (Float(matchCount) / Float(allCount)))
                                 
@@ -394,9 +395,9 @@ extension BNNode {
      
      - Returns: CPT as an array.
      */
-    func getCPTArray(_ sender:AnyObject, mocChanged:Bool, fake : Bool) -> [cl_float] {
+    func getCPTArray(_ sender:AnyObject, mocChanged:Bool, fake : Bool,  thisMOC : NSManagedObjectContext) -> [cl_float] {
         //FIXME only change this back if you feel really safe about it
-        _ = self.CPT(fake: fake)
+        _ = self.CPT(fake: fake, thisMOC: thisMOC)
         
         //        print ("getCPTArray \(self.name) \(self.cptReady)")
         //        if mocChanged == true || self.cptReady != 2 {

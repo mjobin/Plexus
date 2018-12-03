@@ -706,9 +706,9 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
      
      - Returns: A copy of lastModel, randomly altered.
      */
-    func randomChildModel(lastModel : Model, allTraits: [Trait], initusedTraitNames: Set<String>, thisMOC : NSManagedObjectContext?) -> Model {
+    func randomChildModel(lastModel : Model, allTraits: [Trait], initusedTraitNames: Set<String>, thisMOC : NSManagedObjectContext) -> Model {
         var usedTraitNames = initusedTraitNames
-        let newModel = lastModel.copySelf(moc: thisMOC ?? nil, withEntries: true)
+        let newModel = lastModel.copySelf(moc: thisMOC, withEntries: true)
         
         let nodesForTest = newModel.bnnode.allObjects as! [BNNode]
         if nodesForTest.count < 2 {
@@ -778,7 +778,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                         finalString += "Removing hidden: "
                         newModel.removeABNNodeObject(toNode)
                         toNode.removeSelfFromNeighbors(moc: thisMOC)
-                        thisMOC?.delete(toNode)
+                        thisMOC.delete(toNode)
                         nochange = false
                     }
                     
@@ -884,7 +884,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                                     neverdeleted = false
                                     newModel.removeABNNodeObject(chkNode)
                                     chkNode.removeSelfFromNeighbors(moc: thisMOC)
-                                    thisMOC?.delete(chkNode)
+                                    thisMOC.delete(chkNode)
                                     numwithname = numwithname - 1
                                     nochange = false
                                 }
@@ -940,7 +940,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
               let iN = testNode.addADownObject(downNode: testDownNode, moc: thisMOC)
 //                print ("      \(iN.ifthen)   \(iN.isFault)")
             }
-            testCPT = testNode.CPT(fake: false)
+            testCPT = testNode.CPT(fake: false, thisMOC: thisMOC)
         }
 //        print(" ")
         if testCPT != 2 {
@@ -1109,17 +1109,22 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         
         let curModels : [Model] = mainSplitViewController.modelTreeController?.selectedObjects as! [Model]
         let firstModel : Model = curModels[0]
+        
+        do {
+            try self.moc.obtainPermanentIDs(for: [firstModel])
+        }  catch let error as NSError {
+            print(error)
+        }
+        
         let firstModelID = firstModel.objectID
         var finalModel = firstModel
         
+
         
-//        let fileManager = FileManager.default
-//        let logpath = fileManager.currentDirectoryPath
-//        print(logpath)
-//        var logfilename = logpath
-//        logfilename += "/"
-//        logfilename += firstModelID.uriRepresentation().absoluteString
-//        print (logfilename)
+        var finalModelID = firstModelID
+        
+        
+
         
         self.progSheet = self.progHillSetup(self)
         self.window!.beginSheet(self.progSheet, completionHandler: nil)
@@ -1150,6 +1155,8 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         }
         
 
+
+        
         //The Traits and Entries involved in a run do not change, so they can be fetched just once
         var allTraits = [Trait]()
         let request = NSFetchRequest<Trait>(entityName: "Trait")
@@ -1225,17 +1232,14 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                             
                             firstrun = false
                             lastbic = firstbic
+                            lastModel = cfirstModel
                             
                         }
                         else {
     
                             
-                            
-                            let curModel = self.randomChildModel(lastModel: lastModel, allTraits: allTraits, initusedTraitNames: usedTraitNames, thisMOC: nil)
+                            let curModel = self.randomChildModel(lastModel: lastModel, allTraits: allTraits, initusedTraitNames: usedTraitNames, thisMOC: cmoc)
                             var discardModel = curModel
-                            
-
-                            
                             
                             var cycleChk = false
                             let newNodes = curModel.bnnode
@@ -1255,60 +1259,50 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                             
                                 let msrun = self.metalCalc(curModel : curModel, fake : false, verbose: false)
                                 if (msrun == true) {
-//                                    print (curModel.score)
+
                                     self.runLog += curModel.score.stringValue
                                     self.runLog += "\n"
                                     curbic = curModel.score
-//                                    print("\(lastbic) \(curbic)")
                                     curModel.setValue(curbic, forKey: "score")
                                     if curbic.floatValue > lastbic.floatValue {
                                         discardModel = lastModel
 
-//                                        print ("keeping: \(curModel.name) and discarding \(discardModel.name)")
+
                                         lastModel = curModel
                                         lastbic = curbic
-    //                                    if discardModel != cfirstModel {
-    //                                        cmoc.delete(discardModel)
-    //                                    }
+                                        if discardModel != cfirstModel {
+                                            print ("keeping: \(curModel.name) and discarding \(discardModel.name)")
+                                            cmoc.delete(discardModel)
+                                        }
                                         
                                         usedTraitNames = Set<String>()
                                         let lastNodes = lastModel.bnnode.allObjects as! [BNNode]
                                         for lastNode in lastNodes {
                                             usedTraitNames.insert(lastNode.name)
                                         }
-                                        
-
-                                        
-                                        
+  
                                     }
                                     else {
-//                                        print ("discarded.")
-//                                    self.runLog += curModel.score.stringValue
-//                                        self.runLog += "\n"
-//                                                                            print (curModel.score)
-    //                                    cmoc.delete(curModel)
-                                        discardModel = curModel
-                                        
+                                        cmoc.delete(curModel)
                                     }
                                 }
                                 else {
-//                                    print ("error")
                                     self.runLog += "error\n"
-    //                                cmoc.delete(curModel)
+                                    cmoc.delete(curModel)
                                 }
                             }
                             else {
-                                print ("cyclic")
                                 self.runLog += "cyclic\n"
+                                cmoc.delete(curModel)
                             }
                             
                             
-                            //Delete the discarded model unless it is the first model
-                            if discardModel != cfirstModel {
-                                for theEntry in theEntries.allObjects as! [Entry] {
-                                    theEntry.removeAModelObject(discardModel)
-                                }
-                            }
+//                            //Delete the discarded model unless it is the first model
+//                            if discardModel != cfirstModel {
+//                                for theEntry in theEntries.allObjects as! [Entry] {
+//                                    theEntry.removeAModelObject(discardModel)
+//                                }
+//                            }
                             
                             
                         }
@@ -1326,9 +1320,11 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                         
                     }
                     
+
                     if lastModel != cfirstModel {
                         modelPeaks.append(lastModel)
                     }
+
                     DispatchQueue.main.async {
                         self.rProgInd.increment(by: 1.0)
                         self.hProgInd.doubleValue = 0
@@ -1337,10 +1333,13 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                     }
 
                 }
+                
+
 
                 //Run through all the random restarts and select highest score
                 if(modelPeaks.count > 0){
                     var peakModel = modelPeaks[0]
+                    print(peakModel.name)
                     for thisPeak in modelPeaks {
                         if thisPeak.score as! Float > peakModel.score as! Float {
                             peakModel = thisPeak
@@ -1369,20 +1368,44 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                         bestname = bestname + formatter.string(from: date)
                         peakModel.setValue(bestname, forKey: "name")
                         finalModel = peakModel
+                        
+                        do {
+                            try cmoc.obtainPermanentIDs(for: [finalModel])
+                        }  catch let error as NSError {
+                            print(error)
+                        }
+                        
+                        finalModelID = peakModel.objectID
                     }
                     
                 }
                 
                 else {
-                    finalModel = firstModel
+                    finalModelID = firstModelID
                 }
                 
+                
+                do {
+                    try cmoc.save()
+                } catch let error as NSError {
+                    print(error)
+                    fatalError("ERROR saving to primary MOC.")
+                }
 
                 
                 
                 self.performSelector(onMainThread: #selector(PlexusMainWindowController.endProgInd), with: nil, waitUntilDone: true)
                 
                 DispatchQueue.main.sync {
+                    
+
+                    do {
+                        finalModel = try self.moc.existingObject(with: finalModelID) as! Model
+                        
+                    }
+                    catch {
+                        fatalError("Error in calcQueue.")
+                    }
                     
                     if self.breakloop == true {
                         firstModel.score = NSNumber.init(floatLiteral: -Double.infinity)
@@ -1400,40 +1423,6 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                         scoreAlert.messageText = "Highest scoring model: \(finalModel.name) with score \(finalModel.score)"
                         if finalModel != firstModel {
                             scoreAlert.informativeText = "Plexus will select the new model."
-
-                            self.moc.insert(finalModel)
-                            for insNode in finalModel.bnnode {
-                                let thisinsNode : BNNode = insNode as! BNNode
-
-                                self.moc.insert(thisinsNode)
-                                //Select the new winning node int he tree
-                                for thisDown in thisinsNode.downNodes(self){
-
-                                    if let thisDI = thisinsNode.getDownInterBetween(downNode: thisDown){
-
-                                        self.moc.insert(thisDI)
-                                    }
-
-                                }
-
-                            }
-                            
-
-                            
-                            for theEntry in finalModel.entry.allObjects as! [Entry] { //This is necessary to make sure nil-context models do not have relationships to the entries, which they sometimes seem to do at this point and sometimes not.
-                                theEntry.removeAModelObject(finalModel)
-                                finalModel.removeAnEntryObject(theEntry)
-
-                            }
-                            
-
-                            let firstEntries = firstModel.entry
-
-                            for theEntry in firstEntries.allObjects as! [Entry] {
-//                                print("entry name \(theEntry.name) entry moc: \(theEntry.managedObjectContext)    model moc : \(finalModel.managedObjectContext)")
-                                theEntry.addAModelObject(finalModel)
-                                finalModel.addAnEntryObject(theEntry)
-                            }
                             
                             firstModel.runlog = self.runLog
                             
@@ -1447,9 +1436,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                             firstModel.addAChildObject(finalModel)
                             let finalIndexPath = self.mainSplitViewController.modelTreeController.indexPathOfModel(model:finalModel)
                             self.mainSplitViewController.modelTreeController.setSelectionIndexPath(finalIndexPath! as IndexPath)
- 
-                            
-                        
+
                         }
                         else {
                          scoreAlert.informativeText = "No model scored higher than the original."
@@ -1912,7 +1899,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         //Buffer 7: Cptnet
         var cptnet = [Float]()
         for node in nodesForCalc {
-            let theCPT = node.getCPTArray(self, mocChanged: moc.hasChanges, fake : fake)
+            let theCPT = node.getCPTArray(self, mocChanged: moc.hasChanges, fake : fake, thisMOC: moc)
             cptnet = cptnet + theCPT
             let leftOver = maxCPTSize-theCPT.count
             for _ in 0..<leftOver {
@@ -2352,8 +2339,11 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                 fatalError("ERROR saving to primary MOC.")
             }
             
+            
+            
+            
             for thisNode in allNodes {
-                _ = thisNode.CPT(fake: false)
+                _ = thisNode.CPT(fake: false, thisMOC: thisMOC)
                 
             }
             do {
