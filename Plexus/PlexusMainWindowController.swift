@@ -1558,10 +1558,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                 let cfirstModel = try cmoc.existingObject(with: firstModelID) as! Model
                 
                 let theEntries = cfirstModel.entry
-                
 
-                
-                
                 let faultpredicate = NSPredicate(format:"self IN %@", theEntries) //This should fire the faults for all the entries in the model
                 let faultrequest = NSFetchRequest<Entry>(entityName: "Entry")
                 faultrequest.predicate = faultpredicate
@@ -1649,12 +1646,11 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                         
                         let thisrun = self.metalCalc(curModel : curModel, fake : false, verbose: false)
                         if thisrun {
-                            self.runLog += firstModel.score.stringValue
+                            self.runLog += curModel.score.stringValue
                             self.runLog += "\n"
                         }
 
 
-                        
                         DispatchQueue.main.async {
                             self.hProgInd.increment(by: 1.0)
                             let rstep = DispatchTime.now()
