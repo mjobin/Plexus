@@ -1271,7 +1271,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                                         lastModel = curModel
                                         lastbic = curbic
                                         if discardModel != cfirstModel {
-                                            print ("keeping: \(curModel.name) and discarding \(discardModel.name)")
+//                                            print ("keeping: \(curModel.name) and discarding \(discardModel.name)")
                                             cmoc.delete(discardModel)
                                         }
                                         
