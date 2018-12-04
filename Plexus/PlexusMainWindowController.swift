@@ -932,24 +932,16 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
          //Now make sure the CPT's are recalced
         let afterNodes = newModel.bnnode.allObjects as! [BNNode]
         var testCPT = 2
-//        print("\nrandom done")
+
         for testNode in afterNodes {
-//            print("FOR: \(testNode.name)")
-            for testDownNode in testNode.downNodes(self){
-//                print(" -> \(testDownNode.name)")
-              let iN = testNode.addADownObject(downNode: testDownNode, moc: thisMOC)
-//                print ("      \(iN.ifthen)   \(iN.isFault)")
-            }
             testCPT = testNode.CPT(fake: false, thisMOC: thisMOC)
         }
-//        print(" ")
         if testCPT != 2 {
             fatalError("Error creating CPT in randomChildModel.")
         }
 
         runLog += finalString
         runLog += "\t"
-//        print(finalString, terminator:"\t")
         return newModel
     }
     
@@ -1033,7 +1025,6 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         
         let curModels : [Model] = mainSplitViewController.modelTreeController?.selectedObjects as! [Model]
         let firstModel : Model = curModels[0]
-        let theEntries = firstModel.entry
         
         let nodesForTest = firstModel.bnnode.allObjects as! [BNNode]
         if (nodesForTest.count < 2){
@@ -1128,8 +1119,8 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         
         self.progSheet = self.progHillSetup(self)
         self.window!.beginSheet(self.progSheet, completionHandler: nil)
-        self.hProgInd.maxValue =  Double(firstModel.hillchains)
-        self.rProgInd.maxValue =  Double(firstModel.runstarts)
+        self.hProgInd.maxValue =  Double(truncating: firstModel.hillchains)
+        self.rProgInd.maxValue =  Double(truncating: firstModel.runstarts)
         self.progSheet.makeKeyAndOrderFront(self)
         
         let runstarts = firstModel.runstarts
@@ -1158,301 +1149,303 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
 
         
         //The Traits and Entries involved in a run do not change, so they can be fetched just once
-        var allTraits = [Trait]()
         let request = NSFetchRequest<Trait>(entityName: "Trait")
         let predicate = NSPredicate(format: "entry IN %@", argumentArray: [firstModel.entry])
         request.predicate = predicate
         do {
-            allTraits = try moc.fetch (request)
+            let allTraits = try moc.fetch (request)
             
-        } catch {
-            fatalError("Failed request searching for all Traits of \(firstModel).")
-        }
-
-        var hcount = 0
-        let calcQueue = DispatchQueue(label: "calcQueue")
-        calcQueue.async {
-
-            let cmoc = NSManagedObjectContext.init(concurrencyType: .privateQueueConcurrencyType)
-//            cmoc.persistentStoreCoordinator = self.moc.persistentStoreCoordinator
-            cmoc.parent = self.moc
-            
-
-            do {
-                let cfirstModel = try cmoc.existingObject(with: firstModelID) as! Model
+            var hcount = 0
+            let calcQueue = DispatchQueue(label: "calcQueue")
+            calcQueue.async {
                 
-                let theEntries = cfirstModel.entry
+                let cmoc = NSManagedObjectContext.init(concurrencyType: .privateQueueConcurrencyType)
+                //            cmoc.persistentStoreCoordinator = self.moc.persistentStoreCoordinator
+                cmoc.parent = self.moc
                 
                 
-                let faultpredicate = NSPredicate(format:"self IN %@", theEntries) //This should fire the faults for all the entries in the model
-                let faultrequest = NSFetchRequest<Entry>(entityName: "Entry")
-                faultrequest.predicate = faultpredicate
-                faultrequest.returnsObjectsAsFaults = false
                 do {
-                    _ = try cmoc.fetch(faultrequest)
+                    let cfirstModel = try cmoc.existingObject(with: firstModelID) as! Model
                     
-                } catch let error as NSError {
-                    print (error)
-                }
-                
-                
-
-                
-                if cfirstModel.score.floatValue <= -Float.infinity {
-                    _ = self.metalCalc(curModel: cfirstModel, fake : false, verbose: true)
-                }
-
-                var lastModel = cfirstModel
-                
-
-                let firstbic = cfirstModel.score
-//                print ("firstbic \(firstbic)")
-
-                    var modelPeaks = [Model]()
-                
-
-                for rs in 0...Int(runstarts)-1 {
+                    let theEntries = cfirstModel.entry
                     
-                    if(self.breakloop){
-                        break
+                    
+                    let faultpredicate = NSPredicate(format:"self IN %@", theEntries) //This should fire the faults for all the entries in the model
+                    let faultrequest = NSFetchRequest<Entry>(entityName: "Entry")
+                    faultrequest.predicate = faultpredicate
+                    faultrequest.returnsObjectsAsFaults = false
+                    do {
+                        _ = try cmoc.fetch(faultrequest)
+                        
+                    } catch let error as NSError {
+                        print (error)
                     }
                     
-                
-                    var firstrun = true
-                    var lastbic = NSNumber.init(value: 0.0)
-                    var curbic = NSNumber.init(value: 0.0)
                     
-                    for hc in 0...Int(hillchains)-1 {
+                    
+                    
+                    if cfirstModel.score.floatValue <= -Float.infinity {
+                        _ = self.metalCalc(curModel: cfirstModel, fake : false, verbose: true)
+                    }
+                    
+                    var lastModel = cfirstModel
+                    
+                    
+                    let firstbic = cfirstModel.score
+                    //                print ("firstbic \(firstbic)")
+                    
+                    var modelPeaks = [Model]()
+                    
+                    
+                    for rs in 0...Int(truncating: runstarts)-1 {
                         
                         if(self.breakloop){
                             break
                         }
                         
-                        if(firstrun == true){
+                        
+                        var firstrun = true
+                        var lastbic = NSNumber.init(value: 0.0)
+                        var curbic = NSNumber.init(value: 0.0)
+                        
+                        for hc in 0...Int(truncating: hillchains)-1 {
                             
-                            firstrun = false
-                            lastbic = firstbic
-                            lastModel = cfirstModel
-                            
-                        }
-                        else {
-    
-                            
-                            let curModel = self.randomChildModel(lastModel: lastModel, allTraits: allTraits, initusedTraitNames: usedTraitNames, thisMOC: cmoc)
-                            var discardModel = curModel
-                            
-                            var cycleChk = false
-                            let newNodes = curModel.bnnode
-                            for newNode in newNodes {
-                                let curNode = newNode as! BNNode
-                                cycleChk = curNode.DFTcyclechk([curNode])
+                            if(self.breakloop){
+                                break
                             }
-
                             
-                            var curname = cfirstModel.name + "-"
-                            curname =  curname + String(rs)
-                            curname = curname + "-"
-                            curname = curname + String(hc)
-                            curModel.name = curname
-
-                            if cycleChk == false { //If the new model is a cycle, ignore it
-                            
-                                let msrun = self.metalCalc(curModel : curModel, fake : false, verbose: false)
-                                if (msrun == true) {
-
-                                    self.runLog += curModel.score.stringValue
-                                    self.runLog += "\n"
-                                    curbic = curModel.score
-                                    curModel.setValue(curbic, forKey: "score")
-                                    if curbic.floatValue > lastbic.floatValue {
-                                        discardModel = lastModel
-
-
-                                        lastModel = curModel
-                                        lastbic = curbic
-                                        if discardModel != cfirstModel {
-//                                            print ("keeping: \(curModel.name) and discarding \(discardModel.name)")
-                                            cmoc.delete(discardModel)
-                                        }
+                            if(firstrun == true){
+                                
+                                firstrun = false
+                                lastbic = firstbic
+                                lastModel = cfirstModel
+                                
+                            }
+                            else {
+                                
+                                
+                                let curModel = self.randomChildModel(lastModel: lastModel, allTraits: allTraits, initusedTraitNames: usedTraitNames, thisMOC: cmoc)
+                                var discardModel = curModel
+                                
+                                var cycleChk = false
+                                let newNodes = curModel.bnnode
+                                for newNode in newNodes {
+                                    let curNode = newNode as! BNNode
+                                    cycleChk = curNode.DFTcyclechk([curNode])
+                                }
+                                
+                                
+                                var curname = cfirstModel.name + "-"
+                                curname =  curname + String(rs)
+                                curname = curname + "-"
+                                curname = curname + String(hc)
+                                curModel.name = curname
+                                
+                                if cycleChk == false { //If the new model is a cycle, ignore it
+                                    
+                                    let msrun = self.metalCalc(curModel : curModel, fake : false, verbose: false)
+                                    if (msrun == true) {
                                         
-                                        usedTraitNames = Set<String>()
-                                        let lastNodes = lastModel.bnnode.allObjects as! [BNNode]
-                                        for lastNode in lastNodes {
-                                            usedTraitNames.insert(lastNode.name)
+                                        self.runLog += curModel.score.stringValue
+                                        self.runLog += "\n"
+                                        curbic = curModel.score
+                                        curModel.setValue(curbic, forKey: "score")
+                                        if curbic.floatValue > lastbic.floatValue {
+                                            discardModel = lastModel
+                                            
+                                            
+                                            lastModel = curModel
+                                            lastbic = curbic
+                                            if discardModel != cfirstModel {
+                                                //                                            print ("keeping: \(curModel.name) and discarding \(discardModel.name)")
+                                                cmoc.delete(discardModel)
+                                            }
+                                            
+                                            usedTraitNames = Set<String>()
+                                            let lastNodes = lastModel.bnnode.allObjects as! [BNNode]
+                                            for lastNode in lastNodes {
+                                                usedTraitNames.insert(lastNode.name)
+                                            }
+                                            
                                         }
-  
+                                        else {
+                                            cmoc.delete(curModel)
+                                        }
                                     }
                                     else {
+                                        self.runLog += "error\n"
                                         cmoc.delete(curModel)
                                     }
                                 }
                                 else {
-                                    self.runLog += "error\n"
+                                    self.runLog += "cyclic\n"
                                     cmoc.delete(curModel)
                                 }
+                                
+                                
+                                //                            //Delete the discarded model unless it is the first model
+                                //                            if discardModel != cfirstModel {
+                                //                                for theEntry in theEntries.allObjects as! [Entry] {
+                                //                                    theEntry.removeAModelObject(discardModel)
+                                //                                }
+                                //                            }
+                                
+                                
                             }
-                            else {
-                                self.runLog += "cyclic\n"
-                                cmoc.delete(curModel)
+                            DispatchQueue.main.async {
+                                self.hProgInd.increment(by: 1.0)
+                                let rstep = DispatchTime.now()
+                                let rRunTime = Double(rstep.uptimeNanoseconds - start.uptimeNanoseconds) / 1000000000
+                                hcount += 1
+                                let howLongPer = rRunTime / Double(hcount)
+                                let estTimeTotal = allHillRuns * howLongPer
+                                self.timeLabel.stringValue = self.secondsConvert(secs: rRunTime, retUnit: false)
+                                self.timeMaxLabel.stringValue = self.secondsConvert(secs: estTimeTotal, retUnit: true)
                             }
-                            
-                            
-//                            //Delete the discarded model unless it is the first model
-//                            if discardModel != cfirstModel {
-//                                for theEntry in theEntries.allObjects as! [Entry] {
-//                                    theEntry.removeAModelObject(discardModel)
-//                                }
-//                            }
                             
                             
                         }
+                        
+                        
+                        if lastModel != cfirstModel {
+                            modelPeaks.append(lastModel)
+                        }
+                        
                         DispatchQueue.main.async {
-                            self.hProgInd.increment(by: 1.0)
-                            let rstep = DispatchTime.now()
-                            let rRunTime = Double(rstep.uptimeNanoseconds - start.uptimeNanoseconds) / 1000000000
-                            hcount += 1
-                            let howLongPer = rRunTime / Double(hcount)
-                            let estTimeTotal = allHillRuns * howLongPer
-                            self.timeLabel.stringValue = self.secondsConvert(secs: rRunTime, retUnit: false)
-                            self.timeMaxLabel.stringValue = self.secondsConvert(secs: estTimeTotal, retUnit: true)
-                        }
-                        
-                        
-                    }
-                    
-
-                    if lastModel != cfirstModel {
-                        modelPeaks.append(lastModel)
-                    }
-
-                    DispatchQueue.main.async {
-                        self.rProgInd.increment(by: 1.0)
-                        self.hProgInd.doubleValue = 0
-
-                        
-                    }
-
-                }
-                
-
-
-                //Run through all the random restarts and select highest score
-                if(modelPeaks.count > 0){
-                    var peakModel = modelPeaks[0]
-                    print(peakModel.name)
-                    for thisPeak in modelPeaks {
-                        if thisPeak.score as! Float > peakModel.score as! Float {
-                            peakModel = thisPeak
-                        }
-                    }
-                    
-                    for thisPeak in modelPeaks {
-                        if thisPeak != peakModel{
+                            self.rProgInd.increment(by: 1.0)
+                            self.hProgInd.doubleValue = 0
                             
-                            if thisPeak != cfirstModel {
-                                for theEntry in theEntries.allObjects as! [Entry] {
-                                    theEntry.removeAModelObject(thisPeak)
-                                }
+                            
+                        }
+                        
+                    }
+                    
+                    
+                    
+                    //Run through all the random restarts and select highest score
+                    if(modelPeaks.count > 0){
+                        var peakModel = modelPeaks[0]
+                        print(peakModel.name)
+                        for thisPeak in modelPeaks {
+                            if thisPeak.score as! Float > peakModel.score as! Float {
+                                peakModel = thisPeak
                             }
-                            
-                            cmoc.delete(thisPeak)
-                        }
-                    }
-                    
-                    if peakModel != cfirstModel {
-                        //name it with Best and date
-                        var bestname = peakModel.name + "-BEST-"
-                        let date = Date()
-                        let formatter = DateFormatter()
-                        formatter.dateFormat = "dd.MM.yyyy"
-                        bestname = bestname + formatter.string(from: date)
-                        peakModel.setValue(bestname, forKey: "name")
-                        finalModel = peakModel
-                        
-                        do {
-                            try cmoc.obtainPermanentIDs(for: [finalModel])
-                        }  catch let error as NSError {
-                            print(error)
                         }
                         
-                        finalModelID = peakModel.objectID
-                    }
-                    
-                }
-                
-                else {
-                    finalModelID = firstModelID
-                }
-                
-                
-                do {
-                    try cmoc.save()
-                } catch let error as NSError {
-                    print(error)
-                    fatalError("ERROR saving to primary MOC.")
-                }
-
-                
-                
-                self.performSelector(onMainThread: #selector(PlexusMainWindowController.endProgInd), with: nil, waitUntilDone: true)
-                
-                DispatchQueue.main.sync {
-                    
-
-                    do {
-                        finalModel = try self.moc.existingObject(with: finalModelID) as! Model
+                        for thisPeak in modelPeaks {
+                            if thisPeak != peakModel{
+                                
+                                if thisPeak != cfirstModel {
+                                    for theEntry in theEntries.allObjects as! [Entry] {
+                                        theEntry.removeAModelObject(thisPeak)
+                                    }
+                                }
+                                
+                                cmoc.delete(thisPeak)
+                            }
+                        }
                         
-                    }
-                    catch {
-                        fatalError("Error in calcQueue.")
-                    }
-                    
-                    if self.breakloop == true {
-                        firstModel.score = NSNumber.init(floatLiteral: -Double.infinity)
-                        let cancelAlert = NSAlert()
-                        cancelAlert.alertStyle = .informational
-                        cancelAlert.messageText = "Run cancelled."
-                        cancelAlert.addButton(withTitle: "OK")
-                        _ = cancelAlert.runModal()
-                        self.breakloop = false
-                    }
-                    
-                    else {
-                        let scoreAlert = NSAlert()
-                        scoreAlert.alertStyle = .informational
-                        scoreAlert.messageText = "Highest scoring model: \(finalModel.name) with score \(finalModel.score)"
-                        if finalModel != firstModel {
-                            scoreAlert.informativeText = "Plexus will select the new model."
-                            
-                            firstModel.runlog = self.runLog
+                        if peakModel != cfirstModel {
+                            //name it with Best and date
+                            var bestname = peakModel.name + "-BEST-"
+                            let date = Date()
+                            let formatter = DateFormatter()
+                            formatter.dateFormat = "dd.MM.yyyy"
+                            bestname = bestname + formatter.string(from: date)
+                            peakModel.setValue(bestname, forKey: "name")
+                            finalModel = peakModel
                             
                             do {
-                                try self.moc.save()
-                            } catch let error as NSError {
+                                try cmoc.obtainPermanentIDs(for: [finalModel])
+                            }  catch let error as NSError {
                                 print(error)
-                                fatalError("ERROR saving to primary MOC.")
                             }
                             
-                            firstModel.addAChildObject(finalModel)
-                            let finalIndexPath = self.mainSplitViewController.modelTreeController.indexPathOfModel(model:finalModel)
-                            self.mainSplitViewController.modelTreeController.setSelectionIndexPath(finalIndexPath! as IndexPath)
-
+                            finalModelID = peakModel.objectID
                         }
-                        else {
-                         scoreAlert.informativeText = "No model scored higher than the original."
-                        }
-                        self.mainSplitViewController.modelDetailViewController?.calcInProgress = false
-                        scoreAlert.addButton(withTitle: "OK")
-                        _ = scoreAlert.runModal()
+                        
                     }
+                        
+                    else {
+                        finalModelID = firstModelID
+                    }
+                    
+                    
+                    do {
+                        try cmoc.save()
+                    } catch let error as NSError {
+                        print(error)
+                        fatalError("ERROR saving to primary MOC.")
+                    }
+                    
+                    
+                    
+                    self.performSelector(onMainThread: #selector(PlexusMainWindowController.endProgInd), with: nil, waitUntilDone: true)
+                    
+                    DispatchQueue.main.sync {
+                        
+                        
+                        do {
+                            finalModel = try self.moc.existingObject(with: finalModelID) as! Model
+                            
+                        }
+                        catch {
+                            fatalError("Error in calcQueue.")
+                        }
+                        
+                        if self.breakloop == true {
+                            firstModel.score = NSNumber.init(floatLiteral: -Double.infinity)
+                            let cancelAlert = NSAlert()
+                            cancelAlert.alertStyle = .informational
+                            cancelAlert.messageText = "Run cancelled."
+                            cancelAlert.addButton(withTitle: "OK")
+                            _ = cancelAlert.runModal()
+                            self.breakloop = false
+                        }
+                            
+                        else {
+                            let scoreAlert = NSAlert()
+                            scoreAlert.alertStyle = .informational
+                            scoreAlert.messageText = "Highest scoring model: \(finalModel.name) with score \(finalModel.score)"
+                            if finalModel != firstModel {
+                                scoreAlert.informativeText = "Plexus will select the new model."
+                                
+                                firstModel.runlog = self.runLog
+                                
+                                do {
+                                    try self.moc.save()
+                                } catch let error as NSError {
+                                    print(error)
+                                    fatalError("ERROR saving to primary MOC.")
+                                }
+                                
+                                firstModel.addAChildObject(finalModel)
+                                let finalIndexPath = self.mainSplitViewController.modelTreeController.indexPathOfModel(model:finalModel)
+                                self.mainSplitViewController.modelTreeController.setSelectionIndexPath(finalIndexPath! as IndexPath)
+                                
+                            }
+                            else {
+                                scoreAlert.informativeText = "No model scored higher than the original."
+                            }
+                            self.mainSplitViewController.modelDetailViewController?.calcInProgress = false
+                            scoreAlert.addButton(withTitle: "OK")
+                            _ = scoreAlert.runModal()
+                        }
+                    }
+                    
+                }
+                catch {
+                    fatalError("Error in calcQueue.")
                 }
                 
-            }
-            catch {
-                fatalError("Error in calcQueue.")
-            }
- 
-        } // end calcQueue.async dispatch
+            } // end calcQueue.async dispatch
+            
+            
+        } catch {
+            fatalError("Failed request searching for all Traits of \(firstModel).")
+        }
+
+
         
     }
     
@@ -1484,8 +1477,8 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         
         self.progSheet = self.progHillSetup(self)
         self.window!.beginSheet(self.progSheet, completionHandler: nil)
-        self.hProgInd.maxValue =  Double(firstModel.hillchains)
-        self.rProgInd.maxValue =  Double(firstModel.runstarts)
+        self.hProgInd.maxValue =  Double(truncating: firstModel.hillchains)
+        self.rProgInd.maxValue =  Double(truncating: firstModel.runstarts)
         self.progSheet.makeKeyAndOrderFront(self)
         
         let runstarts = firstModel.runstarts
@@ -1533,18 +1526,6 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         }
         
         
-        //The Traits and Entries involved in a run do not change, so they can be fetched just once
-        var allTraits = [Trait]()
-        let request = NSFetchRequest<Trait>(entityName: "Trait")
-        let predicate = NSPredicate(format: "entry IN %@", argumentArray: [firstModel.entry])
-        request.predicate = predicate
-        do {
-            allTraits = try moc.fetch (request)
-            
-        } catch {
-            fatalError("Failed request searching for all Traits of \(firstModel).")
-        }
-        
         var hcount = 0
         let calcQueue = DispatchQueue(label: "calcQueue")
         calcQueue.async {
@@ -1578,7 +1559,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                 }
                 
 
-                for rs in 0...Int(runstarts)-1 {
+                for rs in 0...Int(truncating: runstarts)-1 {
                     
                     if(self.breakloop){
                         break
@@ -1638,7 +1619,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                     self.runLog += "\n--------\n"
                     
                     
-                    for hc in 0...Int(hillchains)-1 {
+                    for _ in 0...Int(truncating: hillchains)-1 {
                         
                         if(self.breakloop){
                             break
@@ -1847,7 +1828,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         //Buffer 3: Prior Distribution Type
         var priordisttypes = [UInt32]()
         for node in nodesForCalc {
-            priordisttypes.append(UInt32(node.priorDistType))
+            priordisttypes.append(UInt32(truncating: node.priorDistType))
         }
         let priordisttypesbuffer = self.device.makeBuffer(bytes: &priordisttypes, length: priordisttypes.count*MemoryLayout<UInt32>.stride, options: MTLResourceOptions.cpuCacheModeWriteCombined)!
         threadMemSize += priordisttypes.count*MemoryLayout<UInt32>.stride
@@ -1856,7 +1837,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         //Buffer 4: PriorV1
         var priorV1s = [Float]()
         for node in nodesForCalc {
-            priorV1s.append(Float(node.priorV1))
+            priorV1s.append(Float(truncating: node.priorV1))
         }
         let priorV1sbuffer = self.device.makeBuffer(bytes: &priorV1s, length: priorV1s.count*MemoryLayout<Float>.stride, options: MTLResourceOptions.cpuCacheModeWriteCombined)!
         threadMemSize += priorV1s.count*MemoryLayout<Float>.stride
@@ -1865,7 +1846,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         //Buffer 5: PriorV2
         var priorV2s = [Float]()
         for node in nodesForCalc {
-            priorV2s.append(Float(node.priorV2))
+            priorV2s.append(Float(truncating: node.priorV2))
         }
         let priorV2sbuffer = self.device.makeBuffer(bytes: &priorV2s, length: priorV2s.count*MemoryLayout<Float>.stride, options: MTLResourceOptions.cpuCacheModeWriteCombined)!
         threadMemSize += priorV2s.count*MemoryLayout<Float>.stride
@@ -1976,7 +1957,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
             
 //let randomArray = Array(0..<30).map { _ in generateUniqueInt() }
             seeds = (0..<ntWidth).map{_ in arc4random()}
-            seedsbuffer.contents().copyBytes(from: seeds, count: seeds.count * MemoryLayout<UInt32>.stride)
+            seedsbuffer.contents().copyMemory(from: seeds, byteCount: seeds.count * MemoryLayout<UInt32>.stride)
             
             
             commandEncoder.setBuffer(seedsbuffer, offset: 0, index: 0)
@@ -2091,7 +2072,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
 //            print("Time to run: \(NSDate().timeIntervalSince(start as Date)) seconds.")
 //        }
         
-        var bins = Int(pow(Float(curModel.runstot), 0.5))
+        var bins = Int(pow(Float(truncating: curModel.runstot), 0.5))
         
         if(bins < 100) {
             bins = 100

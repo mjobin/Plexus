@@ -441,9 +441,9 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
         if(curNodes.count>0) {
             curNode = curNodes[0]
    
-            priorDist = Int(curNode.priorDistType)
-            V1 = Double(curNode.priorV1)
-            V2 = Double(curNode.priorV2)
+            priorDist = Int(truncating: curNode.priorDistType)
+            V1 = Double(truncating: curNode.priorV1)
+            V2 = Double(truncating: curNode.priorV2)
             let theUpNodes = curNode.upNodes(self)
             if(theUpNodes.count > 0) {
                 nodeDetailPriorView.isHidden = true

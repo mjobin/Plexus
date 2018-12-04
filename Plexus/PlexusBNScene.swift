@@ -830,8 +830,8 @@ class PlexusBNScene: SKScene {
         shape.scale(to: shapeSize)
         if inPos.x == (self.frame.width/2) && inPos.y == (self.frame.height/2) {
 
-            var xloc = Double(inNode.savedX)
-            var yloc = Double(inNode.savedY)
+            var xloc = Double(truncating: inNode.savedX)
+            var yloc = Double(truncating: inNode.savedY)
             if xloc <= 0 {
                 xloc = Double.random(in: 1...Double(self.frame.width))
             }
