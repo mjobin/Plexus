@@ -168,8 +168,9 @@ class PlexusModelViewController: NSViewController, NSOutlineViewDelegate, NSOutl
             if yerob == modelTreeController {
                 if firstrun {
                     let savedSIData = UserDefaults.standard.data(forKey: "plexusModelSelectionIndexPaths")
-                    let savedSI = NSKeyedUnarchiver.unarchiveObject(with: savedSIData ?? Data())
-                    _ = modelTreeController.setSelectionIndexPaths(savedSI as! [IndexPath])
+                    if let savedSI = NSKeyedUnarchiver.unarchiveObject(with: savedSIData ?? Data()) {
+                        _ = modelTreeController.setSelectionIndexPaths(savedSI as! [IndexPath])
+                    }
                     firstrun = false
                 }
             }
