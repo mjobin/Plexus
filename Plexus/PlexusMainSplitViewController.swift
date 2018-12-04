@@ -20,17 +20,17 @@ class PlexusMainSplitViewController: NSSplitViewController {
     var entryDetailViewController : PlexusEntryDetailViewController? = nil
     var modelDetailViewController :  PlexusModelDetailViewController? = nil
     
-    dynamic var entryController : NSArrayController!
-    dynamic var modelTreeController : NSTreeController!
+    @objc dynamic var entryController : NSArrayController!
+    @objc dynamic var modelTreeController : NSTreeController!
     
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        modelViewController = childViewControllers[0] as? PlexusModelViewController
-        entryViewController = childViewControllers[1] as? PlexusEntryViewController
-        entryDetailViewController = childViewControllers[2] as? PlexusEntryDetailViewController
-        modelDetailViewController = childViewControllers[3] as? PlexusModelDetailViewController
+        modelViewController = children[0] as? PlexusModelViewController
+        entryViewController = children[1] as? PlexusEntryViewController
+        entryDetailViewController = children[2] as? PlexusEntryDetailViewController
+        modelDetailViewController = children[3] as? PlexusModelDetailViewController
 
 
 

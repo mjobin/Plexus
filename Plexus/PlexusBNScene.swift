@@ -13,8 +13,8 @@ import CoreData
 class PlexusBNScene: SKScene {
     
     var moc : NSManagedObjectContext!
-    dynamic var modelTreeController : NSTreeController!
-    dynamic var nodesController : NSArrayController!
+    @objc dynamic var modelTreeController : NSTreeController!
+    @objc dynamic var nodesController : NSArrayController!
 
 
     
@@ -35,13 +35,13 @@ class PlexusBNScene: SKScene {
 
         
             
-        let appDelegate : AppDelegate = NSApplication.shared().delegate as! AppDelegate
+        let appDelegate : AppDelegate = NSApplication.shared.delegate as! AppDelegate
         moc = appDelegate.persistentContainer.viewContext
         
         
         NotificationCenter.default.addObserver(self, selector: #selector(PlexusBNScene.mocDidChange(_:)), name: NSNotification.Name.NSManagedObjectContextObjectsDidChange, object: moc)
         
-        NotificationCenter.default.addObserver(self, selector: #selector(saveData), name: NSNotification.Name.NSApplicationWillTerminate, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(saveData), name: NSApplication.willTerminateNotification, object: nil)
 
 
  
@@ -77,7 +77,7 @@ class PlexusBNScene: SKScene {
         for selNode : BNNode in selNodes{
             
             nodesController.removeObject(selNode)
-            let appDelegate : AppDelegate = NSApplication.shared().delegate as! AppDelegate
+            let appDelegate : AppDelegate = NSApplication.shared.delegate as! AppDelegate
             moc = appDelegate.persistentContainer.viewContext
             moc.delete(selNode)
             
@@ -719,7 +719,7 @@ class PlexusBNScene: SKScene {
     }
   
     
-    func saveData () {
+    @objc func saveData () {
         if(nodesController != nil ){
             
             let curNodes : [BNNode]  = nodesController.arrangedObjects as! [BNNode]
@@ -893,7 +893,7 @@ class PlexusBNScene: SKScene {
     }
     
 
-    func mocDidChange(_ notification: Notification){
+    @objc func mocDidChange(_ notification: Notification){
      //   print(notification.userInfo)
         
       //  var justUpdate = true

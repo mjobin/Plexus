@@ -12,8 +12,8 @@ import SpriteKit
 
 class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NSTableViewDataSource, CPTScatterPlotDataSource, CPTScatterPlotDelegate {
     
-    var moc : NSManagedObjectContext!
-    dynamic var modelTreeController : NSTreeController!
+    @objc var moc : NSManagedObjectContext!
+    @objc dynamic var modelTreeController : NSTreeController!
     @IBOutlet dynamic var nodesController : NSArrayController!
     @IBOutlet dynamic var allNodesController : NSArrayController!
     
@@ -71,7 +71,7 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
     required init?(coder aDecoder: NSCoder)
     {
         
-        let appDelegate : AppDelegate = NSApplication.shared().delegate as! AppDelegate
+        let appDelegate : AppDelegate = NSApplication.shared.delegate as! AppDelegate
         moc = appDelegate.persistentContainer.viewContext
         
 
@@ -84,9 +84,9 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
 
 
         
-        nodeVisView.blendingMode = NSVisualEffectBlendingMode.behindWindow
-        nodeVisView.material = NSVisualEffectMaterial.ultraDark
-        nodeVisView.state = NSVisualEffectState.active
+        nodeVisView.blendingMode = NSVisualEffectView.BlendingMode.behindWindow
+        nodeVisView.material = NSVisualEffectView.Material.ultraDark
+        nodeVisView.state = NSVisualEffectView.State.active
         
 
         scene = PlexusBNScene(size: self.skView.bounds.size)
@@ -102,13 +102,13 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
         _ = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(PlexusModelDetailViewController.cptCheck), userInfo: nil, repeats: true)
 
         
-        singleNodeVisView.blendingMode = NSVisualEffectBlendingMode.behindWindow
-        singleNodeVisView.material = NSVisualEffectMaterial.ultraDark
-        singleNodeVisView.state = NSVisualEffectState.active
+        singleNodeVisView.blendingMode = NSVisualEffectView.BlendingMode.behindWindow
+        singleNodeVisView.material = NSVisualEffectView.Material.ultraDark
+        singleNodeVisView.state = NSVisualEffectView.State.active
         
-        nodeDetailVisView.blendingMode = NSVisualEffectBlendingMode.behindWindow
-        nodeDetailVisView.material = NSVisualEffectMaterial.ultraDark
-        nodeDetailVisView.state = NSVisualEffectState.active
+        nodeDetailVisView.blendingMode = NSVisualEffectView.BlendingMode.behindWindow
+        nodeDetailVisView.material = NSVisualEffectView.Material.ultraDark
+        nodeDetailVisView.state = NSVisualEffectView.State.active
         
         
         
@@ -227,7 +227,7 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
         let priorstring = "Prior"
         let priorstringrange = (priorstring as NSString).range(of: priorstring)
         let priorAS = NSMutableAttributedString(string: "Prior")
-        priorAS.addAttribute(NSForegroundColorAttributeName, value: NSColor.white, range: priorstringrange)
+        priorAS.addAttribute(NSAttributedString.Key.foregroundColor, value: NSColor.white, range: priorstringrange)
         priorPlot.attributedTitle = priorAS
         
         
@@ -264,7 +264,7 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
         let poststring = "Posterior"
         let poststringrange = (poststring as NSString).range(of: poststring)
         let postAS = NSMutableAttributedString(string: "Posterior")
-        postAS.addAttribute(NSForegroundColorAttributeName, value: NSColor.white, range: poststringrange)
+        postAS.addAttribute(NSAttributedString.Key.foregroundColor, value: NSColor.white, range: poststringrange)
         postPlot.attributedTitle = postAS
         
         
@@ -303,14 +303,14 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
                 let priorstring = "Prior"
                 let priorstringrange = (priorstring as NSString).range(of: priorstring)
                 let priorAS = NSMutableAttributedString(string: "Prior")
-                priorAS.addAttribute(NSForegroundColorAttributeName, value: NSColor.white, range: priorstringrange)
+                priorAS.addAttribute(NSAttributedString.Key.foregroundColor, value: NSColor.white, range: priorstringrange)
                 plot.attributedTitle = priorAS
             }
             else {
                 let poststring = "Posterior"
                 let poststringrange = (poststring as NSString).range(of: poststring)
                 let postAS = NSMutableAttributedString(string: "Posterior")
-                postAS.addAttribute(NSForegroundColorAttributeName, value: NSColor.white, range: poststringrange)
+                postAS.addAttribute(NSAttributedString.Key.foregroundColor, value: NSColor.white, range: poststringrange)
                 plot.attributedTitle = postAS
             }
         }
@@ -337,14 +337,14 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
                 let priorstring = "Prior"
                 let priorstringrange = (priorstring as NSString).range(of: priorstring)
                 let priorAS = NSMutableAttributedString(string: "Prior")
-                priorAS.addAttribute(NSForegroundColorAttributeName, value: NSColor.white, range: priorstringrange)
+                priorAS.addAttribute(NSAttributedString.Key.foregroundColor, value: NSColor.white, range: priorstringrange)
                 plot.attributedTitle = priorAS
             }
             else {
                 let poststring = "Posterior"
                 let poststringrange = (poststring as NSString).range(of: poststring)
                 let postAS = NSMutableAttributedString(string: "Posterior")
-                postAS.addAttribute(NSForegroundColorAttributeName, value: NSColor.white, range: poststringrange)
+                postAS.addAttribute(NSAttributedString.Key.foregroundColor, value: NSColor.white, range: poststringrange)
                 plot.attributedTitle = postAS
             }
         }
@@ -427,7 +427,7 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
     
     //******CPTScatterPlotDataSource fxns
     
-    func reloadData() {
+    @objc func reloadData() {
         
         for view in nodeDetailCPTView.subviews{
             view.removeFromSuperview()
@@ -469,12 +469,12 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
                     }
 
                     for thisUpNode in theUpNodes {
-                        let cptcolumn = NSTableColumn(identifier: thisUpNode.name)
+                        let cptcolumn = NSTableColumn(identifier: convertToNSUserInterfaceItemIdentifier(thisUpNode.name))
                         cptcolumn.headerCell.stringValue = thisUpNode.name
                         cptTableView.addTableColumn(cptcolumn)
                         
                     }
-                    let datacolumn = NSTableColumn(identifier: "Data")
+                    let datacolumn = NSTableColumn(identifier: convertToNSUserInterfaceItemIdentifier("Data"))
                     datacolumn.headerCell.stringValue = "CP"
                     cptTableView.addTableColumn(datacolumn)
                     
@@ -489,7 +489,7 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
                     let cptProgInd = NSProgressIndicator()
                     cptProgInd.usesThreadedAnimation = true
                     cptProgInd.isIndeterminate = true
-                    cptProgInd.style = .spinningStyle
+                    cptProgInd.style = .spinning
                     cptTableContainer.documentView = cptProgInd
                     //FIXME center?
                    // cptTableContainer.addSubview(cptProgInd)
@@ -780,7 +780,7 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
         }
     }
     
-    func mocDidChange(_ notification: Notification){
+    @objc func mocDidChange(_ notification: Notification){
         mocChange = true
         let info = notification.userInfo
 
@@ -871,7 +871,7 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
         if(curNodes.count>0) {
             curNode = curNodes[0]
            // print(curnode.name)
-            if(tableColumn?.identifier == "Data" ){
+            if(convertFromNSUserInterfaceItemIdentifier(tableColumn?.identifier ?? NSUserInterfaceItemIdentifier(rawValue: "None")) == "Data" ){
                 let curModels : [Model] = modelTreeController.selectedObjects as! [Model]
                 let curModel : Model = curModels[0]
                 if curModel.complete {
@@ -919,7 +919,7 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
         return nil
     }
  
-    func cptCheck()
+    @objc func cptCheck()
     {
 
 
@@ -1043,4 +1043,14 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
     }
 
 
+}
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertToNSUserInterfaceItemIdentifier(_ input: String) -> NSUserInterfaceItemIdentifier {
+	return NSUserInterfaceItemIdentifier(rawValue: input)
+}
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertFromNSUserInterfaceItemIdentifier(_ input: NSUserInterfaceItemIdentifier) -> String {
+	return input.rawValue
 }

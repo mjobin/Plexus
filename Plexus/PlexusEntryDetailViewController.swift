@@ -11,8 +11,8 @@ import Cocoa
 class PlexusEntryDetailViewController: NSViewController, NSTableViewDelegate, NSTableViewDataSource, NSTabViewDelegate {
     
     
-    var moc : NSManagedObjectContext!
-    dynamic var entryController : NSController!
+    @objc var moc : NSManagedObjectContext!
+    @objc dynamic var entryController : NSController!
     
     @IBOutlet dynamic var traitsController : NSArrayController!
     @IBOutlet weak var traitsTableView : NSTableView!
@@ -27,7 +27,7 @@ class PlexusEntryDetailViewController: NSViewController, NSTableViewDelegate, NS
     required init?(coder aDecoder: NSCoder)
     {
         
-        let appDelegate : AppDelegate = NSApplication.shared().delegate as! AppDelegate
+        let appDelegate : AppDelegate = NSApplication.shared.delegate as! AppDelegate
         moc = appDelegate.persistentContainer.viewContext
         super.init(coder: aDecoder)
         
@@ -38,7 +38,7 @@ class PlexusEntryDetailViewController: NSViewController, NSTableViewDelegate, NS
         
         let kString : String = kUTTypeURL as String
         let registeredTypes:[String] = [kString]
-        traitsTableView.register(forDraggedTypes: registeredTypes)
+        traitsTableView.registerForDraggedTypes(convertToNSPasteboardPasteboardTypeArray(registeredTypes))
         traitsTableView.setDraggingSourceOperationMask(NSDragOperation.every, forLocal: true)
         traitsTableView.setDraggingSourceOperationMask(NSDragOperation.every, forLocal: false)
         traitsTableView.verticalMotionCanBeginDrag = true
@@ -80,7 +80,7 @@ class PlexusEntryDetailViewController: NSViewController, NSTableViewDelegate, NS
             let data : Data = NSKeyedArchiver.archivedData(withRootObject: mutableArray)
             
             let kString : String = kUTTypeURL as String
-            pboard.setData(data, forType: kString)
+            pboard.setData(data, forType: convertToNSPasteboardPasteboardType(kString))
             return true
             
             
@@ -93,4 +93,14 @@ class PlexusEntryDetailViewController: NSViewController, NSTableViewDelegate, NS
     }
     
   
+}
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertToNSPasteboardPasteboardTypeArray(_ input: [String]) -> [NSPasteboard.PasteboardType] {
+	return input.map { key in NSPasteboard.PasteboardType(key) }
+}
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertToNSPasteboardPasteboardType(_ input: String) -> NSPasteboard.PasteboardType {
+	return NSPasteboard.PasteboardType(rawValue: input)
 }

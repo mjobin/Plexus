@@ -29,10 +29,10 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
     var kernelFunction : MTLFunction!
     
     lazy var defaultLibrary: MTLLibrary! = {
-        self.device.newDefaultLibrary()
+        self.device.makeDefaultLibrary()
     }()
     lazy var commandQueue: MTLCommandQueue! = {
-        print ("Metal device: \(self.device.name!). Headless: \(self.device.isHeadless). Low Power: \(self.device.isLowPower)")
+        print ("Metal device: \(self.device.name). Headless: \(self.device.isHeadless). Low Power: \(self.device.isLowPower)")
         return self.device.makeCommandQueue()
     }()
     
@@ -75,7 +75,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
 
     
 
-    dynamic var modelTreeController : NSTreeController!
+    @objc dynamic var modelTreeController : NSTreeController!
     
 
     
@@ -84,7 +84,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         //let errorPtr : NSErrorPointer = nil
 
         //Get MOC from App delegate
-        let appDelegate : AppDelegate = NSApplication.shared().delegate as! AppDelegate
+        let appDelegate : AppDelegate = NSApplication.shared.delegate as! AppDelegate
         moc = appDelegate.persistentContainer.viewContext
         
         let request = NSFetchRequest<Model>(entityName: "Model")
@@ -212,7 +212,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         
         //sheet programamticaly
         let sheetRect = NSRect(x: 0, y: 0, width: 400, height: 82)
-        retWin = NSWindow(contentRect: sheetRect, styleMask: .titled, backing: NSBackingStoreType.buffered, defer: true)
+        retWin = NSWindow(contentRect: sheetRect, styleMask: .titled, backing: NSWindow.BackingStoreType.buffered, defer: true)
         let contentView = NSView(frame: sheetRect)
         self.progInd = NSProgressIndicator(frame: NSRect(x: 143, y: 52, width: 239, height: 20))
         self.progInd.canDrawConcurrently = true
@@ -227,7 +227,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         workLabel.stringValue = "Working..."
         
         self.cancelButton = NSButton(frame: NSRect(x: 304, y: 12, width: 84, height: 32))
-        cancelButton.bezelStyle = NSBezelStyle.rounded
+        cancelButton.bezelStyle = NSButton.BezelStyle.rounded
         cancelButton.title = "Cancel"
         cancelButton.target = self
         cancelButton.action = #selector(PlexusMainWindowController.cancelProg(_:))
@@ -275,7 +275,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         
         //sheet programamticaly
         let sheetRect = NSRect(x: 0, y: 0, width: 500, height: 180)
-        retWin = NSWindow(contentRect: sheetRect, styleMask: .titled, backing: NSBackingStoreType.buffered, defer: true)
+        retWin = NSWindow(contentRect: sheetRect, styleMask: .titled, backing: NSWindow.BackingStoreType.buffered, defer: true)
         let contentView = NSView(frame: sheetRect)
         progInd = NSProgressIndicator(frame: NSRect(x: 100, y: 52, width: 250, height: 20))
         progInd.canDrawConcurrently = true
@@ -290,7 +290,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         workLabel.stringValue = "Working..."
         
         self.cancelButton = NSButton(frame: NSRect(x: 304, y: 12, width: 84, height: 32))
-        cancelButton.bezelStyle = NSBezelStyle.rounded
+        cancelButton.bezelStyle = NSButton.BezelStyle.rounded
         cancelButton.title = "Cancel"
         cancelButton.target = self
         cancelButton.action = #selector(PlexusMainWindowController.cancelProg(_:))
@@ -446,7 +446,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         
 
         
-        if (result == NSFileHandlingPanelOKButton) {
+        if (result.rawValue == NSFileHandlingPanelOKButton) {
             mainSplitViewController.modelDetailViewController?.calcInProgress = true
             var i = 1
             var firstLine = true
@@ -690,7 +690,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         
     }
 
-    func cancelProg(_ sender: AnyObject){
+    @objc func cancelProg(_ sender: AnyObject){
 
         self.breakloop = true
     }
@@ -974,7 +974,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         let result = sv.runModal()
         sv.close()
         
-        if (result == NSFileHandlingPanelOKButton) {
+        if (result.rawValue == NSFileHandlingPanelOKButton) {
             mainSplitViewController.modelDetailViewController?.calcInProgress = true
             
             var baseFile  = sv.url?.absoluteString
@@ -1822,13 +1822,13 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         
         //Buffer 0: RNG seeds
         var seeds = [UInt32](repeating: 0, count: ntWidth)
-        let seedsbuffer = self.device.makeBuffer(bytes: &seeds, length: seeds.count*MemoryLayout<UInt32>.stride, options: MTLResourceOptions.cpuCacheModeWriteCombined)
+        let seedsbuffer = self.device.makeBuffer(bytes: &seeds, length: seeds.count*MemoryLayout<UInt32>.stride, options: MTLResourceOptions.cpuCacheModeWriteCombined)!
         threadMemSize += seeds.count*MemoryLayout<UInt32>.stride
         
         
         //Buffer 1: BN Results
         var bnresults = [Float](repeating: -1.0, count: ntWidth*nodesForCalc.count)
-        let bnresultsbuffer = self.device.makeBuffer(bytes: &bnresults, length: bnresults.count*MemoryLayout<Float>.stride, options: resourceOptions)
+        let bnresultsbuffer = self.device.makeBuffer(bytes: &bnresults, length: bnresults.count*MemoryLayout<Float>.stride, options: resourceOptions)!
         threadMemSize += bnresults.count*MemoryLayout<Float>.stride
         
         
@@ -1840,7 +1840,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         intparams.append(UInt32(maxInfSize)) //3
         intparams.append(UInt32(maxCPTSize)) //4
         intparams.append(curModel.thin as! UInt32) //5
-        let intparamsbuffer = self.device.makeBuffer(bytes: &intparams, length: intparams.count*MemoryLayout<UInt32>.stride, options: resourceOptions)
+        let intparamsbuffer = self.device.makeBuffer(bytes: &intparams, length: intparams.count*MemoryLayout<UInt32>.stride, options: resourceOptions)!
         threadMemSize += intparams.count*MemoryLayout<UInt32>.stride
         
         
@@ -1849,7 +1849,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         for node in nodesForCalc {
             priordisttypes.append(UInt32(node.priorDistType))
         }
-        let priordisttypesbuffer = self.device.makeBuffer(bytes: &priordisttypes, length: priordisttypes.count*MemoryLayout<UInt32>.stride, options: MTLResourceOptions.cpuCacheModeWriteCombined)
+        let priordisttypesbuffer = self.device.makeBuffer(bytes: &priordisttypes, length: priordisttypes.count*MemoryLayout<UInt32>.stride, options: MTLResourceOptions.cpuCacheModeWriteCombined)!
         threadMemSize += priordisttypes.count*MemoryLayout<UInt32>.stride
         
         
@@ -1858,7 +1858,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         for node in nodesForCalc {
             priorV1s.append(Float(node.priorV1))
         }
-        let priorV1sbuffer = self.device.makeBuffer(bytes: &priorV1s, length: priorV1s.count*MemoryLayout<Float>.stride, options: MTLResourceOptions.cpuCacheModeWriteCombined)
+        let priorV1sbuffer = self.device.makeBuffer(bytes: &priorV1s, length: priorV1s.count*MemoryLayout<Float>.stride, options: MTLResourceOptions.cpuCacheModeWriteCombined)!
         threadMemSize += priorV1s.count*MemoryLayout<Float>.stride
         
         
@@ -1867,7 +1867,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         for node in nodesForCalc {
             priorV2s.append(Float(node.priorV2))
         }
-        let priorV2sbuffer = self.device.makeBuffer(bytes: &priorV2s, length: priorV2s.count*MemoryLayout<Float>.stride, options: MTLResourceOptions.cpuCacheModeWriteCombined)
+        let priorV2sbuffer = self.device.makeBuffer(bytes: &priorV2s, length: priorV2s.count*MemoryLayout<Float>.stride, options: MTLResourceOptions.cpuCacheModeWriteCombined)!
         threadMemSize += priorV2s.count*MemoryLayout<Float>.stride
         
         
@@ -1888,7 +1888,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
             sInfNet.append(thisinf)
         }
 
-        let infnetbuffer = self.device.makeBuffer(bytes: &infnet, length: nodesForCalc.count*maxInfSize*MemoryLayout<Int32>.stride, options: MTLResourceOptions.cpuCacheModeWriteCombined)
+        let infnetbuffer = self.device.makeBuffer(bytes: &infnet, length: nodesForCalc.count*maxInfSize*MemoryLayout<Int32>.stride, options: MTLResourceOptions.cpuCacheModeWriteCombined)!
         threadMemSize = nodesForCalc.count*maxInfSize*MemoryLayout<Int32>.stride
         
         
@@ -1902,28 +1902,28 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                 cptnet.append(-1.0)
             }
         }
-        let cptnetbuffer = self.device.makeBuffer(bytes: &cptnet, length: nodesForCalc.count*maxCPTSize*MemoryLayout<Float>.stride, options: MTLResourceOptions.cpuCacheModeWriteCombined)
+        let cptnetbuffer = self.device.makeBuffer(bytes: &cptnet, length: nodesForCalc.count*maxCPTSize*MemoryLayout<Float>.stride, options: MTLResourceOptions.cpuCacheModeWriteCombined)!
         threadMemSize += nodesForCalc.count*maxCPTSize*MemoryLayout<Float>.stride
         
         
         //Buffer 8 Shuffle Buffer
-        let shufflebuffer = self.device.makeBuffer(length: ntWidth*nodesForCalc.count*MemoryLayout<UInt32>.stride, options: MTLResourceOptions.storageModePrivate)
+        let shufflebuffer = self.device.makeBuffer(length: ntWidth*nodesForCalc.count*MemoryLayout<UInt32>.stride, options: MTLResourceOptions.storageModePrivate)!
         threadMemSize += ntWidth*nodesForCalc.count*MemoryLayout<UInt32>.stride
         
         
         //Buffer 9: BNStates array num notdes * ntWidth
-        let bnstatesbuffer = self.device.makeBuffer(length: ntWidth*nodesForCalc.count*MemoryLayout<Float>.stride, options: MTLResourceOptions.storageModePrivate)
+        let bnstatesbuffer = self.device.makeBuffer(length: ntWidth*nodesForCalc.count*MemoryLayout<Float>.stride, options: MTLResourceOptions.storageModePrivate)!
         threadMemSize += ntWidth*nodesForCalc.count*MemoryLayout<Float>.stride
         
         
         //Buffer 10: Prior values
         var priors = [Float](repeating: -1.0, count: ntWidth*nodesForCalc.count)
-        let priorsbuffer = self.device.makeBuffer(bytes: &priors, length: priors.count*MemoryLayout<Float>.stride, options: resourceOptions)
+        let priorsbuffer = self.device.makeBuffer(bytes: &priors, length: priors.count*MemoryLayout<Float>.stride, options: resourceOptions)!
         threadMemSize += ntWidth*nodesForCalc.count*MemoryLayout<Float>.stride
         
         //Buffer 11: BNStates output array num nodes * ntWidth
         var bnstatesout = [Float](repeating: -1.0, count: ntWidth*nodesForCalc.count)
-        let bnstatesoutbuffer = self.device.makeBuffer(length: ntWidth*nodesForCalc.count*MemoryLayout<Float>.stride, options: resourceOptions)
+        let bnstatesoutbuffer = self.device.makeBuffer(length: ntWidth*nodesForCalc.count*MemoryLayout<Float>.stride, options: resourceOptions)!
         threadMemSize += ntWidth*nodesForCalc.count*MemoryLayout<Float>.stride
 
         
@@ -1970,8 +1970,8 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         while (rc<runstot){
             
 
-            let commandBuffer = self.commandQueue.makeCommandBuffer()
-            let commandEncoder = commandBuffer.makeComputeCommandEncoder()
+            let commandBuffer = self.commandQueue.makeCommandBuffer()!
+            let commandEncoder = commandBuffer.makeComputeCommandEncoder()!
             commandEncoder.setComputePipelineState(self.pipelineState)
             
 //let randomArray = Array(0..<30).map { _ in generateUniqueInt() }
@@ -1979,18 +1979,18 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
             seedsbuffer.contents().copyBytes(from: seeds, count: seeds.count * MemoryLayout<UInt32>.stride)
             
             
-            commandEncoder.setBuffer(seedsbuffer, offset: 0, at: 0)
-            commandEncoder.setBuffer(bnresultsbuffer, offset: 0, at: 1)
-            commandEncoder.setBuffer(intparamsbuffer, offset: 0, at: 2)
-            commandEncoder.setBuffer(priordisttypesbuffer, offset: 0, at: 3)
-            commandEncoder.setBuffer(priorV1sbuffer, offset: 0, at: 4)
-            commandEncoder.setBuffer(priorV2sbuffer, offset: 0, at: 5)
-            commandEncoder.setBuffer(infnetbuffer, offset: 0, at: 6)
-            commandEncoder.setBuffer(cptnetbuffer, offset: 0, at: 7)
-            commandEncoder.setBuffer(shufflebuffer, offset: 0, at: 8)
-            commandEncoder.setBuffer(bnstatesbuffer, offset: 0, at: 9)
-            commandEncoder.setBuffer(priorsbuffer, offset: 0, at: 10)
-            commandEncoder.setBuffer(bnstatesoutbuffer, offset: 0, at: 11)
+            commandEncoder.setBuffer(seedsbuffer, offset: 0, index: 0)
+            commandEncoder.setBuffer(bnresultsbuffer, offset: 0, index: 1)
+            commandEncoder.setBuffer(intparamsbuffer, offset: 0, index: 2)
+            commandEncoder.setBuffer(priordisttypesbuffer, offset: 0, index: 3)
+            commandEncoder.setBuffer(priorV1sbuffer, offset: 0, index: 4)
+            commandEncoder.setBuffer(priorV2sbuffer, offset: 0, index: 5)
+            commandEncoder.setBuffer(infnetbuffer, offset: 0, index: 6)
+            commandEncoder.setBuffer(cptnetbuffer, offset: 0, index: 7)
+            commandEncoder.setBuffer(shufflebuffer, offset: 0, index: 8)
+            commandEncoder.setBuffer(bnstatesbuffer, offset: 0, index: 9)
+            commandEncoder.setBuffer(priorsbuffer, offset: 0, index: 10)
+            commandEncoder.setBuffer(bnstatesoutbuffer, offset: 0, index: 11)
 
             
             commandEncoder.dispatchThreadgroups(numThreadgroups, threadsPerThreadgroup: threadsPerThreadgroup)
@@ -2456,7 +2456,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         let result = sv.runModal()
         sv.close()
         
-        if (result == NSFileHandlingPanelOKButton) {
+        if (result.rawValue == NSFileHandlingPanelOKButton) {
             mainSplitViewController.modelDetailViewController?.calcInProgress = true
            
             var baseFile  = sv.url?.absoluteString
@@ -2840,14 +2840,14 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
     }
     
     
-    func startProgInd(){
+    @objc func startProgInd(){
         self.progSheet = self.progSetup(self)
         self.window!.beginSheet(self.progSheet, completionHandler: nil)
         self.progSheet.makeKeyAndOrderFront(self)
     }
     
     
-    func betweenRuns(){
+    @objc func betweenRuns(){
         
         if(self.progSheet != nil){
 
@@ -2858,7 +2858,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
     }
     
     
-    func endProgInd(){
+    @objc func endProgInd(){
 
         if(self.progSheet != nil){
             self.progSheet.orderOut(self)
@@ -2885,7 +2885,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
   
     func calcMarginalLikelihood(curModel:Model, inEntries: NSSet, nodesForCalc:[BNNode], infnet:[[Int32]], results : [[Float]], priorresults : [[Float]], bnstatesoutresults : [[Float]]) -> Float {
         
-        let appDelegate : AppDelegate = NSApplication.shared().delegate as! AppDelegate
+        let appDelegate : AppDelegate = NSApplication.shared.delegate as! AppDelegate
         let moc = appDelegate.persistentContainer.viewContext
         
         var subsamp = curModel.runsper as! Int
@@ -3232,7 +3232,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
 //    }
     
     
-    func contextDidSave(_ notification: Notification) {
+    @objc func contextDidSave(_ notification: Notification) {
         let savedContext = notification.object as! NSManagedObjectContext
         if(savedContext == self.moc) { // ignore change notifications for the main MOC
             return

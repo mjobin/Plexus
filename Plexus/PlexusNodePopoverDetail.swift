@@ -10,8 +10,8 @@ import Cocoa
 
 class PlexusNodePopoverDetail: NSViewController {
     
-    dynamic var nodesController : NSArrayController!
-    dynamic var modelTreeController : NSTreeController!
+    @objc dynamic var nodesController : NSArrayController!
+    @objc dynamic var modelTreeController : NSTreeController!
 
     override func viewDidLoad() {
         super.viewDidLoad()

@@ -13,8 +13,8 @@ import CoreServices
 class PlexusBNSKView: SKView {
     
     var moc : NSManagedObjectContext!
-    dynamic var modelTreeController : NSTreeController!
-    dynamic var nodesController : NSArrayController!
+    @objc dynamic var modelTreeController : NSTreeController!
+    @objc dynamic var nodesController : NSArrayController!
     var vc : PlexusModelDetailViewController!
     
     required init?(coder aDecoder: NSCoder)
@@ -23,13 +23,13 @@ class PlexusBNSKView: SKView {
         super.init(coder: aDecoder)
         let kString : String = kUTTypeURL as String
         let registeredTypes:[String] = [kString]
-        self.register(forDraggedTypes: registeredTypes)
+        self.registerForDraggedTypes(convertToNSPasteboardPasteboardTypeArray(registeredTypes))
         
         self.allowsTransparency = true
         self.ignoresSiblingOrder = true
         
         
-        let appDelegate : AppDelegate = NSApplication.shared().delegate as! AppDelegate
+        let appDelegate : AppDelegate = NSApplication.shared.delegate as! AppDelegate
         moc = appDelegate.persistentContainer.viewContext
         
 
@@ -96,12 +96,12 @@ class PlexusBNSKView: SKView {
     override func performDragOperation(_ sender: NSDraggingInfo) -> Bool {
         
               
-        let pboard : NSPasteboard = sender.draggingPasteboard()
+        let pboard : NSPasteboard = sender.draggingPasteboard
        // let types : NSArray = pboard.types!
         
         
         let kString : String = kUTTypeURL as String
-        let data : Data = pboard.data(forType: kString)!
+        let data : Data = pboard.data(forType: convertToNSPasteboardPasteboardType(kString))!
         let draggedArray : NSArray = NSKeyedUnarchiver.unarchiveObject(with: data) as! NSArray
         
 
@@ -176,7 +176,7 @@ class PlexusBNSKView: SKView {
         do {
             try moc.save()
         } catch let error as NSError {
-            self.print(error)
+            self.printView(error)
         }
  
     }
@@ -185,4 +185,14 @@ class PlexusBNSKView: SKView {
 
     
     
+}
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertToNSPasteboardPasteboardTypeArray(_ input: [String]) -> [NSPasteboard.PasteboardType] {
+	return input.map { key in NSPasteboard.PasteboardType(key) }
+}
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertToNSPasteboardPasteboardType(_ input: String) -> NSPasteboard.PasteboardType {
+	return NSPasteboard.PasteboardType(rawValue: input)
 }

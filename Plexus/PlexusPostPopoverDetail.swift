@@ -10,8 +10,8 @@ import Cocoa
 
 class PlexusPostPopoverDetail: NSViewController, NSTableViewDelegate, NSTableViewDataSource {
     
-    dynamic var nodesController : NSArrayController!
-    dynamic var modelTreeController : NSTreeController!
+    @objc dynamic var nodesController : NSArrayController!
+    @objc dynamic var modelTreeController : NSTreeController!
     @IBOutlet var popoverView : NSView!
     @IBOutlet var popScrollView : NSScrollView!
     @IBOutlet var cptTableView : NSTableView!
@@ -29,7 +29,7 @@ class PlexusPostPopoverDetail: NSViewController, NSTableViewDelegate, NSTableVie
         }
         let theUpNodes = curNode.upNodes(self)
         for thisUpNode in theUpNodes {
-            let cptcolumn = NSTableColumn(identifier: thisUpNode.name)
+            let cptcolumn = NSTableColumn(identifier: convertToNSUserInterfaceItemIdentifier(thisUpNode.name))
             cptcolumn.headerCell.stringValue = thisUpNode.name
             cptcolumn.sizeToFit()
 
@@ -37,7 +37,7 @@ class PlexusPostPopoverDetail: NSViewController, NSTableViewDelegate, NSTableVie
             cptTableView.addTableColumn(cptcolumn)
             
         }
-        let datacolumn = NSTableColumn(identifier: "Data")
+        let datacolumn = NSTableColumn(identifier: convertToNSUserInterfaceItemIdentifier("Data"))
         datacolumn.headerCell.stringValue = "CP"
         tableWidth += Double(datacolumn.width)
         cptTableView.addTableColumn(datacolumn)
@@ -87,7 +87,7 @@ class PlexusPostPopoverDetail: NSViewController, NSTableViewDelegate, NSTableVie
         var curNodes : [BNNode] = nodesController.selectedObjects as! [BNNode]
         if(curNodes.count>0) {
             let curNode = curNodes[0]
-            if(tableColumn?.identifier == "Data" ){
+            if(convertFromNSUserInterfaceItemIdentifier(tableColumn?.identifier ?? NSUserInterfaceItemIdentifier(rawValue: "None")) == "Data" ){
                 let curModels : [Model] = plexusModelDetailViewController.modelTreeController.selectedObjects as! [Model]
                 let curModel : Model = curModels[0]
                 if curModel.complete {
@@ -137,4 +137,14 @@ class PlexusPostPopoverDetail: NSViewController, NSTableViewDelegate, NSTableVie
         return nil
     }
     
+}
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertToNSUserInterfaceItemIdentifier(_ input: String) -> NSUserInterfaceItemIdentifier {
+	return NSUserInterfaceItemIdentifier(rawValue: input)
+}
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertFromNSUserInterfaceItemIdentifier(_ input: NSUserInterfaceItemIdentifier) -> String {
+	return input.rawValue
 }

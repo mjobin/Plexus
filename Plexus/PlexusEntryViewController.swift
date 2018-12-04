@@ -12,8 +12,8 @@ import CoreServices
 
 class PlexusEntryViewController: NSViewController, NSTableViewDelegate, NSTableViewDataSource {
 
-    var moc : NSManagedObjectContext!
-    dynamic var modelTreeController : NSTreeController!
+    @objc var moc : NSManagedObjectContext!
+    @objc dynamic var modelTreeController : NSTreeController!
     @IBOutlet dynamic var entryController : NSArrayController!
     @IBOutlet weak var entryTableView : NSTableView!
 
@@ -21,7 +21,7 @@ class PlexusEntryViewController: NSViewController, NSTableViewDelegate, NSTableV
     required init?(coder aDecoder: NSCoder)
     {
 
-        let appDelegate : AppDelegate = NSApplication.shared().delegate as! AppDelegate
+        let appDelegate : AppDelegate = NSApplication.shared.delegate as! AppDelegate
         moc = appDelegate.persistentContainer.viewContext
 
         super.init(coder: aDecoder)
@@ -30,13 +30,13 @@ class PlexusEntryViewController: NSViewController, NSTableViewDelegate, NSTableV
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        let appDelegate : AppDelegate = NSApplication.shared().delegate as! AppDelegate
+        let appDelegate : AppDelegate = NSApplication.shared.delegate as! AppDelegate
         moc = appDelegate.persistentContainer.viewContext
         
     
         let kString : String = kUTTypeURL as String
         let registeredTypes:[String] = [kString]
-        entryTableView.register(forDraggedTypes: registeredTypes)
+        entryTableView.registerForDraggedTypes(convertToNSPasteboardPasteboardTypeArray(registeredTypes))
         entryTableView.setDraggingSourceOperationMask(NSDragOperation.every, forLocal: true)
         entryTableView.setDraggingSourceOperationMask(NSDragOperation.every, forLocal: false)
         entryTableView.verticalMotionCanBeginDrag = true
@@ -117,7 +117,7 @@ class PlexusEntryViewController: NSViewController, NSTableViewDelegate, NSTableV
             let data : Data = NSKeyedArchiver.archivedData(withRootObject: mutableArray)
             
             let kString : String = kUTTypeURL as String
-            pboard.setData(data, forType: kString)
+            pboard.setData(data, forType: convertToNSPasteboardPasteboardType(kString))
             return true
             
             
@@ -130,4 +130,14 @@ class PlexusEntryViewController: NSViewController, NSTableViewDelegate, NSTableV
     
     
     
+}
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertToNSPasteboardPasteboardTypeArray(_ input: [String]) -> [NSPasteboard.PasteboardType] {
+	return input.map { key in NSPasteboard.PasteboardType(key) }
+}
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertToNSPasteboardPasteboardType(_ input: String) -> NSPasteboard.PasteboardType {
+	return NSPasteboard.PasteboardType(rawValue: input)
 }

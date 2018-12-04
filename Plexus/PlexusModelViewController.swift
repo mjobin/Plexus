@@ -10,7 +10,7 @@ import Cocoa
 
 class PlexusModelViewController: NSViewController, NSOutlineViewDelegate, NSOutlineViewDataSource {
 
-    var moc : NSManagedObjectContext!
+    @objc var moc : NSManagedObjectContext!
     @IBOutlet dynamic var modelTreeController : NSTreeController!
     @IBOutlet weak var modelOutlineView : NSOutlineView!
     
@@ -20,7 +20,7 @@ class PlexusModelViewController: NSViewController, NSOutlineViewDelegate, NSOutl
     required init?(coder aDecoder: NSCoder)
     {
         
-        let appDelegate : AppDelegate = NSApplication.shared().delegate as! AppDelegate
+        let appDelegate : AppDelegate = NSApplication.shared.delegate as! AppDelegate
         moc = appDelegate.persistentContainer.viewContext
         
         super.init(coder: aDecoder)
@@ -30,7 +30,7 @@ class PlexusModelViewController: NSViewController, NSOutlineViewDelegate, NSOutl
         super.viewDidLoad()
         let kString : String = kUTTypeURL as String
         let registeredTypes:[String] = [kString]
-        modelOutlineView.register(forDraggedTypes: registeredTypes)
+        modelOutlineView.registerForDraggedTypes(convertToNSPasteboardPasteboardTypeArray(registeredTypes))
         
         let options: NSKeyValueObservingOptions = [NSKeyValueObservingOptions.new, NSKeyValueObservingOptions.old]
         modelTreeController.addObserver(self, forKeyPath: "arrangedObjects", options: options, context: nil)
@@ -60,9 +60,9 @@ class PlexusModelViewController: NSViewController, NSOutlineViewDelegate, NSOutl
         
 
         
-        let pboard : NSPasteboard = info.draggingPasteboard()
+        let pboard : NSPasteboard = info.draggingPasteboard
         let kString : String = kUTTypeURL as String
-        let data : Data = pboard.data(forType: kString)!
+        let data : Data = pboard.data(forType: convertToNSPasteboardPasteboardType(kString))!
         let draggedArray : NSArray = NSKeyedUnarchiver.unarchiveObject(with: data) as! NSArray
 
         
@@ -178,4 +178,14 @@ class PlexusModelViewController: NSViewController, NSOutlineViewDelegate, NSOutl
     }
     
     
+}
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertToNSPasteboardPasteboardTypeArray(_ input: [String]) -> [NSPasteboard.PasteboardType] {
+	return input.map { key in NSPasteboard.PasteboardType(key) }
+}
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertToNSPasteboardPasteboardType(_ input: String) -> NSPasteboard.PasteboardType {
+	return NSPasteboard.PasteboardType(rawValue: input)
 }
