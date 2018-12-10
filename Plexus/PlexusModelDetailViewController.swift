@@ -769,6 +769,11 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
 
     
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
+        
+        if calcInProgress == true {
+            return
+        }
+        
         let keyPathStr : String = keyPath!
         switch (keyPathStr) {
             case("selectionIndexPath"): //modelTreeController

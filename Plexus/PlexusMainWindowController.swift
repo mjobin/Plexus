@@ -2418,6 +2418,458 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
     
     }
     
+    @IBAction func exportButton(_ x:NSToolbarItem){
+        
+//        let defaults = UserDefaults.standard
+        
+        let curModels : [Model] = self.mainSplitViewController.modelTreeController?.selectedObjects as! [Model]
+        let curModel : Model = curModels[0]
+        
+        
+        let op:NSOpenPanel = NSOpenPanel()
+        op.canChooseFiles = false
+        op.canChooseDirectories = true
+        let result = op.runModal()
+        op.close()
+        
+
+        
+        if (result.rawValue == NSFileHandlingPanelOKButton) {
+            mainSplitViewController.modelDetailViewController?.calcInProgress = true
+            
+            self.performSelector(onMainThread: #selector(PlexusMainWindowController.startProgInd), with: nil, waitUntilDone: true)
+
+            
+
+            let baseDir = op.directoryURL?.absoluteURL
+        
+            DispatchQueue.global().async {
+                self.exportModel(curModel: curModel, curDir: baseDir!)
+                
+                
+                DispatchQueue.main.async {
+                    self.mainSplitViewController.modelDetailViewController?.calcInProgress = false
+                }
+                self.performSelector(onMainThread: #selector(PlexusMainWindowController.endProgInd), with: nil, waitUntilDone: true)
+                
+
+            }
+            
+        }
+        
+        else { return }
+            
+    }
+    
+    func exportModel(curModel: Model, curDir: URL) {
+        
+        let defaults = UserDefaults.standard
+        let pTypes = defaults.array(forKey: "PriorTypes") as! [String]
+        
+        let newDir = curDir.appendingPathComponent(curModel.name)
+
+
+        
+        //Remove an exisitng directory with that name
+        do {
+            try FileManager.default.removeItem(at: newDir)
+        }  catch _ as NSError {
+//            print(error.description)
+        }
+        
+
+        //Create a new one to write into
+        do {
+            try FileManager.default.createDirectory(at: newDir, withIntermediateDirectories: false, attributes: nil)
+        } catch let error as NSError {
+            print(error.description)
+            return
+        }
+        
+        
+        let newPath = newDir.path
+        
+        //Change working directory to that one
+    
+
+        if FileManager.default.changeCurrentDirectoryPath(newPath){
+
+            //Write files
+            let baseFile = curModel.name + "-data.txt"
+            let dataURL = newDir.appendingPathComponent(baseFile)
+
+//            print(dataURL)
+            
+//            var baseFile = "file://" + newPath + "//" + curModel.name
+//            //baseFile = baseFile.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed)
+//            let dataFile =  baseFile + "-data.txt"
+//            print (dataFile)
+//            let dataURL = URL(string: dataFile)
+//            print (dataURL)
+//
+            
+
+                
+                var allScopedTraits  = [Trait]()
+                let theEntries = curModel.entry
+                for thisEntry in theEntries {
+                    let curEntry = thisEntry as! Entry
+                    for thisTrait in curEntry.trait {
+                        let curTrait = thisTrait as! Trait
+                        allScopedTraits.append(curTrait)
+                    }
+                }
+                
+                let distinctHeaderTraits = NSSet(array: allScopedTraits.map { $0.name })
+                
+//
+//                self.performSelector(onMainThread: #selector(PlexusMainWindowController.startProgInd), with: nil, waitUntilDone: true)
+            
+                DispatchQueue.main.async {
+                    self.maxLabel.stringValue = String(theEntries.count)
+                    self.progInd.isIndeterminate = false
+                    self.workLabel.stringValue = "Exporting Entries..."
+                    self.progInd.doubleValue = 0
+                    self.progInd.startAnimation(self)
+                    self.progInd.maxValue =  Double(theEntries.count)
+                    self.progInd.startAnimation(self)
+                }
+                
+                var outText = "Name,"
+                
+                
+                var i = 0
+                
+                for headerTrait in distinctHeaderTraits {
+                    outText += headerTrait as! String
+                    
+                    outText += ","
+                    
+                }
+                outText += "\n"
+                
+
+                
+                for thisEntry in theEntries {
+                    let entry = thisEntry as! Entry
+                    outText += entry.name
+                    outText += ","
+                    
+                    let tTraits = entry.trait
+                    for headerTrait in distinctHeaderTraits {
+                        let hKey = headerTrait as! String
+                        
+                        
+                        
+                        var traitString = [String]()
+                        for tTrait in tTraits{
+                            let tKey = (tTrait as AnyObject).value(forKey: "name") as! String
+                            if hKey == tKey{
+                                //outText += tTrait.valueForKey("value") as! String
+                                //outText += "\t"
+                                traitString.append((tTrait as AnyObject).value(forKey: "value") as! String)
+                            }
+                            
+                            
+                        }
+                        if(traitString.count > 1){
+                            outText += "\""
+                        }
+                        var k = 1
+                        for thisTraitString in traitString {
+                            outText += thisTraitString
+                            if(traitString.count > 1 && k < traitString.count){
+                                outText += ","
+                            }
+                            k += 1
+                        }
+                        
+                        if(traitString.count > 1){
+                            outText += "\""
+                        }
+                        
+                        
+                        outText += ","
+                    }
+                    
+                    
+                    outText += "\n"
+                    
+                    DispatchQueue.main.async {
+                        
+                        self.progInd.increment(by: 1)
+                        self.curLabel.stringValue = String(i)
+                        
+                    }
+                    i += 1
+                    
+                }
+
+                do {
+                    try outText.write(to: dataURL, atomically: true, encoding: String.Encoding.utf8)
+                } catch _ {
+                }
+            
+            
+            
+            DispatchQueue.main.async {
+                self.maxLabel.stringValue = String(theEntries.count)
+                self.progInd.isIndeterminate = false
+                self.workLabel.stringValue = "Exporting Nodes..."
+                self.progInd.doubleValue = 0
+                self.progInd.startAnimation(self)
+                self.progInd.maxValue =  Double(theEntries.count)
+                self.progInd.startAnimation(self)
+            }
+                
+
+            
+                i = 0
+            
+                let nodeTXTFileName = curModel.name + "-nodes.csv"
+                let nodeTXTURL = newDir.appendingPathComponent(nodeTXTFileName)
+                outText = String()
+            
+                var longestColumn = 0
+            
+                var postBins = [[Double]]()
+                var postCounts = [[Int]]()
+                var postArrays = [[Float]]()
+                    
+                for node in self.mainSplitViewController.modelDetailViewController?.nodesController.arrangedObjects as! [BNNode] {
+                    self.mainSplitViewController.modelDetailViewController?.nodesController.setSelectionIndex(i)
+                    
+                    outText += node.name
+                    outText += "-PriorType,"
+                    
+                    outText += node.name
+                    outText += "-PriorV1,"
+                    
+                    outText += node.name
+                    outText += "-PriorV2,"
+                    
+                    
+                    
+                    
+                    outText += node.name
+                    outText += "-PostCount,"
+                    
+                    let postCount = node.postCount
+                    if (postCount.count > longestColumn){
+                        longestColumn = postCount.count
+                    }
+                    postCounts.append(postCount)
+                    
+                    let postCountDub = Double(postCount.count)
+                    
+                    var postBin = [Double]()
+                    var binc = 0.0
+                    for _ in postCount {
+                        postBin.append(binc/postCountDub)
+                        binc = binc + 1
+                    }
+                    if (postBin.count > longestColumn){
+                        longestColumn = postBin.count
+                    }
+                    postBins.append(postBin)
+                    
+                    outText += node.name
+                    outText += "-PostBins,"
+                    
+                    
+                    outText += node.name
+                    outText += "-PostDist,"
+                    let postArray = node.postArray
+                    if (postArray.count > longestColumn){
+                        longestColumn = postArray.count
+                    }
+                    postArrays.append(postArray)
+                    
+                    
+                    
+                }
+            
+                outText += "\n"
+                for j in 0...longestColumn{
+                    var k = 0
+                    for node in self.mainSplitViewController.modelDetailViewController?.nodesController.arrangedObjects as! [BNNode] {
+                        self.mainSplitViewController.modelDetailViewController?.nodesController.setSelectionIndex(i)
+                        if(j==0){
+                            outText += pTypes[node.priorDistType as! Int]
+                            outText += ","
+                            outText += String(describing: node.priorV1)
+                            outText += ","
+                            outText += String(describing: node.priorV2)
+                            outText += ","
+                        }
+                        else {
+                            outText += ",,,"
+                        }
+                        if(j<postCounts[k].count){
+                            outText += String(postCounts[k][j])
+                        }
+                        outText += ","
+                        
+                        if(j<postBins[k].count){
+                            outText += String(postBins[k][j])
+                        }
+                        outText += ","
+                        
+                        if(j<postArrays[k].count){
+                            outText += String(postArrays[k][j])
+                        }
+                        
+                        
+                        outText += ","
+                        
+                        
+                    }
+                    
+                    k = k + 1
+                    outText += "\n"
+                    
+                }
+                    
+                    
+                do {
+                    try outText.write(to: nodeTXTURL, atomically: true, encoding: String.Encoding.utf8)
+                }
+                catch let error as NSError {
+                    print(error)
+                } catch {
+                    fatalError()
+                }
+            
+            
+            //Log
+            
+            
+            let logFile = curModel.name + "-runlog.txt"
+            let logURL = newDir.appendingPathComponent(logFile)
+            
+            
+            do {
+                try curModel.runlog.write(to: logURL, atomically: true, encoding: String.Encoding.utf8)
+            } catch _ {
+            }
+            
+            
+                DispatchQueue.main.sync {
+                  
+                    
+                for node in self.mainSplitViewController.modelDetailViewController?.nodesController.arrangedObjects as! [BNNode] {
+                    self.mainSplitViewController.modelDetailViewController?.nodesController.setSelectionIndex(i)
+                    
+                    
+            
+                    //create a compound of the outFile name and node name
+                    let nodePDFFileName = curModel.name + "-" + node.name + ".pdf"
+                    let nodeURL = newDir.appendingPathComponent(nodePDFFileName)
+                    
+                    
+                    let graphView = self.mainSplitViewController.modelDetailViewController?.graphView
+                    graphView?.frame = NSMakeRect(0, 0, 800, 600)
+                    
+                    
+                    let graph = self.mainSplitViewController.modelDetailViewController?.graph
+                    
+                    graph?.frame = NSMakeRect(0, 0, 800, 600)
+                    
+                    graph?.paddingTop = 10.0
+                    graph?.paddingBottom = 10.0
+                    graph?.paddingLeft = 10.0
+                    graph?.paddingRight = 10.0
+                    
+                    
+                    let titleStyle = CPTMutableTextStyle()
+                    titleStyle.fontName = "SFProDisplay-Bold"
+                    titleStyle.fontSize = 18.0
+                    titleStyle.color = CPTColor.black()
+                    graph?.titleTextStyle = titleStyle
+                    graph?.title = node.name
+                    
+                    let titleTextStyle = CPTMutableTextStyle.init()
+                    titleTextStyle.color = CPTColor.white()
+                    
+                    
+                    
+                    for plot in (graph?.allPlots())! {
+                        plot.attributedTitle = nil
+                        if(plot.identifier!.isEqual("PriorPlot")){
+                            plot.title = "Prior"
+                            
+                        }
+                        else {
+                            plot.title = "Posterior"
+                            
+                        }
+                    }
+                    
+                    
+                    
+
+                    
+                    let axisSet = graph?.axisSet as! CPTXYAxisSet
+                    let axisLineStyle = CPTMutableLineStyle.init()
+                    axisLineStyle.lineColor = CPTColor.black()
+                    axisSet.xAxis!.axisConstraints = CPTConstraints.constraint(withUpperOffset: 1.0)
+                    axisSet.yAxis!.axisConstraints = CPTConstraints.constraint(withUpperOffset: 1.0)
+                    axisSet.yAxis!.axisConstraints = CPTConstraints.constraint(withLowerOffset: 0.0)
+                    axisSet.xAxis!.axisConstraints = CPTConstraints.constraint(withLowerOffset: 0.0)
+                    axisSet.xAxis!.tickDirection = CPTSign.positive
+                    axisSet.yAxis!.tickDirection = CPTSign.positive
+                    axisSet.xAxis?.axisLineStyle = axisLineStyle
+                    axisSet.xAxis?.majorTickLineStyle = axisLineStyle
+                    axisSet.yAxis?.majorTickLineStyle = axisLineStyle
+                    axisSet.xAxis?.minorTickLineStyle = axisLineStyle
+                    axisSet.yAxis?.minorTickLineStyle = axisLineStyle
+                    axisSet.yAxis?.axisLineStyle = axisLineStyle
+                    
+                    
+                    
+                    
+                    let axisTextStyle = CPTMutableTextStyle.init()
+                    axisTextStyle.color = CPTColor.black()
+                    
+                    axisSet.xAxis?.labelTextStyle = axisTextStyle
+                    axisSet.yAxis?.labelTextStyle = axisTextStyle
+                    
+                    axisSet.xAxis!.labelingPolicy = .automatic
+                    axisSet.yAxis!.labelingPolicy = .automatic
+                    axisSet.xAxis!.preferredNumberOfMajorTicks = 3
+                    axisSet.yAxis!.preferredNumberOfMajorTicks = 3
+                    axisSet.xAxis!.minorTicksPerInterval = 4
+                    axisSet.yAxis!.minorTicksPerInterval = 4
+                    graph?.axisSet = axisSet
+                    
+                    
+                    
+                    
+                    let pdfData = graph?.dataForPDFRepresentationOfLayer()
+                    try? pdfData!.write(to: nodeURL, options: [.atomic])
+                    
+                    graph?.title = ""
+                    
+                    i += 1
+                }
+                    
+                    
+            
+            }
+
+            //Then recurively do the same for all the children
+            let curChildren = curModel.children
+            for curChild in curChildren {
+                let thisChild = curChild as! Model
+                self.exportModel(curModel: thisChild, curDir: newDir)
+            }
+            
+        }
+        
+
+        
+    }
+    
     @IBAction func exportCSV(_ x:NSToolbarItem){
 
         self.breakloop = false
@@ -2460,8 +2912,11 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
             baseFile = baseFile! + "/" + sv.nameFieldStringValue.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed)!
             
             let outFileName = baseFile! + "-data.csv"
+            print (outFileName)
 
             let outURL = URL(string: outFileName)
+            
+            print (outURL)
             
             
             
