@@ -3,7 +3,7 @@
 //  Plexus
 //
 //  Created by matt on 10/1/14.
-//  Copyright (c) 2014 Matthew Jobin. All rights reserved.
+//  Copyright (c) 2018 Matthew Jobin. All rights reserved.
 //
 
 import Cocoa
@@ -12,18 +12,18 @@ import Metal
 
 class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
     
-  
+    
     var moc : NSManagedObjectContext!
     var mainSplitViewController = PlexusMainSplitViewController()
     @IBOutlet var mainToolbar : NSToolbar!
     @IBOutlet var testprog : NSProgressIndicator!
     @IBOutlet var metalDevices = MTLCopyAllDevices()
     @IBOutlet dynamic var devicesController : NSArrayController!
-
-
+    
+    
     let queue = DispatchQueue(label: "com.plexus.Plexus.metalQueue")
-
-
+    
+    
     var device : MTLDevice!
     var pipelineState : MTLComputePipelineState!
     var kernelFunction : MTLFunction!
@@ -42,13 +42,13 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
     var progSheet : NSWindow!
     var cancelButton : NSButton!
     
-
+    
     var progInd : NSProgressIndicator!
     var workLabel : NSTextField!
     var curLabel : NSTextField!
     var ofLabel : NSTextField!
     var maxLabel : NSTextField!
-
+    
     
     var hProgInd : NSProgressIndicator!
     var hworkLabel : NSTextField!
@@ -62,27 +62,27 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
     var rcurLabel : NSTextField!
     var rmaxLabel : NSTextField!
     
-
+    
     var timeLabel : NSTextField!
     var timeOfLabel : NSTextField!
     var timeMaxLabel : NSTextField!
-     
-
+    
+    
     
     var breakloop = false
     
     
-
     
-
+    
+    
     @objc dynamic var modelTreeController : NSTreeController!
     
-
+    
     
     override func windowWillLoad() {
         
         //let errorPtr : NSErrorPointer = nil
-
+        
         //Get MOC from App delegate
         let appDelegate : AppDelegate = NSApplication.shared.delegate as! AppDelegate
         moc = appDelegate.persistentContainer.viewContext
@@ -98,17 +98,17 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         
         if fetchedModels == nil {
             print("error")
-
+            
         }
-
-
+        
+        
         
         let initModels = fetchedModels as! [NSManagedObject]
         if(initModels.count == 0){
-
+            
             //so make an initial one
-
-
+            
+            
             let newModel = NSEntityDescription.insertNewObject(forEntityName: "Model", into: moc) 
             newModel.setValue("newmodel", forKey: "name")
             newModel.setValue(Date(), forKey: "dateCreated")
@@ -119,19 +119,19 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
             } catch let error as NSError {
                 print(error)
             }
-
+            
         }
         
-
-
-//        NotificationCenter.default.addObserver(self, selector: #selector(PlexusMainWindowController.contextDidChange(_:)), name: Notification.Name.NSManagedObjectContextObjectsDidChange, object: nil)
-//        NotificationCenter.default.addObserver(self, selector: #selector(PlexusMainWindowController.contextWillSave(_:)), name: Notification.Name.NSManagedObjectContextWillSave, object: nil)
+        
+        
+        //        NotificationCenter.default.addObserver(self, selector: #selector(PlexusMainWindowController.contextDidChange(_:)), name: Notification.Name.NSManagedObjectContextObjectsDidChange, object: nil)
+        //        NotificationCenter.default.addObserver(self, selector: #selector(PlexusMainWindowController.contextWillSave(_:)), name: Notification.Name.NSManagedObjectContextWillSave, object: nil)
         
         
         NotificationCenter.default.addObserver(self, selector: #selector(PlexusMainWindowController.contextDidSave(_:)), name: NSNotification.Name.NSManagedObjectContextDidSave, object: nil)
         
         
-
+        
         
         
         
@@ -141,32 +141,45 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
     
     override func windowDidLoad() {
         super.windowDidLoad()
-
+        
         mainSplitViewController = contentViewController as! PlexusMainSplitViewController
-
- 
+        
+        
         modelTreeController = mainSplitViewController.modelViewController?.modelTreeController
         
-//        queue.async {
-//            self.setUpMetal()
-//        }
+        //        queue.async {
+        //            self.setUpMetal()
+        //        }
         
-
+        
         
     }
     
-
-
     
+    
+    /**
+     Opens and closes Model SplitView item
+     
+     - Parameter x: Toolbar tem.
+     
+     */
     @IBAction func  toggleModels(_ x:NSToolbarItem){
-
-
+        
+        
         mainSplitViewController.toggleModels(x)
         
     }
     
-
     
+    /**
+     Converts time to nearest unit and rounds.
+     
+     - Parameter secs: seconds from time function.
+     - Parameter retUnit: should time unit be
+     
+     
+     - Returns: String with converted time and possibly unit.
+     */
     func secondsConvert(secs : Double, retUnit:Bool) -> String {
         
         let formatter = NumberFormatter()
@@ -201,12 +214,20 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         }
         
         if retUnit {
-        retString += "."
+            retString += "."
         }
         return retString
     }
-
     
+    
+    /**
+     Prepares progress indicator sheet.
+     
+     - Parameter sender: Calling function.
+     
+     
+     - Returns: Prepared sheet for display.
+     */
     func progSetup(_ sender: AnyObject) -> NSWindow {
         var retWin : NSWindow!
         
@@ -261,7 +282,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         contentView.addSubview(progInd)
         contentView.addSubview(cancelButton)
         
-
+        
         
         retWin.contentView = contentView
         
@@ -270,6 +291,13 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
     }
     
     
+    /**
+     Prepares progress indicator sheet with three progress bars for random hill climbing function.
+     
+     - Parameter sender: Calling function.
+     
+     - Returns: Prepared sheet for display.
+     */
     func progHillSetup(_ sender: AnyObject) -> NSWindow {
         var retWin : NSWindow!
         
@@ -317,7 +345,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         curLabel.stringValue = String(0)
         
         
-
+        
         
         hProgInd = NSProgressIndicator(frame: NSRect(x: 100, y: 94, width: 250, height: 20))
         hProgInd.canDrawConcurrently = true
@@ -365,7 +393,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         timeOfLabel.isBezeled = false
         timeOfLabel.stringValue = "of"
         
-    
+        
         self.timeMaxLabel = NSTextField(frame: NSRect(x: 54, y: 12, width: 128, height: 20))
         timeMaxLabel.isEditable = false
         timeMaxLabel.drawsBackground = false
@@ -398,9 +426,15 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
     }
     
     
+    /**
+     Imports a Comma Separated text file.
+     
+     - Parameter x: Toolbar tem.
+     
+     */
     @IBAction func  importCSV(_ x:NSToolbarItem){
-
-
+        
+        
         self.mainSplitViewController.entryController.fetch(self)
         self.breakloop = false
         
@@ -412,39 +446,39 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         op.canChooseFiles = true
         op.allowedFileTypes = ["csv"]
         
-//        let aView : NSView = NSView(frame: NSMakeRect(0.0, 0.0, 324.0, 22.0))
-//        
-//        //accessory view to allow addition to current locaiton
-//        let av:NSButton = NSButton(frame: NSMakeRect(0.0, 0.0, 140.0, 22.0))
-//        av.setButtonType(NSButtonType.switch)
-//        av.title = "Add as child"
-//        av.state = 0
-//        aView.addSubview(av)
-//        op.accessoryView = aView
-//        
-//        let sc:NSButton = NSButton(frame: NSMakeRect(170.0, 0.0, 140.0, 22.0))
-//        sc.setButtonType(NSButtonType.switch)
-//        sc.title = "Create new model"
-//        sc.state = 1
-//        aView.addSubview(sc)
-//        
-//        op.accessoryView = aView
-//        
-//        
-//       //
-//        if #available(OSX 10.11, *) {
-//            op.isAccessoryViewDisclosed = true
-//        } else {
-//            op.accessoryView?.isHidden = false
-//        }
+        //        let aView : NSView = NSView(frame: NSMakeRect(0.0, 0.0, 324.0, 22.0))
+        //
+        //        //accessory view to allow addition to current locaiton
+        //        let av:NSButton = NSButton(frame: NSMakeRect(0.0, 0.0, 140.0, 22.0))
+        //        av.setButtonType(NSButtonType.switch)
+        //        av.title = "Add as child"
+        //        av.state = 0
+        //        aView.addSubview(av)
+        //        op.accessoryView = aView
+        //
+        //        let sc:NSButton = NSButton(frame: NSMakeRect(170.0, 0.0, 140.0, 22.0))
+        //        sc.setButtonType(NSButtonType.switch)
+        //        sc.title = "Create new model"
+        //        sc.state = 1
+        //        aView.addSubview(sc)
+        //
+        //        op.accessoryView = aView
+        //
+        //
+        //       //
+        //        if #available(OSX 10.11, *) {
+        //            op.isAccessoryViewDisclosed = true
+        //        } else {
+        //            op.accessoryView?.isHidden = false
+        //        }
         
         let result = op.runModal()
         
-
+        
         
         op.close()
         
-
+        
         
         if (result.rawValue == NSFileHandlingPanelOKButton) {
             mainSplitViewController.modelDetailViewController?.calcInProgress = true
@@ -452,8 +486,8 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
             var firstLine = true
             let inFile  = op.url
             let inFileBase = inFile?.deletingPathExtension()
-
-
+            
+            
             DispatchQueue.global().async {
                 
                 let inMOC = NSManagedObjectContext(concurrencyType: .privateQueueConcurrencyType)
@@ -470,14 +504,14 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                 
                 let delimiterCharacterSet = NSMutableCharacterSet(charactersIn: ",\"")
                 delimiterCharacterSet.formUnion(with: CharacterSet.whitespacesAndNewlines)
-
+                
                 var batchCount : Int = 0
                 var columnCount = 0
                 var nameColumn = -1
                 var latitudeColumn = -1
                 var longitudeColumn = -1
                 var headers = [String]()
-
+                
                 
                 self.performSelector(onMainThread: #selector(PlexusMainWindowController.startProgInd), with: nil, waitUntilDone: true)
                 
@@ -490,9 +524,9 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                     self.progInd.maxValue =  Double(fileLines.count)
                 }
                 
-
+                
                 for thisLine : String in fileLines {
-
+                    
                     if(self.breakloop){
                         break
                     }
@@ -524,7 +558,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                             
                             let newEntry : Entry = Entry(entity: NSEntityDescription.entity(forEntityName: "Entry", in: inMOC)!, insertInto: inMOC)
                             
- 
+                            
                             var theTraits : [String] = thisLine.components(separatedBy: ",")
                             
                             
@@ -534,7 +568,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                                 
                                 DispatchQueue.main.async {
                                     
-
+                                    
                                     self.window!.endSheet(self.progSheet)
                                     self.progSheet.orderOut(self)
                                     
@@ -548,13 +582,13 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                                     alert.addButton(withTitle: cancelButton)
                                     
                                     let _ = alert.runModal()
-
-
+                                    
+                                    
                                     
                                 }
                                 
                                 return
-
+                                
                             }
                             
                             
@@ -566,7 +600,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                             }
                             
                             if latitudeColumn >= 0 {
-                            
+                                
                                 newEntry.setValue(Float(theTraits[latitudeColumn]), forKey: "latitude")
                             }
                             
@@ -574,21 +608,21 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                                 newEntry.setValue(Float(theTraits[longitudeColumn]), forKey: "longitude")
                             }
                             
-
+                            
                             
                             newModel.addAnEntryObject(newEntry)
                             newEntry.addAModelObject(newModel)
-
                             
-
-
-
                             
-
+                            
+                            
+                            
+                            
+                            
                             
                             columnCount = 0
                             for thisTrait in theTraits {
-
+                                
                                 
                                 if(columnCount != nameColumn){
                                     
@@ -608,7 +642,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                                     
                                 }
                                 
-                            
+                                
                                 columnCount += 1
                                 
                             }
@@ -616,27 +650,27 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                         }
                         
                     }
-
-
+                    
+                    
                     DispatchQueue.main.async {
                         
                         self.progInd.increment(by: 1)
                         self.curLabel.stringValue = String(i)
                         
-
+                        
                     }
                     
-
+                    
                     firstLine = false
                     i += 1
                     
-
-
+                    
+                    
                     
                     batchCount += 1
                     if(batchCount > 100){
                         
-
+                        
                         
                         
                         
@@ -648,61 +682,60 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                             fatalError()
                         }
                         batchCount = 0
-
+                        
                         
                     }
-
+                    
                 }
                 
                 
                 
-                    do {
-                        try inMOC.save()
-                    } catch let error as NSError {
-                        print(error)
-                    } catch {
-                        fatalError()
-                    }
+                do {
+                    try inMOC.save()
+                } catch let error as NSError {
+                    print(error)
+                } catch {
+                    fatalError()
+                }
                 
-
-                    inMOC.reset()
                 
-
-                    DispatchQueue.main.async {
-
-                        let mSelPath = self.mainSplitViewController.modelTreeController.selectionIndexPath
-                        self.moc.reset()
-                        self.mainSplitViewController.entryController.fetch(self)
-                        self.mainSplitViewController.modelTreeController.fetch(self)
-                        self.mainSplitViewController.modelTreeController.setSelectionIndexPath(mSelPath)
-                        self.mainSplitViewController.modelDetailViewController?.calcInProgress = false
-
-                        
-                    }
+                inMOC.reset()
+                
+                
+                DispatchQueue.main.async {
+                    
+                    let mSelPath = self.mainSplitViewController.modelTreeController.selectionIndexPath
+                    self.moc.reset()
+                    self.mainSplitViewController.entryController.fetch(self)
+                    self.mainSplitViewController.modelTreeController.fetch(self)
+                    self.mainSplitViewController.modelTreeController.setSelectionIndexPath(mSelPath)
+                    self.mainSplitViewController.modelDetailViewController?.calcInProgress = false
+                    
+                    
+                }
                 
                 self.performSelector(onMainThread: #selector(PlexusMainWindowController.endProgInd), with: nil, waitUntilDone: true)
-
+                
             }
-  
+            
         }
         
-
+        
         
     }
-
+    
     @objc func cancelProg(_ sender: AnyObject){
-
+        
         self.breakloop = true
     }
     
     /**
      Creates a copied, then randomly altered Model based on an exisitng Model.
      
-     - Parameters:
-     - lastModel: Initial Model to be altered.
-     - allTraits: List of all Traits connected to the Model. Here for convenience, since he Traits will not change model to model.
-     - inituserTraitNames: List of Trait names already in the Model, to avoid duplication.
-     - thisMOC: Currently used Managed Object context. Can be nil.
+     - Parameter lastModel: Initial Model to be altered.
+     - Parameter allTraits: List of all Traits connected to the Model. Here for convenience, since he Traits will not change model to model.
+     - Parameter inituserTraitNames: List of Trait names already in the Model, to avoid duplication.
+     - Parameter thisMOC: Currently used Managed Object context. Cannot be nil.
      
      - Returns: A copy of lastModel, randomly altered.
      */
@@ -715,7 +748,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
             return lastModel //This should not happen, but if the intila model already has less than two nodes, do not proceed. This allows the random node selection below to work.
         }
         
-
+        
         var nochange = true
         var finalString = String()
         
@@ -731,7 +764,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
             let fromNode = nodesForTest[fromPos]
             let toNode = nodesForTest[toPos]
             
-
+            
             
             //Check if there is an arc between them
             var isinfArc = false
@@ -754,96 +787,96 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
             let switchup = Int.random(in: 1 ... 5)
             switch switchup {
                 //Change an ifthen if the from node has no data
-               
-                case 1:
-                   finalString += "Ifthen: "
-                    let request = NSFetchRequest<Trait>(entityName: "Trait")
-                    let predicate = NSPredicate(format: "entry IN %@ && name == %@", argumentArray: [newModel.entry, fromNode.name])
-                    request.predicate = predicate
-                    do {
-                        let allCount = try moc.count(for: request)
-                        if allCount < 1 {
-                            if let interNode = fromNode.getDownInterBetween(downNode: toNode){
-                                interNode.ifthen =  NSNumber(value: Float.random(in: 0 ... 1))
-                                nochange = false
-                            }
-                        }
-                        
-                    } catch {
-                        fatalError("Failed request.")
-                }
-                //Add a hidden node wih no data pointing at toNode, or if it is hidden, remove it
-                case 2:
-                    if toNode.hidden == true {
-                        finalString += "Removing hidden: "
-                        newModel.removeABNNodeObject(toNode)
-                        toNode.removeSelfFromNeighbors(moc: thisMOC)
-                        thisMOC.delete(toNode)
-                        nochange = false
-                    }
-                    
-                    else {
-                        var hashidden = false
-                        for thisUpNode in toNode.upNodes(self){
-                            if thisUpNode.hidden == true {
-                                hashidden = true
-                            }
-                        }
-                        
-                        if hashidden == false {
-                            finalString += "Adding hidden: "
-                            let newNode : BNNode = BNNode(entity: BNNode.entity(), insertInto: thisMOC)
-                            newNode.name = "hidden"
-                            newNode.hidden = true
-                            newModel.addABNNodeObject(newNode)
-                            newNode.model = newModel
-                            newNode.priorDistType = 1 //Set uniform prior
-                            newNode.priorV1 = 0.0
-                            newNode.priorV2 = 1.0
-                            
-                            let newInter = newNode.addADownObject(downNode: toNode, moc: thisMOC)
-                            newInter.ifthen = 0.5
+                
+            case 1:
+                finalString += "Ifthen: "
+                let request = NSFetchRequest<Trait>(entityName: "Trait")
+                let predicate = NSPredicate(format: "entry IN %@ && name == %@", argumentArray: [newModel.entry, fromNode.name])
+                request.predicate = predicate
+                do {
+                    let allCount = try moc.count(for: request)
+                    if allCount < 1 {
+                        if let interNode = fromNode.getDownInterBetween(downNode: toNode){
+                            interNode.ifthen =  NSNumber(value: Float.random(in: 0 ... 1))
                             nochange = false
                         }
                     }
-                
-                case 3: // Change the direction of an existing arrow
-                    finalString +=  "Changing arrow: "
-                    if fromNode.hidden == false && toNode.hidden == false { //Do not remove or reverse arrows for hidden nodes
-                        if isinfArc == true && isinfByArc == false {
-
-                            if Bool.random() { // delete arc
-                                fromNode.removeADownObject(downNode: toNode, moc: thisMOC)
-                            }
-                            else { // reverse arc
-                                fromNode.removeADownObject(downNode: toNode, moc: thisMOC)
-                                _ = toNode.addADownObject(downNode: fromNode, moc: thisMOC)
-                            }
+                    
+                } catch {
+                    fatalError("Failed request.")
+                }
+            //Add a hidden node wih no data pointing at toNode, or if it is hidden, remove it
+            case 2:
+                if toNode.hidden == true {
+                    finalString += "Removing hidden: "
+                    newModel.removeABNNodeObject(toNode)
+                    toNode.removeSelfFromNeighbors(moc: thisMOC)
+                    thisMOC.delete(toNode)
+                    nochange = false
+                }
+                    
+                else {
+                    var hashidden = false
+                    for thisUpNode in toNode.upNodes(self){
+                        if thisUpNode.hidden == true {
+                            hashidden = true
                         }
-                            
-                        else if isinfArc == false && isinfByArc == true {
-                            if Bool.random() { // delete arc
-                                toNode.removeADownObject(downNode: fromNode, moc: thisMOC)
-
-                            }
-                            else { // reverse arc
-                                toNode.removeADownObject(downNode: fromNode, moc: thisMOC)
-                                _ = fromNode.addADownObject(downNode: toNode, moc: thisMOC)
-                            }
-                        }
-                            
-                        else if isinfArc == true && isinfByArc == true {
-                            fatalError("Error: infleunces in two directions!")
-                        }
-                        else { //both false, no arc
-                            _ = fromNode.addADownObject(downNode: toNode, moc: thisMOC)
                     }
+                    
+                    if hashidden == false {
+                        finalString += "Adding hidden: "
+                        let newNode : BNNode = BNNode(entity: BNNode.entity(), insertInto: thisMOC)
+                        newNode.name = "hidden"
+                        newNode.hidden = true
+                        newModel.addABNNodeObject(newNode)
+                        newNode.model = newModel
+                        newNode.priorDistType = 1 //Set uniform prior
+                        newNode.priorV1 = 0.0
+                        newNode.priorV2 = 1.0
+                        
+                        let newInter = newNode.addADownObject(downNode: toNode, moc: thisMOC)
+                        newInter.ifthen = 0.5
                         nochange = false
+                    }
+                }
+                
+            case 3: // Change the direction of an existing arrow
+                finalString +=  "Changing arrow: "
+                if fromNode.hidden == false && toNode.hidden == false { //Do not remove or reverse arrows for hidden nodes
+                    if isinfArc == true && isinfByArc == false {
+                        
+                        if Bool.random() { // delete arc
+                            fromNode.removeADownObject(downNode: toNode, moc: thisMOC)
+                        }
+                        else { // reverse arc
+                            fromNode.removeADownObject(downNode: toNode, moc: thisMOC)
+                            _ = toNode.addADownObject(downNode: fromNode, moc: thisMOC)
+                        }
+                    }
+                        
+                    else if isinfArc == false && isinfByArc == true {
+                        if Bool.random() { // delete arc
+                            toNode.removeADownObject(downNode: fromNode, moc: thisMOC)
+                            
+                        }
+                        else { // reverse arc
+                            toNode.removeADownObject(downNode: fromNode, moc: thisMOC)
+                            _ = fromNode.addADownObject(downNode: toNode, moc: thisMOC)
+                        }
+                    }
+                        
+                    else if isinfArc == true && isinfByArc == true {
+                        fatalError("Error: infleunces in two directions!")
+                    }
+                    else { //both false, no arc
+                        _ = fromNode.addADownObject(downNode: toNode, moc: thisMOC)
+                    }
+                    nochange = false
                 }
                 
             //Change the traitvalue to another. If numeric, change tolerance
             case 4:
-               finalString += "Changing value: "
+                finalString += "Changing value: "
                 if  toNode.hidden == false {
                     if toNode.numericData {
                         toNode.tolerance = NSNumber(value: Float.random(in: 0 ... 1))
@@ -880,7 +913,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                             if chkNode.name == pickedTraitName {
                                 numwithname += 1
                                 if neverdeleted == true {
-//                                    print("Removing a node")
+                                    //                                    print("Removing a node")
                                     neverdeleted = false
                                     newModel.removeABNNodeObject(chkNode)
                                     chkNode.removeSelfFromNeighbors(moc: thisMOC)
@@ -892,11 +925,11 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                             }
                         }
                         if numwithname < 1 {
-                                usedTraitNames.remove(pickedTraitName)
+                            usedTraitNames.remove(pickedTraitName)
                         }
                     }
                 }
-                //Add node, point it to or from toNode
+                    //Add node, point it to or from toNode
                 else{
                     finalString +=  "Adding node: "
                     let newNode : BNNode = BNNode(entity: BNNode.entity(), insertInto: thisMOC)
@@ -911,99 +944,47 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                     
                     if Bool.random() {
                         _ = newNode.addADownObject(downNode: toNode, moc: thisMOC)
-
+                        
                     }
                     else {
                         _ = newNode.addAnUpObject(upNode: toNode, moc: thisMOC)
                     }
                     usedTraitNames.insert(pickedTraitName)
                     nochange = false
-
+                    
                     
                 }
                 
             default:
-//                    fatalError("Error: illegal random model alteration!")
-
+                //                    fatalError("Error: illegal random model alteration!")
+                
                 nochange = false //FIXME remove
             }
         }
         
-         //Now make sure the CPT's are recalced
+        //Now make sure the CPT's are recalced
         let afterNodes = newModel.bnnode.allObjects as! [BNNode]
         var testCPT = 2
-
+        
         for testNode in afterNodes {
             testCPT = testNode.CPT(fake: false, thisMOC: thisMOC)
         }
         if testCPT != 2 {
             fatalError("Error creating CPT in randomChildModel.")
         }
-
+        
         runLog += finalString
         runLog += "\t"
         return newModel
     }
     
     
-    
-    @IBAction func outputRunLog(_ sender: AnyObject) {
-        
-        self.breakloop = false
-        
-        
-        let curModels : [Model] = self.mainSplitViewController.modelTreeController?.selectedObjects as! [Model]
-        let curModel : Model = curModels[0]
-        
-        
-        let defaults = UserDefaults.standard
-        let pTypes = defaults.array(forKey: "PriorTypes") as! [String]
-        
-        let sv:NSSavePanel = NSSavePanel()
-        sv.nameFieldStringValue = curModel.name
-        
-        
-        let result = sv.runModal()
-        sv.close()
-        
-        if (result.rawValue == NSFileHandlingPanelOKButton) {
-            mainSplitViewController.modelDetailViewController?.calcInProgress = true
-            
-            var baseFile  = sv.url?.absoluteString
-            let baseDir = sv.directoryURL
-            
-            do {
-                try FileManager.default.removeItem(at: sv.url!)
-            }  catch _ as NSError {
-                //print(error.description)
-            }
-            
-            
-            do {
-                try FileManager.default.createDirectory(at: baseDir!.appendingPathComponent(sv.nameFieldStringValue), withIntermediateDirectories: false, attributes: nil)
-            } catch let error as NSError {
-                print(error.description)
-                return
-            }
-            
-            baseFile = baseFile! + "/" + sv.nameFieldStringValue.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed)!
-            
-            let outFileName = baseFile! + "-runlog.txt"
-            
-            let outURL = URL(string: outFileName)
-            
-            
-            do {
-                try curModel.runlog.write(to: outURL!, atomically: true, encoding: String.Encoding.utf8)
-            } catch _ {
-            }
-            
-            
-            
-        }//End ok button
-        
-    }
-    
+    /**
+     Calculates Bayesian score for the current model.
+     
+     - Parameter x: Toolbar tem.
+     
+     */
     @IBAction func singleRunPress(_ x:NSToolbarItem) {
         
         let devices = devicesController?.selectedObjects as! [MTLDevice]
@@ -1033,18 +1014,18 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
             cancelAlert.messageText = "Need at least two nodes with at least one connection between them."
             cancelAlert.addButton(withTitle: "OK")
             _ = cancelAlert.runModal()
-
             
-                self.performSelector(onMainThread: #selector(PlexusMainWindowController.endProgInd), with: nil, waitUntilDone: true)
-                self.mainSplitViewController.modelDetailViewController?.calcInProgress = false
-                return
+            
+            self.performSelector(onMainThread: #selector(PlexusMainWindowController.endProgInd), with: nil, waitUntilDone: true)
+            self.mainSplitViewController.modelDetailViewController?.calcInProgress = false
+            return
         }
         
         let calcQueue = DispatchQueue(label: "calcQueue")
         calcQueue.async {
             
             let fmcrun = self.metalCalc(curModel : firstModel,  fake : false, verbose: true)
-
+            
             self.performSelector(onMainThread: #selector(PlexusMainWindowController.endProgInd), with: nil, waitUntilDone: true)
             
             DispatchQueue.main.async {
@@ -1058,7 +1039,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                     _ = cancelAlert.runModal()
                     self.breakloop = false
                 }
-                
+                    
                 else {
                     if(fmcrun == true){
                         firstModel.complete = true
@@ -1073,17 +1054,24 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                 }
                 
                 self.mainSplitViewController.modelDetailViewController?.calcInProgress = false
-                }
-                                //end calcQ
             }
+            //end calcQ
+        }
         
-}
+    }
     
- 
+    
+    /**
+     Generates X chains of Y length from randomzied models based off the parent model, keeping the highest scoring model from each chain.
+     The highest scoring model will be added as a child of the parent if its score exceeds the parent's score.
+     
+     - Parameter x: Toolbar tem.
+     
+     */
     @IBAction func hillClimbing(_ x:NSToolbarItem){
         let start = DispatchTime.now()
         runLog = ""
-
+        
         let devices = devicesController?.selectedObjects as! [MTLDevice]
         device = devices[0]
         kernelFunction  = defaultLibrary?.makeFunction(name: "bngibbs")
@@ -1110,12 +1098,12 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         let firstModelID = firstModel.objectID
         var finalModel = firstModel
         
-
+        
         
         var finalModelID = firstModelID
         
         
-
+        
         
         self.progSheet = self.progHillSetup(self)
         self.window!.beginSheet(self.progSheet, completionHandler: nil)
@@ -1128,7 +1116,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         
         let allHillRuns = runstarts.doubleValue * hillchains.doubleValue
         
-
+        
         var usedTraitNames = Set<String>()
         let nodesForTest = firstModel.bnnode.allObjects as! [BNNode]
         if (nodesForTest.count < 2){
@@ -1145,8 +1133,8 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
             usedTraitNames.insert(firstNode.name)
         }
         
-
-
+        
+        
         
         //The Traits and Entries involved in a run do not change, so they can be fetched just once
         let request = NSFetchRequest<Trait>(entityName: "Trait")
@@ -1325,7 +1313,6 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                     //Run through all the random restarts and select highest score
                     if(modelPeaks.count > 0){
                         var peakModel = modelPeaks[0]
-                        print(peakModel.name)
                         for thisPeak in modelPeaks {
                             if thisPeak.score as! Float > peakModel.score as! Float {
                                 peakModel = thisPeak
@@ -1444,12 +1431,17 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         } catch {
             fatalError("Failed request searching for all Traits of \(firstModel).")
         }
-
-
+        
+        
         
     }
     
-    
+    /**
+     Generates Model.runstarts number of randomized children of parent model, then scores each of them Model.hillchains numbners of times and keeps in log.
+     
+     - Parameter x: Toolbar tem.
+     
+     */
     @IBAction func comparisonRun(_ x:NSToolbarItem){
         let start = DispatchTime.now()
         runLog = ""
@@ -1471,7 +1463,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         let curModels : [Model] = mainSplitViewController.modelTreeController?.selectedObjects as! [Model]
         let firstModel : Model = curModels[0]
         let firstModelID = firstModel.objectID
-
+        
         
         
         
@@ -1539,7 +1531,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                 let cfirstModel = try cmoc.existingObject(with: firstModelID) as! Model
                 
                 let theEntries = cfirstModel.entry
-
+                
                 let faultpredicate = NSPredicate(format:"self IN %@", theEntries) //This should fire the faults for all the entries in the model
                 let faultrequest = NSFetchRequest<Entry>(entityName: "Entry")
                 faultrequest.predicate = faultpredicate
@@ -1558,14 +1550,14 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                     _ = self.metalCalc(curModel: cfirstModel, fake : false, verbose: true)
                 }
                 
-
+                
                 for rs in 0...Int(truncating: runstarts)-1 {
                     
                     if(self.breakloop){
                         break
                     }
                     
-
+                    
                     let curModel = cfirstModel.copySelf(moc: cmoc, withEntries: false)
                     var currandname = cfirstModel.name
                     currandname += "-rand-"
@@ -1630,8 +1622,8 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                             self.runLog += curModel.score.stringValue
                             self.runLog += "\n"
                         }
-
-
+                        
+                        
                         DispatchQueue.main.async {
                             self.hProgInd.increment(by: 1.0)
                             let rstep = DispatchTime.now()
@@ -1657,7 +1649,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                     
                 }
                 
-  
+                
                 
                 
                 do {
@@ -1684,20 +1676,20 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                     }
                         
                     else {
-
-
-                            
-                            do {
-                                try self.moc.save()
-                            } catch let error as NSError {
-                                print(error)
-                                fatalError("ERROR saving to primary MOC.")
-                            }
-                            
-
-
+                        
+                        
+                        
+                        do {
+                            try self.moc.save()
+                        } catch let error as NSError {
+                            print(error)
+                            fatalError("ERROR saving to primary MOC.")
+                        }
+                        
+                        
+                        
                         self.mainSplitViewController.modelDetailViewController?.calcInProgress = false
-
+                        
                     }
                 }
                 
@@ -1710,29 +1702,36 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         
     }
     
-
     
-    
+    /**
+     Prepares input and compile BNGibbs Metal kernel, then run for Model.runs iterations.
+     
+     - Parameter curModel: Model to be run and scored.
+     - Parameter fake: PAss to each node's CPT() function to determine if calculations should be based on real data.
+     - Parameter verbose: Print runtime information to console.
+     
+     - Returns: True if run completed without errors.
+     */
     func metalCalc(curModel:Model, fake: Bool, verbose:Bool) -> Bool {
-//                let start = DispatchTime.now()
-//                print ("\n\n**********START")
+        //                let start = DispatchTime.now()
+        //                print ("\n\n**********START")
         
         let defaults = UserDefaults.standard
         
         let calcSpeed = defaults.integer(forKey: "calcSpeed")
-
+        
         let teWidth = pipelineState.threadExecutionWidth
         let mTTPT = pipelineState.maxTotalThreadsPerThreadgroup
         
-
+        
         var maxWSS = 0
         if #available(OSX 10.12, *) {
             maxWSS = Int(device.recommendedMaxWorkingSetSize)
             
         }
-
         
-
+        
+        
         let theEntries = curModel.entry
         
         var mTML = 0
@@ -1761,7 +1760,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         else if calcSpeed == 1 {
             ntWidth = Int(Double(ntWidth) * 0.75)
         }
-//        print ("Number of threadgroups: \(ntWidth)")
+        //        print ("Number of threadgroups: \(ntWidth)")
         let threadsPerThreadgroup : MTLSize = MTLSizeMake(mTTPT, 1, 1)
         let numThreadgroups = MTLSize(width: teWidth, height: 1, depth: 1)
         ntWidth = teWidth * mTTPT
@@ -1775,9 +1774,9 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
             self.progInd.startAnimation(self)
             self.workLabel.stringValue = "Preparing..."
             
-
+            
         }
-
+        
         
         //Setup input and output buffers
         let resourceOptions = MTLResourceOptions()
@@ -1868,7 +1867,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
             infnet = infnet + thisinf
             sInfNet.append(thisinf)
         }
-
+        
         let infnetbuffer = self.device.makeBuffer(bytes: &infnet, length: nodesForCalc.count*maxInfSize*MemoryLayout<Int32>.stride, options: MTLResourceOptions.cpuCacheModeWriteCombined)!
         threadMemSize = nodesForCalc.count*maxInfSize*MemoryLayout<Int32>.stride
         
@@ -1906,7 +1905,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         var bnstatesout = [Float](repeating: -1.0, count: ntWidth*nodesForCalc.count)
         let bnstatesoutbuffer = self.device.makeBuffer(length: ntWidth*nodesForCalc.count*MemoryLayout<Float>.stride, options: resourceOptions)!
         threadMemSize += ntWidth*nodesForCalc.count*MemoryLayout<Float>.stride
-
+        
         
         DispatchQueue.main.async {
             self.progInd.isIndeterminate = false
@@ -1929,33 +1928,33 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
             priorresults.append(thisprior)
         }
         
-
+        
         var bnstatesoutresults = [[Float]]()
         for _ in nodesForCalc {
             let thisbnstate = [Float]()
             bnstatesoutresults.append(thisbnstate)
         }
         
-//        print("ThreadMemSize \(threadMemSize)")
+        //        print("ThreadMemSize \(threadMemSize)")
         
-//            var end = DispatchTime.now()
-//            var cptRunTime = Double(end.uptimeNanoseconds - start.uptimeNanoseconds) / 1000000000
-//            print ("**********END Buffer creation  \(cptRunTime) seconds.")
+        //            var end = DispatchTime.now()
+        //            var cptRunTime = Double(end.uptimeNanoseconds - start.uptimeNanoseconds) / 1000000000
+        //            print ("**********END Buffer creation  \(cptRunTime) seconds.")
         
         //RUN LOOP HERE
         var rc = 0
         var resc = 0
         var pesc = 0
         var besc = 0
-//        let start = NSDate()
+        //        let start = NSDate()
         while (rc<runstot){
             
-
+            
             let commandBuffer = self.commandQueue.makeCommandBuffer()!
             let commandEncoder = commandBuffer.makeComputeCommandEncoder()!
             commandEncoder.setComputePipelineState(self.pipelineState)
             
-//let randomArray = Array(0..<30).map { _ in generateUniqueInt() }
+            //let randomArray = Array(0..<30).map { _ in generateUniqueInt() }
             seeds = (0..<ntWidth).map{_ in arc4random()}
             seedsbuffer.contents().copyMemory(from: seeds, byteCount: seeds.count * MemoryLayout<UInt32>.stride)
             
@@ -1972,7 +1971,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
             commandEncoder.setBuffer(bnstatesbuffer, offset: 0, index: 9)
             commandEncoder.setBuffer(priorsbuffer, offset: 0, index: 10)
             commandEncoder.setBuffer(bnstatesoutbuffer, offset: 0, index: 11)
-
+            
             
             commandEncoder.dispatchThreadgroups(numThreadgroups, threadsPerThreadgroup: threadsPerThreadgroup)
             
@@ -1982,57 +1981,57 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
             commandBuffer.waitUntilCompleted()
             
             
-//            end = DispatchTime.now()
-//            cptRunTime = Double(end.uptimeNanoseconds - start.uptimeNanoseconds) / 1000000000
-//            print ("**********END a kernel run  \(cptRunTime) seconds.")
+            //            end = DispatchTime.now()
+            //            cptRunTime = Double(end.uptimeNanoseconds - start.uptimeNanoseconds) / 1000000000
+            //            print ("**********END a kernel run  \(cptRunTime) seconds.")
             
             let bnresultsdata = NSData(bytesNoCopy: bnresultsbuffer.contents(), length: bnresults.count*MemoryLayout<Float>.stride, freeWhenDone: false)
             bnresultsdata.getBytes(&bnresults, length:bnresults.count*MemoryLayout<Float>.stride)
             var ri = 0
             for to in bnresults {
                 
-//                if(to != to || to < 0.0 || to > 1.0) {//fails if nan
-//                    print("bare results problem detected. \(to)")
-//                }
+                //                if(to != to || to < 0.0 || to > 1.0) {//fails if nan
+                //                    print("bare results problem detected. \(to)")
+                //                }
                 
                 if resc >= runstot {
                     break
                 }
                 results[ri].append(to)
-//              print(to, terminator:"\t")
+                //              print(to, terminator:"\t")
                 ri = ri + 1
                 if ri >= nc {
                     ri = 0
-//              print ("\n")
+                    //              print ("\n")
                     resc = resc + 1
                 }
             }
-
-
+            
+            
             let priorsdata = NSData(bytesNoCopy: priorsbuffer.contents(), length: priors.count*MemoryLayout<Float>.stride, freeWhenDone: false)
             priorsdata.getBytes(&priors, length:priors.count*MemoryLayout<Float>.stride)
             ri = 0
             for to in priors {
                 
-//                if(to != to && to <= 0.0 && to >= 1.0) {//fails if nan
-//                    print("bare priors problem detected. \(to)")
-//                }
+                //                if(to != to && to <= 0.0 && to >= 1.0) {//fails if nan
+                //                    print("bare priors problem detected. \(to)")
+                //                }
                 
                 if pesc >= runstot {
                     break
                 }
                 priorresults[ri].append(to)
-//                print(to, terminator:"\t")
+                //                print(to, terminator:"\t")
                 ri = ri + 1
                 if ri >= nc {
                     ri = 0
-//                print ("\n")
-                pesc = pesc + 1
+                    //                print ("\n")
+                    pesc = pesc + 1
                 }
             }
             
-
-
+            
+            
             let bnstatesoutdata = NSData(bytesNoCopy: bnstatesoutbuffer.contents(), length: bnstatesout.count*MemoryLayout<Float>.stride, freeWhenDone: false)
             bnstatesoutdata.getBytes(&bnstatesout, length:bnstatesout.count*MemoryLayout<Float>.stride)
             ri = 0
@@ -2041,13 +2040,13 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                 if besc >= runstot {
                     break
                 }
-//                print(to, terminator:"\t")
+                //                print(to, terminator:"\t")
                 bnstatesoutresults[ri].append(to)
-
+                
                 ri = ri + 1
                 if ri >= nc {
                     ri = 0
-//                                    print ("\n")
+                    //                                    print ("\n")
                     besc = besc + 1
                 }
             }
@@ -2062,15 +2061,15 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                 self.curLabel.stringValue = String(resc)
             }
             
-//            end = DispatchTime.now()
-//            cptRunTime = Double(end.uptimeNanoseconds - start.uptimeNanoseconds) / 1000000000
-//            print ("**********END rc loop  \(cptRunTime) seconds.")
+            //            end = DispatchTime.now()
+            //            cptRunTime = Double(end.uptimeNanoseconds - start.uptimeNanoseconds) / 1000000000
+            //            print ("**********END rc loop  \(cptRunTime) seconds.")
             // End rc loop
         }
         
-//        if verbose == true {
-//            print("Time to run: \(NSDate().timeIntervalSince(start as Date)) seconds.")
-//        }
+        //        if verbose == true {
+        //            print("Time to run: \(NSDate().timeIntervalSince(start as Date)) seconds.")
+        //        }
         
         var bins = Int(pow(Float(truncating: curModel.runstot), 0.5))
         
@@ -2087,7 +2086,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
             inNode.priorArray = priorresult
             
             
-    
+            
             fi = fi + 1
             
         }
@@ -2101,14 +2100,14 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         }
         
         
-
+        
         
         fi = 0
         for result in results {
-
+            
             var postCount = [Int](repeating: 0, count: bins)
             let inNode : BNNode = nodesForCalc[fi]
-
+            
             let theUpNodes = inNode.upNodes(self)
             //If a dependent node
             if theUpNodes.count > 0 {
@@ -2129,9 +2128,9 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                         
                     }
                     
-//                    else{
-//                         print("problem detected. gNode is \(gNode)")
-//                    }
+                    //                    else{
+                    //                         print("problem detected. gNode is \(gNode)")
+                    //                    }
                     
                     gi += 1
                 }
@@ -2191,12 +2190,12 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                 inNode.postArray = result
                 inNode.cptFreezeArray = inNode.cptArray
                 
-            
+                
             }
-            
+                
             else {
-
-
+                
+                
                 inNode.postArray = [Float](repeating: 0.0, count: result.count)
                 inNode.postCount = postCount
                 inNode.cptFreezeArray = inNode.cptArray
@@ -2204,32 +2203,41 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
             
             fi = fi + 1
             
-
+            
             
         }
         
         let score = self.calcMarginalLikelihood(curModel: curModel, inEntries: theEntries, nodesForCalc: nodesForCalc, infnet : sInfNet, results : results, priorresults : priorresults, bnstatesoutresults : bnstatesoutresults)
         curModel.setValue(score, forKey: "score")
         
-            DispatchQueue.main.async {
-                curModel.complete = true
-                
-                
+        DispatchQueue.main.async {
+            curModel.complete = true
+            
+            
         }
         self.performSelector(onMainThread: #selector(PlexusMainWindowController.betweenRuns), with: nil, waitUntilDone: true)
-//        if verbose == true {
-//            print("Full run: \(NSDate().timeIntervalSince(start as Date)) seconds.")
-//        }
+        //        if verbose == true {
+        //            print("Full run: \(NSDate().timeIntervalSince(start as Date)) seconds.")
+        //        }
         
-//        var end = DispatchTime.now()
-//        var cptRunTime = Double(end.uptimeNanoseconds - start.uptimeNanoseconds) / 1000000000
-//        print ("**********END RUN  \(cptRunTime) seconds.")
+        //        var end = DispatchTime.now()
+        //        var cptRunTime = Double(end.uptimeNanoseconds - start.uptimeNanoseconds) / 1000000000
+        //        print ("**********END RUN  \(cptRunTime) seconds.")
         
         return true
         
-
+        
     }
     
+    
+    /**
+     Generate random data from the structure of a given Bayesian Network. Useful for self and recovery testing. Creates Model.runstot Entries per node.
+     Determines state of new Entry's Traits based on probabilities in network's existing CPT.
+     
+     - Parameter curModel: Model to be randomized.
+     - Parameter thisMOC: Currently used Managed Object context. Cannot be nil.
+     
+     */
     func randDataFromBN(curModel:Model, thisMOC: NSManagedObjectContext) {
         
         let allNodes = curModel.bnnode.allObjects as! [BNNode]
@@ -2331,7 +2339,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
             }
             
             
-
+            
             
         }
         
@@ -2339,67 +2347,77 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         
     }
     
-  @IBAction func genRandData(_ x:NSToolbarItem){
-    
-    let devices = devicesController?.selectedObjects as! [MTLDevice]
-    device = devices[0]
-    kernelFunction  = defaultLibrary?.makeFunction(name: "bngibbs")
-    do {
-        pipelineState = try device.makeComputePipelineState(function: kernelFunction!)
-    }
-    catch {
-        fatalError("Cannot set up Metal")
+    /**
+     Creates a child Model of current Model with randomly-generated Entries.
+     
+     - Parameter x: Toolbar tem.
+     
+     */
+    @IBAction func genRandData(_ x:NSToolbarItem){
         
-    }
-    
-    mainSplitViewController.modelDetailViewController?.calcInProgress = true
-    self.breakloop = false
-    
-    self.progSheet = self.progSetup(self)
-    self.window!.beginSheet(self.progSheet, completionHandler: nil)
-    self.progSheet.makeKeyAndOrderFront(self)
-    
-    
-    let curModels : [Model] = modelTreeController.selectedObjects as! [Model]
-    let curModel : Model = curModels[0]
-    
-    let newModel = curModel.copySelf(moc: self.moc, withEntries: false)
-    var simname = curModel.name
-    simname += "-rand"
-    newModel.name = simname
-    
-
-    
-
-    self.randDataFromBN(curModel: newModel, thisMOC: self.moc)
-    
-    do {
-        try self.moc.save()
-    } catch let error as NSError {
-        print(error)
-        fatalError("ERROR saving to calc queue MOC.")
-    }
-    
-    curModel.addAChildObject(newModel)
-
-
-    
-    self.performSelector(onMainThread: #selector(PlexusMainWindowController.endProgInd), with: nil, waitUntilDone: true)
-    self.mainSplitViewController.modelDetailViewController?.calcInProgress = false
-    
+        let devices = devicesController?.selectedObjects as! [MTLDevice]
+        device = devices[0]
+        kernelFunction  = defaultLibrary?.makeFunction(name: "bngibbs")
+        do {
+            pipelineState = try device.makeComputePipelineState(function: kernelFunction!)
+        }
+        catch {
+            fatalError("Cannot set up Metal")
+            
+        }
+        
+        mainSplitViewController.modelDetailViewController?.calcInProgress = true
+        self.breakloop = false
+        
+        self.progSheet = self.progSetup(self)
+        self.window!.beginSheet(self.progSheet, completionHandler: nil)
+        self.progSheet.makeKeyAndOrderFront(self)
+        
+        
+        let curModels : [Model] = modelTreeController.selectedObjects as! [Model]
+        let curModel : Model = curModels[0]
+        
+        let newModel = curModel.copySelf(moc: self.moc, withEntries: false)
+        var simname = curModel.name
+        simname += "-rand"
+        newModel.name = simname
+        
+        
+        
+        
+        self.randDataFromBN(curModel: newModel, thisMOC: self.moc)
+        
+        do {
+            try self.moc.save()
+        } catch let error as NSError {
+            print(error)
+            fatalError("ERROR saving to calc queue MOC.")
+        }
+        
+        curModel.addAChildObject(newModel)
+        
+        
+        
+        self.performSelector(onMainThread: #selector(PlexusMainWindowController.endProgInd), with: nil, waitUntilDone: true)
+        self.mainSplitViewController.modelDetailViewController?.calcInProgress = false
+        
     } //end genRandData
     
-
     
+    /**
+     Toggles Model.complete. Deletes results if unlocking.
+     
+     - Parameter x: Toolbar tem.
+     
+     */
     @IBAction func lockToggle(_ x:NSToolbarItem){
-
+        
         let curModels : [Model] = modelTreeController.selectedObjects as! [Model]
         let curModel : Model = curModels[0]
         if(curModel.complete == true){
-//           print ("locked")
         }
         else {
-
+            
             //delete all posterior data
             let curNodes  = curModel.bnnode.allObjects as! [BNNode]
             for curNode : BNNode in curNodes {
@@ -2414,13 +2432,19 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
             }
             
         }
-    
-    
+        
+        
     }
     
+    
+    /**
+     Exports Entry data, Node prior and posteriors, and run logs for the current Model
+     
+     - Parameter x: Toolbar item.
+     
+     */
     @IBAction func exportButton(_ x:NSToolbarItem){
         
-//        let defaults = UserDefaults.standard
         
         let curModels : [Model] = self.mainSplitViewController.modelTreeController?.selectedObjects as! [Model]
         let curModel : Model = curModels[0]
@@ -2432,17 +2456,17 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         let result = op.runModal()
         op.close()
         
-
+        
         
         if (result.rawValue == NSFileHandlingPanelOKButton) {
             mainSplitViewController.modelDetailViewController?.calcInProgress = true
             
             self.performSelector(onMainThread: #selector(PlexusMainWindowController.startProgInd), with: nil, waitUntilDone: true)
-
             
-
+            
+            
             let baseDir = op.directoryURL?.absoluteURL
-        
+            
             DispatchQueue.global().async {
                 self.exportModel(curModel: curModel, curDir: baseDir!)
                 
@@ -2452,32 +2476,40 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                 }
                 self.performSelector(onMainThread: #selector(PlexusMainWindowController.endProgInd), with: nil, waitUntilDone: true)
                 
-
+                
             }
             
         }
-        
-        else { return }
             
+        else { return }
+        
     }
     
+    
+    /**
+     Exports Entry data, Node prior and posteriors, and run logs for the current Model, then recursively does same for children in nested folders.
+     
+     - Parameter curModel: Model to be exported.
+     - Parameter curDir: Working directory.
+     
+     */
     func exportModel(curModel: Model, curDir: URL) {
         
         let defaults = UserDefaults.standard
         let pTypes = defaults.array(forKey: "PriorTypes") as! [String]
         
         let newDir = curDir.appendingPathComponent(curModel.name)
-
-
+        
+        
         
         //Remove an exisitng directory with that name
         do {
             try FileManager.default.removeItem(at: newDir)
         }  catch _ as NSError {
-//            print(error.description)
+            //            print(error.description)
         }
         
-
+        
         //Create a new one to write into
         do {
             try FileManager.default.createDirectory(at: newDir, withIntermediateDirectories: false, attributes: nil)
@@ -2490,125 +2522,125 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         let newPath = newDir.path
         
         //Change working directory to that one
-    
-
+        
+        
         if FileManager.default.changeCurrentDirectoryPath(newPath){
-
+            
             //Write files
             let baseFile = curModel.name + "-data.txt"
             let dataURL = newDir.appendingPathComponent(baseFile)
-
-//            print(dataURL)
             
-//            var baseFile = "file://" + newPath + "//" + curModel.name
-//            //baseFile = baseFile.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed)
-//            let dataFile =  baseFile + "-data.txt"
-//            print (dataFile)
-//            let dataURL = URL(string: dataFile)
-//            print (dataURL)
-//
+            //            print(dataURL)
             
-
-                
-                var allScopedTraits  = [Trait]()
-                let theEntries = curModel.entry
-                for thisEntry in theEntries {
-                    let curEntry = thisEntry as! Entry
-                    for thisTrait in curEntry.trait {
-                        let curTrait = thisTrait as! Trait
-                        allScopedTraits.append(curTrait)
-                    }
+            //            var baseFile = "file://" + newPath + "//" + curModel.name
+            //            //baseFile = baseFile.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed)
+            //            let dataFile =  baseFile + "-data.txt"
+            //            print (dataFile)
+            //            let dataURL = URL(string: dataFile)
+            //            print (dataURL)
+            //
+            
+            
+            
+            var allScopedTraits  = [Trait]()
+            let theEntries = curModel.entry
+            for thisEntry in theEntries {
+                let curEntry = thisEntry as! Entry
+                for thisTrait in curEntry.trait {
+                    let curTrait = thisTrait as! Trait
+                    allScopedTraits.append(curTrait)
                 }
-                
-                let distinctHeaderTraits = NSSet(array: allScopedTraits.map { $0.name })
-                
-//
-//                self.performSelector(onMainThread: #selector(PlexusMainWindowController.startProgInd), with: nil, waitUntilDone: true)
+            }
             
-                DispatchQueue.main.async {
-                    self.maxLabel.stringValue = String(theEntries.count)
-                    self.progInd.isIndeterminate = false
-                    self.workLabel.stringValue = "Exporting Entries..."
-                    self.progInd.doubleValue = 0
-                    self.progInd.startAnimation(self)
-                    self.progInd.maxValue =  Double(theEntries.count)
-                    self.progInd.startAnimation(self)
-                }
+            let distinctHeaderTraits = NSSet(array: allScopedTraits.map { $0.name })
+            
+            //
+            //                self.performSelector(onMainThread: #selector(PlexusMainWindowController.startProgInd), with: nil, waitUntilDone: true)
+            
+            DispatchQueue.main.async {
+                self.maxLabel.stringValue = String(theEntries.count)
+                self.progInd.isIndeterminate = false
+                self.workLabel.stringValue = "Exporting Entries..."
+                self.progInd.doubleValue = 0
+                self.progInd.startAnimation(self)
+                self.progInd.maxValue =  Double(theEntries.count)
+                self.progInd.startAnimation(self)
+            }
+            
+            var outText = "Name,"
+            
+            
+            var i = 0
+            
+            for headerTrait in distinctHeaderTraits {
+                outText += headerTrait as! String
                 
-                var outText = "Name,"
+                outText += ","
                 
+            }
+            outText += "\n"
+            
+            
+            
+            for thisEntry in theEntries {
+                let entry = thisEntry as! Entry
+                outText += entry.name
+                outText += ","
                 
-                var i = 0
-                
+                let tTraits = entry.trait
                 for headerTrait in distinctHeaderTraits {
-                    outText += headerTrait as! String
+                    let hKey = headerTrait as! String
+                    
+                    
+                    
+                    var traitString = [String]()
+                    for tTrait in tTraits{
+                        let tKey = (tTrait as AnyObject).value(forKey: "name") as! String
+                        if hKey == tKey{
+                            //outText += tTrait.valueForKey("value") as! String
+                            //outText += "\t"
+                            traitString.append((tTrait as AnyObject).value(forKey: "value") as! String)
+                        }
+                        
+                        
+                    }
+                    if(traitString.count > 1){
+                        outText += "\""
+                    }
+                    var k = 1
+                    for thisTraitString in traitString {
+                        outText += thisTraitString
+                        if(traitString.count > 1 && k < traitString.count){
+                            outText += ","
+                        }
+                        k += 1
+                    }
+                    
+                    if(traitString.count > 1){
+                        outText += "\""
+                    }
+                    
                     
                     outText += ","
-                    
                 }
+                
+                
                 outText += "\n"
                 
-
+                DispatchQueue.main.async {
+                    
+                    self.progInd.increment(by: 1)
+                    self.curLabel.stringValue = String(i)
+                    
+                }
+                i += 1
                 
-                for thisEntry in theEntries {
-                    let entry = thisEntry as! Entry
-                    outText += entry.name
-                    outText += ","
-                    
-                    let tTraits = entry.trait
-                    for headerTrait in distinctHeaderTraits {
-                        let hKey = headerTrait as! String
-                        
-                        
-                        
-                        var traitString = [String]()
-                        for tTrait in tTraits{
-                            let tKey = (tTrait as AnyObject).value(forKey: "name") as! String
-                            if hKey == tKey{
-                                //outText += tTrait.valueForKey("value") as! String
-                                //outText += "\t"
-                                traitString.append((tTrait as AnyObject).value(forKey: "value") as! String)
-                            }
-                            
-                            
-                        }
-                        if(traitString.count > 1){
-                            outText += "\""
-                        }
-                        var k = 1
-                        for thisTraitString in traitString {
-                            outText += thisTraitString
-                            if(traitString.count > 1 && k < traitString.count){
-                                outText += ","
-                            }
-                            k += 1
-                        }
-                        
-                        if(traitString.count > 1){
-                            outText += "\""
-                        }
-                        
-                        
-                        outText += ","
-                    }
-                    
-                    
-                    outText += "\n"
-                    
-                    DispatchQueue.main.async {
-                        
-                        self.progInd.increment(by: 1)
-                        self.curLabel.stringValue = String(i)
-                        
-                    }
-                    i += 1
-                    
-                }
-
-                do {
-                    try outText.write(to: dataURL, atomically: true, encoding: String.Encoding.utf8)
-                } catch _ {
-                }
+            }
+            
+            do {
+                try outText.write(to: dataURL, atomically: true, encoding: String.Encoding.utf8)
+            } catch _ {
+            }
             
             
             
@@ -2621,124 +2653,124 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                 self.progInd.maxValue =  Double(theEntries.count)
                 self.progInd.startAnimation(self)
             }
+            
+            
+            
+            i = 0
+            
+            let nodeTXTFileName = curModel.name + "-nodes.csv"
+            let nodeTXTURL = newDir.appendingPathComponent(nodeTXTFileName)
+            outText = String()
+            
+            var longestColumn = 0
+            
+            var postBins = [[Double]]()
+            var postCounts = [[Int]]()
+            var postArrays = [[Float]]()
+            
+            for node in self.mainSplitViewController.modelDetailViewController?.nodesController.arrangedObjects as! [BNNode] {
+                self.mainSplitViewController.modelDetailViewController?.nodesController.setSelectionIndex(i)
                 
-
+                outText += node.name
+                outText += "-PriorType,"
+                
+                outText += node.name
+                outText += "-PriorV1,"
+                
+                outText += node.name
+                outText += "-PriorV2,"
+                
+                
+                
+                
+                outText += node.name
+                outText += "-PostCount,"
+                
+                let postCount = node.postCount
+                if (postCount.count > longestColumn){
+                    longestColumn = postCount.count
+                }
+                postCounts.append(postCount)
+                
+                let postCountDub = Double(postCount.count)
+                
+                var postBin = [Double]()
+                var binc = 0.0
+                for _ in postCount {
+                    postBin.append(binc/postCountDub)
+                    binc = binc + 1
+                }
+                if (postBin.count > longestColumn){
+                    longestColumn = postBin.count
+                }
+                postBins.append(postBin)
+                
+                outText += node.name
+                outText += "-PostBins,"
+                
+                
+                outText += node.name
+                outText += "-PostDist,"
+                let postArray = node.postArray
+                if (postArray.count > longestColumn){
+                    longestColumn = postArray.count
+                }
+                postArrays.append(postArray)
+                
+                
+                
+            }
             
-                i = 0
-            
-                let nodeTXTFileName = curModel.name + "-nodes.csv"
-                let nodeTXTURL = newDir.appendingPathComponent(nodeTXTFileName)
-                outText = String()
-            
-                var longestColumn = 0
-            
-                var postBins = [[Double]]()
-                var postCounts = [[Int]]()
-                var postArrays = [[Float]]()
-                    
+            outText += "\n"
+            for j in 0...longestColumn{
+                var k = 0
                 for node in self.mainSplitViewController.modelDetailViewController?.nodesController.arrangedObjects as! [BNNode] {
                     self.mainSplitViewController.modelDetailViewController?.nodesController.setSelectionIndex(i)
-                    
-                    outText += node.name
-                    outText += "-PriorType,"
-                    
-                    outText += node.name
-                    outText += "-PriorV1,"
-                    
-                    outText += node.name
-                    outText += "-PriorV2,"
-                    
-                    
-                    
-                    
-                    outText += node.name
-                    outText += "-PostCount,"
-                    
-                    let postCount = node.postCount
-                    if (postCount.count > longestColumn){
-                        longestColumn = postCount.count
+                    if(j==0){
+                        outText += pTypes[node.priorDistType as! Int]
+                        outText += ","
+                        outText += String(describing: node.priorV1)
+                        outText += ","
+                        outText += String(describing: node.priorV2)
+                        outText += ","
                     }
-                    postCounts.append(postCount)
-                    
-                    let postCountDub = Double(postCount.count)
-                    
-                    var postBin = [Double]()
-                    var binc = 0.0
-                    for _ in postCount {
-                        postBin.append(binc/postCountDub)
-                        binc = binc + 1
+                    else {
+                        outText += ",,,"
                     }
-                    if (postBin.count > longestColumn){
-                        longestColumn = postBin.count
+                    if(j<postCounts[k].count){
+                        outText += String(postCounts[k][j])
                     }
-                    postBins.append(postBin)
+                    outText += ","
                     
-                    outText += node.name
-                    outText += "-PostBins,"
-                    
-                    
-                    outText += node.name
-                    outText += "-PostDist,"
-                    let postArray = node.postArray
-                    if (postArray.count > longestColumn){
-                        longestColumn = postArray.count
+                    if(j<postBins[k].count){
+                        outText += String(postBins[k][j])
                     }
-                    postArrays.append(postArray)
+                    outText += ","
                     
+                    if(j<postArrays[k].count){
+                        outText += String(postArrays[k][j])
+                    }
+                    
+                    
+                    outText += ","
                     
                     
                 }
-            
+                
+                k = k + 1
                 outText += "\n"
-                for j in 0...longestColumn{
-                    var k = 0
-                    for node in self.mainSplitViewController.modelDetailViewController?.nodesController.arrangedObjects as! [BNNode] {
-                        self.mainSplitViewController.modelDetailViewController?.nodesController.setSelectionIndex(i)
-                        if(j==0){
-                            outText += pTypes[node.priorDistType as! Int]
-                            outText += ","
-                            outText += String(describing: node.priorV1)
-                            outText += ","
-                            outText += String(describing: node.priorV2)
-                            outText += ","
-                        }
-                        else {
-                            outText += ",,,"
-                        }
-                        if(j<postCounts[k].count){
-                            outText += String(postCounts[k][j])
-                        }
-                        outText += ","
-                        
-                        if(j<postBins[k].count){
-                            outText += String(postBins[k][j])
-                        }
-                        outText += ","
-                        
-                        if(j<postArrays[k].count){
-                            outText += String(postArrays[k][j])
-                        }
-                        
-                        
-                        outText += ","
-                        
-                        
-                    }
-                    
-                    k = k + 1
-                    outText += "\n"
-                    
-                }
-                    
-                    
-                do {
-                    try outText.write(to: nodeTXTURL, atomically: true, encoding: String.Encoding.utf8)
-                }
-                catch let error as NSError {
-                    print(error)
-                } catch {
-                    fatalError()
-                }
+                
+            }
+            
+            
+            do {
+                try outText.write(to: nodeTXTURL, atomically: true, encoding: String.Encoding.utf8)
+            }
+            catch let error as NSError {
+                print(error)
+            } catch {
+                fatalError()
+            }
             
             
             //Log
@@ -2754,14 +2786,14 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
             }
             
             
-                DispatchQueue.main.sync {
-                  
-                    
+            DispatchQueue.main.sync {
+                
+                
                 for node in self.mainSplitViewController.modelDetailViewController?.nodesController.arrangedObjects as! [BNNode] {
                     self.mainSplitViewController.modelDetailViewController?.nodesController.setSelectionIndex(i)
                     
                     
-            
+                    
                     //create a compound of the outFile name and node name
                     let nodePDFFileName = curModel.name + "-" + node.name + ".pdf"
                     let nodeURL = newDir.appendingPathComponent(nodePDFFileName)
@@ -2807,7 +2839,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                     
                     
                     
-
+                    
                     
                     let axisSet = graph?.axisSet as! CPTXYAxisSet
                     let axisLineStyle = CPTMutableLineStyle.init()
@@ -2852,11 +2884,11 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                     
                     i += 1
                 }
-                    
-                    
-            
+                
+                
+                
             }
-
+            
             //Then recurively do the same for all the children
             let curChildren = curModel.children
             for curChild in curChildren {
@@ -2866,416 +2898,15 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
             
         }
         
-
-        
-    }
-    
-    @IBAction func exportCSV(_ x:NSToolbarItem){
-
-        self.breakloop = false
-
-        
-        let curModels : [Model] = self.mainSplitViewController.modelTreeController?.selectedObjects as! [Model]
-        let curModel : Model = curModels[0]
-        
-        
-        let defaults = UserDefaults.standard
-        let pTypes = defaults.array(forKey: "PriorTypes") as! [String]
-        
-        let sv:NSSavePanel = NSSavePanel()
-        sv.nameFieldStringValue = curModel.name
-        
-        
-        let result = sv.runModal()
-        sv.close()
-        
-        if (result.rawValue == NSFileHandlingPanelOKButton) {
-            mainSplitViewController.modelDetailViewController?.calcInProgress = true
-           
-            var baseFile  = sv.url?.absoluteString
-            let baseDir = sv.directoryURL
-            
-            do {
-                try FileManager.default.removeItem(at: sv.url!)
-            }  catch _ as NSError {
-                //print(error.description)
-            }
-            
-            
-            do {
-                try FileManager.default.createDirectory(at: baseDir!.appendingPathComponent(sv.nameFieldStringValue), withIntermediateDirectories: false, attributes: nil)
-            } catch let error as NSError {
-                print(error.description)
-                return
-            }
- 
-            baseFile = baseFile! + "/" + sv.nameFieldStringValue.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed)!
-            
-            let outFileName = baseFile! + "-data.csv"
-            print (outFileName)
-
-            let outURL = URL(string: outFileName)
-            
-            print (outURL)
-            
-            
-            
-            
-
-
-            DispatchQueue.global().async {
-                
-                var allScopedTraits  = [Trait]()
-                let theEntries = curModel.entry
-                for thisEntry in theEntries {
-                    let curEntry = thisEntry as! Entry
-                    for thisTrait in curEntry.trait {
-                        let curTrait = thisTrait as! Trait
-                        allScopedTraits.append(curTrait)
-                    }
-                }
-                
-                let distinctHeaderTraits = NSSet(array: allScopedTraits.map { $0.name })
-                
-
-                
-                // #
-              //  let entries : [Entry] = try self.moc!.fetch(request)
-                self.performSelector(onMainThread: #selector(PlexusMainWindowController.startProgInd), with: nil, waitUntilDone: true)
-
-                self.maxLabel.stringValue = String(theEntries.count)
-                self.progInd.isIndeterminate = true
-                self.workLabel.stringValue = "Exporting Entries..."
-                self.progInd.doubleValue = 0
-                
-                self.progInd.startAnimation(self)
-                
-                
-                self.progInd.maxValue =  Double(theEntries.count)
-                
-                
-                self.progInd.startAnimation(self)
-                
-                var outText = "Name,"
-                
-                
-                var i = 0
-
-                for headerTrait in distinctHeaderTraits {
-                    outText += headerTrait as! String
-                    
-                    outText += ","
-                    
-                }
-                outText += "\n"
-                
-                self.progInd.isIndeterminate = false
-                
-                for thisEntry in theEntries {
-                    let entry = thisEntry as! Entry
-                    outText += entry.name
-                    outText += ","
-                    
-                    let tTraits = entry.trait
-                    for headerTrait in distinctHeaderTraits {
-                        let hKey = headerTrait as! String
-                        
-                        
-                        
-                        var traitString = [String]()
-                        for tTrait in tTraits{
-                            let tKey = (tTrait as AnyObject).value(forKey: "name") as! String
-                            if hKey == tKey{
-                                //outText += tTrait.valueForKey("value") as! String
-                                //outText += "\t"
-                                traitString.append((tTrait as AnyObject).value(forKey: "value") as! String)
-                            }
-                            
-                            
-                        }
-                        if(traitString.count > 1){
-                            outText += "\""
-                        }
-                        var k = 1
-                        for thisTraitString in traitString {
-                            outText += thisTraitString
-                            if(traitString.count > 1 && k < traitString.count){
-                                outText += ","
-                            }
-                            k += 1
-                        }
-                        
-                        if(traitString.count > 1){
-                            outText += "\""
-                        }
-                        
-                        
-                        outText += ","
-                    }
-                    
-                    
-                    outText += "\n"
-                    
-                    DispatchQueue.main.async {
-                        
-                        self.progInd.increment(by: 1)
-                        self.curLabel.stringValue = String(i)
-                        
-                    }
-                    i += 1
-                    
-                }
-                
-                
-                
-                do {
-                    try outText.write(to: outURL!, atomically: true, encoding: String.Encoding.utf8)
-                } catch _ {
-                }
-                    
-
-                DispatchQueue.main.async {
-                
-                    self.progInd.isIndeterminate = true
-                    self.progInd.startAnimation(self)
-                    self.workLabel.stringValue = "Exporting Nodes..."
-                    
-                    var i = 0
-                    
-                    let nodeTXTFileName = baseFile! + "-nodes.csv"
-                    let nodeTXTURL = URL(string: nodeTXTFileName)
-                    var outText : String = String()
-                    
-                    var longestColumn = 0
-                    
-                    var postBins = [[Double]]()
-                    var postCounts = [[Int]]()
-                    var postArrays = [[Float]]()
-                    
-                    for node in self.mainSplitViewController.modelDetailViewController?.nodesController.arrangedObjects as! [BNNode] {
-                        self.mainSplitViewController.modelDetailViewController?.nodesController.setSelectionIndex(i)
-                        
-                        outText += node.name
-                        outText += "-PriorType,"
-                        
-                        outText += node.name
-                        outText += "-PriorV1,"
-                        
-                        outText += node.name
-                        outText += "-PriorV2,"
-                        
-
-
-                        
-                        outText += node.name
-                        outText += "-PostCount,"
-                        
-                         let postCount = node.postCount
-                        if (postCount.count > longestColumn){
-                            longestColumn = postCount.count
-                        }
-                        postCounts.append(postCount)
-                        
-                        let postCountDub = Double(postCount.count)
-                        
-                        var postBin = [Double]()
-                        var binc = 0.0
-                        for _ in postCount {
-                            postBin.append(binc/postCountDub)
-                            binc = binc + 1
-                        }
-                        if (postBin.count > longestColumn){
-                            longestColumn = postBin.count
-                        }
-                        postBins.append(postBin)
-                        
-                        outText += node.name
-                        outText += "-PostBins,"
-                        
-                        
-                        outText += node.name
-                        outText += "-PostDist,"
-                        let postArray = node.postArray
-                        if (postArray.count > longestColumn){
-                            longestColumn = postArray.count
-                        }
-                        postArrays.append(postArray)
-                        
-                        
-                        
-                    }
-                    
-                    outText += "\n"
-                    for j in 0...longestColumn{
-                        var k = 0
-                        for node in self.mainSplitViewController.modelDetailViewController?.nodesController.arrangedObjects as! [BNNode] {
-                            self.mainSplitViewController.modelDetailViewController?.nodesController.setSelectionIndex(i)
-                            if(j==0){
-                                outText += pTypes[node.priorDistType as! Int]
-                                outText += ","
-                                outText += String(describing: node.priorV1)
-                                outText += ","
-                                outText += String(describing: node.priorV2)
-                                outText += ","
-                            }
-                            else {
-                                outText += ",,,"
-                            }
-                            if(j<postCounts[k].count){
-                                outText += String(postCounts[k][j])
-                            }
-                            outText += ","
-                            
-                            if(j<postBins[k].count){
-                                outText += String(postBins[k][j])
-                            }
-                            outText += ","
-                            
-                            if(j<postArrays[k].count){
-                                outText += String(postArrays[k][j])
-                            }
-                            
-                            
-                            outText += ","
-                            
-                            
-                        }
-                        
-                        k = k + 1
-                        outText += "\n"
-  
-                    }
-                    
- 
-                    do {
-                        try outText.write(to: nodeTXTURL!, atomically: true, encoding: String.Encoding.utf8)
-                    }
-                    catch let error as NSError {
-                        print(error)
-                    } catch {
-                        fatalError()
-                    }
-                    
-                    
-
-                    for node in self.mainSplitViewController.modelDetailViewController?.nodesController.arrangedObjects as! [BNNode] {
-                        self.mainSplitViewController.modelDetailViewController?.nodesController.setSelectionIndex(i)
-
-
-                        
-                        //create a compound of the outFile name and node name
-                        let nodePDFFileName = baseFile! + "-" + node.name + ".pdf"
-                        let nodeURL = URL(string: nodePDFFileName)
-
-                        
-                        let graphView = self.mainSplitViewController.modelDetailViewController?.graphView
-                        graphView?.frame = NSMakeRect(0, 0, 800, 600)
-                        
-                        
-                        let graph = self.mainSplitViewController.modelDetailViewController?.graph
-                        
-                        graph?.frame = NSMakeRect(0, 0, 800, 600)
-                        
-                        graph?.paddingTop = 10.0
-                        graph?.paddingBottom = 10.0
-                        graph?.paddingLeft = 10.0
-                        graph?.paddingRight = 10.0
-                        
-
-                        let titleStyle = CPTMutableTextStyle()
-                        titleStyle.fontName = "SFProDisplay-Bold"
-                        titleStyle.fontSize = 18.0
-                        titleStyle.color = CPTColor.black()
-                        graph?.titleTextStyle = titleStyle
-                        graph?.title = node.name
-                        
-                        let titleTextStyle = CPTMutableTextStyle.init()
-                        titleTextStyle.color = CPTColor.white()
-                        
-                        
-
-                        for plot in (graph?.allPlots())! {
-                            plot.attributedTitle = nil
-                            if(plot.identifier!.isEqual("PriorPlot")){
-                                plot.title = "Prior"
-
-                            }
-                            else {
-                                plot.title = "Posterior"
-
-                            }
-                        }
-                        
-
-
-                        
-
-                        
-
-                        
-                        let axisSet = graph?.axisSet as! CPTXYAxisSet
-                        let axisLineStyle = CPTMutableLineStyle.init()
-                        axisLineStyle.lineColor = CPTColor.black()
-                        axisSet.xAxis!.axisConstraints = CPTConstraints.constraint(withUpperOffset: 1.0)
-                        axisSet.yAxis!.axisConstraints = CPTConstraints.constraint(withUpperOffset: 1.0)
-                        axisSet.yAxis!.axisConstraints = CPTConstraints.constraint(withLowerOffset: 0.0)
-                        axisSet.xAxis!.axisConstraints = CPTConstraints.constraint(withLowerOffset: 0.0)
-                        axisSet.xAxis!.tickDirection = CPTSign.positive
-                        axisSet.yAxis!.tickDirection = CPTSign.positive
-                        axisSet.xAxis?.axisLineStyle = axisLineStyle
-                        axisSet.xAxis?.majorTickLineStyle = axisLineStyle
-                        axisSet.yAxis?.majorTickLineStyle = axisLineStyle
-                        axisSet.xAxis?.minorTickLineStyle = axisLineStyle
-                        axisSet.yAxis?.minorTickLineStyle = axisLineStyle
-                        axisSet.yAxis?.axisLineStyle = axisLineStyle
-
-                        
-
-                        
-                        let axisTextStyle = CPTMutableTextStyle.init()
-                        axisTextStyle.color = CPTColor.black()
-                        
-                        axisSet.xAxis?.labelTextStyle = axisTextStyle
-                        axisSet.yAxis?.labelTextStyle = axisTextStyle
-                        
-                        axisSet.xAxis!.labelingPolicy = .automatic
-                        axisSet.yAxis!.labelingPolicy = .automatic
-                        axisSet.xAxis!.preferredNumberOfMajorTicks = 3
-                        axisSet.yAxis!.preferredNumberOfMajorTicks = 3
-                        axisSet.xAxis!.minorTicksPerInterval = 4
-                        axisSet.yAxis!.minorTicksPerInterval = 4
-                        graph?.axisSet = axisSet
-
-                        
-
-
-                        let pdfData = graph?.dataForPDFRepresentationOfLayer()
-                        try? pdfData!.write(to: nodeURL!, options: [.atomic])
-                        
-                        graph?.title = ""
-                        
-                        i += 1
-                    }
-                
- 
-
-                    DispatchQueue.main.async {
-                        self.mainSplitViewController.modelDetailViewController?.calcInProgress = false
-                    }
-                    self.performSelector(onMainThread: #selector(PlexusMainWindowController.endProgInd), with: nil, waitUntilDone: true)
-
-                    
-                }
-            
-            }
-
-        }
-        else { return }
         
         
     }
     
     
+    /**
+     Starts progress indicator on sheet.
+     
+     */
     @objc func startProgInd(){
         self.progSheet = self.progSetup(self)
         self.window!.beginSheet(self.progSheet, completionHandler: nil)
@@ -3286,16 +2917,19 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
     @objc func betweenRuns(){
         
         if(self.progSheet != nil){
-
+            
         }
         mainSplitViewController.modelDetailViewController?.setGraphParams()
         mainSplitViewController.modelDetailViewController?.reloadData()
         
     }
     
-    
+    /**
+     Ends progress indictor sheet.
+     
+     */
     @objc func endProgInd(){
-
+        
         if(self.progSheet != nil){
             self.progSheet.orderOut(self)
             self.window!.endSheet(self.progSheet)
@@ -3312,13 +2946,29 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         mainSplitViewController.modelDetailViewController?.reloadData()
         
     }
- 
     
-
     
-/*************************** Likelihood functions  ****/
     
-  
+    
+    /*************************** Likelihood functions  ****/
+    
+    
+    /**
+     Calculates marginal likelihood of a Bayesian Network with MCMC-derived posteriors.
+     
+     -Reference: Chib, S. (1995). Marginal likelihood from the Gibbs output. Amstat.Tandfonline.com
+     , 90(432), 1313–1321.
+     
+     - Parameter curModel: Model to be scored.
+     - Parameter inEntries: Set of Entry objects used to search for Traits.
+     - Parameter nodesForCalc: Array of Nodes in current Model.
+     - Parameter infnet: 2D array of influences represented as numers denoting order of infleunces nodes in nodesForCalc.
+     - Parameter results: 2D array of results (posteriors) from BNGibbs kernel.
+     - Parameter priorresults: 2D array of prior values from BNGibbs kernel.
+     - Parameter bnstatesoutresults: 2D array of nodes states from BNGibbs kernel.
+     
+     - Returns: Marginal likelihood as a Float.
+     */
     func calcMarginalLikelihood(curModel:Model, inEntries: NSSet, nodesForCalc:[BNNode], infnet:[[Int32]], results : [[Float]], priorresults : [[Float]], bnstatesoutresults : [[Float]]) -> Float {
         
         let appDelegate : AppDelegate = NSApplication.shared.delegate as! AppDelegate
@@ -3332,7 +2982,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
             subsamp = curModel.runstot as! Int
         }
         // Get the yes-no's within the scope of the data
-
+        
         let theEntries = inEntries
         
         var dataratios = [Float]()
@@ -3340,7 +2990,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         var tots = [Float]()
         
         for calcNode in nodesForCalc {
-
+            
             let calcValue = calcNode.value
             
             var theTraits = [Trait]()
@@ -3354,7 +3004,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                 return -999
             }
             
-//            print ("\(calcNode.name)  \(theTraits.count)")
+            //            print ("\(calcNode.name)  \(theTraits.count)")
             
             var mTraits = [Trait]()
             
@@ -3387,7 +3037,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
             dataratios.append(Float(mTraits.count) / Float(theTraits.count))
             
         }
-//        print(dataratios)
+        //        print(dataratios)
         //Check that all post arrays are same length
         //Subsample from the posteriors
         var firstnode = true
@@ -3426,17 +3076,17 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                 thisposts.append(postArray[sp])
                 thispriors.append(priorArray[sp])
             }
-//            print("PRIOR")
-//            print(thispriors)
-//            print("POST")
-//            print(thisposts)
+            //            print("PRIOR")
+            //            print(thispriors)
+            //            print("POST")
+            //            print(thisposts)
             posts.append(thisposts)
             priors.append(thispriors)
             nc =  nc + 1
         }
         
-
-
+        
+        
         //Pick index where likelihood of the posterior given the data is the highest
         var maxlike = Float(0.0)
         var maxpos = -1
@@ -3444,64 +3094,64 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         for s in 0...(postlength-1) {
             var likes = [Float]()
             for r in 0...(nodesForCalc.count-1){
-//                print(nodesForCalc[r].node.name)
+                //                print(nodesForCalc[r].node.name)
                 if(tots[r]>0) { // to avoid hidden or data-free nodes in likelihood calc
-//                    print(posts[r][s])
-//                    print(matches[r])
-//                    print(1-(posts[r][s]))
-//                    print(tots[r]-matches[r])
-//                    print(pow(posts[r][s], matches[r]))
-//                    let logmatch = matches[r] * log(posts[r][s]) //log of m^k  = k log m
-//                                    print ("logmatch \(logmatch)")
-//                    print(pow(1-(posts[r][s]), (tots[r]-matches[r])))
-//                    let lognomatch = (tots[r]-matches[r]) * log(1-(posts[r][s])) //log of m^k  = k log m
-//
-//                    print ("lognomatch \(lognomatch)")
-//                    let logsum = logmatch + lognomatch //log M*N = log M + log N
-//                    print ("logsum \(logsum)")
-
+                    //                    print(posts[r][s])
+                    //                    print(matches[r])
+                    //                    print(1-(posts[r][s]))
+                    //                    print(tots[r]-matches[r])
+                    //                    print(pow(posts[r][s], matches[r]))
+                    //                    let logmatch = matches[r] * log(posts[r][s]) //log of m^k  = k log m
+                    //                                    print ("logmatch \(logmatch)")
+                    //                    print(pow(1-(posts[r][s]), (tots[r]-matches[r])))
+                    //                    let lognomatch = (tots[r]-matches[r]) * log(1-(posts[r][s])) //log of m^k  = k log m
+                    //
+                    //                    print ("lognomatch \(lognomatch)")
+                    //                    let logsum = logmatch + lognomatch //log M*N = log M + log N
+                    //                    print ("logsum \(logsum)")
+                    
                     //This is likelihood of posterior given the data
-            
+                    
                     
                     likes.append((matches[r] * log(posts[r][s])) + ((tots[r]-matches[r]) * log(1-(posts[r][s]))))//log of m^k  = k log m
                     
                     
-
+                    
                     
                 }
                 
             }
             
-
-                let loglikelihood = likes.reduce(1, +) //This is likelihood of posterior given the data
-
-                if firsttime == true {
+            
+            let loglikelihood = likes.reduce(1, +) //This is likelihood of posterior given the data
+            
+            if firsttime == true {
+                maxlike = loglikelihood
+                maxpos = s
+                firsttime = false
+            }
+            else{
+                if (loglikelihood > maxlike) {
                     maxlike = loglikelihood
                     maxpos = s
-                    firsttime = false
                 }
-                else{
-                    if (loglikelihood > maxlike) {
-                        maxlike = loglikelihood
-                        maxpos = s
-                    }
-                }
+            }
             
         }
         
         
-//        print("\n maxpos \(maxpos)\n" )
-//        print("Posterior terms:")
+        //        print("\n maxpos \(maxpos)\n" )
+        //        print("Posterior terms:")
         var postvals = [Float]()
         for r in 0...(nodesForCalc.count-1){
             postvals.append(posts[r][maxpos])
-//            print(posts[r][maxpos])
+            //            print(posts[r][maxpos])
         }
         let postterm = (postvals.reduce(1, *)) //This is the posterior
         if postterm == 0.0 {
             return -Float.infinity
         }
-//        print("π(ϴ|y) \(postterm)", terminator:"\t")
+        //        print("π(ϴ|y) \(postterm)", terminator:"\t")
         
         
         //Prior
@@ -3509,13 +3159,13 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         var binsum = Float(0.0)
         var binx = 0
         for r in 0...(nodesForCalc.count-1){
-//            print("Node: \(nodesForCalc[r].name)")
+            //            print("Node: \(nodesForCalc[r].name)")
             let thisinfnet = infnet[r]
             let upNodes = nodesForCalc[r].upNodes(self)
             if upNodes.count > 0 { //dependent. Use the conditional probability of this node given the states of the nodes at maxpos. So say T, T, T is binary 111 or decimal 7
                 let cptarray = nodesForCalc[r].cptArray //FIXME easier to pull this at top of funciton
-
-
+                
+                
                 
                 binsum = 0.0
                 binx = 0
@@ -3523,151 +3173,85 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                     if(thisinf<0){
                         break
                     }
-
+                    
                     let tii = Int(thisinf) //FIXME convert this earlier
-//                    print ("influenced by \(tii) whose state is \(bnstatesoutresults[tii][maxpos])  * \(pow(2, Float(binx)) )")
+                    //                    print ("influenced by \(tii) whose state is \(bnstatesoutresults[tii][maxpos])  * \(pow(2, Float(binx)) )")
                     binsum = binsum + bnstatesoutresults[tii][maxpos] * pow(2, Float(binx)) //add (final state of this node's  * 2 ^ this influencer's position in list of influencers
                     binx = binx + 1
                 }
                 let binfinal = Int(binsum) //shoudl always be exact float to int
-
-//                print ("node: \(nodesForCalc[r].name) binfinal: \(binfinal) cptarray size: \(cptarray.count) entry \(cptarray[binfinal])")
+                
+                //                print ("node: \(nodesForCalc[r].name) binfinal: \(binfinal) cptarray size: \(cptarray.count) entry \(cptarray[binfinal])")
                 priorProds.append(cptarray[binfinal]) //FIXME crashing here
-
+                
             }
             else { //independent
                 priorProds.append(priors[r][maxpos])
             }
         }
-
-//        print(priorProds)
+        
+        //        print(priorProds)
         let priorterm = (priorProds.reduce(1, *)) //This is the prior term
         if priorterm == 0.0 {
             return -Float.infinity
         }
-//        print("π(ϴ) \(priorterm)", terminator:"\t")
-
+        //        print("π(ϴ) \(priorterm)", terminator:"\t")
+        
         
         var likes = [Float]()
         for r in 0...(nodesForCalc.count-1){
-//            print ("\(nodesForCalc[r].name)")
+            //            print ("\(nodesForCalc[r].name)")
             
             if(tots[r]>0) { // to avoid hidden or data-free nodes in likelihood calc
-//                print("\nname: \(nodesForCalc[r].name)")
-//                print("prior: \(priorProds[r])")
-//                print("matches: \(matches[r])")
-//                print("1-prior: \(1-(priorProds[r]))")
-//                print("nomatches: \(tots[r]-matches[r])")
-//                print("prior^matches \(pow(priorProds[r], matches[r]))") //FIXME zero becasue e.g. 0.5 ^ 290 comes back as a zero
-//                let logmatch = matches[r] * log(priorProds[r]) //log of m^k  = k log m
-//                print ("logmatch \(logmatch)")
-//
-//                print((pow(1-(priorProds[r]), (tots[r]-matches[r]))))
-//                let lognomatch = (tots[r]-matches[r]) * log(1-(priorProds[r])) //log of m^k  = k log m
-//
-//                print ("lognomatch \(lognomatch)")
-//
-//                let logsum = logmatch + lognomatch //log M*N = log M + log N
-//
-//                print ("logsum \(logsum)")
-//                print((matches[r] * log(priorProds[r])) + ((tots[r]-matches[r]) * log(1-(priorProds[r]))))
-//                likes.append(log(pow(priorProds[r], matches[r]) * pow(1-(priorProds[r]), (tots[r]-matches[r])))) //This is likelihood of data given the Priors
-//                print("SCORE: \((matches[r] * log(priorProds[r])) + ((tots[r]-matches[r]) * log(1-(priorProds[r]))))")
+                //                print("\nname: \(nodesForCalc[r].name)")
+                //                print("prior: \(priorProds[r])")
+                //                print("matches: \(matches[r])")
+                //                print("1-prior: \(1-(priorProds[r]))")
+                //                print("nomatches: \(tots[r]-matches[r])")
+                //                print("prior^matches \(pow(priorProds[r], matches[r]))") //FIXME zero becasue e.g. 0.5 ^ 290 comes back as a zero
+                //                let logmatch = matches[r] * log(priorProds[r]) //log of m^k  = k log m
+                //                print ("logmatch \(logmatch)")
+                //
+                //                print((pow(1-(priorProds[r]), (tots[r]-matches[r]))))
+                //                let lognomatch = (tots[r]-matches[r]) * log(1-(priorProds[r])) //log of m^k  = k log m
+                //
+                //                print ("lognomatch \(lognomatch)")
+                //
+                //                let logsum = logmatch + lognomatch //log M*N = log M + log N
+                //
+                //                print ("logsum \(logsum)")
+                //                print((matches[r] * log(priorProds[r])) + ((tots[r]-matches[r]) * log(1-(priorProds[r]))))
+                //                likes.append(log(pow(priorProds[r], matches[r]) * pow(1-(priorProds[r]), (tots[r]-matches[r])))) //This is likelihood of data given the Priors
+                //                print("SCORE: \((matches[r] * log(priorProds[r])) + ((tots[r]-matches[r]) * log(1-(priorProds[r]))))")
                 likes.append((matches[r] * log(priorProds[r])) + ((tots[r]-matches[r]) * log(1-(priorProds[r]))))
                 
-
+                
             }
             
         }
-
+        
         let likelihood = likes.reduce(1, +) //This is the likelihood of the data given the priors
         if likelihood == 0.0 {
             return -Float.infinity
         }
-//        print("f(y|ϴ) \(likelihood)", terminator:"\t")
+        //        print("f(y|ϴ) \(likelihood)", terminator:"\t")
         
         
-//        print (log(priorterm) + likelihood - log(postterm))
-//        print ("score: \(log(priorterm) + likelihood - log(postterm))")
+        //        print (log(priorterm) + likelihood - log(postterm))
+        //        print ("score: \(log(priorterm) + likelihood - log(postterm))")
         return log(priorterm) + likelihood - log(postterm)
         
     }
     
-
     
     
-//    func contextDidChange(_ notification: Notification) {
-//        let savedContext = notification.object as! NSManagedObjectContext
-//        if(savedContext == self.moc) { // ignore change notifications for the main MOC
-//            return
-//        }
-//
-//        print(savedContext)
-//
-//
-//        if let insertedObjects = notification.userInfo?[NSInsertedObjectsKey] as? Set<NSManagedObject>, !insertedObjects.isEmpty {
-//            print(insertedObjects)
-//        }
-////                if let updatedObjects = notification.userInfo?[NSUpdatedObjectsKey] as? Set<NSManagedObject>, !updatedObjects.isEmpty {
-////                    print(updatedObjects)
-////                }
-////                if let deletedObjects = notification.userInfo?[NSDeletedObjectsKey] as? Set<NSManagedObject>, !deletedObjects.isEmpty {
-////                    print(deletedObjects)
-////                }
-////                if let refreshedObjects = notification.userInfo?[NSRefreshedObjectsKey] as? Set<NSManagedObject>, !refreshedObjects.isEmpty {
-////                    print(refreshedObjects)
-////                }
-////                if let invalidatedObjects = notification.userInfo?[NSInvalidatedObjectsKey] as? Set<NSManagedObject>, !invalidatedObjects.isEmpty {
-////                    print(invalidatedObjects)
-////                }
-////                if let areInvalidatedAllObjects = notification.userInfo?[NSInvalidatedAllObjectsKey] as? Bool {
-////                    print(areInvalidatedAllObjects)
-////                }
-//
-//        DispatchQueue.main.sync {
-//            self.moc.mergeChanges(fromContextDidSave: notification)
-//        }
-//
-//
-//    }
-//
-//
-//    func contextWillSave(_ notification: Notification) {
-//        let savedContext = notification.object as! NSManagedObjectContext
-//        if(savedContext == self.moc) { // ignore change notifications for the main MOC
-//            return
-//        }
-//
-//        print(savedContext)
-//
-//
-//        if let insertedObjects = notification.userInfo?[NSInsertedObjectsKey] as? Set<NSManagedObject>, !insertedObjects.isEmpty {
-//            print(insertedObjects)
-//        }
-////        if let updatedObjects = notification.userInfo?[NSUpdatedObjectsKey] as? Set<NSManagedObject>, !updatedObjects.isEmpty {
-////            print(updatedObjects)
-////        }
-////        if let deletedObjects = notification.userInfo?[NSDeletedObjectsKey] as? Set<NSManagedObject>, !deletedObjects.isEmpty {
-////            print(deletedObjects)
-////        }
-////        if let refreshedObjects = notification.userInfo?[NSRefreshedObjectsKey] as? Set<NSManagedObject>, !refreshedObjects.isEmpty {
-////            print(refreshedObjects)
-////        }
-////        if let invalidatedObjects = notification.userInfo?[NSInvalidatedObjectsKey] as? Set<NSManagedObject>, !invalidatedObjects.isEmpty {
-////            print(invalidatedObjects)
-////        }
-////        if let areInvalidatedAllObjects = notification.userInfo?[NSInvalidatedAllObjectsKey] as? Bool {
-////            print(areInvalidatedAllObjects)
-////        }
-//
-//        DispatchQueue.main.sync {
-//            self.moc.mergeChanges(fromContextDidSave: notification)
-//        }
-//
-//
-//    }
     
-    
+    /**
+     Runs when MOC saves. Set to merge changes from child to parent MOC only.
+     
+     - Parameter notification: What has changed.
+     
+     */
     @objc func contextDidSave(_ notification: Notification) {
         let savedContext = notification.object as! NSManagedObjectContext
         if(savedContext == self.moc) { // ignore change notifications for the main MOC
@@ -3675,29 +3259,10 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         }
         
         
-//        if let insertedObjects = notification.userInfo?[NSInsertedObjectsKey] as? Set<NSManagedObject>, !insertedObjects.isEmpty {
-//            print(insertedObjects)
-//        }
-//        if let updatedObjects = notification.userInfo?[NSUpdatedObjectsKey] as? Set<NSManagedObject>, !updatedObjects.isEmpty {
-//            print(updatedObjects)
-//        }
-//        if let deletedObjects = notification.userInfo?[NSDeletedObjectsKey] as? Set<NSManagedObject>, !deletedObjects.isEmpty {
-//            print(deletedObjects)
-//        }
-//        if let refreshedObjects = notification.userInfo?[NSRefreshedObjectsKey] as? Set<NSManagedObject>, !refreshedObjects.isEmpty {
-//            print(refreshedObjects)
-//        }
-//        if let invalidatedObjects = notification.userInfo?[NSInvalidatedObjectsKey] as? Set<NSManagedObject>, !invalidatedObjects.isEmpty {
-//            print(invalidatedObjects)
-//        }
-//        if let areInvalidatedAllObjects = notification.userInfo?[NSInvalidatedAllObjectsKey] as? Bool {
-//            print(areInvalidatedAllObjects)
-//        }
-        
         DispatchQueue.main.sync {
             self.moc.mergeChanges(fromContextDidSave: notification)
         }
         
-
+        
     }
 }
