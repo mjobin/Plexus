@@ -44,6 +44,12 @@ class PlexusEntryViewController: NSViewController, NSTableViewDelegate, NSTableV
     }
     
 
+    /**
+     Removes selected Entries from current Model. If an Entry is no longer attached to any Model, it is deleted from the MOC.
+     
+     - Parameter sender: Calling function.
+
+     */
     @IBAction func removeEntries(_ sender: AnyObject) {
         
         let curModels : [Model] = modelTreeController?.selectedObjects as! [Model]
@@ -52,7 +58,6 @@ class PlexusEntryViewController: NSViewController, NSTableViewDelegate, NSTableV
             return
         }
         
-    
         let curEntries : [Entry] = entryController.selectedObjects as! [Entry]
         for curEntry in curEntries {
             curModel.removeAnEntryObject(curEntry)
@@ -72,7 +77,8 @@ class PlexusEntryViewController: NSViewController, NSTableViewDelegate, NSTableV
 
     }
 
-    //TableView Delegate fxns
+    // MARK: - TableView Delegate fxns
+    
     func tableView(_ tableView: NSTableView, objectValueFor tableColumn: NSTableColumn?, row: Int) -> Any? {
 
         let entryArray : NSArray = entryController.arrangedObjects as! NSArray
@@ -87,11 +93,6 @@ class PlexusEntryViewController: NSViewController, NSTableViewDelegate, NSTableV
         if ((aTableView == entryTableView))
         {
             
-
-            
-//            let selectedRow = rowIndexes.first
-//            let selectedRows = rowIndexes
-            
             let entryArray : NSArray = entryController.arrangedObjects as! NSArray
             print (entryArray.count)
             
@@ -104,15 +105,7 @@ class PlexusEntryViewController: NSViewController, NSTableViewDelegate, NSTableV
                 mutableArray.add(selectedObject.objectID.uriRepresentation())
             }
 
-            
-//            let selectedObject : AnyObject = entryArray.object(at: selectedRow!) as AnyObject
-//
-//
-//
-//
-//
-//            mutableArray.add(selectedObject.objectID.uriRepresentation())
-            
+
             
             let data : Data = NSKeyedArchiver.archivedData(withRootObject: mutableArray)
             

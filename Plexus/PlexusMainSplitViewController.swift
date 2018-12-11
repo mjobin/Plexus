@@ -52,9 +52,12 @@ class PlexusMainSplitViewController: NSSplitViewController {
         
     }
     
-    
 
-    
+    /**
+     Toggle Model SplitView item.
+     
+     - Parameter x: Toolbar tem.
+     */
     func  toggleModels(_ x:NSToolbarItem){
         
         let modelListViewItem = self.splitViewItems[0] // 0 is left pane
@@ -62,15 +65,5 @@ class PlexusMainSplitViewController: NSSplitViewController {
         
     }
     
-
-    
-  
-    override func splitViewWillResizeSubviews(_ aNotification: Notification){
-     //   println(aNotification)
-    }
-
-    override func splitViewDidResizeSubviews(_ aNotification: Notification){
-       // println(aNotification)
-    }
     
 }

@@ -51,7 +51,7 @@ class PlexusEntryDetailViewController: NSViewController, NSTableViewDelegate, NS
 
     
     
-    //TableView Delegate fxns
+    // MARK: - TableView Delegate fxns
     func tableView(_ tableView: NSTableView, objectValueFor tableColumn: NSTableColumn?, row: Int) -> Any? {
         let traitsArray : NSArray = traitsController.arrangedObjects as! NSArray
         return traitsArray.object(at: row)

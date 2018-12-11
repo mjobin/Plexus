@@ -79,6 +79,10 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
         super.init(coder: aDecoder)
     }
 
+    /**
+     Sets up obervers and view effects. Sets up Core Plot plotting spaces.
+     
+     */
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -326,30 +330,7 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
         
     }
     
-    func setGraphParams() {
-        
-        graph.add(priorPlot)
-        
-        for plot in (graph?.allPlots())! {
-            plot.title = nil
-            plot.attributedTitle = nil
-            if(plot.identifier!.isEqual("PriorPlot")){
-                let priorstring = "Prior"
-                let priorstringrange = (priorstring as NSString).range(of: priorstring)
-                let priorAS = NSMutableAttributedString(string: "Prior")
-                priorAS.addAttribute(NSAttributedString.Key.foregroundColor, value: NSColor.white, range: priorstringrange)
-                plot.attributedTitle = priorAS
-            }
-            else {
-                let poststring = "Posterior"
-                let poststringrange = (poststring as NSString).range(of: poststring)
-                let postAS = NSMutableAttributedString(string: "Posterior")
-                postAS.addAttribute(NSAttributedString.Key.foregroundColor, value: NSColor.white, range: poststringrange)
-                plot.attributedTitle = postAS
-            }
-        }
-       
-    }
+
     
     override func viewDidAppear() {
         super.viewDidAppear()
@@ -425,8 +406,12 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
         
     }
     
-    //******CPTScatterPlotDataSource fxns
+
     
+    /**
+     Reloads data for VC. Determines whether current node is dependent and shows different controls and graphs based on that.
+     
+     */
     @objc func reloadData() {
         
         for view in nodeDetailCPTView.subviews{
@@ -662,7 +647,16 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
     }
     
     
+    // MARK: - Core plot functions
     
+    
+    /**
+     Counts prior or posterior data for a CPTPlot.
+     
+     - Parameter plot: CPTPlot holding data.
+
+     - Returns: Count of records for plot.
+     */
     func numberOfRecords(for plot: CPTPlot) -> UInt {
         
         if(plot.identifier!.isEqual("PriorPlot")){
@@ -672,6 +666,16 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
         
     }
     
+    /**
+     Retrieves a y value for a given x for plot
+     
+     - Parameter plot: CPTPlot holding data.
+     - Parameter fieldEnum: x or y value.
+     - Parameter idx: Index of value.
+     
+     
+     - Returns: Gaussian deviate
+     */
     func number(for plot: CPTPlot, field fieldEnum: UInt, record idx: UInt) -> Any? {
         let numrec = Double(numberOfRecords(for: plot))
         
@@ -704,16 +708,13 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
                     }
                     
                 case 2: //gaussian
-//                    print("prior \(gaussian(V1, c: V2, x: nidx))")
                     return gaussian(V1, c: V2, x: nidx) as AnyObject?
-//                    return gaussian(V1, sigma: V2, x: nidx) as AnyObject?
                     
                 case 3: //beta
                     return beta(V1, b: V2, x: nidx) as AnyObject?
                     
                 case 4: //gamma
                     
-//                    print("prior \(gamma(V1, b: V2, x: nidx))")
                     return gamma(V1, b:V2, x:nidx) as AnyObject?
                     
                     
@@ -734,27 +735,76 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
         return 0 as AnyObject?
     }
     
-    
-    //****** distn fxns
+    /**
+     Distinguishes between prior and posterior plots for Core Plot.
+     
+     */
+    func setGraphParams() {
+        
+        graph.add(priorPlot)
+        
+        for plot in (graph?.allPlots())! {
+            plot.title = nil
+            plot.attributedTitle = nil
+            if(plot.identifier!.isEqual("PriorPlot")){
+                let priorstring = "Prior"
+                let priorstringrange = (priorstring as NSString).range(of: priorstring)
+                let priorAS = NSMutableAttributedString(string: "Prior")
+                priorAS.addAttribute(NSAttributedString.Key.foregroundColor, value: NSColor.white, range: priorstringrange)
+                plot.attributedTitle = priorAS
+            }
+            else {
+                let poststring = "Posterior"
+                let poststringrange = (poststring as NSString).range(of: poststring)
+                let postAS = NSMutableAttributedString(string: "Posterior")
+                postAS.addAttribute(NSAttributedString.Key.foregroundColor, value: NSColor.white, range: poststringrange)
+                plot.attributedTitle = postAS
+            }
+        }
+        
+    }
 
+    // MARK: - Distribution drawing functions
     
-//    func gaussian(_ mu: Double, sigma: Double, x: Double) -> Double {
-//        let n : Double = sigma * 2.0 * sqrt(.pi)
-//        let p : Double = exp( -pow(x-mu, 2.0) / (2.0 * pow(sigma, 2.0)))
-//        return p/n
-//    }
-    
+    /**
+     Calculates a deviate of a gaussian function.
+     
+     - Parameter b:
+     - Parameter c:
+     - Parameter x:
+
+     
+     - Returns: Gaussian deviate
+     */
     func gaussian(_ b: Double, c: Double, x: Double) -> Double {
         return exp( -pow(x-b, 2.0) / (2.0 * pow(c, 2.0)))
     }
     
+    
+    /**
+     Calculates a deviate of a beta function.
+     
+     
+     Gamma(a+B)/Gamma(a)+Gamma(b)
+     ---------------------------
+     x^a-1 * (1-x)^(b-1)
+     
+     - Returns: Beta deviate.
+     */
     func beta(_ a: Double, b: Double, x: Double) -> Double {
         let betanorm : Double = tgamma((a+b))/(tgamma(a)+tgamma(b))
         let secondhalf : Double = pow(x, (a-1))*pow((1-x),(b-1))
         return betanorm * secondhalf
     }
-        
-    func gamma(_ a: Double, b: Double, x: Double) -> Double { //(A^R)/Gamma(R) * X^(R-1) * Exp(-A*X)
+    
+    /**
+     Calculates a deviate of a gamma function.
+     (a^b)/Gamma(b) * x^(b-1) * Exp(-a*x)
+     
+     
+     - Returns: Gamma deviate.
+     */
+    func gamma(_ a: Double, b: Double, x: Double) -> Double {
         return pow(a,b)/tgamma(b) * pow(x, (b-1)) * pow(M_E, -(x*a))
     }
     
@@ -762,12 +812,11 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
     
 
     
+    // MARK: - Observers.
     
-    
-    //******
-    
-
-    
+    /**
+     Reloads data only when index paths change, though not when calculations are in progress.
+     */
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
         
         if calcInProgress == true {
@@ -785,6 +834,12 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
         }
     }
     
+    /**
+     Runs when MOC changes. Restricts setting flags to act on changes to a few keys.
+     
+     - Parameter notification: What has changed.
+     
+     */
     @objc func mocDidChange(_ notification: Notification){
         mocChange = true
         let info = notification.userInfo

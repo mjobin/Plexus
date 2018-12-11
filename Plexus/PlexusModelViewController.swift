@@ -100,9 +100,6 @@ class PlexusModelViewController: NSViewController, NSOutlineViewDelegate, NSOutl
             }
         }
         
-        
-
-
 
         do {
             try moc.save()
@@ -114,6 +111,12 @@ class PlexusModelViewController: NSViewController, NSOutlineViewDelegate, NSOutl
     }
 
     
+    /**
+     Creates a new Model at index path and inserts into modelTreeController.
+     
+     - Parameter sender: Calling function.
+
+     */
     @IBAction func addModel(_ sender : AnyObject){
 
         var inPath = IndexPath()
@@ -128,15 +131,15 @@ class PlexusModelViewController: NSViewController, NSOutlineViewDelegate, NSOutl
         
         modelTreeController.insert(newModel, atArrangedObjectIndexPath: inPath)
         
-        
     }
     
     
-    @IBAction func removeModel(_ sender : AnyObject){
-        
-        
-    }
-    
+    /**
+     Creates a new Model that is the child of the selected Model. Uses Model's copySelf function.
+     
+     - Parameter sender: Calling function.
+     
+     */
     @IBAction func childModel(_ sender : AnyObject){
         
         let curModels : [Model] = modelTreeController.selectedObjects as! [Model]
@@ -148,22 +151,16 @@ class PlexusModelViewController: NSViewController, NSOutlineViewDelegate, NSOutl
             let newModel : Model = curModel.copySelf(moc: self.moc, withEntries: true)
             newModel.setValue(NSNumber.init(floatLiteral: -Double.infinity), forKey: "score")
             
-            // curModel.addChildObject(newModel)
-            // newModel.setValue(curModel, forKey: "parent")
             modelTreeController.insert(newModel, atArrangedObjectIndexPath: newPath)
             let copyName : String = curModel.name + " copy"
             newModel.setValue(copyName, forKey: "name")
 
-  
-            
         }
-        
         
     }
     
     
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
-
         if let yerob = object as? NSTreeController {
             if yerob == modelTreeController {
                 if firstrun {
@@ -175,10 +172,7 @@ class PlexusModelViewController: NSViewController, NSOutlineViewDelegate, NSOutl
                 }
             }
         }
-
     }
-    
-    
 }
 
 // Helper function inserted by Swift 4.2 migrator.
