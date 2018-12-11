@@ -12,12 +12,9 @@ class PlexusMainSplitView: NSSplitView {
 
     override func draw(_ dirtyRect: NSRect) {
         super.draw(dirtyRect)
-
-        // Drawing code here.
     }
     
     override func viewDidEndLiveResize() {
         super.viewDidEndLiveResize()
-        //println("mainview ended lize resize with bound width \(self.bounds.width)")
     }
 }

@@ -38,6 +38,14 @@ extension Model {
     }
     
     
+    /**
+     Create a copy of this Model.
+     
+     - Parameter moc: Managed Object Context.
+     - Parameter withEntries: If true, create relationships between this Model's Entries and the new Model.
+     
+     - Returns: Copied Model.
+     */
     func copySelf(moc: NSManagedObjectContext?, withEntries: Bool) -> Model {
         
         
@@ -151,46 +159,4 @@ extension Model {
         //end copyself
     }
     
-    func genRandData(moc: NSManagedObjectContext?) {
-        
-        //Remove existing Entries
-        for theEntry in self.entry.allObjects as! [Entry] {
-            self.removeAnEntryObject(theEntry)
-        }
-        
-        let allNodes = self.bnnode.allObjects as! [BNNode]
-        
-        var nodecounter = 1
-        //Prepare the independnt nodes
-        for thisNode in allNodes {
-            thisNode.name = String(nodecounter)
-            thisNode.value = "yes"
-            let upNodes = thisNode.upNodes(self)
-            if upNodes.count < 1 { //Independent nodes need to
-                
-                thisNode.priorDistType =  NSNumber.init(integerLiteral: Int.random(in: 0 ... 4))
-                thisNode.priorV1 = NSNumber.init(floatLiteral: Double.random(in: 0.0 ... 1.0))
-                thisNode.priorV2 = NSNumber.init(floatLiteral: Double.random(in: 0.0 ... 1.0))
-                
-            }
-            else {
-                for upNode in upNodes {
-                    
-                    if let thisInter = thisNode.getUpInterBetween(upNode: upNode){
-                        thisInter.ifthen = NSNumber.init(floatLiteral: Double.random(in: 0.0 ... 1.0))
-                    }
-                }
-            }
-            
-            nodecounter += 1
-        }
-        
-
-        
-        
-        
-        
-    }
-  
-
 }

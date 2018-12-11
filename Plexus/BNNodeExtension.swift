@@ -212,7 +212,12 @@ extension BNNode {
     }
     
     
-    
+    /**
+     Ensures a Node is not connected to other nodes in the Model.
+     
+     - Parameter moc: Managed Object Context.
+     
+   */
     func removeSelfFromNeighbors(moc : NSManagedObjectContext?){
         for upNode in self.upNodes(self){
             upNode.removeADownObject(downNode: self, moc: moc)
@@ -256,6 +261,9 @@ extension BNNode {
     
     /**
      Calculates a Conditional Probability Table for this BNNode.
+     
+     - Parameter fake: If true, ignore data and calculate by rolling off BNInterNode.
+     - Parameter thisMOC: Managed object context. May not be nil.
      
      - Returns: 2 if successfully completed.
      */

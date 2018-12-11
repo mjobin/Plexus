@@ -37,18 +37,18 @@ class PlexusBNSKView: SKView {
 
 
     
-    override func draw(_ dirtyRect: NSRect) {
-        super.draw(dirtyRect)
-
-    }
-    
+    /**
+     If dragging, operation always Copy.
+     
+     */
     override func draggingEntered(_ sender: NSDraggingInfo) -> NSDragOperation {
                return NSDragOperation.copy
-        
     }
     
+    /**
+     These functions pass events down to the PlexusBNScene.
 
-    
+     */
     internal override func mouseDown(with theEvent: NSEvent) {
         
         self.scene?.mouseDown(with: theEvent)
@@ -67,14 +67,14 @@ class PlexusBNSKView: SKView {
             self.scene?.rightMouseDown(with: theEvent)
     }
  
-    /*
-    override func rightMouseDown(theEvent: NSEvent) {
-        print("view rmd")
-        let contextMenu = NSMenu.init(title: "whut")
-        NSMenu.popUpContextMenu(contextMenu, withEvent: theEvent, forView: self)
-    }
-    */
-    
+
+    /**
+     Disallows drag if current Model is complete or there is no Model.
+     
+     - Parameter sender: Calling function.
+     
+     - Returns: True if drag allowed.
+     */
     override func prepareForDragOperation(_ sender: NSDraggingInfo) -> Bool {
         
         
@@ -87,17 +87,21 @@ class PlexusBNSKView: SKView {
             return false
         }
         
-
-        
         
         return true
     }
     
+    /**
+     Drag operation results in a new BNNode being created.
+     
+     - Parameter sender: Calling function.
+     
+     - Returns: Always false.
+     */
     override func performDragOperation(_ sender: NSDraggingInfo) -> Bool {
         
               
         let pboard : NSPasteboard = sender.draggingPasteboard
-       // let types : NSArray = pboard.types!
         
         
         let kString : String = kUTTypeURL as String
@@ -120,15 +124,18 @@ class PlexusBNSKView: SKView {
                 
             }
             
-            
-           
         }
 
         return false
     }
     
 
-    
+    /**
+     Creates a new BNNode and adds it to the Model.
+     
+     - Parameter inTrait: Trait whose information attaches to the Node.
+     
+     */
     func addNode(inTrait: Trait?){
         
         let newNode : BNNode = BNNode(entity: NSEntityDescription.entity(forEntityName: "BNNode", in: moc)!, insertInto: moc)
@@ -145,10 +152,6 @@ class PlexusBNSKView: SKView {
             
             
         }
-
-
-
-            
 
         let curModels : [Model] = modelTreeController.selectedObjects as! [Model]
         let curModel : Model = curModels[0]

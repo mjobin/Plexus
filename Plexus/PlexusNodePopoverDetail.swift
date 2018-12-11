@@ -12,10 +12,5 @@ class PlexusNodePopoverDetail: NSViewController {
     
     @objc dynamic var nodesController : NSArrayController!
     @objc dynamic var modelTreeController : NSTreeController!
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        // Do view setup here.
-    }
     
 }

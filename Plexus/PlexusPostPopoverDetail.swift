@@ -18,6 +18,10 @@ class PlexusPostPopoverDetail: NSViewController, NSTableViewDelegate, NSTableVie
     var plexusModelDetailViewController : PlexusModelDetailViewController!
     
 
+    /**
+      Calculates size from number of CPT entries needed.
+     
+     */
     override func viewDidLoad() {
         super.viewDidLoad()
         var tableWidth = 0.0
@@ -47,7 +51,7 @@ class PlexusPostPopoverDetail: NSViewController, NSTableViewDelegate, NSTableVie
         
 
         popoverView.setFrameSize(NSSize(width: CGFloat(tableWidth + 32), height: CGFloat(tableRect.height + 100)))
-        //        popoverView.setFrameSize(NSSize(width: CGFloat(tableRect.width + 32), height: CGFloat(tableRect.height + 100)))
+
 
         popoverView.display()
     
@@ -62,8 +66,15 @@ class PlexusPostPopoverDetail: NSViewController, NSTableViewDelegate, NSTableVie
     
     
     
-    //tableview data source
-    
+        // MARK: - TableView data source
+
+    /**
+     Calculates number of rows needed from nodesController.
+     
+     - Parameter tableView: TableView should only be the one in the storyboard.
+     
+     - Returns: Number of rows needed.
+     */
     func numberOfRows(in tableView: NSTableView) -> Int {
         var curNodes : [BNNode] = nodesController.selectedObjects as! [BNNode]
         if(curNodes.count>0) {
@@ -83,6 +94,16 @@ class PlexusPostPopoverDetail: NSViewController, NSTableViewDelegate, NSTableVie
         return 0
     }
     
+    
+    /**
+     Retrives value for TableView cell. Calculates string of T anf F's from state of upstream nodes.
+     
+     - Parameter tableView: TableView should only be the one in the storyboard.
+     - Parameter tableColumn: Calculates CPT vlaue if column is "Data".
+     - Parameter row: For referencing cptarray of the Model.
+     
+     - Returns: Number of rows needed.
+     */
     func tableView(_ tableView: NSTableView, objectValueFor tableColumn: NSTableColumn?, row: Int) -> Any? {
         var curNodes : [BNNode] = nodesController.selectedObjects as! [BNNode]
         if(curNodes.count>0) {

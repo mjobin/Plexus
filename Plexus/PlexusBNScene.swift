@@ -31,10 +31,15 @@ class PlexusBNScene: SKScene {
     var d2 : CGFloat = 0.8
     
     
+    /**
+     Sets MOC as primary MOC. Adds observers for MOC changing and saving.
+     
+     - Parameter view: SKView linked to this SKScene.
+
+     */
     override func didMove(to view: SKView) {
 
-        
-            
+    
         let appDelegate : AppDelegate = NSApplication.shared.delegate as! AppDelegate
         moc = appDelegate.persistentContainer.viewContext
         
@@ -44,14 +49,12 @@ class PlexusBNScene: SKScene {
         NotificationCenter.default.addObserver(self, selector: #selector(saveData), name: NSApplication.willTerminateNotification, object: nil)
 
 
- 
         firstUpdate = true
         
         
         self.backgroundColor = SKColor.clear
-        startNode = self // so initialized
+        startNode = self
         movingNode = self
-
 
     }
     
@@ -59,7 +62,13 @@ class PlexusBNScene: SKScene {
         changes = true
     }
 
-    
+
+    /**
+     Screens out key events when Model is complete.
+     
+     - Parameter theEvent: New key event.
+     
+     */
     override func keyDown(with theEvent: NSEvent) {
         let curModels : [Model] = modelTreeController.selectedObjects as! [Model]
         let curModel : Model = curModels[0]
@@ -70,6 +79,12 @@ class PlexusBNScene: SKScene {
         interpretKeyEvents([theEvent])
     }
     
+    /**
+     Delete node from Model and MOC.
+     
+     - Parameter theEvent: New key event.
+     
+     */
     override func deleteBackward(_ sender: Any?) {
         
         
@@ -87,21 +102,23 @@ class PlexusBNScene: SKScene {
         self.reloadData()
     }
     
+    /**
+     
+     Interprets mouse down events. Passed touchedNode down from labels to PlexusBNNode if needed.
+     Selects node if one click, performs dblClickAction if doubled.
+     
+     - Parameter theEvent: New key event.
+     
+     */
     override func mouseDown(with theEvent: NSEvent) {
-
-        //print ("event: \(theEvent)")
-    
         
         let curModels : [Model] = modelTreeController.selectedObjects as! [Model]
         let curModel : Model = curModels[0]
 
-        
-        
         let loc = theEvent.location(in: self)
         dragStart = loc
        
         var touchedNode : SKNode = self.atPoint(loc)
-//        print("mouseDown touched \(touchedNode.name)      parent: \(String(describing: touchedNode.parent))")
 
         if(touchedNode.isEqual(to: self)) { //pass up to scroll?
             if(theEvent.clickCount > 1){
@@ -128,13 +145,11 @@ class PlexusBNScene: SKScene {
                 
             }
             
-            
             if(touchedNode.name == "nodeName"){//passing mouseDown to node beenath
                 let allNodes : [SKNode] = self.nodes(at: touchedNode.position)
 
                 for theNode : SKNode in allNodes {
                     
-                //   print("mouseDOWN sknode \(theNode) pos: \(theNode.position)")
 
                     if(theNode.name == "bnNode")
                     {
@@ -144,8 +159,6 @@ class PlexusBNScene: SKScene {
                 
             }
             
-//            print ("mouseDown now touchedNode is \(touchedNode)")
-
             if(touchedNode.name == "bnNode"){
                 
                 self.enumerateChildNodes(withName: "lightingNode", using: { thisNode, stop in
@@ -182,52 +195,28 @@ class PlexusBNScene: SKScene {
                 
             }
             
-            
-
         }
 
-        
                startNode = touchedNode
-        
-    
  
     }
     
     
-    override func rightMouseDown(with theEvent: NSEvent) {
-        
-        print("right mouse down")
-       
-        let loc = theEvent.location(in: self)
-
-        
-        let touchedNode : SKNode = self.atPoint(loc)
-        
-        if(touchedNode.name == "bnNode"){
-            print("on node")
-        }
-        /*
-         let contextMenu = NSMenu.init(title: "whut")
-        NSMenu.popUpContextMenu(contextMenu, withEvent: theEvent, forView: self.view!)
- */
-    }
-    
-    override func rightMouseDragged(with event: NSEvent) {
-
-        print("right mouse dragged")
-    }
-    
+    /**
+     
+     Active during drag.
+     Draws arrow to cursor if command-dragging. Otherwise moves dragged node.
+     
+     - Parameter theEvent: New key event.
+     
+     */
     override func mouseDragged(with theEvent: NSEvent) {
         
-
         
         let loc : CGPoint = theEvent.location(in: self)
         var touchedNode : SKNode = self.atPoint(loc)
         changes = true
 
-
-
-        
         self.enumerateChildNodes(withName: "nodeInterName", using: { thisLine, stop in
             thisLine.removeFromParent()
         })
@@ -236,13 +225,11 @@ class PlexusBNScene: SKScene {
             thisLine.removeFromParent()
         })
 
-        
         if movingNode.name == "bnNode"{
             let bnNode = movingNode as! PlexusBNNode
             bnNode.position = loc
             bnNode.nameLabel.position = loc
             bnNode.valLabel.position = loc
-//            print("\(bnNode.name) position now \(bnNode.position)")
             return
         }
         
@@ -325,10 +312,14 @@ class PlexusBNScene: SKScene {
     }
     
     
+    /**
+     
+     Creates an influence arrow between nodes if drag started on a node and ended ona different one.
+     
+     - Parameter theEvent: New key event.
+     
+     */
     override func mouseUp(with theEvent: NSEvent) {
-        //let errorPtr : NSErrorPointer = nil
-        
-
         
         movingNode = self
 
@@ -338,8 +329,6 @@ class PlexusBNScene: SKScene {
             return
         }
  
-        
-        
         
         let loc = theEvent.location(in: self)
         
@@ -358,10 +347,6 @@ class PlexusBNScene: SKScene {
             
         }
         
-
-//        print("mouseup startnode \(startNode) rleasednode \(releasedNode)")
-
-
         
         if(!startNode.isEqual(to: self) && startNode.name == "bnNode" && !releasedNode.isEqual(to: self) && releasedNode.name == "bnNode" && !startNode.isEqual(to: releasedNode) ) {
 
@@ -388,9 +373,6 @@ class PlexusBNScene: SKScene {
                 print(error)
             }
             
-
-//           self.reloadData()
-
             
         }
         
@@ -412,7 +394,13 @@ class PlexusBNScene: SKScene {
     }
     
 
-    func reloadDataWPos() { //this just removes the nodes so that update can restopre them
+    /**
+     
+     This just removes the nodes so that update can restore them. Preserves position.
+     
+     
+     */
+    func reloadDataWPos() {
 
         
         self.enumerateChildNodes(withName: "nodeName", using: { thisLine, stop in
@@ -439,7 +427,12 @@ class PlexusBNScene: SKScene {
         
     }
    
-    
+    /**
+     
+     Removes all Nodes and NodeInters.
+     
+     
+     */
     func reloadData(){
         self.enumerateChildNodes(withName: "nodeName", using: { thisLine, stop in
             thisLine.removeFromParent()
@@ -463,9 +456,15 @@ class PlexusBNScene: SKScene {
     }
     
     
+    /**
+     
+     Runs periodically. Removes lines and score labels, then adds again in new positions if needed.
+     Ensures nodes in controller have all been drawn and connected by NodeInters.
+     
+     
+     */
     override func update(_ currentTime: TimeInterval) {
         
-//        print ("changes \(changes) firstupdate \(firstUpdate)")
         
         
         if changes == false && firstUpdate == false {
@@ -719,6 +718,11 @@ class PlexusBNScene: SKScene {
     }
   
     
+    /**
+     
+     Saves position of nodes to MOC.
+     
+     */
     @objc func saveData () {
         if(nodesController != nil ){
             
@@ -748,9 +752,18 @@ class PlexusBNScene: SKScene {
     }
 
 
+    /**
+     Creates a PlexusBNNodeInter from the associated BNNodeInter and a saved position.
+     The former is view, the latter is model.
+     
+     - Parameter inNodeInter: BNNodeInter that needs visual representation.
+     - Parameter inPos: Input position.
+
+    
+     */
     func makeNodeInter(_ inNodeInter : BNNodeInter, inPos: CGPoint){
         
-//        print ("makeNodeinter")
+
         let labelText = (String(format: "%.3f", inNodeInter.ifthen.floatValue))
         
         let myLabel = SKLabelNode(text: labelText)
@@ -791,6 +804,16 @@ class PlexusBNScene: SKScene {
         
     }
     
+    
+    /**
+     Creates a PlexusBNNode from the associated BNNode and a saved position.
+     The former is view, the latter is model.
+     
+     - Parameter inNode: BNNode that needs visual representation.
+     - Parameter inPos: Input position.
+     
+     
+     */
     func makeNode(_ inNode : BNNode, inPos: CGPoint){
                
 
@@ -873,7 +896,7 @@ class PlexusBNScene: SKScene {
         
     }
 
-    
+    //Unused (for now function for calculating angle and distance between nodes to animate them.
     func distanceBetween(_ p: CGPoint, q: CGPoint) -> CGFloat {
         return hypot(p.x - q.x, p.y - q.y)
     }
@@ -893,43 +916,15 @@ class PlexusBNScene: SKScene {
     }
     
 
+    /**
+     If MOC changes, checks if nodes are deleted and resets score.
+     
+     - Parameter notification: Incoming Notification
+     
+     */
     @objc func mocDidChange(_ notification: Notification){
-     //   print(notification.userInfo)
-        
-      //  var justUpdate = true
-//                print("bn scene MOC DID CHANGE ")
-
-//        print("bn scene MOC DID CHANGE \(notification.userInfo)")
-        /*
-        NB: don't chamnge the following unless you know what will happen when you delete a node
-        if let updatedObjects = notification.userInfo?[NSUpdatedObjectsKey] as? NSSet {
-            for updatedObject in updatedObjects {
-              //  println("UPDATE \(updatedObject)")
-                self.reloadData()
-            }
-        }
-        
-        if let refreshedObjects = notification.userInfo?[NSRefreshedObjectsKey] as? NSSet {
-            justUpdate = false
-            for refreshedObject in refreshedObjects {
-              //  println("REFRESHED \(refreshedObject)")
-                self.reloadData()
-            }
-        }
-        
-        
-        
-        if let insertedObjects = notification.userInfo?[NSInsertedObjectsKey] as? NSSet {
-            justUpdate = false
-            for insertedObject in insertedObjects {
-              //  println("inserted \(insertedObject)")
-                self.reloadData()
-            }
-        }
-        */
-
+ 
         if let _ = (notification as NSNotification).userInfo?[NSDeletedObjectsKey] as? NSSet {
-           // justUpdate = false
             let curModels : [Model] = modelTreeController.selectedObjects as! [Model]
             let curModel : Model = curModels[0]
             curModel.setValue(NSNumber.init(floatLiteral: -Double.infinity), forKey: "score")
@@ -941,17 +936,8 @@ class PlexusBNScene: SKScene {
             self.reloadDataWPos()
             
         }
-        
 
-
-        
-        
     }
-
-    
-    
- 
-    
 
 
 }

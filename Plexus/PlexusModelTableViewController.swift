@@ -25,18 +25,5 @@ class PlexusModelTableViewController: NSViewController {
         super.init(coder: aDecoder)
     }
     
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        // Do view setup here.
-        
-        
-    }
-    
-    override func viewDidAppear() {
-        super.viewDidAppear()
-        
-
-    }
     
 }

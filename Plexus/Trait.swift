@@ -11,10 +11,8 @@ import CoreData
 
 class Trait: NSManagedObject {
 
-
     @NSManaged var name: String
     @NSManaged var value: String
-    
     @NSManaged var entry: Entry
 
 }

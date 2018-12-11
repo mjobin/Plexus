@@ -18,7 +18,6 @@ class PlexusBNTabView: NSTabView {
     
     override func viewDidEndLiveResize() {
         super.viewDidEndLiveResize()
-       // println("BNtabview ended lize resize with bound width \(self.bounds.width)")
     }
     
 }
