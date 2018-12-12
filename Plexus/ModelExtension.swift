@@ -58,7 +58,7 @@ extension Model {
         newModel.setValue(Date(), forKey: "dateModded")
         newModel.setValue(self.hillchains, forKey: "hillchains")
         newModel.setValue(self.name, forKey: "name")
-        newModel.setValue(self.runsper, forKey: "runsper")
+        newModel.setValue(self.chain, forKey: "chain")
         newModel.setValue(self.runstarts, forKey: "runstarts")
         newModel.setValue(self.runstot, forKey: "runstot")
         newModel.setValue(0, forKey: "score")

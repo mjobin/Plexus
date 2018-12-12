@@ -18,7 +18,7 @@ class Model: NSManagedObject {
     @NSManaged var hillchains: NSNumber
     @NSManaged var name: String
     @NSManaged var runlog: String
-    @NSManaged var runsper: NSNumber
+    @NSManaged var chain: NSNumber
     @NSManaged var runstarts: NSNumber
     @NSManaged var runstot: NSNumber
     @NSManaged var score: NSNumber

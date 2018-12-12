@@ -1588,7 +1588,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                     self.runLog += curModel.runstot.stringValue
                     self.runLog += " independent chains of "
                     
-                    self.runLog += curModel.runsper.stringValue
+                    self.runLog += curModel.chain.stringValue
                     
                     self.runLog += " length each with "
                     self.runLog += curModel.burnins.stringValue
@@ -1814,7 +1814,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         
         //Buffer 2: Integer Parameters
         var intparams = [UInt32]()
-        intparams.append((curModel.runsper as! UInt32) + (curModel.burnins as! UInt32)) //0
+        intparams.append((curModel.chain as! UInt32) + (curModel.burnins as! UInt32)) //0
         intparams.append(curModel.burnins as! UInt32) //1
         intparams.append(UInt32(nodesForCalc.count)) //2
         intparams.append(UInt32(maxInfSize)) //3
@@ -2974,7 +2974,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         let appDelegate : AppDelegate = NSApplication.shared.delegate as! AppDelegate
         let moc = appDelegate.persistentContainer.viewContext
         
-        var subsamp = curModel.runsper as! Int
+        var subsamp = curModel.chain as! Int
         if subsamp < 1000  {
             subsamp = 1000
         }

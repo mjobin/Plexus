@@ -43,18 +43,18 @@
         <relationship name="trait" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="Trait" inverseName="entry" inverseEntity="Trait" syncable="YES"/>
     </entity>
     <entity name="Model" representedClassName="Plexus.Model" syncable="YES">
-        <attribute name="burnins" optional="YES" attributeType="Float" defaultValueString="100" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="burnins" optional="YES" attributeType="Integer 32" defaultValueString="10000" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="chain" optional="YES" attributeType="Integer 32" minValueString="0" defaultValueString="1000000" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="complete" optional="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="dateCreated" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="dateModded" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="hillchains" optional="YES" attributeType="Integer 32" minValueString="1" defaultValueString="100" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="name" optional="YES" attributeType="String" defaultValueString="New Model" syncable="YES"/>
         <attribute name="runlog" optional="YES" attributeType="String" defaultValueString="No Log." syncable="YES"/>
-        <attribute name="runsper" optional="YES" attributeType="Integer 32" minValueString="0" defaultValueString="10000" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="runstarts" optional="YES" attributeType="Integer 32" minValueString="1" defaultValueString="10" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="runstot" optional="YES" attributeType="Integer 32" minValueString="0" defaultValueString="10000" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="score" optional="YES" attributeType="Float" usesScalarValueType="NO" syncable="YES"/>
-        <attribute name="thin" optional="YES" attributeType="Integer 32" minValueString="1" defaultValueString="10" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="thin" optional="YES" attributeType="Integer 32" minValueString="1" defaultValueString="1" usesScalarValueType="NO" syncable="YES"/>
         <relationship name="bnnode" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="BNNode" inverseName="model" inverseEntity="BNNode" syncable="YES"/>
         <relationship name="children" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="Model" inverseName="parent" inverseEntity="Model" syncable="YES"/>
         <relationship name="entry" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Entry" inverseName="model" inverseEntity="Entry" syncable="YES"/>

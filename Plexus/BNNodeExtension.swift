@@ -269,7 +269,7 @@ extension BNNode {
      */
     func CPT(fake:Bool, thisMOC : NSManagedObjectContext) -> Int {
 //        let start = DispatchTime.now()
-//        print ("\n**********START CPT for \(self.name)")
+        print ("\n**********START CPT for \(self.name)")
         
 
         let curModel : Model = self.model
