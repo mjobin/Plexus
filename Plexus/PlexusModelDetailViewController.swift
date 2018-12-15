@@ -1025,7 +1025,7 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
         var anyones = false
         
         for (key, value) in cptReady{
-        print ("checking on \(key.name): \(value)")
+//        print ("checking on \(key.name): \(value)")
            if(value == 0 && anyones == false) {
                 alltwos = false
                 self.cptReady[key] = 1 //while processing

@@ -743,22 +743,6 @@
                                         <action selector="importCSV:" target="B8D-0N-5wS" id="CjT-Td-orB"/>
                                     </connections>
                                 </toolbarItem>
-                                <toolbarItem implicitItemIdentifier="6CFA3BFD-8F3A-407C-A1ED-680D590BE354" label="x" paletteLabel="x" image="Plexus Export Icon" id="Pyk-Fc-aOd">
-                                    <nil key="toolTip"/>
-                                    <size key="minSize" width="38" height="32"/>
-                                    <size key="maxSize" width="40" height="32"/>
-                                    <button key="view" verticalHuggingPriority="750" id="tKN-zz-kWz">
-                                        <rect key="frame" x="0.0" y="14" width="40" height="32"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="push" bezelStyle="rounded" image="Plexus Export Icon" imagePosition="only" alignment="center" borderStyle="border" imageScaling="axesIndependently" inset="2" id="D2I-uP-5XB">
-                                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                            <font key="font" metaFont="system"/>
-                                        </buttonCell>
-                                    </button>
-                                    <connections>
-                                        <action selector="exportCSV:" target="B8D-0N-5wS" id="ct8-Rn-Had"/>
-                                    </connections>
-                                </toolbarItem>
                                 <toolbarItem implicitItemIdentifier="D890D86B-5BF0-421A-865E-9C2ED1030198" label="Export" paletteLabel="Export" image="Plexus Export Icon" id="lw0-CC-tcM">
                                     <nil key="toolTip"/>
                                     <size key="minSize" width="38" height="32"/>
@@ -2640,12 +2624,12 @@
                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                                 <connections>
+                                    <binding destination="twQ-tO-BoE" name="value" keyPath="selection.chain" id="vg1-Yf-ORu"/>
                                     <binding destination="twQ-tO-BoE" name="enabled" keyPath="selection.complete" id="9p8-B4-oE1">
                                         <dictionary key="options">
                                             <string key="NSValueTransformerName">NSNegateBoolean</string>
                                         </dictionary>
                                     </binding>
-                                    <binding destination="twQ-tO-BoE" name="value" keyPath="selection.chain" id="vg1-Yf-ORu"/>
                                 </connections>
                             </textField>
                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="sGV-py-TZw">
