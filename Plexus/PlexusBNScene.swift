@@ -24,7 +24,6 @@ class PlexusBNScene: SKScene {
     var dragStart = CGPoint(x: 0.0, y: 0.0)
     var startNode = SKNode()
     var movingNode = SKNode()
-    var changes = false
 
 
     var d1 : CGFloat = 0.3
@@ -58,9 +57,9 @@ class PlexusBNScene: SKScene {
 
     }
     
-    override func didChangeSize(_ oldSize: CGSize) {
-        changes = true
-    }
+//    override func didChangeSize(_ oldSize: CGSize) {
+//
+//    }
 
 
     /**
@@ -111,6 +110,8 @@ class PlexusBNScene: SKScene {
      
      */
     override func mouseDown(with theEvent: NSEvent) {
+        
+
         
         let curModels : [Model] = modelTreeController.selectedObjects as! [Model]
         let curModel : Model = curModels[0]
@@ -198,6 +199,8 @@ class PlexusBNScene: SKScene {
         }
 
                startNode = touchedNode
+        
+
  
     }
     
@@ -212,10 +215,9 @@ class PlexusBNScene: SKScene {
      */
     override func mouseDragged(with theEvent: NSEvent) {
         
-        
+
         let loc : CGPoint = theEvent.location(in: self)
         var touchedNode : SKNode = self.atPoint(loc)
-        changes = true
 
         self.enumerateChildNodes(withName: "nodeInterName", using: { thisLine, stop in
             thisLine.removeFromParent()
@@ -294,13 +296,11 @@ class PlexusBNScene: SKScene {
             
         }
         else {
-//            touchedNode = startNode
-//            touchedNode.position = loc
 
 
             if touchedNode.name == "bnNode"{
                 movingNode = touchedNode
-//                print("\n**********************mouseDdragged touched \(String(describing: touchedNode.name))     moving: \(String(describing: movingNode.name)))\n")
+//                print("mouseDragged start: \(String(describing: startNode.name)) touched \(String(describing: touchedNode.name))     moving: \(String(describing: movingNode.name)))\n")
                 let bnNode = touchedNode as! PlexusBNNode
                 bnNode.position = loc
                 bnNode.nameLabel.position = loc
@@ -308,7 +308,6 @@ class PlexusBNScene: SKScene {
             }
         }
         
-
     }
     
     
@@ -321,6 +320,8 @@ class PlexusBNScene: SKScene {
      */
     override func mouseUp(with theEvent: NSEvent) {
         
+
+        
         movingNode = self
 
         let curModels : [Model] = modelTreeController.selectedObjects as! [Model]
@@ -332,21 +333,32 @@ class PlexusBNScene: SKScene {
         
         let loc = theEvent.location(in: self)
         
+        
+        
+        
         var releasedNode : SKNode = self.atPoint(loc)
         
-        if(releasedNode.name == "nodeName"){//passing mouseDown to node beenath
+        if(releasedNode.name == "nodeLine"){//passing mouseUp to node if in same area
             let allNodes : [SKNode] = self.nodes(at: releasedNode.position)
-
             for theNode : SKNode in allNodes {
-                //print("mouseup sknode \(theNode)")
                 if(theNode.name == "bnNode")
                 {
                     releasedNode = theNode //switch to the bnNode in the position of the label
                 }
             }
-            
         }
         
+        if(releasedNode.name == "nodeName"){//passing mouseDown to node beenath
+            let allNodes : [SKNode] = self.nodes(at: releasedNode.position)
+            for theNode : SKNode in allNodes {
+                if(theNode.name == "bnNode")
+                {
+                    releasedNode = theNode //switch to the bnNode in the position of the label
+                }
+            }
+        }
+        
+//        print ("mouseUp    start node: \(startNode)      released node: \(releasedNode)")
         
         if(!startNode.isEqual(to: self) && startNode.name == "bnNode" && !releasedNode.isEqual(to: self) && releasedNode.name == "bnNode" && !startNode.isEqual(to: releasedNode) ) {
 
@@ -407,7 +419,13 @@ class PlexusBNScene: SKScene {
             thisLine.removeFromParent()
         })
         
+        self.enumerateChildNodes(withName: "nodeInterName", using: { thisLine, stop in
+            thisLine.removeFromParent()
+        })
         
+        self.enumerateChildNodes(withName: "bnNodeInter", using: { thisLine, stop in
+            thisLine.removeFromParent()
+        })
         
         self.enumerateChildNodes(withName: "bnNode", using: { thisLine, stop in
             let idNode : PlexusBNNode = thisLine as! PlexusBNNode
@@ -421,9 +439,6 @@ class PlexusBNScene: SKScene {
         
         })
 
-
-        startNode = self //to ensure no deleted nodes retained as startNode
-        changes = true
         
     }
    
@@ -451,7 +466,6 @@ class PlexusBNScene: SKScene {
             thisLine.removeFromParent()
         })
         
-        changes = true
 
     }
     
@@ -466,12 +480,6 @@ class PlexusBNScene: SKScene {
     override func update(_ currentTime: TimeInterval) {
         
         
-        
-        if changes == false && firstUpdate == false {
-            return
-        }
-
-
         self.enumerateChildNodes(withName: "nodeLine", using: { thisLine, stop in
             thisLine.removeFromParent()
         })
@@ -710,11 +718,7 @@ class PlexusBNScene: SKScene {
             }
         }
         
-        
-        
-        changes = false
-        
-        
+
     }
   
     
@@ -923,19 +927,24 @@ class PlexusBNScene: SKScene {
      
      */
     @objc func mocDidChange(_ notification: Notification){
+        
+//        print (notification)
  
         if let _ = (notification as NSNotification).userInfo?[NSDeletedObjectsKey] as? NSSet {
             let curModels : [Model] = modelTreeController.selectedObjects as! [Model]
             let curModel : Model = curModels[0]
             curModel.setValue(NSNumber.init(floatLiteral: -Double.infinity), forKey: "score")
-            
             self.reloadData()
         }
-        else {
-
+        
+        else if let _ = (notification as NSNotification).userInfo?[NSInsertedObjectsKey] as? NSSet {
             self.reloadDataWPos()
-            
         }
+//        else {
+//
+//            self.reloadDataWPos()
+//
+//        }
 
     }
 
