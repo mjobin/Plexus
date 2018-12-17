@@ -2851,9 +2851,9 @@
         <image name="NSLockLockedTemplate" width="10" height="14"/>
         <image name="NSLockUnlockedTemplate" width="10" height="14"/>
         <image name="NSRemoveTemplate" width="11" height="11"/>
-        <image name="Plexus Export Icon" width="24" height="24"/>
-        <image name="Plexus Import Icon" width="24" height="24"/>
-        <image name="PlexusAddChild" width="24" height="24"/>
+        <image name="Plexus Export Icon" width="48" height="48"/>
+        <image name="Plexus Import Icon" width="48" height="48"/>
+        <image name="PlexusAddChild" width="48" height="48"/>
         <image name="toolbarItem:WkY-d0-2fX:image" width="18" height="18">
             <mutableData key="keyedArchiveRepresentation">
 YnBsaXN0MDDUAQIDBAUGbW5YJHZlcnNpb25YJG9iamVjdHNZJGFyY2hpdmVyVCR0b3ASAAGGoK8QGQcI
