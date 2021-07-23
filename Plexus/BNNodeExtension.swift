@@ -268,7 +268,7 @@ extension BNNode {
      - Returns: 2 if successfully completed.
      */
     func CPT(fake:Bool, thisMOC : NSManagedObjectContext) -> Int {
-//        let start = DispatchTime.now()
+        let start = DispatchTime.now()
         print ("\n**********START CPT for \(self.name)")
         
 
@@ -281,6 +281,11 @@ extension BNNode {
         let nUp = theUpNodes.count
         if(nUp < 1) { //since 2^0 is 1
             self.cptArray = [Float](repeating: -1.0, count: 1)
+            
+            let end = DispatchTime.now()
+            let cptRunTime = Double(end.uptimeNanoseconds - start.uptimeNanoseconds) / 1000000000
+            print ("**********END CPT \(cptRunTime) seconds.")
+            
             return 2
         }
         else {
@@ -390,6 +395,10 @@ extension BNNode {
         }
         
         self.cptArray = cptarray
+        
+        let end = DispatchTime.now()
+        let cptRunTime = Double(end.uptimeNanoseconds - start.uptimeNanoseconds) / 1000000000
+        print ("**********END CPT \(cptRunTime) seconds.")
         
         return 2
     }
