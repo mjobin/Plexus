@@ -13,6 +13,7 @@ import Metal
 class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
     
     
+    let appDelegate : AppDelegate = NSApplication.shared.delegate as! AppDelegate
     var moc : NSManagedObjectContext!
     var mainSplitViewController = PlexusMainSplitViewController()
     @IBOutlet var mainToolbar : NSToolbar!
@@ -84,7 +85,6 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         //let errorPtr : NSErrorPointer = nil
         
         //Get MOC from App delegate
-        let appDelegate : AppDelegate = NSApplication.shared.delegate as! AppDelegate
         moc = appDelegate.persistentContainer.viewContext
         
         let request = NSFetchRequest<Model>(entityName: "Model")
@@ -481,7 +481,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         
         
         if (result.rawValue == NSFileHandlingPanelOKButton) {
-            mainSplitViewController.modelDetailViewController?.calcInProgress = true
+            appDelegate.calcInProgress = true
             var i = 1
             var firstLine = true
             let inFile  = op.url
@@ -709,7 +709,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                     self.mainSplitViewController.entryController.fetch(self)
                     self.mainSplitViewController.modelTreeController.fetch(self)
                     self.mainSplitViewController.modelTreeController.setSelectionIndexPath(mSelPath)
-                    self.mainSplitViewController.modelDetailViewController?.calcInProgress = false
+                    self.appDelegate.calcInProgress = false
                     
                     
                 }
@@ -997,7 +997,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
             fatalError("Cannot set up Metal")
         }
         
-        mainSplitViewController.modelDetailViewController?.calcInProgress = true
+        appDelegate.calcInProgress = true
         self.breakloop = false
         
         self.progSheet = self.progSetup(self)
@@ -1017,7 +1017,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
             
             
             self.performSelector(onMainThread: #selector(PlexusMainWindowController.endProgInd), with: nil, waitUntilDone: true)
-            self.mainSplitViewController.modelDetailViewController?.calcInProgress = false
+            appDelegate.calcInProgress = false
             return
         }
         
@@ -1053,7 +1053,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                     
                 }
                 
-                self.mainSplitViewController.modelDetailViewController?.calcInProgress = false
+                self.appDelegate.calcInProgress = false
             }
             //end calcQ
         }
@@ -1082,7 +1082,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
             fatalError("Cannot set up Metal")
         }
         
-        mainSplitViewController.modelDetailViewController?.calcInProgress = true
+        appDelegate.calcInProgress = true
         self.breakloop = false
         
         
@@ -1126,7 +1126,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
             cancelAlert.addButton(withTitle: "OK")
             _ = cancelAlert.runModal()
             self.performSelector(onMainThread: #selector(PlexusMainWindowController.endProgInd), with: nil, waitUntilDone: true)
-            self.mainSplitViewController.modelDetailViewController?.calcInProgress = false
+            appDelegate.calcInProgress = false
             return
         }
         for firstNode in nodesForTest {
@@ -1414,7 +1414,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                             else {
                                 scoreAlert.informativeText = "No model scored higher than the original."
                             }
-                            self.mainSplitViewController.modelDetailViewController?.calcInProgress = false
+                            self.appDelegate.calcInProgress = false
                             scoreAlert.addButton(withTitle: "OK")
                             _ = scoreAlert.runModal()
                         }
@@ -1456,7 +1456,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
             fatalError("Cannot set up Metal")
         }
         
-        mainSplitViewController.modelDetailViewController?.calcInProgress = true
+        appDelegate.calcInProgress = true
         self.breakloop = false
         
         
@@ -1488,7 +1488,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
             cancelAlert.addButton(withTitle: "OK")
             _ = cancelAlert.runModal()
             self.performSelector(onMainThread: #selector(PlexusMainWindowController.endProgInd), with: nil, waitUntilDone: true)
-            self.mainSplitViewController.modelDetailViewController?.calcInProgress = false
+            appDelegate.calcInProgress = false
             return
         }
         
@@ -1507,7 +1507,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
             cancelAlert.addButton(withTitle: "OK")
             _ = cancelAlert.runModal()
             self.performSelector(onMainThread: #selector(PlexusMainWindowController.endProgInd), with: nil, waitUntilDone: true)
-            self.mainSplitViewController.modelDetailViewController?.calcInProgress = false
+            appDelegate.calcInProgress = false
             return
             
         }
@@ -1688,7 +1688,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                         
                         
                         
-                        self.mainSplitViewController.modelDetailViewController?.calcInProgress = false
+                        self.appDelegate.calcInProgress = false
                         
                     }
                 }
@@ -1722,7 +1722,6 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         
         let teWidth = pipelineState.threadExecutionWidth
         let mTTPT = pipelineState.maxTotalThreadsPerThreadgroup
-        
         
         var maxWSS = 0
         if #available(OSX 10.12, *) {
@@ -2366,7 +2365,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
             
         }
         
-        mainSplitViewController.modelDetailViewController?.calcInProgress = true
+        appDelegate.calcInProgress = true
         self.breakloop = false
         
         self.progSheet = self.progSetup(self)
@@ -2399,7 +2398,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         
         
         self.performSelector(onMainThread: #selector(PlexusMainWindowController.endProgInd), with: nil, waitUntilDone: true)
-        self.mainSplitViewController.modelDetailViewController?.calcInProgress = false
+        appDelegate.calcInProgress = false
         
     } //end genRandData
     
@@ -2459,7 +2458,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         
         
         if (result.rawValue == NSFileHandlingPanelOKButton) {
-            mainSplitViewController.modelDetailViewController?.calcInProgress = true
+            appDelegate.calcInProgress = true
             
             self.performSelector(onMainThread: #selector(PlexusMainWindowController.startProgInd), with: nil, waitUntilDone: true)
             
@@ -2472,7 +2471,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                 
                 
                 DispatchQueue.main.async {
-                    self.mainSplitViewController.modelDetailViewController?.calcInProgress = false
+                    self.appDelegate.calcInProgress = false
                 }
                 self.performSelector(onMainThread: #selector(PlexusMainWindowController.endProgInd), with: nil, waitUntilDone: true)
                 
@@ -2814,7 +2813,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
                     
                     
                     let titleStyle = CPTMutableTextStyle()
-                    titleStyle.fontName = "SFProDisplay-Bold"
+//                    titleStyle.fontName = "SFProDisplay-Bold"
                     titleStyle.fontSize = 18.0
                     titleStyle.color = CPTColor.black()
                     graph?.titleTextStyle = titleStyle
@@ -2970,10 +2969,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
      - Returns: Marginal likelihood as a Float.
      */
     func calcMarginalLikelihood(curModel:Model, inEntries: NSSet, nodesForCalc:[BNNode], infnet:[[Int32]], results : [[Float]], priorresults : [[Float]], bnstatesoutresults : [[Float]]) -> Float {
-        
-        let appDelegate : AppDelegate = NSApplication.shared.delegate as! AppDelegate
-        let moc = appDelegate.persistentContainer.viewContext
-        
+                
         var subsamp = curModel.chain as! Int
         if subsamp < 1000  {
             subsamp = 1000

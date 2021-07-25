@@ -14,6 +14,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     
     let plexusRunMinTransformer = PlexusRunMinTransformer()
     let plexusRunMaxTransformer = PlexusRunMinTransformer()
+    
+    var calcInProgress = false
 
 
     func applicationDidFinishLaunching(_ aNotification: Notification) {

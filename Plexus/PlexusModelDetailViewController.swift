@@ -12,6 +12,7 @@ import SpriteKit
 
 class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NSTableViewDataSource, CPTScatterPlotDataSource, CPTScatterPlotDelegate {
     
+    let appDelegate : AppDelegate = NSApplication.shared.delegate as! AppDelegate
     @objc var moc : NSManagedObjectContext!
     @objc dynamic var modelTreeController : NSTreeController!
     @IBOutlet dynamic var nodesController : NSArrayController!
@@ -64,14 +65,14 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
 
     var firstrun = true
     var mocChange = false
-    var calcInProgress = false
+//    var calcInProgress = false
     
     let defaults = UserDefaults.standard
     
     required init?(coder aDecoder: NSCoder)
     {
         
-        let appDelegate : AppDelegate = NSApplication.shared.delegate as! AppDelegate
+
         moc = appDelegate.persistentContainer.viewContext
         
 
@@ -819,7 +820,7 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
      */
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
         
-        if calcInProgress == true {
+        if appDelegate.calcInProgress == true {
             return
         }
         
@@ -841,16 +842,27 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
      
      */
     @objc func mocDidChange(_ notification: Notification){
+        
+        
+        if appDelegate.calcInProgress == true {
+            return
+        }
+        
+//        print("moc detail mocDidChange")
         mocChange = true
         let info = notification.userInfo
+        
+//        print (info)
 
         var relD = false
 
         if let objs = info?[NSUpdatedObjectsKey] as? Set<NSManagedObject> {
             for obj :NSManagedObject in objs {
-
+//                       print (info)
+                print("modelDetai VC change update")
                 let changes = obj.changedValues()
                 for (key, _) in changes {
+                    print (key)
 
                     if(key == "cptReady"){
                         return
@@ -982,11 +994,13 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
     @objc func cptCheck()
     {
 
-
-        if calcInProgress == true {
+        if appDelegate.calcInProgress == true {
             return
         }
 
+//        return //FIXME
+//        let what = 0
+        
         if (firstrun){
             
             
@@ -1024,16 +1038,16 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
         var alltwos = true
         var anyones = false
         
-        for (key, value) in cptReady{
-//        print ("checking on \(key.name): \(value)")
+        for (key, value) in cptReady{ //FIXME this ic ausing a constant update loop
+        print ("checking on \(key.name): \(value)")
            if(value == 0 && anyones == false) {
                 alltwos = false
                 self.cptReady[key] = 1 //while processing
                 DispatchQueue.global().async {
 
-                    self.cptReady[key] = key.CPT(fake: false, thisMOC: self.moc)
+                    self.cptReady[key] = key.CPT(fake: false, thisMOC: self.moc) //FIXME THIS ic ausing a constant update loop
 
-                    
+
                     self.performSelector(onMainThread: #selector(PlexusModelDetailViewController.reloadData), with: nil, waitUntilDone: false)
 
                 }
@@ -1059,39 +1073,39 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
                 print(error)
             }
 
-            
+
             let curNodes : [BNNode] = nodesController.arrangedObjects as! [BNNode]
             if(curNodes.count>0) {
                 for curNode in curNodes{
                     cptReady[curNode] = 0
                 }
             }
-            
+
             calcThisCPT = false
         }
-        
+
         if(calcCPT == true){
-            
+
             do {
                 try moc.save()
             } catch let error as NSError {
                 print(error)
             }
-            
 
-            
+
+
             cptReady = [:]
-            
+
             let curNodes : [BNNode] = allNodesController.arrangedObjects as! [BNNode]
             if(curNodes.count>0) {
                 for curNode in curNodes{
                     cptReady[curNode] = 0
                 }
             }
-            
-            
 
-            
+
+
+
             defaults.set(false, forKey: "leaveOnOpen")
             defaults.set(false, forKey: "leaveOnClose")
 

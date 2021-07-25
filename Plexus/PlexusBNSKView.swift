@@ -12,6 +12,7 @@ import CoreServices
 
 class PlexusBNSKView: SKView {
     
+    let appDelegate : AppDelegate = NSApplication.shared.delegate as! AppDelegate
     var moc : NSManagedObjectContext!
     @objc dynamic var modelTreeController : NSTreeController!
     @objc dynamic var nodesController : NSArrayController!
@@ -29,7 +30,7 @@ class PlexusBNSKView: SKView {
         self.ignoresSiblingOrder = true
         
         
-        let appDelegate : AppDelegate = NSApplication.shared.delegate as! AppDelegate
+
         moc = appDelegate.persistentContainer.viewContext
         
 

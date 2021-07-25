@@ -12,6 +12,7 @@ import CoreServices
 
 class PlexusEntryViewController: NSViewController, NSTableViewDelegate, NSTableViewDataSource {
 
+    let appDelegate : AppDelegate = NSApplication.shared.delegate as! AppDelegate
     @objc var moc : NSManagedObjectContext!
     @objc dynamic var modelTreeController : NSTreeController!
     @IBOutlet dynamic var entryController : NSArrayController!
@@ -21,7 +22,6 @@ class PlexusEntryViewController: NSViewController, NSTableViewDelegate, NSTableV
     required init?(coder aDecoder: NSCoder)
     {
 
-        let appDelegate : AppDelegate = NSApplication.shared.delegate as! AppDelegate
         moc = appDelegate.persistentContainer.viewContext
 
         super.init(coder: aDecoder)
@@ -29,9 +29,6 @@ class PlexusEntryViewController: NSViewController, NSTableViewDelegate, NSTableV
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        let appDelegate : AppDelegate = NSApplication.shared.delegate as! AppDelegate
-        moc = appDelegate.persistentContainer.viewContext
         
     
         let kString : String = kUTTypeURL as String

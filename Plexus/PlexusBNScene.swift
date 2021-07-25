@@ -12,6 +12,7 @@ import CoreData
 
 class PlexusBNScene: SKScene {
     
+    let appDelegate : AppDelegate = NSApplication.shared.delegate as! AppDelegate
     var moc : NSManagedObjectContext!
     @objc dynamic var modelTreeController : NSTreeController!
     @objc dynamic var nodesController : NSArrayController!
@@ -38,12 +39,10 @@ class PlexusBNScene: SKScene {
      */
     override func didMove(to view: SKView) {
 
-    
-        let appDelegate : AppDelegate = NSApplication.shared.delegate as! AppDelegate
         moc = appDelegate.persistentContainer.viewContext
         
         
-        NotificationCenter.default.addObserver(self, selector: #selector(PlexusBNScene.mocDidChange(_:)), name: NSNotification.Name.NSManagedObjectContextObjectsDidChange, object: moc)
+//        NotificationCenter.default.addObserver(self, selector: #selector(PlexusBNScene.mocDidChange(_:)), name: NSNotification.Name.NSManagedObjectContextObjectsDidChange, object: moc)
         
         NotificationCenter.default.addObserver(self, selector: #selector(saveData), name: NSApplication.willTerminateNotification, object: nil)
 
@@ -91,8 +90,6 @@ class PlexusBNScene: SKScene {
         for selNode : BNNode in selNodes{
             
             nodesController.removeObject(selNode)
-            let appDelegate : AppDelegate = NSApplication.shared.delegate as! AppDelegate
-            moc = appDelegate.persistentContainer.viewContext
             moc.delete(selNode)
             
         }
@@ -479,6 +476,9 @@ class PlexusBNScene: SKScene {
      */
     override func update(_ currentTime: TimeInterval) {
         
+//        return //FIXME
+//        let what = 0
+
         
         self.enumerateChildNodes(withName: "nodeLine", using: { thisLine, stop in
             thisLine.removeFromParent()
@@ -494,6 +494,7 @@ class PlexusBNScene: SKScene {
         })
         
 
+//        print ("updating")
         
         var outOfBounds = false
         self.enumerateChildNodes(withName: "bnNode", using: { thisNode, stop in
@@ -635,12 +636,12 @@ class PlexusBNScene: SKScene {
                                         
                                     }
                                     else {
-                                                let interNode = idNode.node.addADownObject(downNode: infNode.node, moc: moc)
+                                            let interNode = idNode.node.addADownObject(downNode: infNode.node, moc: moc)
                                                 //Create display node for this Nodeinter
-                                                self.makeNodeInter(interNode, inPos: CGPoint(x: theX,  y: theY))
+                                            self.makeNodeInter(interNode, inPos: CGPoint(x: theX,  y: theY))
                                         
                                         }
-                                    
+                                
 
                                 
                             }
@@ -682,12 +683,12 @@ class PlexusBNScene: SKScene {
                 let nnl1 = SKLabelNode(text: "Drag from  Traits to")
                 let nnl2 = SKLabelNode(text: "create a node.")
                 nnl1.fontSize = 18
-                nnl1.fontName = "SFProDisplay-Bold"
+//                nnl1.fontName = "SFProDisplay-Bold"
                 nnl1.name = "noNodesName"
                 nnl1.zPosition = 1
                 
                 nnl2.fontSize = 18
-                nnl2.fontName = "SFProDisplay-Bold"
+//                nnl2.fontName = "SFProDisplay-Bold"
                 nnl2.name = "noNodesName"
                 nnl2.zPosition = 1
                 
@@ -708,7 +709,7 @@ class PlexusBNScene: SKScene {
                 if(curModel.score != 0){
                     let scoretxt = SKLabelNode(text: "Score: \(curModel.score)")
                     scoretxt.fontSize = 18
-                    scoretxt.fontName = "SFProDisplay-Bold"
+//                    scoretxt.fontName = "SFProDisplay-Bold"
                     scoretxt.name = "scoreName"
                     scoretxt.zPosition = 1
                     scoretxt.position = CGPoint(x: self.frame.width*0.5, y: 20)
@@ -771,7 +772,7 @@ class PlexusBNScene: SKScene {
         let labelText = (String(format: "%.3f", inNodeInter.ifthen.floatValue))
         
         let myLabel = SKLabelNode(text: labelText)
-        myLabel.fontName = "SFProDisplay-Bold"
+//        myLabel.fontName = "SFProDisplay-Bold"
         myLabel.fontSize = 12
         myLabel.zPosition = 3
         myLabel.name = "nodeInterName"
@@ -823,7 +824,7 @@ class PlexusBNScene: SKScene {
 
         
         let myLabel = SKLabelNode(text: inNode.name)
-        myLabel.fontName = "SFProDisplay-Bold"
+//        myLabel.fontName = "SFProDisplay-Bold"
         myLabel.fontSize = 14
         myLabel.zPosition = 3
         myLabel.name = "nodeName"
@@ -928,18 +929,28 @@ class PlexusBNScene: SKScene {
      */
     @objc func mocDidChange(_ notification: Notification){
         
-//        print (notification)
+        if appDelegate.calcInProgress == true {
+            return
+        }
+        
+        print("bnscene mocDidChange")
+
  
-        if let _ = (notification as NSNotification).userInfo?[NSDeletedObjectsKey] as? NSSet {
+        if let _ = notification.userInfo?[NSDeletedObjectsKey] as? NSSet {
             let curModels : [Model] = modelTreeController.selectedObjects as! [Model]
             let curModel : Model = curModels[0]
             curModel.setValue(NSNumber.init(floatLiteral: -Double.infinity), forKey: "score")
             self.reloadData()
         }
         
-        else if let _ = (notification as NSNotification).userInfo?[NSInsertedObjectsKey] as? NSSet {
+        else if let _ = notification.userInfo?[NSInsertedObjectsKey] as? NSSet {
             self.reloadDataWPos()
         }
+        
+        else if (notification.userInfo?[NSUpdatedObjectsKey] as? NSSet) != nil {
+            print("bnscene update")
+        }
+        
 //        else {
 //
 //            self.reloadDataWPos()

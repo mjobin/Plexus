@@ -666,7 +666,7 @@
                         <windowCollectionBehavior key="collectionBehavior" fullScreenPrimary="YES"/>
                         <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
                         <rect key="contentRect" x="311" y="364" width="1024" height="600"/>
-                        <rect key="screenRect" x="0.0" y="0.0" width="1680" height="1027"/>
+                        <rect key="screenRect" x="0.0" y="0.0" width="1440" height="900"/>
                         <toolbar key="toolbar" implicitIdentifier="FC5FD341-A73E-4141-80CC-F9D05CFAA252" autosavesConfiguration="NO" displayMode="iconAndLabel" sizeMode="regular" id="pyn-dH-y2N">
                             <allowedToolbarItems>
                                 <toolbarItem implicitItemIdentifier="NSToolbarShowColorsItem" id="1qw-cg-2Ce"/>
@@ -676,10 +676,10 @@
                                 <toolbarItem implicitItemIdentifier="NSToolbarFlexibleSpaceItem" id="3e1-GX-aR9"/>
                                 <toolbarItem implicitItemIdentifier="2CB4B42F-9C2D-4A6A-8723-9EDE6333DB19" label="Lock" paletteLabel="Lock" image="NSLockLockedTemplate" id="EB6-A3-dHZ">
                                     <nil key="toolTip"/>
-                                    <size key="minSize" width="48" height="48"/>
+                                    <size key="minSize" width="47.5" height="48"/>
                                     <size key="maxSize" width="48" height="48"/>
                                     <button key="view" id="RoU-4I-Ucg">
-                                        <rect key="frame" x="0.0" y="14" width="48" height="48"/>
+                                        <rect key="frame" x="0.0" y="14" width="47.5" height="48"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                         <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="NSLockLockedTemplate" imagePosition="overlaps" alignment="center" alternateImage="NSLockUnlockedTemplate" imageScaling="proportionallyDown" inset="2" id="V9D-sm-5VC">
                                             <behavior key="behavior" pushIn="YES" changeContents="YES" lightByContents="YES"/>
@@ -846,7 +846,7 @@
                                 <toolbarItem implicitItemIdentifier="A0AEDA63-4BA0-489E-BC52-5CDFF8405E47" label="Models" paletteLabel="Models" image="NSGoLeftTemplate" sizingBehavior="auto" id="cxJ-Ba-9U3">
                                     <nil key="toolTip"/>
                                     <button key="view" verticalHuggingPriority="750" id="caP-84-jsQ">
-                                        <rect key="frame" x="0.0" y="14" width="86" height="37"/>
+                                        <rect key="frame" x="18" y="14" width="10" height="14"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <buttonCell key="cell" type="bevel" bezelStyle="regularSquare" image="NSGoLeftTemplate" imagePosition="overlaps" alignment="center" alternateImage="NSGoRightTemplate" imageScaling="proportionallyDown" inset="2" id="s4V-pZ-mlJ">
                                             <behavior key="behavior" pushIn="YES" changeContents="YES" lightByContents="YES"/>
@@ -860,7 +860,7 @@
                                 <toolbarItem implicitItemIdentifier="63CCAD30-35C6-45C8-B097-D0B3BEFCF7EB" label="Device" paletteLabel="Device" title="Item 1" sizingBehavior="auto" id="9un-M5-c2D">
                                     <nil key="toolTip"/>
                                     <popUpButton key="view" verticalHuggingPriority="750" id="npT-NI-h0m">
-                                        <rect key="frame" x="0.0" y="14" width="100" height="24"/>
+                                        <rect key="frame" x="0.0" y="14" width="74" height="25"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <popUpButtonCell key="cell" type="roundTextured" title="Item 1" bezelStyle="texturedRounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" selectedItem="bZO-0b-59T" id="ukU-fY-sPL">
                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -882,7 +882,6 @@
                             </allowedToolbarItems>
                             <defaultToolbarItems>
                                 <toolbarItem reference="cxJ-Ba-9U3"/>
-                                <toolbarItem reference="WTX-aD-8MF"/>
                                 <toolbarItem reference="lw0-CC-tcM"/>
                                 <toolbarItem reference="3e1-GX-aR9"/>
                                 <toolbarItem reference="9un-M5-c2D"/>
@@ -893,6 +892,7 @@
                                 <toolbarItem reference="PcQ-Jx-jzD"/>
                                 <toolbarItem reference="w3a-q3-YGU"/>
                                 <toolbarItem reference="lYj-Xm-flT"/>
+                                <toolbarItem reference="WTX-aD-8MF"/>
                             </defaultToolbarItems>
                         </toolbar>
                         <connections>
@@ -949,7 +949,7 @@
             <objects>
                 <viewController id="QF4-CV-Jth" customClass="PlexusEntryViewController" customModule="Plexus" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" misplaced="YES" id="s3H-VE-B97">
-                        <rect key="frame" x="0.0" y="0.0" width="174" height="276"/>
+                        <rect key="frame" x="0.0" y="0.0" width="174" height="252"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
                             <button horizontalCompressionResistancePriority="1000" translatesAutoresizingMaskIntoConstraints="NO" id="0KG-3C-KG3" userLabel="Add Entry">
@@ -980,7 +980,7 @@
                                 </connections>
                             </button>
                             <searchField wantsLayer="YES" verticalHuggingPriority="750" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="tgB-Ta-n7s">
-                                <rect key="frame" x="0.0" y="134" width="174" height="22"/>
+                                <rect key="frame" x="0.0" y="230" width="174" height="22"/>
                                 <searchFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" usesSingleLineMode="YES" bezelStyle="round" id="yvP-fH-9z9">
                                     <font key="font" metaFont="system"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -996,13 +996,13 @@
                                 </connections>
                             </searchField>
                             <scrollView horizontalCompressionResistancePriority="250" autohidesScrollers="YES" horizontalLineScroll="19" horizontalPageScroll="10" verticalLineScroll="19" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="QxF-zw-XRg">
-                                <rect key="frame" x="0.0" y="24" width="174" height="112"/>
+                                <rect key="frame" x="0.0" y="24" width="174" height="208"/>
                                 <clipView key="contentView" horizontalCompressionResistancePriority="250" ambiguous="YES" drawsBackground="NO" id="Pzr-zg-49U">
-                                    <rect key="frame" x="1" y="1" width="172" height="110"/>
+                                    <rect key="frame" x="1" y="1" width="172" height="206"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <tableView verticalHuggingPriority="750" ambiguous="YES" allowsExpansionToolTips="YES" selectionHighlightStyle="sourceList" columnSelection="YES" autosaveColumns="NO" rowSizeStyle="automatic" headerView="pBu-Ci-Mqf" viewBased="YES" id="rEo-sV-atd">
-                                            <rect key="frame" x="0.0" y="0.0" width="172" height="87"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="172" height="183"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <size key="intercellSpacing" width="3" height="2"/>
                                             <color key="backgroundColor" name="_sourceListBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -1122,12 +1122,12 @@
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
                             <tabView horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="Eqq-KD-BGU">
-                                <rect key="frame" x="0.0" y="0.0" width="219" height="142"/>
+                                <rect key="frame" x="0.0" y="0.0" width="219" height="190"/>
                                 <font key="font" metaFont="system"/>
                                 <tabViewItems>
                                     <tabViewItem label="Traits" identifier="1" id="Gcs-dU-XeU">
                                         <view key="view" horizontalCompressionResistancePriority="250" id="rcN-eQ-0Xl">
-                                            <rect key="frame" x="10" y="33" width="199" height="96"/>
+                                            <rect key="frame" x="10" y="33" width="199" height="144"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <subviews>
                                                 <button horizontalCompressionResistancePriority="1000" translatesAutoresizingMaskIntoConstraints="NO" id="beb-ea-tRM" userLabel="Add Trait">
@@ -1159,13 +1159,13 @@
                                                     </connections>
                                                 </button>
                                                 <scrollView horizontalCompressionResistancePriority="250" autohidesScrollers="YES" horizontalLineScroll="19" horizontalPageScroll="10" verticalLineScroll="19" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="7lT-CU-s06">
-                                                    <rect key="frame" x="0.0" y="20" width="199" height="76"/>
+                                                    <rect key="frame" x="0.0" y="20" width="199" height="124"/>
                                                     <clipView key="contentView" horizontalCompressionResistancePriority="250" drawsBackground="NO" id="BE3-ps-ExK">
-                                                        <rect key="frame" x="1" y="1" width="197" height="74"/>
+                                                        <rect key="frame" x="1" y="1" width="197" height="122"/>
                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                         <subviews>
                                                             <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" selectionHighlightStyle="sourceList" columnSelection="YES" multipleSelection="NO" autosaveColumns="NO" rowSizeStyle="automatic" headerView="aje-tO-ct0" viewBased="YES" id="D6o-uZ-TGZ">
-                                                                <rect key="frame" x="0.0" y="0.0" width="197" height="51"/>
+                                                                <rect key="frame" x="0.0" y="0.0" width="197" height="99"/>
                                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                 <size key="intercellSpacing" width="3" height="2"/>
                                                                 <color key="backgroundColor" name="_sourceListBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -1456,7 +1456,7 @@
                                                                 <rect key="frame" x="1" y="216" width="582" height="16"/>
                                                                 <autoresizingMask key="autoresizingMask"/>
                                                             </scroller>
-                                                            <scroller key="verticalScroller" wantsLayer="YES" verticalHuggingPriority="750" doubleValue="1" horizontal="NO" id="YEA-K1-KRk">
+                                                            <scroller key="verticalScroller" wantsLayer="YES" verticalHuggingPriority="750" horizontal="NO" id="YEA-K1-KRk">
                                                                 <rect key="frame" x="567" y="1" width="16" height="231"/>
                                                                 <autoresizingMask key="autoresizingMask"/>
                                                             </scroller>

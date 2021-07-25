@@ -10,6 +10,7 @@ import Cocoa
 
 class PlexusModelViewController: NSViewController, NSOutlineViewDelegate, NSOutlineViewDataSource {
 
+    let appDelegate : AppDelegate = NSApplication.shared.delegate as! AppDelegate
     @objc var moc : NSManagedObjectContext!
     @IBOutlet dynamic var modelTreeController : NSTreeController!
     @IBOutlet weak var modelOutlineView : NSOutlineView!
@@ -20,7 +21,6 @@ class PlexusModelViewController: NSViewController, NSOutlineViewDelegate, NSOutl
     required init?(coder aDecoder: NSCoder)
     {
         
-        let appDelegate : AppDelegate = NSApplication.shared.delegate as! AppDelegate
         moc = appDelegate.persistentContainer.viewContext
         
         super.init(coder: aDecoder)

@@ -10,7 +10,7 @@ import Cocoa
 
 class PlexusEntryDetailViewController: NSViewController, NSTableViewDelegate, NSTableViewDataSource, NSTabViewDelegate {
     
-    
+    let appDelegate : AppDelegate = NSApplication.shared.delegate as! AppDelegate
     @objc var moc : NSManagedObjectContext!
     @objc dynamic var entryController : NSController!
     
@@ -26,8 +26,7 @@ class PlexusEntryDetailViewController: NSViewController, NSTableViewDelegate, NS
     
     required init?(coder aDecoder: NSCoder)
     {
-        
-        let appDelegate : AppDelegate = NSApplication.shared.delegate as! AppDelegate
+
         moc = appDelegate.persistentContainer.viewContext
         super.init(coder: aDecoder)
         

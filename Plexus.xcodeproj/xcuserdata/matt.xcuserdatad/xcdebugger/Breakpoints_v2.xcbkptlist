@@ -1,20 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Bucket
+   uuid = "CCFA371E-C5E5-418D-A6A8-E8607B1B12B5"
    type = "1"
    version = "2.0">
    <Breakpoints>
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
+            uuid = "4D4BFCD1-8227-474E-8746-1309DF174607"
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Plexus/PlexusMainWindowController.swift"
-            timestampString = "566177995.003364"
+            timestampString = "570402819.4086699"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "2501"
-            endingLineNumber = "2501"
+            startingLineNumber = "2513"
+            endingLineNumber = "2513"
             landmarkName = "exportModel(curModel:curDir:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -22,15 +24,16 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
+            uuid = "CB791DB6-5D7B-4E2C-905A-3614D5456E6A"
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Plexus/PlexusMainWindowController.swift"
-            timestampString = "566177995.005052"
+            timestampString = "570402819.409279"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "2545"
-            endingLineNumber = "2545"
+            startingLineNumber = "2557"
+            endingLineNumber = "2557"
             landmarkName = "exportModel(curModel:curDir:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -38,15 +41,16 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
+            uuid = "9F1484FA-D79D-46CF-B8F0-AEB90CB9D53C"
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Plexus/PlexusMainWindowController.swift"
-            timestampString = "566177995.005456"
+            timestampString = "570402819.40953"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "2522"
-            endingLineNumber = "2522"
+            startingLineNumber = "2534"
+            endingLineNumber = "2534"
             landmarkName = "exportModel(curModel:curDir:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -54,15 +58,16 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
+            uuid = "49968AC3-5226-4FA6-88A3-C4CFE712F3D8"
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Plexus/PlexusMainWindowController.swift"
-            timestampString = "566177995.0057909"
+            timestampString = "570402819.409767"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "2529"
-            endingLineNumber = "2529"
+            startingLineNumber = "2541"
+            endingLineNumber = "2541"
             landmarkName = "exportModel(curModel:curDir:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -70,15 +75,16 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
+            uuid = "5A7390FA-83E3-40C5-B098-9496B3B745B5"
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Plexus/PlexusMainWindowController.swift"
-            timestampString = "566177995.006106"
+            timestampString = "570402819.410001"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "2797"
-            endingLineNumber = "2797"
+            startingLineNumber = "2809"
+            endingLineNumber = "2809"
             landmarkName = "exportModel(curModel:curDir:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -86,15 +92,16 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
+            uuid = "00D84BA7-5234-4525-A80D-336B490FA3A2"
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Plexus/PlexusMainWindowController.swift"
-            timestampString = "566177995.006417"
+            timestampString = "570402819.4102761"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "2879"
-            endingLineNumber = "2879"
+            startingLineNumber = "2891"
+            endingLineNumber = "2891"
             landmarkName = "exportModel(curModel:curDir:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -102,16 +109,169 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
+            uuid = "61F66BBD-D787-4DEA-85F8-599B8962DCDE"
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Plexus/PlexusModelDetailViewController.swift"
-            timestampString = "566177995.006722"
+            timestampString = "570402819.410522"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "431"
-            endingLineNumber = "431"
-            landmarkName = "reloadData()"
+            startingLineNumber = "414"
+            endingLineNumber = "414"
+            landmarkName = "PlexusModelDetailViewController"
+            landmarkType = "3">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "20A84B32-D825-4A78-AE3C-7F34871913DD"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Plexus/PlexusModelDetailViewController.swift"
+            timestampString = "570402819.410889"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "827"
+            endingLineNumber = "827"
+            landmarkName = "observeValue(forKeyPath:of:change:context:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "ABC41E70-E033-43D2-9FF7-2745A49EF4FA"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Plexus/PlexusModelDetailViewController.swift"
+            timestampString = "570402819.411148"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "857"
+            endingLineNumber = "857"
+            landmarkName = "mocDidChange(_:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "F8020928-6881-4417-A720-08DE62C4747F"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Plexus/PlexusModelDetailViewController.swift"
+            timestampString = "570402819.411394"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "901"
+            endingLineNumber = "901"
+            landmarkName = "mocDidChange(_:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "F0B2AAC2-D4EB-4E91-A8B1-4C95DFFE97B7"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Plexus/PlexusBNScene.swift"
+            timestampString = "570402819.411643"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "938"
+            endingLineNumber = "938"
+            landmarkName = "mocDidChange(_:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "2E078F5B-36FF-4030-9556-B83B82A12709"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Plexus/PlexusBNScene.swift"
+            timestampString = "570402819.411911"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "937"
+            endingLineNumber = "937"
+            landmarkName = "mocDidChange(_:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "841D3D79-3E23-4323-B05A-77A18E8702B3"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Plexus/PlexusBNScene.swift"
+            timestampString = "570402819.412132"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "771"
+            endingLineNumber = "771"
+            landmarkName = "makeNodeInter(_:inPos:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "8FD4B8DA-EFEC-4D1A-A927-711684A26FEF"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Plexus/PlexusBNScene.swift"
+            timestampString = "570402819.412341"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "538"
+            endingLineNumber = "538"
+            landmarkName = "update(_:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "02C4FDB7-D213-4DBE-BC47-3A4A6D39B8E8"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Plexus/PlexusModelDetailViewController.swift"
+            timestampString = "570402819.412554"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "846"
+            endingLineNumber = "846"
+            landmarkName = "mocDidChange(_:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "5EB984D8-8256-4154-BADF-36480D23BEE0"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Plexus/PlexusBNScene.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "931"
+            endingLineNumber = "931"
+            landmarkName = "mocDidChange(_:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

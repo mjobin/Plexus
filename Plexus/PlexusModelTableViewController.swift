@@ -10,6 +10,7 @@ import Cocoa
 
 class PlexusModelTableViewController: NSViewController {
     
+    let appDelegate : AppDelegate = NSApplication.shared.delegate as! AppDelegate
     var moc : NSManagedObjectContext!
     
     @objc dynamic var modelTreeController : NSTreeController!
@@ -18,8 +19,7 @@ class PlexusModelTableViewController: NSViewController {
     
     required init?(coder aDecoder: NSCoder)
     {
-        
-        let appDelegate : AppDelegate = NSApplication.shared.delegate as! AppDelegate
+
         moc = appDelegate.persistentContainer.viewContext
         
         super.init(coder: aDecoder)
