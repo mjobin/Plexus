@@ -678,7 +678,7 @@
                                     <nil key="toolTip"/>
                                     <button key="view" verticalHuggingPriority="750" id="caP-84-jsQ">
                                         <rect key="frame" x="18" y="14" width="10" height="14"/>
-                                        <autoresizingMask key="autoresizingMask"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                         <buttonCell key="cell" type="bevel" bezelStyle="regularSquare" image="NSGoLeftTemplate" imagePosition="overlaps" alignment="center" alternateImage="NSGoRightTemplate" imageScaling="proportionallyDown" inset="2" id="s4V-pZ-mlJ">
                                             <behavior key="behavior" pushIn="YES" changeContents="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="system"/>
@@ -824,13 +824,13 @@
                                         </binding>
                                     </connections>
                                 </toolbarItem>
-                                <toolbarItem implicitItemIdentifier="72537653-7743-41E0-B6E4-38AD733530FF" label="Mawdel" paletteLabel="Mawdel" sizingBehavior="auto" id="lwi-jA-x3T">
+                                <toolbarItem implicitItemIdentifier="72537653-7743-41E0-B6E4-38AD733530FF" label="Model" paletteLabel="Model" sizingBehavior="auto" id="lwi-jA-x3T">
                                     <nil key="toolTip"/>
                                     <textField key="view" horizontalHuggingPriority="251" verticalHuggingPriority="750" id="Ags-lV-5fI">
-                                        <rect key="frame" x="0.0" y="14" width="500" height="16"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                        <rect key="frame" x="0.0" y="14" width="536" height="24"/>
+                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
                                         <textFieldCell key="cell" lineBreakMode="clipping" alignment="center" title="Label" id="PKX-Gc-yyz">
-                                            <font key="font" usesAppearanceFont="YES"/>
+                                            <font key="font" metaFont="system" size="18"/>
                                             <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                         </textFieldCell>
@@ -839,10 +839,10 @@
                                         </connections>
                                     </textField>
                                 </toolbarItem>
-                                <toolbarItem implicitItemIdentifier="22BADA0D-B094-4ED4-9F0F-B365AF1E6359" label="Lawk" paletteLabel="Lawk" image="NSLockLockedTemplate" sizingBehavior="auto" id="Dhv-Pb-rum">
+                                <toolbarItem implicitItemIdentifier="22BADA0D-B094-4ED4-9F0F-B365AF1E6359" label="" paletteLabel="" image="NSLockLockedTemplate" sizingBehavior="auto" id="Dhv-Pb-rum">
                                     <nil key="toolTip"/>
                                     <button key="view" verticalHuggingPriority="750" id="1v7-14-Efm">
-                                        <rect key="frame" x="6" y="14" width="21.5" height="21"/>
+                                        <rect key="frame" x="0.0" y="14" width="21.5" height="21"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                         <buttonCell key="cell" type="smallSquare" bezelStyle="smallSquare" image="NSLockLockedTemplate" imagePosition="overlaps" alignment="center" alternateImage="NSLockUnlockedTemplate" lineBreakMode="truncatingTail" state="on" imageScaling="proportionallyDown" inset="2" id="lvi-aE-6JB">
                                             <behavior key="behavior" pushIn="YES" changeContents="YES" lightByContents="YES"/>
@@ -857,9 +857,21 @@
                                         </connections>
                                     </button>
                                 </toolbarItem>
+                                <toolbarItem implicitItemIdentifier="4CC2C2A8-9ED5-49D0-B133-8AE4D234EE8C" label="Mawdels" paletteLabel="Mawdels" title="Button" sizingBehavior="auto" id="3HS-rc-3Lt">
+                                    <nil key="toolTip"/>
+                                    <button key="view" verticalHuggingPriority="750" id="xP7-gJ-2lA">
+                                        <rect key="frame" x="0.0" y="14" width="82" height="32"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                        <buttonCell key="cell" type="push" title="Button" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="G26-DB-FFh">
+                                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                            <font key="font" metaFont="system"/>
+                                        </buttonCell>
+                                    </button>
+                                </toolbarItem>
                             </allowedToolbarItems>
                             <defaultToolbarItems>
                                 <toolbarItem reference="cxJ-Ba-9U3"/>
+                                <toolbarItem reference="zqh-cG-M8f"/>
                                 <toolbarItem reference="oMX-Si-RNj"/>
                                 <toolbarItem reference="9Mb-fv-qKz"/>
                                 <toolbarItem reference="3e1-GX-aR9"/>
