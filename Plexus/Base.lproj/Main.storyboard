@@ -674,175 +674,6 @@
                                 <toolbarItem implicitItemIdentifier="NSToolbarPrintItem" id="6SP-SO-RDG"/>
                                 <toolbarItem implicitItemIdentifier="NSToolbarSpaceItem" id="zqh-cG-M8f"/>
                                 <toolbarItem implicitItemIdentifier="NSToolbarFlexibleSpaceItem" id="3e1-GX-aR9"/>
-                                <toolbarItem implicitItemIdentifier="2CB4B42F-9C2D-4A6A-8723-9EDE6333DB19" label="Lock" paletteLabel="Lock" image="NSLockLockedTemplate" id="EB6-A3-dHZ">
-                                    <nil key="toolTip"/>
-                                    <size key="minSize" width="47.5" height="48"/>
-                                    <size key="maxSize" width="48" height="48"/>
-                                    <button key="view" id="RoU-4I-Ucg">
-                                        <rect key="frame" x="0.0" y="14" width="47.5" height="48"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="NSLockLockedTemplate" imagePosition="overlaps" alignment="center" alternateImage="NSLockUnlockedTemplate" imageScaling="proportionallyDown" inset="2" id="V9D-sm-5VC">
-                                            <behavior key="behavior" pushIn="YES" changeContents="YES" lightByContents="YES"/>
-                                            <font key="font" metaFont="system"/>
-                                        </buttonCell>
-                                        <connections>
-                                            <binding destination="B8D-0N-5wS" name="value" keyPath="modelTreeController.selection.complete" id="ldS-kf-yJJ">
-                                                <dictionary key="options">
-                                                    <string key="NSValueTransformerName">NSNegateBoolean</string>
-                                                </dictionary>
-                                            </binding>
-                                        </connections>
-                                    </button>
-                                    <connections>
-                                        <action selector="lockToggle:" target="B8D-0N-5wS" id="ASn-nw-IWg"/>
-                                    </connections>
-                                </toolbarItem>
-                                <toolbarItem implicitItemIdentifier="7DBB251A-F64A-427D-B561-2BB1683FD206" label="" paletteLabel="" image="toolbarItem:WkY-d0-2fX:image" title="GPU" id="WkY-d0-2fX">
-                                    <nil key="toolTip"/>
-                                    <size key="minSize" width="47" height="32"/>
-                                    <size key="maxSize" width="80" height="32"/>
-                                    <button key="view" verticalHuggingPriority="750" id="W8k-c4-eBh">
-                                        <rect key="frame" x="0.0" y="14" width="50" height="32"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="bevel" title="GPU" bezelStyle="regularSquare" image="toolbarItem:WkY-d0-2fX:image" imagePosition="left" alignment="left" inset="2" id="rGO-yi-MFW">
-                                            <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
-                                            <font key="font" metaFont="system"/>
-                                        </buttonCell>
-                                    </button>
-                                </toolbarItem>
-                                <toolbarItem implicitItemIdentifier="F70157C8-9601-4EE1-8FDA-7DC51E607C12" label="Model" paletteLabel="Model" id="k41-Tj-JRN" userLabel="Model">
-                                    <nil key="toolTip"/>
-                                    <size key="minSize" width="100" height="32"/>
-                                    <size key="maxSize" width="500" height="48"/>
-                                    <textField key="view" horizontalHuggingPriority="251" verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="YES" id="29Q-IT-76p">
-                                        <rect key="frame" x="0.0" y="14" width="500" height="32"/>
-                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES"/>
-                                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="center" title="Label" id="6w8-O7-qEn">
-                                            <font key="font" metaFont="system" size="18"/>
-                                            <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                                        </textFieldCell>
-                                        <connections>
-                                            <binding destination="B8D-0N-5wS" name="value" keyPath="modelTreeController.selection.name" id="XE6-JV-0jy"/>
-                                        </connections>
-                                    </textField>
-                                </toolbarItem>
-                                <toolbarItem implicitItemIdentifier="FE7E66FF-5BF6-4AD1-BF6E-20A9AC9DE96B" label="Import" paletteLabel="Import" image="Plexus Import Icon" id="WTX-aD-8MF">
-                                    <nil key="toolTip"/>
-                                    <size key="minSize" width="38" height="32"/>
-                                    <size key="maxSize" width="40" height="32"/>
-                                    <button key="view" verticalHuggingPriority="750" id="6hN-m8-G3o">
-                                        <rect key="frame" x="1" y="14" width="40" height="32"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="push" bezelStyle="rounded" image="Plexus Import Icon" imagePosition="only" alignment="center" borderStyle="border" imageScaling="axesIndependently" inset="2" id="aha-0V-LxL">
-                                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                            <font key="font" metaFont="system"/>
-                                        </buttonCell>
-                                    </button>
-                                    <connections>
-                                        <action selector="importCSV:" target="B8D-0N-5wS" id="CjT-Td-orB"/>
-                                    </connections>
-                                </toolbarItem>
-                                <toolbarItem implicitItemIdentifier="D890D86B-5BF0-421A-865E-9C2ED1030198" label="Export" paletteLabel="Export" image="Plexus Export Icon" id="lw0-CC-tcM">
-                                    <nil key="toolTip"/>
-                                    <size key="minSize" width="38" height="32"/>
-                                    <size key="maxSize" width="40" height="32"/>
-                                    <button key="view" verticalHuggingPriority="750" id="cav-V8-RqA">
-                                        <rect key="frame" x="1" y="14" width="40" height="32"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="push" bezelStyle="rounded" image="Plexus Export Icon" imagePosition="only" alignment="center" borderStyle="border" imageScaling="axesIndependently" inset="2" id="4th-Jp-MVc">
-                                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                            <font key="font" metaFont="system"/>
-                                        </buttonCell>
-                                    </button>
-                                    <connections>
-                                        <action selector="exportButton:" target="B8D-0N-5wS" id="lue-8F-TWB"/>
-                                    </connections>
-                                </toolbarItem>
-                                <toolbarItem implicitItemIdentifier="E48DEC70-4559-474A-B0E1-11F7B8E27148" label="Score" paletteLabel="Score" title="=" id="lYj-Xm-flT">
-                                    <nil key="toolTip"/>
-                                    <size key="minSize" width="38" height="32"/>
-                                    <size key="maxSize" width="72" height="32"/>
-                                    <button key="view" verticalHuggingPriority="750" id="Vzm-7N-vk6">
-                                        <rect key="frame" x="0.0" y="14" width="72" height="32"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="push" title="=" bezelStyle="rounded" imagePosition="overlaps" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="j30-Zg-k8X">
-                                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                            <font key="font" metaFont="systemSemibold" size="13"/>
-                                        </buttonCell>
-                                    </button>
-                                    <connections>
-                                        <action selector="singleRunPress:" target="B8D-0N-5wS" id="gUz-4b-8t9"/>
-                                        <binding destination="B8D-0N-5wS" name="enabled" keyPath="modelTreeController.selection.complete" id="c2Y-ia-1ea">
-                                            <dictionary key="options">
-                                                <string key="NSValueTransformerName">NSNegateBoolean</string>
-                                            </dictionary>
-                                        </binding>
-                                    </connections>
-                                </toolbarItem>
-                                <toolbarItem implicitItemIdentifier="FCDA8462-D033-4985-AF4A-F945679B582A" label="Multi" paletteLabel="Multi" title="∑" id="PcQ-Jx-jzD">
-                                    <nil key="toolTip"/>
-                                    <size key="minSize" width="48" height="32"/>
-                                    <size key="maxSize" width="72" height="32"/>
-                                    <button key="view" verticalHuggingPriority="750" id="Dek-Zy-hgU">
-                                        <rect key="frame" x="0.0" y="14" width="72" height="32"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="push" title="∑" bezelStyle="rounded" imagePosition="overlaps" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Isr-ek-XIT">
-                                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                            <font key="font" metaFont="systemSemibold" size="13"/>
-                                        </buttonCell>
-                                    </button>
-                                    <connections>
-                                        <action selector="comparisonRun:" target="B8D-0N-5wS" id="Y3j-g8-h0e"/>
-                                        <binding destination="B8D-0N-5wS" name="enabled" keyPath="modelTreeController.selection.complete" id="3HW-mO-Nwy">
-                                            <dictionary key="options">
-                                                <string key="NSValueTransformerName">NSNegateBoolean</string>
-                                            </dictionary>
-                                        </binding>
-                                    </connections>
-                                </toolbarItem>
-                                <toolbarItem implicitItemIdentifier="A329C1F0-C742-475F-99B0-1357AADDC194" label="Rand" paletteLabel="Rand" title="?" id="pLY-AX-dvL">
-                                    <nil key="toolTip"/>
-                                    <size key="minSize" width="48" height="32"/>
-                                    <size key="maxSize" width="72" height="32"/>
-                                    <button key="view" verticalHuggingPriority="750" id="jIk-co-O9R">
-                                        <rect key="frame" x="0.0" y="14" width="72" height="32"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="push" title="?" bezelStyle="rounded" imagePosition="overlaps" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Hh3-zg-1V3">
-                                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                            <font key="font" metaFont="systemSemibold" size="13"/>
-                                        </buttonCell>
-                                    </button>
-                                    <connections>
-                                        <action selector="genRandData:" target="B8D-0N-5wS" id="v0X-Ne-yi8"/>
-                                        <binding destination="B8D-0N-5wS" name="enabled" keyPath="modelTreeController.selection.complete" id="1ln-Pg-gJb">
-                                            <dictionary key="options">
-                                                <string key="NSValueTransformerName">NSNegateBoolean</string>
-                                            </dictionary>
-                                        </binding>
-                                    </connections>
-                                </toolbarItem>
-                                <toolbarItem implicitItemIdentifier="D521ED6E-A777-407F-A119-FCD03A58B33D" label="Hill" paletteLabel="Hill" title="☶" id="w3a-q3-YGU">
-                                    <nil key="toolTip"/>
-                                    <size key="minSize" width="38" height="32"/>
-                                    <size key="maxSize" width="72" height="32"/>
-                                    <button key="view" verticalHuggingPriority="750" id="jkE-J6-aKQ">
-                                        <rect key="frame" x="0.0" y="14" width="72" height="32"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="push" title="☶" bezelStyle="rounded" imagePosition="overlaps" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Xwe-qc-PNb">
-                                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                            <font key="font" size="13" name="ArialUnicodeMS"/>
-                                        </buttonCell>
-                                    </button>
-                                    <connections>
-                                        <action selector="hillClimbing:" target="B8D-0N-5wS" id="u1o-m5-5WJ"/>
-                                        <binding destination="B8D-0N-5wS" name="enabled" keyPath="modelTreeController.selection.complete" id="V59-Ad-DlO">
-                                            <dictionary key="options">
-                                                <string key="NSValueTransformerName">NSNegateBoolean</string>
-                                            </dictionary>
-                                        </binding>
-                                    </connections>
-                                </toolbarItem>
                                 <toolbarItem implicitItemIdentifier="A0AEDA63-4BA0-489E-BC52-5CDFF8405E47" label="Models" paletteLabel="Models" image="NSGoLeftTemplate" sizingBehavior="auto" id="cxJ-Ba-9U3">
                                     <nil key="toolTip"/>
                                     <button key="view" verticalHuggingPriority="750" id="caP-84-jsQ">
@@ -879,20 +710,167 @@
                                         </connections>
                                     </popUpButton>
                                 </toolbarItem>
+                                <toolbarItem implicitItemIdentifier="4C941D02-306D-479B-8DDB-3178E8AED347" label="Score" paletteLabel="Score" title="=" sizingBehavior="auto" id="GtM-cs-fyG">
+                                    <nil key="toolTip"/>
+                                    <button key="view" verticalHuggingPriority="750" id="gHP-YJ-8vo">
+                                        <rect key="frame" x="0.0" y="14" width="48" height="32"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                        <buttonCell key="cell" type="push" title="=" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="g1c-2S-KRZ">
+                                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                            <font key="font" metaFont="system"/>
+                                        </buttonCell>
+                                    </button>
+                                    <connections>
+                                        <action selector="singleRunPress:" target="B8D-0N-5wS" id="jWx-td-1xL"/>
+                                        <binding destination="B8D-0N-5wS" name="enabled" keyPath="modelTreeController.selection.complete" id="xkW-DN-xEg">
+                                            <dictionary key="options">
+                                                <string key="NSValueTransformerName">NSNegateBoolean</string>
+                                            </dictionary>
+                                        </binding>
+                                    </connections>
+                                </toolbarItem>
+                                <toolbarItem implicitItemIdentifier="995C6865-AFA5-401B-95A0-4927E0D8994C" label="Hill" paletteLabel="Hill" bordered="YES" title="☶" sizingBehavior="auto" id="nIm-nG-5u9">
+                                    <nil key="toolTip"/>
+                                    <button key="view" verticalHuggingPriority="750" id="VNy-0C-OEq">
+                                        <rect key="frame" x="0.0" y="14" width="48" height="32"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                        <buttonCell key="cell" type="push" title="☶" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="XjX-Xe-wfL">
+                                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                            <font key="font" size="13" name="ArialUnicodeMS"/>
+                                        </buttonCell>
+                                    </button>
+                                    <connections>
+                                        <action selector="hillClimbing:" target="B8D-0N-5wS" id="w2k-Ld-L9W"/>
+                                        <binding destination="B8D-0N-5wS" name="enabled" keyPath="modelTreeController.selection.complete" id="828-b8-L9P">
+                                            <dictionary key="options">
+                                                <string key="NSValueTransformerName">NSNegateBoolean</string>
+                                            </dictionary>
+                                        </binding>
+                                    </connections>
+                                </toolbarItem>
+                                <toolbarItem implicitItemIdentifier="DA41D2C0-4A16-448A-853A-0E09174A19CA" label="Rand" paletteLabel="Rand" bordered="YES" title="?" sizingBehavior="auto" id="UWN-Wi-hK1">
+                                    <nil key="toolTip"/>
+                                    <button key="view" verticalHuggingPriority="750" id="5IW-Dp-3Oe">
+                                        <rect key="frame" x="0.0" y="14" width="48" height="32"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                        <buttonCell key="cell" type="push" title="?" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="adg-tH-SwZ">
+                                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                            <font key="font" size="13" name="ArialUnicodeMS"/>
+                                        </buttonCell>
+                                    </button>
+                                    <connections>
+                                        <action selector="genRandData:" target="B8D-0N-5wS" id="ktR-Og-0mK"/>
+                                        <binding destination="B8D-0N-5wS" name="enabled" keyPath="modelTreeController.selection.complete" id="KTc-X0-Hng">
+                                            <dictionary key="options">
+                                                <string key="NSValueTransformerName">NSNegateBoolean</string>
+                                            </dictionary>
+                                        </binding>
+                                    </connections>
+                                </toolbarItem>
+                                <toolbarItem implicitItemIdentifier="F8BACBA1-6E50-4741-B046-2899DAE944FA" label="Multi" paletteLabel="Multi" bordered="YES" title="∑" sizingBehavior="auto" id="DdL-BX-ewy">
+                                    <nil key="toolTip"/>
+                                    <button key="view" verticalHuggingPriority="750" id="baR-Ye-9bS">
+                                        <rect key="frame" x="0.0" y="14" width="48" height="32"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                        <buttonCell key="cell" type="push" title="∑" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Ubm-k6-uUQ">
+                                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                            <font key="font" size="13" name="ArialUnicodeMS"/>
+                                        </buttonCell>
+                                    </button>
+                                    <connections>
+                                        <action selector="comparisonRun:" target="B8D-0N-5wS" id="5EP-Kg-OKw"/>
+                                        <binding destination="B8D-0N-5wS" name="enabled" keyPath="modelTreeController.selection.complete" id="yiT-GL-RhR">
+                                            <dictionary key="options">
+                                                <string key="NSValueTransformerName">NSNegateBoolean</string>
+                                            </dictionary>
+                                        </binding>
+                                    </connections>
+                                </toolbarItem>
+                                <toolbarItem implicitItemIdentifier="36C6601D-4872-4F5F-8116-E7F9CF359102" label="Import" paletteLabel="Import" image="Plexus Import Icon" bordered="YES" sizingBehavior="auto" id="oMX-Si-RNj">
+                                    <nil key="toolTip"/>
+                                    <button key="view" verticalHuggingPriority="750" id="h1F-g5-M2Q">
+                                        <rect key="frame" x="0.0" y="14" width="48" height="32"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                        <buttonCell key="cell" type="push" bezelStyle="rounded" image="Plexus Import Icon" imagePosition="only" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="UC7-gQ-SeW">
+                                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                            <font key="font" size="13" name="ArialUnicodeMS"/>
+                                        </buttonCell>
+                                    </button>
+                                    <connections>
+                                        <action selector="importCSV:" target="B8D-0N-5wS" id="CGA-dQ-XEA"/>
+                                        <binding destination="B8D-0N-5wS" name="enabled" keyPath="modelTreeController.selection.complete" id="L48-j2-MjY">
+                                            <dictionary key="options">
+                                                <string key="NSValueTransformerName">NSNegateBoolean</string>
+                                            </dictionary>
+                                        </binding>
+                                    </connections>
+                                </toolbarItem>
+                                <toolbarItem implicitItemIdentifier="D6A863DD-1097-4BA9-9F2A-3E87EF99AB2E" label="Export" paletteLabel="Export" image="Plexus Export Icon" bordered="YES" sizingBehavior="auto" id="9Mb-fv-qKz">
+                                    <nil key="toolTip"/>
+                                    <button key="view" verticalHuggingPriority="750" id="epE-PP-f0l">
+                                        <rect key="frame" x="0.0" y="14" width="48" height="32"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                        <buttonCell key="cell" type="push" bezelStyle="rounded" image="Plexus Export Icon" imagePosition="only" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="dSL-WK-2PI">
+                                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                            <font key="font" size="13" name="ArialUnicodeMS"/>
+                                        </buttonCell>
+                                    </button>
+                                    <connections>
+                                        <action selector="exportButton:" target="B8D-0N-5wS" id="p93-IO-CXI"/>
+                                        <binding destination="B8D-0N-5wS" name="enabled" keyPath="modelTreeController.selection.complete" id="MpI-2I-1e8">
+                                            <dictionary key="options">
+                                                <string key="NSValueTransformerName">NSNegateBoolean</string>
+                                            </dictionary>
+                                        </binding>
+                                    </connections>
+                                </toolbarItem>
+                                <toolbarItem implicitItemIdentifier="72537653-7743-41E0-B6E4-38AD733530FF" label="Mawdel" paletteLabel="Mawdel" sizingBehavior="auto" id="lwi-jA-x3T">
+                                    <nil key="toolTip"/>
+                                    <textField key="view" horizontalHuggingPriority="251" verticalHuggingPriority="750" id="Ags-lV-5fI">
+                                        <rect key="frame" x="0.0" y="14" width="500" height="16"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                        <textFieldCell key="cell" lineBreakMode="clipping" alignment="center" title="Label" id="PKX-Gc-yyz">
+                                            <font key="font" usesAppearanceFont="YES"/>
+                                            <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                            <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                        </textFieldCell>
+                                        <connections>
+                                            <binding destination="B8D-0N-5wS" name="value" keyPath="modelTreeController.selection.name" id="8ln-fv-XJw"/>
+                                        </connections>
+                                    </textField>
+                                </toolbarItem>
+                                <toolbarItem implicitItemIdentifier="22BADA0D-B094-4ED4-9F0F-B365AF1E6359" label="Lawk" paletteLabel="Lawk" image="NSLockLockedTemplate" sizingBehavior="auto" id="Dhv-Pb-rum">
+                                    <nil key="toolTip"/>
+                                    <button key="view" verticalHuggingPriority="750" id="1v7-14-Efm">
+                                        <rect key="frame" x="6" y="14" width="21.5" height="21"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                        <buttonCell key="cell" type="smallSquare" bezelStyle="smallSquare" image="NSLockLockedTemplate" imagePosition="overlaps" alignment="center" alternateImage="NSLockUnlockedTemplate" lineBreakMode="truncatingTail" state="on" imageScaling="proportionallyDown" inset="2" id="lvi-aE-6JB">
+                                            <behavior key="behavior" pushIn="YES" changeContents="YES" lightByContents="YES"/>
+                                            <font key="font" metaFont="system"/>
+                                        </buttonCell>
+                                        <connections>
+                                            <binding destination="B8D-0N-5wS" name="value" keyPath="modelTreeController.selection.complete" id="my5-rx-dL6">
+                                                <dictionary key="options">
+                                                    <string key="NSValueTransformerName">NSNegateBoolean</string>
+                                                </dictionary>
+                                            </binding>
+                                        </connections>
+                                    </button>
+                                </toolbarItem>
                             </allowedToolbarItems>
                             <defaultToolbarItems>
                                 <toolbarItem reference="cxJ-Ba-9U3"/>
-                                <toolbarItem reference="lw0-CC-tcM"/>
+                                <toolbarItem reference="oMX-Si-RNj"/>
+                                <toolbarItem reference="9Mb-fv-qKz"/>
                                 <toolbarItem reference="3e1-GX-aR9"/>
+                                <toolbarItem reference="lwi-jA-x3T"/>
+                                <toolbarItem reference="Dhv-Pb-rum"/>
+                                <toolbarItem reference="3e1-GX-aR9"/>
+                                <toolbarItem reference="GtM-cs-fyG"/>
+                                <toolbarItem reference="nIm-nG-5u9"/>
+                                <toolbarItem reference="UWN-Wi-hK1"/>
+                                <toolbarItem reference="DdL-BX-ewy"/>
                                 <toolbarItem reference="9un-M5-c2D"/>
-                                <toolbarItem reference="k41-Tj-JRN"/>
-                                <toolbarItem reference="EB6-A3-dHZ"/>
-                                <toolbarItem reference="pLY-AX-dvL"/>
-                                <toolbarItem reference="3e1-GX-aR9"/>
-                                <toolbarItem reference="PcQ-Jx-jzD"/>
-                                <toolbarItem reference="w3a-q3-YGU"/>
-                                <toolbarItem reference="lYj-Xm-flT"/>
-                                <toolbarItem reference="WTX-aD-8MF"/>
                             </defaultToolbarItems>
                         </toolbar>
                         <connections>
@@ -949,7 +927,7 @@
             <objects>
                 <viewController id="QF4-CV-Jth" customClass="PlexusEntryViewController" customModule="Plexus" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" misplaced="YES" id="s3H-VE-B97">
-                        <rect key="frame" x="0.0" y="0.0" width="174" height="252"/>
+                        <rect key="frame" x="0.0" y="0.0" width="174" height="228"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
                             <button horizontalCompressionResistancePriority="1000" translatesAutoresizingMaskIntoConstraints="NO" id="0KG-3C-KG3" userLabel="Add Entry">
@@ -980,7 +958,7 @@
                                 </connections>
                             </button>
                             <searchField wantsLayer="YES" verticalHuggingPriority="750" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="tgB-Ta-n7s">
-                                <rect key="frame" x="0.0" y="230" width="174" height="22"/>
+                                <rect key="frame" x="0.0" y="134" width="174" height="22"/>
                                 <searchFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" usesSingleLineMode="YES" bezelStyle="round" id="yvP-fH-9z9">
                                     <font key="font" metaFont="system"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -996,13 +974,13 @@
                                 </connections>
                             </searchField>
                             <scrollView horizontalCompressionResistancePriority="250" autohidesScrollers="YES" horizontalLineScroll="19" horizontalPageScroll="10" verticalLineScroll="19" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="QxF-zw-XRg">
-                                <rect key="frame" x="0.0" y="24" width="174" height="208"/>
+                                <rect key="frame" x="0.0" y="24" width="174" height="112"/>
                                 <clipView key="contentView" horizontalCompressionResistancePriority="250" ambiguous="YES" drawsBackground="NO" id="Pzr-zg-49U">
-                                    <rect key="frame" x="1" y="1" width="172" height="206"/>
+                                    <rect key="frame" x="1" y="1" width="172" height="110"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <tableView verticalHuggingPriority="750" ambiguous="YES" allowsExpansionToolTips="YES" selectionHighlightStyle="sourceList" columnSelection="YES" autosaveColumns="NO" rowSizeStyle="automatic" headerView="pBu-Ci-Mqf" viewBased="YES" id="rEo-sV-atd">
-                                            <rect key="frame" x="0.0" y="0.0" width="172" height="183"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="172" height="87"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <size key="intercellSpacing" width="3" height="2"/>
                                             <color key="backgroundColor" name="_sourceListBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -1122,12 +1100,12 @@
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
                             <tabView horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="Eqq-KD-BGU">
-                                <rect key="frame" x="0.0" y="0.0" width="219" height="190"/>
+                                <rect key="frame" x="0.0" y="0.0" width="219" height="238"/>
                                 <font key="font" metaFont="system"/>
                                 <tabViewItems>
                                     <tabViewItem label="Traits" identifier="1" id="Gcs-dU-XeU">
                                         <view key="view" horizontalCompressionResistancePriority="250" id="rcN-eQ-0Xl">
-                                            <rect key="frame" x="10" y="33" width="199" height="144"/>
+                                            <rect key="frame" x="10" y="33" width="199" height="192"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <subviews>
                                                 <button horizontalCompressionResistancePriority="1000" translatesAutoresizingMaskIntoConstraints="NO" id="beb-ea-tRM" userLabel="Add Trait">
@@ -1159,13 +1137,13 @@
                                                     </connections>
                                                 </button>
                                                 <scrollView horizontalCompressionResistancePriority="250" autohidesScrollers="YES" horizontalLineScroll="19" horizontalPageScroll="10" verticalLineScroll="19" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="7lT-CU-s06">
-                                                    <rect key="frame" x="0.0" y="20" width="199" height="124"/>
+                                                    <rect key="frame" x="0.0" y="20" width="199" height="172"/>
                                                     <clipView key="contentView" horizontalCompressionResistancePriority="250" drawsBackground="NO" id="BE3-ps-ExK">
-                                                        <rect key="frame" x="1" y="1" width="197" height="122"/>
+                                                        <rect key="frame" x="1" y="1" width="197" height="170"/>
                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                         <subviews>
                                                             <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" selectionHighlightStyle="sourceList" columnSelection="YES" multipleSelection="NO" autosaveColumns="NO" rowSizeStyle="automatic" headerView="aje-tO-ct0" viewBased="YES" id="D6o-uZ-TGZ">
-                                                                <rect key="frame" x="0.0" y="0.0" width="197" height="99"/>
+                                                                <rect key="frame" x="0.0" y="0.0" width="197" height="147"/>
                                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                 <size key="intercellSpacing" width="3" height="2"/>
                                                                 <color key="backgroundColor" name="_sourceListBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -2427,13 +2405,13 @@
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
                             <scrollView autohidesScrollers="YES" horizontalLineScroll="17" horizontalPageScroll="10" verticalLineScroll="17" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="w83-19-RAd">
-                                <rect key="frame" x="0.0" y="140" width="194" height="136"/>
+                                <rect key="frame" x="0.0" y="140" width="194" height="88"/>
                                 <clipView key="contentView" drawsBackground="NO" id="i9f-z5-eLc">
-                                    <rect key="frame" x="1" y="1" width="192" height="134"/>
+                                    <rect key="frame" x="1" y="1" width="192" height="86"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
-                                        <outlineView verticalHuggingPriority="750" ambiguous="YES" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" selectionHighlightStyle="sourceList" multipleSelection="NO" autosaveColumns="NO" rowSizeStyle="automatic" headerView="Zuu-vy-pRK" viewBased="YES" indentationPerLevel="14" outlineTableColumn="lGB-lD-x0v" id="dAC-hN-JIM" userLabel="Model Outline View">
-                                            <rect key="frame" x="0.0" y="0.0" width="192" height="111"/>
+                                        <outlineView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" selectionHighlightStyle="sourceList" multipleSelection="NO" autosaveColumns="NO" rowSizeStyle="automatic" headerView="Zuu-vy-pRK" viewBased="YES" indentationPerLevel="14" outlineTableColumn="lGB-lD-x0v" id="dAC-hN-JIM" userLabel="Model Outline View">
+                                            <rect key="frame" x="0.0" y="0.0" width="192" height="63"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <size key="intercellSpacing" width="3" height="0.0"/>
                                             <color key="backgroundColor" name="_sourceListBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -2848,28 +2826,5 @@
         <image name="Plexus Export Icon" width="24" height="24"/>
         <image name="Plexus Import Icon" width="24" height="24"/>
         <image name="PlexusAddChild" width="24" height="24"/>
-        <image name="toolbarItem:WkY-d0-2fX:image" width="18" height="18">
-            <mutableData key="keyedArchiveRepresentation">
-YnBsaXN0MDDUAQIDBAUGBwpYJHZlcnNpb25ZJGFyY2hpdmVyVCR0b3BYJG9iamVjdHMSAAGGoF8QD05T
-S2V5ZWRBcmNoaXZlctEICVRyb290gAGvEBkLDBccEyEzQEFCQ0RFRkdOT1BUWF1gY2hrVSRudWxs1Q0O
-DxAREhMUFRZWJGNsYXNzXk5TUmVzaXppbmdNb2RlXE5TSW1hZ2VGbGFnc1ZOU1JlcHNXTlNDb2xvcoAY
-EAASAMMAAIACgBbSGA0ZG1pOUy5vYmplY3RzoRqAA4AV0hgNHSCiHh+ABIAFgBTaIiMkDSUmJygpKiss
-LS4vExMwMTJWTlNTaXplXxAVTlNDb3JlVUlJbWFnZVRlbXBsYXRlXE5TQ29sb3JTcGFjZV8QEE5TQ29s
-b3JTcGFjZU5hbWVfEBlOU0ludGVybmFsTGF5b3V0RGlyZWN0aW9uXxAPTlNCaXRzUGVyU2FtcGxlXxAW
-TlNDb3JlVUlJbWFnZUNvY29hTmFtZVpOU0hhc0FscGhhXxAUTlNDb3JlVUlJbWFnZU9wdGlvbnOADwiA
-EYATgBCAAAmABtM0GA01Oj9XTlMua2V5c6Q2Nzg5gAeACIAJgAqkOx49PoALgASADIANgA5Uc2l6ZVV2
-YWx1ZVVzdGF0ZVZ3aWRnZXRXcmVndWxhclZub3JtYWxYY2hlY2tib3jSSElKS1okY2xhc3NuYW1lWCRj
-bGFzc2VzXxATTlNNdXRhYmxlRGljdGlvbmFyeaNKTE1cTlNEaWN0aW9uYXJ5WE5TT2JqZWN0WHsxOCwg
-MTh9XxAZTlNDYWxpYnJhdGVkUkdCQ29sb3JTcGFjZdJRDVJTVE5TSUQQAYAS0khJVVZcTlNDb2xvclNw
-YWNloldNXE5TQ29sb3JTcGFjZdJISVlaXxAQTlNDb3JlVUlJbWFnZVJlcKNbXE1fEBBOU0NvcmVVSUlt
-YWdlUmVwWk5TSW1hZ2VSZXDSSEleX1dOU0FycmF5ol5N0khJYWJeTlNNdXRhYmxlQXJyYXmjYV5N02Qk
-DWVmZ1dOU1doaXRlRDAgMAAQA4AX0khJaWpXTlNDb2xvcqJpTdJISWxtV05TSW1hZ2WibE0ACAARABoA
-JAApADIANwBJAEwAUQBTAG8AdQCAAIcAlgCjAKoAsgC0ALYAuwC9AL8AxADPANEA0wDVANoA3QDfAOEA
-4wD4AP8BFwEkATcBUwFlAX4BiQGgAaIBowGlAacBqQGrAawBrgG1Ab0BwgHEAcYByAHKAc8B0QHTAdUB
-1wHZAd4B5AHqAfEB+QIAAgkCDgIZAiICOAI8AkkCUgJbAncCfAKBAoMChQKKApcCmgKnAqwCvwLDAtYC
-4QLmAu4C8QL2AwUDCQMQAxgDHQMfAyEDJgMuAzEDNgM+AAAAAAAAAgEAAAAAAAAAbgAAAAAAAAAAAAAA
-AAAAA0E
-</mutableData>
-        </image>
     </resources>
 </document>
