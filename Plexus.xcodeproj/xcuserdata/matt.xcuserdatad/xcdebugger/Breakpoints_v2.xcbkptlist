@@ -15,8 +15,8 @@
             timestampString = "570402819.4086699"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "2513"
-            endingLineNumber = "2513"
+            startingLineNumber = "2524"
+            endingLineNumber = "2524"
             landmarkName = "exportModel(curModel:curDir:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -32,8 +32,8 @@
             timestampString = "570402819.409279"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "2557"
-            endingLineNumber = "2557"
+            startingLineNumber = "2568"
+            endingLineNumber = "2568"
             landmarkName = "exportModel(curModel:curDir:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -49,8 +49,8 @@
             timestampString = "570402819.40953"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "2534"
-            endingLineNumber = "2534"
+            startingLineNumber = "2545"
+            endingLineNumber = "2545"
             landmarkName = "exportModel(curModel:curDir:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -66,8 +66,8 @@
             timestampString = "570402819.409767"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "2541"
-            endingLineNumber = "2541"
+            startingLineNumber = "2552"
+            endingLineNumber = "2552"
             landmarkName = "exportModel(curModel:curDir:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -83,8 +83,8 @@
             timestampString = "570402819.410001"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "2809"
-            endingLineNumber = "2809"
+            startingLineNumber = "2820"
+            endingLineNumber = "2820"
             landmarkName = "exportModel(curModel:curDir:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -100,8 +100,8 @@
             timestampString = "570402819.4102761"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "2891"
-            endingLineNumber = "2891"
+            startingLineNumber = "2902"
+            endingLineNumber = "2902"
             landmarkName = "exportModel(curModel:curDir:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -151,8 +151,8 @@
             timestampString = "570402819.411148"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "857"
-            endingLineNumber = "857"
+            startingLineNumber = "855"
+            endingLineNumber = "855"
             landmarkName = "mocDidChange(_:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -168,8 +168,8 @@
             timestampString = "570402819.411394"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "901"
-            endingLineNumber = "901"
+            startingLineNumber = "897"
+            endingLineNumber = "897"
             landmarkName = "mocDidChange(_:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -185,8 +185,8 @@
             timestampString = "570402819.411643"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "938"
-            endingLineNumber = "938"
+            startingLineNumber = "937"
+            endingLineNumber = "937"
             landmarkName = "mocDidChange(_:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -202,8 +202,8 @@
             timestampString = "570402819.411911"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "937"
-            endingLineNumber = "937"
+            startingLineNumber = "936"
+            endingLineNumber = "936"
             landmarkName = "mocDidChange(_:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -269,9 +269,376 @@
             filePath = "Plexus/PlexusBNScene.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "931"
-            endingLineNumber = "931"
+            startingLineNumber = "930"
+            endingLineNumber = "930"
             landmarkName = "mocDidChange(_:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "3C0EE6B1-5545-4F04-8DA6-3383921C355C"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Plexus/PlexusMainWindowController.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "39"
+            endingLineNumber = "39"
+            landmarkName = "PlexusMainWindowController"
+            landmarkType = "3">
+            <Locations>
+               <Location
+                  uuid = "3C0EE6B1-5545-4F04-8DA6-3383921C355C - 5f8fca74fd7f3de2"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Plexus.PlexusMainWindowController.init(window: Swift.Optional&lt;__C.NSWindow&gt;) -&gt; Plexus.PlexusMainWindowController"
+                  moduleName = "Plexus"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/matt/Documents/Code/Plexus/Plexus/PlexusMainWindowController.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "41"
+                  endingLineNumber = "41"
+                  offsetFromSymbolStart = "1436">
+               </Location>
+               <Location
+                  uuid = "3C0EE6B1-5545-4F04-8DA6-3383921C355C - b1dd7713bbf768e"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Plexus.PlexusMainWindowController.init(coder: __C.NSCoder) -&gt; Swift.Optional&lt;Plexus.PlexusMainWindowController&gt;"
+                  moduleName = "Plexus"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/matt/Documents/Code/Plexus/Plexus/PlexusMainWindowController.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "41"
+                  endingLineNumber = "41"
+                  offsetFromSymbolStart = "1436">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "7DE778EB-E2FE-4B0C-BDB0-154D7353AD93"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Plexus/PlexusMainWindowController.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "24"
+            endingLineNumber = "24"
+            landmarkName = "PlexusMainWindowController"
+            landmarkType = "3">
+            <Locations>
+               <Location
+                  uuid = "7DE778EB-E2FE-4B0C-BDB0-154D7353AD93 - 36b6a154d489ba18"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Plexus.PlexusMainWindowController.queue.getter : __C.OS_dispatch_queue"
+                  moduleName = "Plexus"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/matt/Documents/Code/Plexus/Plexus/PlexusMainWindowController.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "25"
+                  endingLineNumber = "25"
+                  offsetFromSymbolStart = "48">
+               </Location>
+               <Location
+                  uuid = "7DE778EB-E2FE-4B0C-BDB0-154D7353AD93 - 5f8fca74fd7f3f92"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Plexus.PlexusMainWindowController.init(window: Swift.Optional&lt;__C.NSWindow&gt;) -&gt; Plexus.PlexusMainWindowController"
+                  moduleName = "Plexus"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/matt/Documents/Code/Plexus/Plexus/PlexusMainWindowController.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "25"
+                  endingLineNumber = "25"
+                  offsetFromSymbolStart = "1108">
+               </Location>
+               <Location
+                  uuid = "7DE778EB-E2FE-4B0C-BDB0-154D7353AD93 - b1dd7713bbf74fe"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Plexus.PlexusMainWindowController.init(coder: __C.NSCoder) -&gt; Swift.Optional&lt;Plexus.PlexusMainWindowController&gt;"
+                  moduleName = "Plexus"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/matt/Documents/Code/Plexus/Plexus/PlexusMainWindowController.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "25"
+                  endingLineNumber = "25"
+                  offsetFromSymbolStart = "1108">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "359AE37D-9359-4264-9740-5D297139A39F"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Plexus/PlexusMainWindowController.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "1887"
+            endingLineNumber = "1887"
+            landmarkName = "metalCalc(curModel:fake:verbose:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "A8F3BBD5-3C5E-4F5A-B20E-B5B47EBEF3AB"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Plexus/PlexusMainWindowController.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "1883"
+            endingLineNumber = "1883"
+            landmarkName = "metalCalc(curModel:fake:verbose:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "A659246A-8244-40F7-B82A-817618982B2E"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Plexus/PlexusMainWindowController.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "1811"
+            endingLineNumber = "1811"
+            landmarkName = "metalCalc(curModel:fake:verbose:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "FC243A38-8CEA-48BE-A56F-5F112CCB5B7F"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Plexus/PlexusMainWindowController.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "1721"
+            endingLineNumber = "1721"
+            landmarkName = "metalCalc(curModel:fake:verbose:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "369371E0-D639-471D-8B33-19F2F8FDBD32"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Plexus/PlexusMainWindowController.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "989"
+            endingLineNumber = "989"
+            landmarkName = "singleRunPress(_:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "369371E0-D639-471D-8B33-19F2F8FDBD32 - 52b9b4556d4af1ef"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Plexus.PlexusMainWindowController.singleRunPress(__C.NSToolbarItem) -&gt; ()"
+                  moduleName = "Plexus"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/matt/Documents/Code/Plexus/Plexus/PlexusMainWindowController.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "990"
+                  endingLineNumber = "990"
+                  offsetFromSymbolStart = "344">
+               </Location>
+               <Location
+                  uuid = "369371E0-D639-471D-8B33-19F2F8FDBD32 - 52b9b4556d4af1ef"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Plexus.PlexusMainWindowController.singleRunPress(__C.NSToolbarItem) -&gt; ()"
+                  moduleName = "Plexus"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/matt/Documents/Code/Plexus/Plexus/PlexusMainWindowController.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "990"
+                  endingLineNumber = "990"
+                  offsetFromSymbolStart = "5392">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "DC56168B-3BDA-49F9-8CE2-579823535946"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Plexus/PlexusModelDetailViewController.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "851"
+            endingLineNumber = "851"
+            landmarkName = "mocDidChange(_:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "4FB51235-E1B7-4360-8C62-D5A4537CF40B"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Plexus/PlexusMainWindowController.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "1817"
+            endingLineNumber = "1817"
+            landmarkName = "metalCalc(curModel:fake:verbose:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "414DBBB6-0B6A-446A-9AAE-6533CA74B7A8"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Plexus/PlexusMainWindowController.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "1823"
+            endingLineNumber = "1823"
+            landmarkName = "metalCalc(curModel:fake:verbose:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "4C40CB89-A315-49A1-BDAF-C91297BB4861"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Plexus/PlexusMainWindowController.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "1834"
+            endingLineNumber = "1834"
+            landmarkName = "metalCalc(curModel:fake:verbose:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "D46C4206-B53F-40DB-8027-BF3F523FBA34"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Plexus/PlexusMainWindowController.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "1844"
+            endingLineNumber = "1844"
+            landmarkName = "metalCalc(curModel:fake:verbose:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "0859FA30-E5BC-4E82-8F91-FF73460E6E0A"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Plexus/PlexusMainWindowController.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "1853"
+            endingLineNumber = "1853"
+            landmarkName = "metalCalc(curModel:fake:verbose:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "9E9AE398-8973-4F76-9768-8A971B538862"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Plexus/PlexusMainWindowController.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "1862"
+            endingLineNumber = "1862"
+            landmarkName = "metalCalc(curModel:fake:verbose:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "5E2869E0-827F-4A1D-A7D1-DEAAF9429238"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Plexus/PlexusMainWindowController.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "1727"
+            endingLineNumber = "1727"
+            landmarkName = "metalCalc(curModel:fake:verbose:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "1E1C4648-5356-4D2A-85A2-A4C908311E0D"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Plexus/PlexusMainWindowController.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "1718"
+            endingLineNumber = "1718"
+            landmarkName = "metalCalc(curModel:fake:verbose:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

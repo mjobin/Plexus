@@ -1,23 +1,23 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="14315.18" systemVersion="18A389" minimumToolsVersion="Xcode 7.3" sourceLanguage="Objective-C" userDefinedModelVersionIdentifier="">
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="18154" systemVersion="20F71" minimumToolsVersion="Xcode 7.3" sourceLanguage="Objective-C" userDefinedModelVersionIdentifier="">
     <entity name="BNNode" representedClassName="Plexus.BNNode" syncable="YES">
-        <attribute name="cptArray" optional="YES" attributeType="Transformable" customClassName="[Float]" syncable="YES"/>
-        <attribute name="cptFreezeArray" optional="YES" attributeType="Transformable" customClassName="[Float]" syncable="YES"/>
+        <attribute name="cptArray" optional="YES" attributeType="Transformable" valueTransformerName="NSSecureUnarchiveFromData" customClassName="[Float]" syncable="YES"/>
+        <attribute name="cptFreezeArray" optional="YES" attributeType="Transformable" valueTransformerName="NSSecureUnarchiveFromData" customClassName="[Float]" syncable="YES"/>
         <attribute name="cptReady" optional="YES" attributeType="Integer 16" minValueString="0" maxValueString="2" defaultValueString="NO" usesScalarValueType="NO" syncable="YES"/>
-        <attribute name="finalStates" optional="YES" attributeType="Transformable" customClassName="[Float]" syncable="YES"/>
+        <attribute name="finalStates" optional="YES" attributeType="Transformable" valueTransformerName="NSSecureUnarchiveFromData" customClassName="[Float]" syncable="YES"/>
         <attribute name="hidden" optional="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="name" optional="YES" attributeType="String" defaultValueString="New Node" syncable="YES"/>
         <attribute name="numericData" optional="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="NO" syncable="YES"/>
-        <attribute name="postArray" optional="YES" attributeType="Transformable" customClassName="[Float]" syncable="YES"/>
-        <attribute name="postCount" optional="YES" attributeType="Transformable" valueTransformerName="" customClassName="[Int]" syncable="YES"/>
+        <attribute name="postArray" optional="YES" attributeType="Transformable" valueTransformerName="NSSecureUnarchiveFromData" customClassName="[Float]" syncable="YES"/>
+        <attribute name="postCount" optional="YES" attributeType="Transformable" valueTransformerName="NSSecureUnarchiveFromData" customClassName="[Int]" syncable="YES"/>
         <attribute name="postETHigh" optional="YES" attributeType="Double" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="postETLow" optional="YES" attributeType="Double" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="postHPDHigh" optional="YES" attributeType="Double" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="postHPDLow" optional="YES" attributeType="Double" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="postMean" optional="YES" attributeType="Double" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="postSSD" optional="YES" attributeType="Double" usesScalarValueType="NO" syncable="YES"/>
-        <attribute name="priorArray" optional="YES" attributeType="Transformable" customClassName="[Float]" syncable="YES"/>
-        <attribute name="priorCount" optional="YES" attributeType="Transformable" customClassName="[Int]" syncable="YES"/>
+        <attribute name="priorArray" optional="YES" attributeType="Transformable" valueTransformerName="NSSecureUnarchiveFromData" customClassName="[Float]" syncable="YES"/>
+        <attribute name="priorCount" optional="YES" attributeType="Transformable" valueTransformerName="NSSecureUnarchiveFromData" customClassName="[Int]" syncable="YES"/>
         <attribute name="priorDistType" optional="YES" attributeType="Integer 32" minValueString="0" defaultValueString="0" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="priorV1" optional="YES" attributeType="Double" defaultValueString="0.5" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="priorV2" optional="YES" attributeType="Double" defaultValueString="0.5" usesScalarValueType="NO" syncable="YES"/>
@@ -66,7 +66,7 @@
         <relationship name="entry" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Entry" inverseName="trait" inverseEntity="Entry" syncable="YES"/>
     </entity>
     <elements>
-        <element name="BNNode" positionX="-21.91015625" positionY="290.09375" width="128" height="448"/>
+        <element name="BNNode" positionX="-21.91015625" positionY="290.09375" width="128" height="434"/>
         <element name="BNNodeInter" positionX="-439.91796875" positionY="620.0859375" width="128" height="88"/>
         <element name="Entry" positionX="-468" positionY="-36" width="128" height="133"/>
         <element name="Model" positionX="349" positionY="-9" width="128" height="283"/>

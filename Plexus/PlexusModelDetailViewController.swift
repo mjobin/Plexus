@@ -848,18 +848,14 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
             return
         }
         
-//        print("moc detail mocDidChange")
         mocChange = true
         let info = notification.userInfo
         
-//        print (info)
 
         var relD = false
 
         if let objs = info?[NSUpdatedObjectsKey] as? Set<NSManagedObject> {
             for obj :NSManagedObject in objs {
-//                       print (info)
-                print("modelDetai VC change update")
                 let changes = obj.changedValues()
                 for (key, _) in changes {
                     print (key)
@@ -942,7 +938,6 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
         var curNodes : [BNNode] = nodesController.selectedObjects as! [BNNode]
         if(curNodes.count>0) {
             curNode = curNodes[0]
-           // print(curnode.name)
             if(convertFromNSUserInterfaceItemIdentifier(tableColumn?.identifier ?? NSUserInterfaceItemIdentifier(rawValue: "None")) == "Data" ){
                 let curModels : [Model] = modelTreeController.selectedObjects as! [Model]
                 let curModel : Model = curModels[0]
@@ -998,8 +993,6 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
             return
         }
 
-//        return //FIXME
-//        let what = 0
         
         if (firstrun){
             
@@ -1034,19 +1027,16 @@ class PlexusModelDetailViewController: NSViewController, NSTableViewDelegate, NS
             return
         }
 
-        
         var alltwos = true
         var anyones = false
         
-        for (key, value) in cptReady{ //FIXME this ic ausing a constant update loop
-        print ("checking on \(key.name): \(value)")
+        for (key, value) in cptReady{
            if(value == 0 && anyones == false) {
                 alltwos = false
                 self.cptReady[key] = 1 //while processing
                 DispatchQueue.global().async {
 
-                    self.cptReady[key] = key.CPT(fake: false, thisMOC: self.moc) //FIXME THIS ic ausing a constant update loop
-
+                    self.cptReady[key] = key.CPT(fake: false, thisMOC: self.moc)
 
                     self.performSelector(onMainThread: #selector(PlexusModelDetailViewController.reloadData), with: nil, waitUntilDone: false)
 

@@ -821,7 +821,6 @@ class PlexusBNScene: SKScene {
      */
     func makeNode(_ inNode : BNNode, inPos: CGPoint){
                
-
         
         let myLabel = SKLabelNode(text: inNode.name)
 //        myLabel.fontName = "SFProDisplay-Bold"
@@ -832,7 +831,7 @@ class PlexusBNScene: SKScene {
         
         
         let valLabel = SKLabelNode(text: inNode.value)
-        valLabel.fontName = "SFProDisplay-Medium"
+//        valLabel.fontName = "SFProDisplay-Medium"
         valLabel.fontSize = 12
         valLabel.zPosition = 2
         valLabel.name = "nodeName"

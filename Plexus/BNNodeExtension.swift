@@ -412,14 +412,14 @@ extension BNNode {
      
      - Returns: CPT as an array.
      */
-    func getCPTArray(_ sender:AnyObject, mocChanged:Bool, fake : Bool,  thisMOC : NSManagedObjectContext) -> [cl_float] {
-        //FIXME only change this back if you feel really safe about it
-        _ = self.CPT(fake: fake, thisMOC: thisMOC)
+    func getCPTArray(_ sender:AnyObject, mocChanged:Bool, fake : Bool,  thisMOC : NSManagedObjectContext) -> [cl_float]
+    
+    
+    {
         
-        //        print ("getCPTArray \(self.name) \(self.cptReady)")
-        //        if mocChanged == true || self.cptReady != 2 {
-        //           _ = self.CPT()
-        //        }
+            if mocChanged == true || self.cptReady != 2 {
+               _ = self.CPT(fake: false, thisMOC: thisMOC)
+            }
         return self.cptArray
     }
     

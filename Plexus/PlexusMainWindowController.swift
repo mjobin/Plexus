@@ -1713,8 +1713,18 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
      - Returns: True if run completed without errors.
      */
     func metalCalc(curModel:Model, fake: Bool, verbose:Bool) -> Bool {
-        //                let start = DispatchTime.now()
-        //                print ("\n\n**********START")
+                        let start = DispatchTime.now()
+                        print ("\n\n**********START")
+        
+        if moc.hasChanges {
+            print("has changes")
+            do {
+                try moc.save()
+            } catch let error as NSError {
+                print(error)
+            }
+        }
+        
         
         let defaults = UserDefaults.standard
         
@@ -1759,7 +1769,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         else if calcSpeed == 1 {
             ntWidth = Int(Double(ntWidth) * 0.75)
         }
-        //        print ("Number of threadgroups: \(ntWidth)")
+                print ("Number of threadgroups: \(ntWidth)")
         let threadsPerThreadgroup : MTLSize = MTLSizeMake(mTTPT, 1, 1)
         let numThreadgroups = MTLSize(width: teWidth, height: 1, depth: 1)
         ntWidth = teWidth * mTTPT
@@ -1874,6 +1884,7 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         //Buffer 7: Cptnet
         var cptnet = [Float]()
         for node in nodesForCalc {
+
             let theCPT = node.getCPTArray(self, mocChanged: moc.hasChanges, fake : fake, thisMOC: moc)
             cptnet = cptnet + theCPT
             let leftOver = maxCPTSize-theCPT.count
@@ -2219,9 +2230,9 @@ class PlexusMainWindowController: NSWindowController, NSWindowDelegate {
         //            print("Full run: \(NSDate().timeIntervalSince(start as Date)) seconds.")
         //        }
         
-        //        var end = DispatchTime.now()
-        //        var cptRunTime = Double(end.uptimeNanoseconds - start.uptimeNanoseconds) / 1000000000
-        //        print ("**********END RUN  \(cptRunTime) seconds.")
+                var end = DispatchTime.now()
+                var cptRunTime = Double(end.uptimeNanoseconds - start.uptimeNanoseconds) / 1000000000
+                print ("**********END RUN  \(cptRunTime) seconds.")
         
         return true
         
